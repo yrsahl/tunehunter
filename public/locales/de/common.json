@@ -37,21 +37,6 @@
     }
   },
   "search": {
-    "settings": {
-      "title": "Sucheinstellungen",
-      "spotifyConnected": "Verbunden als {{accountName}}",
-      "unlink": {
-        "title": "Spotify-Verknüfung löschen?",
-        "text": "Bitte bestätige, dass du die Verbindung zu deinem Spotify-Account {{accountName}} löschen möchtest."
-      },
-      "region": "Region",
-      "locateMe": "Finde mich",
-      "searchForClubMixesOnly": "Nur Club / Extended Mixes",
-      "setMinimumLength": "Mindestlänge",
-      "resultsView": "Ergebnisse anzeigen auf",
-      "newPage": "Neuer Seite",
-      "below": "Unten"
-    },
     "tabs": {
       "trending": { "header": "Aktuell", "empty": "Keine Einträge bisher..." },
       "spotify": { "header": "Spotify" },
@@ -191,10 +176,37 @@
       "success": "Verbindung zu deinem Spotify-Account wurde erfolgreich entfernt!"
     }
   },
-  "lang": {
-    "language": "Sprache",
-    "en": "English",
-    "de": "Deutsch",
-    "es": "Español"
+  "settings": {
+    "search": {
+      "title": "Sucheinstellungen",
+      "locateMe": "Finde mich",
+      "searchForClubMixesOnly": "Nur Club / Extended Mixes",
+      "setMinimumLength": "Mindestlänge"
+    },
+    "profile": {
+      "spotifyConnected": "Verbunden als {{accountName}}",
+      "unlink": {
+        "title": "Spotify-Verknüfung löschen?",
+        "text": "Bitte bestätige, dass du die Verbindung zu deinem Spotify-Account {{accountName}} löschen möchtest."
+      }
+    },
+    "language": {
+      "title": "Sprache",
+      "en": "English",
+      "de": "Deutsch",
+      "es": "Español"
+    },
+    "region": {
+      "title": "Region"
+    },
+    "theme": {
+      "title": "Theme",
+      "switch": "Theme wechseln",
+      "tooltip": "'Automatisch' setzt das Theme basierend auf der Uhrzeit und dem Stand der Sonne an deinem Standort. 'Manuell' setzt das Theme nicht automatisch.",
+      "light": "Hell",
+      "dark": "Dunkel",
+      "auto": "Automatisch",
+      "manual": "Manuell"
+    }
   }
 }

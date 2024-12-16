@@ -50,13 +50,13 @@ const SearchSettings: FC<IProps> = ({}) => {
         {/* <div className="absolute inset-0 -z-10 bg-background opacity-80" /> */}
 
         <p className="text-center text-lg  text-foreground underline underline-offset-8">
-          {t("search.settings.title")}
+          {t("settings.search.title")}
         </p>
         <div className="grid grid-cols-[240px_minmax(50px,_max-content)] gap-x-8 gap-y-3 opacity-100">
           {/* Minimum length */}
           <Label htmlFor="minimumlength" className="flex items-center font-thin">
             <p>
-              {t("search.settings.setMinimumLength")}
+              {t("settings.search.setMinimumLength")}
               {minimumLengthOption ? ":" : "?"}
             </p>
           </Label>
@@ -90,7 +90,7 @@ const SearchSettings: FC<IProps> = ({}) => {
 
           {/* Club Mixes only */}
           <Label htmlFor="clubmixesonly" className="flex items-center font-thin">
-            {t("search.settings.searchForClubMixesOnly")}
+            {t("settings.search.searchForClubMixesOnly")}
             {!searchForClubMixesOnly && <span>?</span>}
           </Label>
           <div className="flex h-10 items-center justify-end">
@@ -107,7 +107,7 @@ const SearchSettings: FC<IProps> = ({}) => {
             <>
               <div className="flex items-center">
                 <Label htmlFor="region" className="flex items-center font-thin">
-                  {t("search.settings.region")}:
+                  {t("settings.region")}:
                 </Label>
                 <Select onValueChange={changeRegion} value={region}>
                   <SelectTrigger

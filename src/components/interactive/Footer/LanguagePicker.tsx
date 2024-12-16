@@ -11,9 +11,9 @@ const LanguagePicker = () => {
   const { t } = useTranslation("");
   const { preferredLanguage, changeLanguage } = useLanguageSettings();
 
-  const placeholderValue = isSmallDevice ? "EN" : t(`lang.${router.locale}`);
+  const placeholderValue = isSmallDevice ? "EN" : t(`settings.language.${router.locale}`);
   const getLanguageText = (locale: string) =>
-    isSmallDevice ? locale.toUpperCase() : t(`lang.${locale}`);
+    isSmallDevice ? locale.toUpperCase() : t(`settings.language.${locale}`);
 
   return (
     <Select onValueChange={changeLanguage} value={preferredLanguage || router.locale}>

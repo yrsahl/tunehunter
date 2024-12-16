@@ -5,9 +5,10 @@ import { useTheme } from "next-themes";
 import { useEffect } from "react";
 import useUserSettings from "./useUserSettings";
 
-export const AutoThemePreferences = ["Automatically", "Manually"];
+export const AutoThemePreferences = ["auto", "manual"];
+export type AutoThemePreference = (typeof AutoThemePreferences)[number];
 
-// Uses DB for storage as it's a user only-setting
+// Uses DB for storage as it's a user-only setting
 
 const useThemeSettings = () => {
   const { resolvedTheme, setTheme } = useTheme(); // Next hook
@@ -26,15 +27,21 @@ const useThemeSettings = () => {
     // Desired theme already active?
     if (preferredTheme === resolvedTheme) return;
 
-    if (preferredTheme === "light") setTheme("light");
-    if (preferredTheme === "dark") setTheme("dark");
-    if (preferredTheme === "auto") {
-      getUserLocation().then((userLocation) => {
-        if ("error" in userLocation) {
-          return;
-        }
-        setThemeByDaytime(userLocation);
-      });
+    switch (preferredTheme) {
+      case "light":
+        setTheme("light");
+        break;
+      case "dark":
+        setTheme("dark");
+        break;
+      case "auto":
+        getUserLocation().then((userLocation) => {
+          if ("error" in userLocation) {
+            return;
+          }
+          setThemeByDaytime(userLocation);
+        });
+        break;
     }
   }, [preferredTheme]);
 
@@ -51,10 +58,9 @@ const useThemeSettings = () => {
     if (loggedIn) updatePreferredTheme?.(newTheme);
   };
 
-  const changeAutoThemePreference = async (checked: boolean) => {
-    if (checked) {
-      updatePreferredTheme("auto"); // Db
-    } else {
+  const changeAutoThemePreference = (autoThemePreference: AutoThemePreference) => {
+    if (autoThemePreference === "auto") updatePreferredTheme("auto");
+    else {
       const currentTheme = resolvedTheme === "light" ? "light" : "dark";
       updatePreferredTheme(currentTheme);
     }

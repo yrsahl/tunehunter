@@ -36,7 +36,7 @@ const ProfileMenu = () => {
   const { region, changeRegion, createRegionName, setRegionByLocation, sortedRegions } =
     useRegionSettings();
   const { preferredTheme, changeAutoThemePreference } = useThemeSettings();
-  const prefersAutoTheme = preferredTheme === "auto";
+  const autoThemePreference = preferredTheme === "auto" ? "auto" : "manual";
   const { spotifyData } = useSpotifyContext();
   const linkError = useAuthError("link");
 
@@ -137,10 +137,10 @@ const ProfileMenu = () => {
             </a>
             <ConfirmationModal
               dialogAction={() => handleUnlinkSpotify(userData.user.id)}
-              dialogText={t("search.settings.unlink.text", {
+              dialogText={t("settings.profile.unlink.text", {
                 accountName: spotifyData?.profileData?.display_name,
               })}
-              dialogTitle={t("search.settings.unlink.title")}
+              dialogTitle={t("settings.profile.unlink.title")}
             >
               <div>
                 <IconButton icon="x" variant="ghostPrimary" size="icon" iconSize="20px" />
@@ -166,7 +166,7 @@ const ProfileMenu = () => {
 
         {/* Region */}
         <Label htmlFor="region" className="col-span-2 flex items-center justify-end font-thin">
-          {t("search.settings.region")}
+          {t("settings.region.title")}
         </Label>
         <div className="col-span-2">
           <Select onValueChange={changeRegion} value={region}>
@@ -204,13 +204,10 @@ const ProfileMenu = () => {
 
         {/* Theme */}
         <p className="col-span-2 flex items-center justify-end gap-1 font-thin">
-          <span>Switch theme</span>
+          <span>{t("settings.theme.switch")}</span>
         </p>
         <div className="col-span-2">
-          <Select
-            onValueChange={(value) => changeAutoThemePreference(value === "Automatically")}
-            value={prefersAutoTheme ? "Automatically" : "Manually"}
-          >
+          <Select value={autoThemePreference} onValueChange={changeAutoThemePreference}>
             <SelectTrigger
               id="region"
               className="h-9 max-w-44 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 text-base font-thin text-foreground focus:ring-0 focus:ring-offset-0"
@@ -225,7 +222,7 @@ const ProfileMenu = () => {
             <SelectContent>
               {AutoThemePreferences.map((autoThemePreference) => (
                 <SelectItem key={autoThemePreference} value={autoThemePreference} className="py-2">
-                  {autoThemePreference}
+                  {t(`settings.theme.${autoThemePreference}`)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -236,10 +233,7 @@ const ProfileMenu = () => {
             <TooltipTrigger className="cursor-default">
               <CustomIcon icon="info" variant="ghost-foreground" width="18px" height="18px" />
             </TooltipTrigger>
-            <TooltipContent className="border border-foreground/30 bg-background px-4 py-2 text-center text-foreground">
-              <p>'Automatically' sets the theme based on the sunrise cycle in your location.</p>
-              <p>'Manually' does not set the theme on your behalf.</p>
-            </TooltipContent>
+            <TooltipContent className="border border-foreground/30 bg-background px-4 py-2 text-center text-foreground"></TooltipContent>
           </Tooltip>
         </div>
 

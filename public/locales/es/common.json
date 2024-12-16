@@ -37,21 +37,6 @@
     }
   },
   "search": {
-    "settings": {
-      "title": "Configuración de búsqueda",
-      "spotifyConnected": "Conectado como {{accountName}}",
-      "unlink": {
-        "title": "¿Desvincular cuenta de Spotify?",
-        "text": "Por favor confirma que deseas desvincular tu cuenta de Spotify {{accountName}}."
-      },
-      "region": "Región",
-      "locateMe": "Búscame",
-      "searchForClubMixesOnly": "Solo club / extended mixes",
-      "setMinimumLength": "Duración mínima",
-      "resultsView": "Mostrar resultados en",
-      "newPage": "Nueva página",
-      "below": "Debajo"
-    },
     "tabs": {
       "trending": { "header": "Trending", "empty": "Nada está en tendencia en este momento..." },
       "spotify": { "header": "Spotify" },
@@ -191,10 +176,37 @@
       "success": "Cuenta de Spotify desvinculada correctamente!"
     }
   },
-  "lang": {
-    "language": "Idioma",
-    "en": "English",
-    "de": "Deutsch",
-    "es": "Español"
+  "settings": {
+    "search": {
+      "title": "Configuración de búsqueda",
+      "locateMe": "Búscame",
+      "searchForClubMixesOnly": "Solo club / extended mixes",
+      "setMinimumLength": "Duración mínima"
+    },
+    "profile": {
+      "spotifyConnected": "Conectado como {{accountName}}",
+      "unlink": {
+        "title": "¿Desvincular cuenta de Spotify?",
+        "text": "Por favor confirma que deseas desvincular tu cuenta de Spotify {{accountName}}."
+      }
+    },
+    "language": {
+      "title": "Idioma",
+      "en": "Inglés",
+      "de": "Alemán",
+      "es": "Español"
+    },
+    "region": {
+      "title": "Región"
+    },
+    "theme": {
+      "title": "Theme",
+      "switch": "Cambiar tema",
+      "tooltip": "Elige entre claro y oscuro. 'Automático' establece el tema basado en la hora y la posición del sol en tu ubicación. 'Manual' no establece el tema automáticamente.",
+      "light": "Claro",
+      "dark": "Oscuro",
+      "auto": "Automáticamente",
+      "manual": "Manualmente"
+    }
   }
 }

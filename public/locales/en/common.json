@@ -37,21 +37,6 @@
     }
   },
   "search": {
-    "settings": {
-      "title": "Search Settings",
-      "spotifyConnected": "Connected as {{accountName}}",
-      "unlink": {
-        "title": "Unlink Spotify account?",
-        "text": "Please confirm that you want to unlink your Spotify account {{accountName}}."
-      },
-      "region": "Region",
-      "locateMe": "Find me",
-      "searchForClubMixesOnly": "Club / extended mixes only",
-      "setMinimumLength": "Minimum length",
-      "resultsView": "Show results on",
-      "newPage": "New page",
-      "below": "Below"
-    },
     "tabs": {
       "trending": { "header": "Trending", "empty": "Nothing's trending right now..." },
       "spotify": { "header": "Spotify" },
@@ -193,10 +178,37 @@
       "success": "Spotify account successfully unlinked!"
     }
   },
-  "lang": {
-    "language": "Language",
-    "en": "English",
-    "de": "Deutsch",
-    "es": "Español"
+  "settings": {
+    "search": {
+      "title": "Search Settings",
+      "locateMe": "Find me",
+      "searchForClubMixesOnly": "Club / extended mixes only",
+      "setMinimumLength": "Minimum length"
+    },
+    "profile": {
+      "spotifyConnected": "Connected as {{accountName}}",
+      "unlink": {
+        "title": "Unlink Spotify account?",
+        "text": "Please confirm that you want to unlink your Spotify account {{accountName}}."
+      }
+    },
+    "language": {
+      "title": "Language",
+      "en": "English",
+      "de": "German",
+      "es": "Spanish"
+    },
+    "region": {
+      "title": "Region"
+    },
+    "theme": {
+      "title": "Theme",
+      "switch": "Switch theme",
+      "tooltip": "'Automatically' sets the theme based on the time and position of the sun in your location. 'Manually' does not set the theme on your behalf.",
+      "light": "Light",
+      "dark": "Dark",
+      "auto": "Automatically",
+      "manual": "Manually"
+    }
   }
 }
