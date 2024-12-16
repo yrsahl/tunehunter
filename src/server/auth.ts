@@ -49,7 +49,6 @@ export const authOptions: NextAuthOptions = {
     // We're using an adapter, so we're using the 'database' strategy (which also enables us to use the Email SignIn method) and there is no JWT; instead there is a sessionToken cookie which is used to look up the session in the DB
     // If we had been using JWT, we could access the DB here, add stuff to the token and then retrieve that in the 'session' callback to propagate fields to the client
     // jwt: ({ token, account, user }) => {
-    //   console.log("jwt", token, account, user);
     //   if (account) {
     //     token.id = user.id;
     //     token.language = "EN";

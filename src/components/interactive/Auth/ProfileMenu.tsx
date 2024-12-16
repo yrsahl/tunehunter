@@ -1,5 +1,18 @@
+import CustomIcon from "@/components/CustomIcon";
 import { Separator } from "@/components/my-ui/separator";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useSpotifyContext } from "@/contexts/SpotifyContext";
+import { growIn } from "@/helpers/animations";
+import useRegionSettings from "@/hooks/settings/useRegionSettings";
+import useThemeSettings, { AutoThemePreferences } from "@/hooks/settings/useThemeSettings";
 import useAuthError from "@/hooks/useAuthErrors";
 import useProfileFunctions from "@/hooks/useProfileFunctions";
 import { api } from "@/utils/api";
@@ -20,6 +33,10 @@ const ProfileMenu = () => {
   const [changeMailDialogOpen, setChangeMailDialogOpen] = useState(false);
   const { handleDeleteAccount, handleLinkSpotify, handleSignOut, handleUnlinkSpotify } =
     useProfileFunctions();
+  const { region, changeRegion, createRegionName, setRegionByLocation, sortedRegions } =
+    useRegionSettings();
+  const { preferredTheme, changeAutoThemePreference } = useThemeSettings();
+  const prefersAutoTheme = preferredTheme === "auto";
   const { spotifyData } = useSpotifyContext();
   const linkError = useAuthError("link");
 
@@ -29,10 +46,6 @@ const ProfileMenu = () => {
   const userImg = userData?.user.image;
   const userImgAlt = `Avatar image of ${userName}`;
 
-  useEffect(() => {
-    if (linkError) toast.error(linkError, { dismissible: true, duration: Infinity });
-  }, [linkError]);
-
   const { data: spotifyAccount } = api.account.getSpotifyAccountById.useQuery(
     { userId: userData?.user.id! },
     {
@@ -40,6 +53,10 @@ const ProfileMenu = () => {
       enabled: !!userData,
     },
   );
+  // Check for errors from linking spotify
+  useEffect(() => {
+    if (linkError) toast.error(linkError, { dismissible: true, duration: Infinity });
+  }, [linkError]);
 
   if (!userData) {
     return (
@@ -57,7 +74,7 @@ const ProfileMenu = () => {
 
   return (
     <AuthCard size="default">
-      {/* User */}
+      {/* Picture & name */}
       <div className="relative flex flex-row items-center gap-4 pb-2 pt-2">
         <ChangeAvatarModal>
           <div className="relative">
@@ -78,10 +95,9 @@ const ProfileMenu = () => {
         {userName && <p>{userName}</p>}
       </div>
 
-      {/* User data */}
-      <div className="grid w-full grid-cols-[repeat(5,max-content)] gap-x-8 gap-y-6">
-        <p className="col-span-2 flex items-center font-thin">{t("general.mail")}</p>
-
+      <div className="grid w-full grid-cols-[repeat(5,max-content)] gap-x-12 gap-y-6">
+        {/* Mail */}
+        <p className="col-span-2 flex items-center justify-end font-thin">{t("general.mail")}</p>
         <p className="col-span-2 flex items-center overflow-x-clip text-ellipsis font-thin">
           {userMail}
         </p>
@@ -99,7 +115,10 @@ const ProfileMenu = () => {
           </ChangeMailModal>
         </div>
 
-        <p className="col-span-2 flex items-center font-thin">{t("search.spotify.account")}</p>
+        {/* Spotify */}
+        <p className="col-span-2 flex items-center justify-end font-thin">
+          {t("search.spotify.account")}
+        </p>
         {spotifyAccount?.data && (
           <>
             <a
@@ -141,16 +160,105 @@ const ProfileMenu = () => {
           </div>
         )}
 
-        {/* Actions */}
         <div className="col-span-5">
           <Separator />
         </div>
-        <p className="col-span-2 flex items-center font-thin">{t("profile.haveFeedback")}</p>
+
+        {/* Region */}
+        <Label htmlFor="region" className="col-span-2 flex items-center justify-end font-thin">
+          {t("search.settings.region")}
+        </Label>
+        <div className="col-span-2">
+          <Select onValueChange={changeRegion} value={region}>
+            <SelectTrigger
+              id="region"
+              className="h-9 max-w-44 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 text-base font-thin text-foreground focus:ring-0 focus:ring-offset-0"
+            >
+              <motion.div
+                key={region}
+                {...growIn}
+                className="inline-block max-w-36 overflow-hidden text-ellipsis"
+              >
+                <SelectValue />
+              </motion.div>
+            </SelectTrigger>
+            <SelectContent>
+              {sortedRegions.map((region) => (
+                <SelectItem key={region} value={region.toLowerCase()}>
+                  {createRegionName(region)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="col-span-1 flex h-9 items-center justify-center">
+          <IconButton
+            variant="ghostPrimary"
+            size="icon"
+            icon="mapPin"
+            iconSize="24px"
+            bordered="default"
+            onClick={setRegionByLocation}
+          />
+        </div>
+
+        {/* Theme */}
+        <p className="col-span-2 flex items-center justify-end gap-1 font-thin">
+          <span>Switch theme</span>
+        </p>
+        <div className="col-span-2">
+          <Select
+            onValueChange={(value) => changeAutoThemePreference(value === "Automatically")}
+            value={prefersAutoTheme ? "Automatically" : "Manually"}
+          >
+            <SelectTrigger
+              id="region"
+              className="h-9 max-w-44 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 text-base font-thin text-foreground focus:ring-0 focus:ring-offset-0"
+            >
+              <motion.div
+                {...growIn}
+                className="inline-block max-w-36 overflow-hidden text-ellipsis"
+              >
+                <SelectValue />
+              </motion.div>
+            </SelectTrigger>
+            <SelectContent>
+              {AutoThemePreferences.map((autoThemePreference) => (
+                <SelectItem key={autoThemePreference} value={autoThemePreference} className="py-2">
+                  {autoThemePreference}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="col-span-1 flex items-center justify-center">
+          <Tooltip>
+            <TooltipTrigger className="cursor-default">
+              <CustomIcon icon="info" variant="ghost-foreground" width="18px" height="18px" />
+            </TooltipTrigger>
+            <TooltipContent className="border border-foreground/30 bg-background px-4 py-2 text-center text-foreground">
+              <p>'Automatically' sets the theme based on the sunrise cycle in your location.</p>
+              <p>'Manually' does not set the theme on your behalf.</p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+
+        <div className="col-span-5">
+          <Separator />
+        </div>
+
+        {/* Feedback */}
+        <p className="col-span-2 flex items-center justify-end font-thin">
+          {t("profile.haveFeedback")}
+        </p>
         <a href="mailto:hello@tunehunter.app?subject=Feedback" className="col-span-3">
           <IconButton text={t("profile.writeUs")} variant="outlinePrimary" size="sm" icon="mail" />
         </a>
 
-        <p className="col-span-2 flex items-center font-thin">{t("profile.wantToGo")}</p>
+        {/* Delete account */}
+        <p className="col-span-2 flex items-center justify-end font-thin">
+          {t("profile.wantToGo")}
+        </p>
         <div className="col-span-3">
           <ConfirmationModal
             dialogAction={() => handleDeleteAccount(userData.user.id)}
@@ -170,7 +278,7 @@ const ProfileMenu = () => {
       </div>
 
       {/* Log out */}
-      <div className="mt-4 w-fit">
+      <div className="mb-2 mt-6 w-fit">
         <IconButton
           onClick={handleSignOut}
           text={t("profile.logout")}

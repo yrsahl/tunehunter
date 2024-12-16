@@ -1,7 +1,5 @@
 ---- CORE
 
-Get local time -> switch theme
-
 iTunes api search debounce
 Results styles & functionality
 

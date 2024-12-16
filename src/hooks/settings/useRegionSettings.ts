@@ -7,6 +7,7 @@ import {
   Regions,
   sortRegions,
 } from "@/helpers/region";
+import { getUserLocation } from "@/helpers/user-location";
 import { iso1A2Code } from "@rapideditor/country-coder"; // ESM import named
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { useSession } from "next-auth/react";
@@ -16,17 +17,20 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 import useUserSettings from "./useUserSettings";
 
-const useRegion = () => {
+// Uses local storage + DB strategy to faciliate both guests and users to use the setting:
+// - If guest: use local storage
+// - If user: use DB and local storage for optimistic updates, then reinstate local storage from DB on refresh/page load
+
+const useRegionSettings = () => {
   const router = useRouter();
   const { t } = useTranslation("");
   const [region, setRegion] = useLocalStorage("region", "de");
   const { status, data: userData } = useSession();
   const loggedIn = status === "authenticated";
   const {
-    getUserSettings,
+    userSettings,
     userSettingsUpdaters: { updatePreferredRegion },
   } = useUserSettings(userData?.user.id);
-  const userSettings = getUserSettings();
 
   const sortedRegions = sortRegions(Regions, router.locale || "en");
 
@@ -52,32 +56,23 @@ const useRegion = () => {
   };
 
   const setRegionByLocation = () => {
-    const userLocation = {
-      longitude: 0,
-      latitude: 0,
-    };
-
-    // Get coordinates from geolocation API
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        userLocation.longitude = position.coords.longitude;
-        userLocation.latitude = position.coords.latitude;
-
-        const countryCode = iso1A2Code([userLocation.longitude, userLocation.latitude]);
-
-        if (countryCode) {
-          changeRegion(countryCode.toLowerCase());
-          toast.success(
-            t("toast.retrieveLocation.success", { country: createRegionName(countryCode) }),
-          );
-        } else {
-          toast.error(t("toast.retrieveLocation.error"), { dismissible: true, duration: Infinity });
-        }
-      },
-      () => {
+    getUserLocation().then((location) => {
+      if ("error" in location) {
         toast.error(t("toast.retrieveLocation.error"), { dismissible: true, duration: Infinity });
-      },
-    );
+        return;
+      }
+
+      const { latitude, longitude } = location;
+      const countryCode = iso1A2Code([longitude, latitude]);
+      if (countryCode) {
+        changeRegion(countryCode.toLowerCase());
+        toast.success(
+          t("toast.retrieveLocation.success", { country: createRegionName(countryCode) }),
+        );
+      } else {
+        toast.error(t("toast.retrieveLocation.error"), { dismissible: true, duration: Infinity });
+      }
+    });
   };
 
   return {
@@ -89,4 +84,4 @@ const useRegion = () => {
   };
 };
 
-export default useRegion;
+export default useRegionSettings;

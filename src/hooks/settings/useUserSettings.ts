@@ -3,14 +3,12 @@ import { api } from "@/utils/api";
 
 const useUserSettings = (userId: string | undefined) => {
   const mutateSettings = api.user.setUserSettings.useMutation();
+  const utils = api.useUtils();
 
-  const getUserSettings = () => {
-    const { data: userSettings } = api.user.getUserSettings.useQuery(
-      { userId: userId! },
-      { enabled: !!userId },
-    );
-    return userSettings;
-  };
+  const { data: userSettings } = api.user.getUserSettings.useQuery(
+    { userId: userId! },
+    { enabled: !!userId },
+  );
 
   const userSettingsUpdaters = {
     updatePreferredTheme: (theme: string) => {
@@ -22,6 +20,7 @@ const useUserSettings = (userId: string | undefined) => {
             return 0;
           },
           onSuccess: () => {
+            utils.user.getUserSettings.invalidate({ userId });
             return 1;
           },
         },
@@ -37,6 +36,7 @@ const useUserSettings = (userId: string | undefined) => {
             return 0;
           },
           onSuccess: () => {
+            utils.user.getUserSettings.invalidate({ userId });
             return 1;
           },
         },
@@ -52,6 +52,7 @@ const useUserSettings = (userId: string | undefined) => {
             return 0;
           },
           onSuccess: () => {
+            utils.user.getUserSettings.invalidate({ userId });
             return 1;
           },
         },
@@ -60,7 +61,7 @@ const useUserSettings = (userId: string | undefined) => {
   };
 
   return {
-    getUserSettings,
+    userSettings,
     userSettingsUpdaters,
   };
 };

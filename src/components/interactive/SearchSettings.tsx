@@ -1,8 +1,9 @@
 import { growIn, slideInAndOutFromAbove } from "@/helpers/animations";
-import useRegion from "@/hooks/useRegion";
+import useRegionSettings from "@/hooks/settings/useRegionSettings";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { AnimatePresence, motion } from "framer-motion";
 import { Cog } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useTranslation } from "next-i18next";
 import { FC } from "react";
 import IconButton from "../IconButton";
@@ -16,6 +17,8 @@ interface IProps {}
 
 const SearchSettings: FC<IProps> = ({}) => {
   const { t } = useTranslation("");
+  const { status } = useSession();
+  const loggedIn = status === "authenticated";
 
   // State
   const [searchForClubMixesOnly, setSearchForClubMixesOnly] = useLocalStorage(
@@ -28,7 +31,7 @@ const SearchSettings: FC<IProps> = ({}) => {
   );
   const [minimumLengthSeconds, setMinimumLengthSeconds] = useLocalStorage("minimumlength", 120);
   const { region, changeRegion, createRegionName, setRegionByLocation, sortedRegions } =
-    useRegion();
+    useRegionSettings();
 
   // Prepared strings
   const minimumLengthDisplayMinutes = Math.floor(minimumLengthSeconds / 60)
@@ -99,42 +102,47 @@ const SearchSettings: FC<IProps> = ({}) => {
           </div>
 
           {/* Region */}
-          <div className="flex items-center">
-            <Label htmlFor="region" className="flex items-center font-thin">
-              {t("search.settings.region")}:
-            </Label>
-            <Select onValueChange={changeRegion} value={region}>
-              <SelectTrigger
-                id="region"
-                className="h-9 max-w-44 justify-start gap-2 text-ellipsis border-none bg-transparent px-1 text-base text-foreground focus:ring-0 focus:ring-offset-0"
-              >
-                <motion.div
-                  key={region}
-                  {...growIn}
-                  className="inline-block max-w-32 overflow-hidden text-ellipsis"
-                >
-                  <SelectValue />
-                </motion.div>
-              </SelectTrigger>
-              <SelectContent>
-                {sortedRegions.map((region) => (
-                  <SelectItem key={region} value={region.toLowerCase()}>
-                    {createRegionName(region)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex h-10 items-center justify-center">
-            <IconButton
-              variant="ghostPrimary"
-              size="icon"
-              icon="mapPin"
-              iconSize="28px"
-              bordered="default"
-              onClick={setRegionByLocation}
-            />
-          </div>
+
+          {!loggedIn && (
+            <>
+              <div className="flex items-center">
+                <Label htmlFor="region" className="flex items-center font-thin">
+                  {t("search.settings.region")}:
+                </Label>
+                <Select onValueChange={changeRegion} value={region}>
+                  <SelectTrigger
+                    id="region"
+                    className="h-9 max-w-44 justify-start gap-2 text-ellipsis border-none bg-transparent px-1 text-base text-foreground focus:ring-0 focus:ring-offset-0"
+                  >
+                    <motion.div
+                      key={region}
+                      {...growIn}
+                      className="inline-block max-w-32 overflow-hidden text-ellipsis"
+                    >
+                      <SelectValue />
+                    </motion.div>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sortedRegions.map((region) => (
+                      <SelectItem key={region} value={region.toLowerCase()}>
+                        {createRegionName(region)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex h-10 items-center justify-center">
+                <IconButton
+                  variant="ghostPrimary"
+                  size="icon"
+                  icon="mapPin"
+                  iconSize="28px"
+                  bordered="default"
+                  onClick={setRegionByLocation}
+                />
+              </div>
+            </>
+          )}
         </div>
       </PopoverContent>
     </Popover>

@@ -38,7 +38,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <SessionProvider session={session}>
         <SpotifyProvider>
           <TooltipProvider delayDuration={500}>
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <ThemeProvider attribute="class" defaultTheme="auto" enableSystem={false}>
               <Layout>
                 <Component {...pageProps} />
               </Layout>

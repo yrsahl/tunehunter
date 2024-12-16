@@ -32,8 +32,6 @@ const SpotifyTable = () => {
     );
   }
 
-  console.log("spotify data", spotifyData);
-
   return (
     <>
       {!loggedIn || !spotifyData ? (
