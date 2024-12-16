@@ -1,6 +1,6 @@
 ---- CORE
 
-iTunes api search debounce
+spotify api search with devyannik account
 Results styles & functionality
 
 Solidify auth:

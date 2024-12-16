@@ -15,7 +15,7 @@ const AuthCallbackPage: NextPage = ({}) => {
   const router = useRouterWithHelpers();
   const { t } = useTranslation();
   const { data: userData, status } = useSession();
-  const { spotifyData } = useSpotifyContext();
+  const { spotifyUserData } = useSpotifyContext();
   const [error, setError] = useState<string | null>(null);
   const loggedIn = status === "authenticated";
 
@@ -35,7 +35,7 @@ const AuthCallbackPage: NextPage = ({}) => {
       // setError("You're not logged in!");
       return;
     }
-    if (isSpotifyAccountDataLoading || !spotifyData) {
+    if (isSpotifyAccountDataLoading || !spotifyUserData) {
       // setError("We're still loading your Spotify account data.");
       return;
     }
@@ -52,7 +52,7 @@ const AuthCallbackPage: NextPage = ({}) => {
     // Toast
     if (actionParam === "link") {
       toast.success(
-        t("toast.connect.success", { account: spotifyData?.profileData?.display_name }),
+        t("toast.connect.success", { account: spotifyUserData?.profileData?.display_name }),
         { duration: 1800 },
       );
     } else {
@@ -64,7 +64,7 @@ const AuthCallbackPage: NextPage = ({}) => {
     setTimeout(() => {
       router.push(redirectPath);
     }, 2000);
-  }, [router.isReady, loggedIn, isSpotifyAccountDataLoading, spotifyData, accessToken]);
+  }, [router.isReady, loggedIn, isSpotifyAccountDataLoading, spotifyUserData, accessToken]);
 
   return (
     <>

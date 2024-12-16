@@ -1,14 +1,16 @@
 import {
+  SpotifyArtists,
+  SpotifySearchData,
   type SpotifyCurrentlyPlaying,
   type SpotifyProfileData,
   type SpotifyQueue,
   type SpotifyRecentlyPlayed,
-  type SpotifyTopArtists,
-  type SpotifyTopTracks,
+  type SpotifyTracks,
 } from "@/types/spotify";
 
 const SONG_LIMIT = 30;
 
+// User data (fetched with user token)
 const USER_PROFILE_ENDPOINT = "https://api.spotify.com/v1/me";
 const CURRENTLY_PLAYING_ENDPOINT = "https://api.spotify.com/v1/me/player/currently-playing";
 const QUEUE_ENDPOINT = "https://api.spotify.com/v1/me/player/queue";
@@ -16,15 +18,15 @@ const RECENTLY_PLAYED_ENDPOINT = `https://api.spotify.com/v1/me/player/recently-
 const TOP_ARTISTS_ENDPOINT = `https://api.spotify.com/v1/me/top/artists?time_range=long_term&limit=${SONG_LIMIT}`;
 const TOP_TRACKS_ENDPOINT = `https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=${SONG_LIMIT}`;
 
-export const combinedFetchSpotifyData = async (token: string) => {
+export const fetchSpotifyUserData = async (userToken: string) => {
   const [profileData, currentlyPlaying, queue, recentlyPlayed, topArtists, topTracks] =
     await Promise.all([
-      fetchProfileData(token),
-      fetchCurrentlyPlaying(token),
-      fetchQueue(token),
-      fetchRecentlyPlayed(token),
-      fetchTopArtists(token),
-      fetchTopTracks(token),
+      fetchProfileData(userToken),
+      fetchCurrentlyPlaying(userToken),
+      fetchQueue(userToken),
+      fetchRecentlyPlayed(userToken),
+      fetchTopArtists(userToken),
+      fetchTopTracks(userToken),
     ]);
 
   return { profileData, currentlyPlaying, queue, recentlyPlayed, topArtists, topTracks };
@@ -47,13 +49,30 @@ export const fetchRecentlyPlayed = (token: string) => {
 };
 
 export const fetchTopArtists = (token: string) => {
-  return fetchSpotifyData<SpotifyTopArtists>(token, TOP_ARTISTS_ENDPOINT);
+  return fetchSpotifyData<SpotifyArtists>(token, TOP_ARTISTS_ENDPOINT);
 };
 
 export const fetchTopTracks = (token: string) => {
-  return fetchSpotifyData<SpotifyTopTracks>(token, TOP_TRACKS_ENDPOINT);
+  return fetchSpotifyData<SpotifyTracks>(token, TOP_TRACKS_ENDPOINT);
 };
 
+// Search data (fetched with app token)
+const SEARCH_ENDPOINT = "https://api.spotify.com/v1/search";
+
+export const fetchSpotifySearchData = async (appToken: string, query: string) => {
+  // Build searchUrl
+  const searchParams = new URLSearchParams({
+    q: query,
+    type: "track",
+    limit: SONG_LIMIT.toString(),
+  });
+  const searchUrl = `${SEARCH_ENDPOINT}?${searchParams.toString()}`;
+
+  // Fetch
+  return fetchSpotifyData<SpotifySearchData>(appToken, searchUrl);
+};
+
+// Helper
 async function fetchSpotifyData<T>(token: string, endpoint: string): Promise<T | null> {
   const response = await fetch(endpoint, {
     headers: {

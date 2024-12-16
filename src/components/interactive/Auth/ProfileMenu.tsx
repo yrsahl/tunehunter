@@ -37,7 +37,7 @@ const ProfileMenu = () => {
     useRegionSettings();
   const { preferredTheme, changeAutoThemePreference } = useThemeSettings();
   const autoThemePreference = preferredTheme === "auto" ? "auto" : "manual";
-  const { spotifyData } = useSpotifyContext();
+  const { spotifyUserData } = useSpotifyContext();
   const linkError = useAuthError("link");
 
   const { data: userData } = useSession();
@@ -131,14 +131,14 @@ const ProfileMenu = () => {
                 icon="external"
                 iconPosition="right"
                 variant="link"
-                text={spotifyData?.profileData?.display_name}
+                text={spotifyUserData?.profileData?.display_name}
                 size="sm"
               />
             </a>
             <ConfirmationModal
               dialogAction={() => handleUnlinkSpotify(userData.user.id)}
               dialogText={t("settings.profile.unlink.text", {
-                accountName: spotifyData?.profileData?.display_name,
+                accountName: spotifyUserData?.profileData?.display_name,
               })}
               dialogTitle={t("settings.profile.unlink.title")}
             >

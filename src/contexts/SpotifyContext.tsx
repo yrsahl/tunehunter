@@ -1,26 +1,26 @@
-import { combinedFetchSpotifyData } from "@/helpers/fetch-spotify-data";
-import { SpotifyData } from "@/types/spotify";
+import { fetchSpotifyUserData } from "@/helpers/fetch-spotify-data";
+import { SpotifyUserData } from "@/types/spotify";
 import { api } from "@/utils/api";
 import { useSession } from "next-auth/react";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 
 interface ISpotifyContext {
-  spotifyData: SpotifyData | null;
-  refreshSpotifyData: () => void;
-  spotifyDataLoading: boolean;
+  spotifyUserData: SpotifyUserData | null;
+  refreshSpotifyUserData: () => void;
+  isSpotifyUserDataLoading: boolean;
 }
 
 const SpotifyContext = createContext<ISpotifyContext>({
-  spotifyData: null,
-  refreshSpotifyData: () => {},
-  spotifyDataLoading: false,
+  spotifyUserData: null,
+  refreshSpotifyUserData: () => {},
+  isSpotifyUserDataLoading: false,
 });
 
 export const useSpotifyContext = () => useContext(SpotifyContext);
 
 export const SpotifyProvider = ({ children }: { children: ReactNode }) => {
-  const [spotifyData, setSpotifyData] = useState<SpotifyData | null>(null);
-  const [spotifyDataLoading, setSpotifyDataLoading] = useState(false);
+  const [spotifyUserData, setSpotifyUserData] = useState<SpotifyUserData | null>(null);
+  const [isSpotifyUserDataLoading, setisSpotifyUserDataLoading] = useState(false);
   const { data: userData } = useSession();
 
   const { data: spotifyAccountData } = api.account.getSpotifyAccountById.useQuery(
@@ -32,33 +32,37 @@ export const SpotifyProvider = ({ children }: { children: ReactNode }) => {
   );
   const accessToken = spotifyAccountData?.data?.access_token;
 
-  const refreshSpotifyData = async () => {
+  const refreshSpotifyUserData = async () => {
+    // Reset if we have no valid token
     if (!accessToken) {
-      setSpotifyData(null);
+      setSpotifyUserData(null);
       return;
     }
-    setSpotifyDataLoading(true);
+
+    // Otherwise start fetching
+    setisSpotifyUserDataLoading(true);
 
     try {
-      const response = await combinedFetchSpotifyData(accessToken);
-      setSpotifyData(response);
-      setSpotifyDataLoading(false);
+      const response = await fetchSpotifyUserData(accessToken);
+      setSpotifyUserData(response);
+      setisSpotifyUserDataLoading(false);
     } catch (error) {
       console.error(error);
-      setSpotifyDataLoading(false);
+      setisSpotifyUserDataLoading(false);
     }
   };
 
+  // Refresh on any change to the access token (new/renewed -> fetch, stale/logged out -> delete)
   useEffect(() => {
-    refreshSpotifyData();
+    refreshSpotifyUserData();
   }, [accessToken]);
 
   return (
     <SpotifyContext.Provider
       value={{
-        spotifyData,
-        refreshSpotifyData,
-        spotifyDataLoading,
+        spotifyUserData,
+        refreshSpotifyUserData,
+        isSpotifyUserDataLoading,
       }}
     >
       {children}
