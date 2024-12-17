@@ -14,6 +14,7 @@ import { Toaster } from "sonner";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SpotifyProvider } from "@/contexts/SpotifyContext";
+import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { DefaultSeo } from "next-seo";
 import SEO from "../../next-seo.config";
@@ -37,6 +38,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <DefaultSeo {...SEO} />
       <Toaster position="top-right" toastOptions={toastOptions} closeButton richColors />
       <SpeedInsights />
+      <Analytics />
       <SessionProvider session={session}>
         <SpotifyProvider>
           <TooltipProvider delayDuration={500}>
