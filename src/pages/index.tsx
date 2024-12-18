@@ -42,6 +42,7 @@ export const Home: NextPage = () => {
       <SearchBar
         ref={searchBarRef}
         searchInput={searchInput}
+        searchData={searchData}
         isSearchDataLoading={isSearchDataLoading}
         handleSearchSubmit={handleSearchSubmit}
         handleInputChange={handleInputChange}

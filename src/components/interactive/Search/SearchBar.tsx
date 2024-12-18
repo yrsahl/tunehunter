@@ -3,6 +3,7 @@ import { LoadingIndicator } from "@/components/Indicators";
 import { Input } from "@/components/ui/input";
 import { fadeInAndOut } from "@/helpers/animations";
 import { cn } from "@/lib/utils";
+import { SpotifySearchData } from "@/types/spotify";
 import { AnimatePresence, motion } from "framer-motion";
 import { Search } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -17,8 +18,6 @@ import {
 const SearchSettings = dynamic(() => import("@/components/interactive/Search/SearchSettings"), {
   ssr: false,
 });
-
-interface IProps {}
 
 const placeholderValues = [
   "Celine Dion - My Heart Will Go On",
@@ -35,6 +34,7 @@ const placeholderValues = [
 
 interface ISearchBarProps {
   searchInput: string;
+  searchData: SpotifySearchData | null;
   isSearchDataLoading: boolean;
   handleSearchSubmit: (e: FormEvent<HTMLFormElement>) => void;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -46,6 +46,7 @@ interface ISearchBarProps {
 const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = (
   {
     searchInput,
+    searchData,
     isSearchDataLoading,
     handleSearchSubmit,
     handleInputChange,
@@ -76,7 +77,7 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = (
           sizeVariant="lg"
           className={cn(
             "overflow-ellipsis border-2 border-primary px-14 text-lg ring-0 transition-all duration-300 placeholder:text-muted-foreground focus-visible:ring-0",
-            showResults && "rounded-b-none border-b-0",
+            searchData && showResults && "rounded-b-none border-b-0",
           )}
           value={searchInput}
           onChange={handleInputChange}
@@ -102,7 +103,7 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = (
         </span>
         <div className="absolute right-4 top-1/2 flex -translate-y-1/2 gap-2">
           <AnimatePresence>
-            {showResults && (
+            {searchData && showResults && (
               <motion.div {...fadeInAndOut()}>
                 <IconButton icon="x" size="icon" variant="ghostDestructive" onClick={resetSearch} />
               </motion.div>
