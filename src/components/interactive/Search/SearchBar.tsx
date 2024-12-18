@@ -1,20 +1,14 @@
 import IconButton from "@/components/IconButton";
 import { LoadingIndicator } from "@/components/Indicators";
 import { Input } from "@/components/ui/input";
+import { useSearchDataContext } from "@/contexts/SearchDataContext";
 import { fadeInAndOut } from "@/helpers/animations";
+import useSearchFunctions from "@/hooks/useSearchFunctions";
 import { cn } from "@/lib/utils";
-import { SpotifySearchData } from "@/types/spotify";
 import { AnimatePresence, motion } from "framer-motion";
 import { Search } from "lucide-react";
 import dynamic from "next/dynamic";
-import {
-  FormEvent,
-  forwardRef,
-  ForwardRefRenderFunction,
-  ReactNode,
-  useEffect,
-  useState,
-} from "react";
+import { forwardRef, ForwardRefRenderFunction, ReactNode, useEffect, useState } from "react";
 const SearchSettings = dynamic(() => import("@/components/interactive/Search/SearchSettings"), {
   ssr: false,
 });
@@ -33,30 +27,17 @@ const placeholderValues = [
 ];
 
 interface ISearchBarProps {
-  searchInput: string;
-  searchData: SpotifySearchData | null;
-  isSearchDataLoading: boolean;
-  handleSearchSubmit: (e: FormEvent<HTMLFormElement>) => void;
-  handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  resetSearch: () => void;
   showResults: boolean;
   children?: ReactNode;
 }
 
 const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = (
-  {
-    searchInput,
-    searchData,
-    isSearchDataLoading,
-    handleSearchSubmit,
-    handleInputChange,
-    resetSearch,
-    showResults,
-    children,
-  }: ISearchBarProps,
+  { showResults, children }: ISearchBarProps,
   ref,
 ) => {
   const [currentPlaceholder, setCurrentPlaceholder] = useState("");
+  const { handleSearchSubmit, searchInput, handleInputChange, resetSearch } = useSearchFunctions();
+  const { searchData, isSearchDataLoading } = useSearchDataContext();
 
   // Puts a random placeholder song value into the search bar
   useEffect(() => {

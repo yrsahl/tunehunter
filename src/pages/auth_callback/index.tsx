@@ -1,5 +1,5 @@
 import { RedirectIndicator } from "@/components/Indicators";
-import { useSpotifyContext } from "@/contexts/SpotifyContext";
+import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
 import { playJingle } from "@/helpers/play-jingle";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { api } from "@/utils/api";
@@ -15,7 +15,7 @@ const AuthCallbackPage: NextPage = ({}) => {
   const router = useRouterWithHelpers();
   const { t } = useTranslation();
   const { data: userData, status } = useSession();
-  const { spotifyUserData } = useSpotifyContext();
+  const { spotifyUserData } = useSpotifyUserDataContext();
   const [error, setError] = useState<string | null>(null);
   const loggedIn = status === "authenticated";
 

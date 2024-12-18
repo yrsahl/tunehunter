@@ -13,7 +13,8 @@ import Layout from "./layout";
 import { Toaster } from "sonner";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { SpotifyProvider } from "@/contexts/SpotifyContext";
+import { SearchDataProvider } from "@/contexts/SearchDataContext";
+import { SpotifyUserDataProvider } from "@/contexts/SpotifyUserDataContext";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { DefaultSeo } from "next-seo";
@@ -40,15 +41,17 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <SpeedInsights />
       <Analytics />
       <SessionProvider session={session}>
-        <SpotifyProvider>
+        <SpotifyUserDataProvider>
           <TooltipProvider delayDuration={500}>
             <ThemeProvider attribute="class" defaultTheme="auto" enableSystem={false}>
               <Layout>
-                <Component {...pageProps} />
+                <SearchDataProvider>
+                  <Component {...pageProps} />
+                </SearchDataProvider>
               </Layout>
             </ThemeProvider>
           </TooltipProvider>
-        </SpotifyProvider>
+        </SpotifyUserDataProvider>
       </SessionProvider>
     </>
   );

@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useSpotifyContext } from "@/contexts/SpotifyContext";
+import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
 import { growIn } from "@/helpers/animations";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
 import useThemeSettings, { AutoThemePreferences } from "@/hooks/settings/useThemeSettings";
@@ -37,7 +37,7 @@ const ProfileMenu = () => {
     useRegionSettings();
   const { preferredTheme, changeAutoThemePreference } = useThemeSettings();
   const autoThemePreference = preferredTheme === "auto" ? "auto" : "manual";
-  const { spotifyUserData } = useSpotifyContext();
+  const { spotifyUserData } = useSpotifyUserDataContext();
   const linkError = useAuthError("link");
 
   const { data: userData } = useSession();

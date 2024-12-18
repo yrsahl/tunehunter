@@ -1,6 +1,6 @@
 import IconButton from "@/components/IconButton";
 import { LoadingIndicator } from "@/components/Indicators";
-import { useSpotifyContext } from "@/contexts/SpotifyContext";
+import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
 import { fadeInAndOut } from "@/helpers/animations";
 import { signInWithProvider } from "@/helpers/sign-in";
 import { cn } from "@/lib/utils";
@@ -22,7 +22,8 @@ const SpotifyTable = () => {
   const { status } = useSession();
   const loggedIn = status === "authenticated";
 
-  const { spotifyUserData, refreshSpotifyUserData, isSpotifyUserDataLoading } = useSpotifyContext();
+  const { spotifyUserData, refreshSpotifyUserData, isSpotifyUserDataLoading } =
+    useSpotifyUserDataContext();
 
   if (loggedIn && isSpotifyUserDataLoading) {
     return (

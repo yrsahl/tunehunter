@@ -4,21 +4,21 @@ import { api } from "@/utils/api";
 import { useSession } from "next-auth/react";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 
-interface ISpotifyContext {
+interface ISpotifyUserDataContext {
   spotifyUserData: SpotifyUserData | null;
   refreshSpotifyUserData: () => void;
   isSpotifyUserDataLoading: boolean;
 }
 
-const SpotifyContext = createContext<ISpotifyContext>({
+const SpotifyUserDataContext = createContext<ISpotifyUserDataContext>({
   spotifyUserData: null,
   refreshSpotifyUserData: () => {},
   isSpotifyUserDataLoading: false,
 });
 
-export const useSpotifyContext = () => useContext(SpotifyContext);
+export const useSpotifyUserDataContext = () => useContext(SpotifyUserDataContext);
 
-export const SpotifyProvider = ({ children }: { children: ReactNode }) => {
+export const SpotifyUserDataProvider = ({ children }: { children: ReactNode }) => {
   const [spotifyUserData, setSpotifyUserData] = useState<SpotifyUserData | null>(null);
   const [isSpotifyUserDataLoading, setIsSpotifyUserDataLoading] = useState(false);
   const { data: userData } = useSession();
@@ -30,11 +30,11 @@ export const SpotifyProvider = ({ children }: { children: ReactNode }) => {
       enabled: !!userData,
     },
   );
-  const accessToken = spotifyAccountData?.data?.access_token;
+  const userAccessToken = spotifyAccountData?.data?.access_token;
 
   const refreshSpotifyUserData = async () => {
     // Reset if we have no valid token
-    if (!accessToken) {
+    if (!userAccessToken) {
       setSpotifyUserData(null);
       return;
     }
@@ -43,7 +43,7 @@ export const SpotifyProvider = ({ children }: { children: ReactNode }) => {
     setIsSpotifyUserDataLoading(true);
 
     try {
-      const response = await fetchSpotifyUserData(accessToken);
+      const response = await fetchSpotifyUserData(userAccessToken);
       setSpotifyUserData(response);
       setIsSpotifyUserDataLoading(false);
     } catch (error) {
@@ -55,10 +55,10 @@ export const SpotifyProvider = ({ children }: { children: ReactNode }) => {
   // Refresh on any change to the access token (new/renewed -> fetch, stale/logged out -> delete)
   useEffect(() => {
     refreshSpotifyUserData();
-  }, [accessToken]);
+  }, [userAccessToken]);
 
   return (
-    <SpotifyContext.Provider
+    <SpotifyUserDataContext.Provider
       value={{
         spotifyUserData,
         refreshSpotifyUserData,
@@ -66,6 +66,6 @@ export const SpotifyProvider = ({ children }: { children: ReactNode }) => {
       }}
     >
       {children}
-    </SpotifyContext.Provider>
+    </SpotifyUserDataContext.Provider>
   );
 };

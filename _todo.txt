@@ -1,6 +1,7 @@
 ---- CORE
 
 spotify api search with devyannik account
+search options
 Results styles & functionality
 
 Solidify auth:
