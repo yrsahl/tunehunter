@@ -1,45 +1,45 @@
-export const fadeIn = {
+export const fadeIn = (duration = 0.3) => ({
   initial: { opacity: 0 },
   animate: { opacity: 1 },
-  transition: { duration: 0.3 },
-};
+  transition: { duration },
+});
 
-export const fadeInAndOut = {
+export const fadeInAndOut = (duration = 0.3) => ({
   initial: { opacity: 0 },
   animate: { opacity: 1 },
   exit: { opacity: 0 },
-  transition: { duration: 0.15, ease: "easeInOut" },
-};
+  transition: { duration, ease: "easeInOut" },
+});
 
-export const growIn = {
+export const growIn = (duration = 0.3) => ({
   initial: { scale: 0.9, opacity: 0 },
   animate: { scale: 1, opacity: 1 },
-  transition: { duration: 0.3 },
-};
+  transition: { duration },
+});
 
-export const slideInFromAbove = {
+export const slideInFromAbove = (duration = 0.5) => ({
   initial: { opacity: 0, y: -10 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5 },
-};
+  transition: { duration },
+});
 
-export const slideInAndOutFromAbove = {
+export const slideInAndOutFromAbove = (duration = 0.5) => ({
   initial: { opacity: 0, y: -10 },
   animate: { opacity: 1, y: 0 },
   exit: { opacity: 0, y: -10 },
-  transition: { duration: 0.5 },
-};
+  transition: { duration },
+});
 
-export const slideInAndOutFromLeft = {
+export const slideInAndOutFromLeft = (duration = 0.5) => ({
   initial: { opacity: 0, x: -10 },
   animate: { opacity: 1, x: 0 },
   exit: { opacity: 0, x: -10 },
-  transition: { duration: 0.5 },
-};
+  transition: { duration },
+});
 
-export const slideInAndOutFromRight = {
+export const slideInAndOutFromRight = (duration = 0.5) => ({
   initial: { opacity: 0, x: 10 },
   animate: { opacity: 1, x: 0 },
   exit: { opacity: 0, x: 10 },
-  transition: { duration: 0.5 },
-};
+  transition: { duration },
+});

@@ -1,11 +1,18 @@
-// << Spotify >>
-export type SpotifyRefreshData = {
+// Tokens
+export type SpotifyRefreshTokenData = {
   access_token: string;
   token_type: "Bearer";
   expires_in: number;
   scope: string;
 };
 
+export type SpotifyClientCredentialsTokenData = {
+  access_token: string;
+  token_type: "Bearer";
+  expires_in: number;
+};
+
+// User data
 export type SpotifyUserData = {
   profileData: SpotifyProfileData | null;
   currentlyPlaying: SpotifyCurrentlyPlaying | null;

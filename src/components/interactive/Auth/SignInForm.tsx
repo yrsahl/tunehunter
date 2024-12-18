@@ -28,6 +28,7 @@ const SignInForm: FC<IProps> = ({ email, setEmail, setMenuState }) => {
   const utils = api.useUtils();
   const loginError = useAuthError("login");
 
+  // Get OAuth providers
   useEffect(() => {
     const fetchProviders = async () => {
       const resProviders = await getProviders();
@@ -38,6 +39,7 @@ const SignInForm: FC<IProps> = ({ email, setEmail, setMenuState }) => {
     fetchProviders();
   }, []);
 
+  // Display login error to user
   useEffect(() => {
     if (loginError) toast.error(loginError, { dismissible: true, duration: Infinity });
   }, [loginError]);

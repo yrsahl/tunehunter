@@ -6,12 +6,12 @@ import { Cog } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "next-i18next";
 import { FC } from "react";
-import IconButton from "../IconButton";
-import { Label } from "../ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Slider } from "../ui/slider";
-import { Switch } from "../ui/switch";
+import IconButton from "../../IconButton";
+import { Label } from "../../ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
+import { Slider } from "../../ui/slider";
+import { Switch } from "../../ui/switch";
 
 interface IProps {}
 
@@ -71,7 +71,7 @@ const SearchSettings: FC<IProps> = ({}) => {
             {minimumLengthOption && (
               <motion.div
                 className="col-span-2 mx-auto flex w-4/5 cursor-pointer items-center justify-center gap-4 py-2"
-                {...slideInAndOutFromAbove}
+                {...slideInAndOutFromAbove()}
                 key="mnimumlengthslider"
               >
                 <span className="font-normal">
@@ -116,7 +116,7 @@ const SearchSettings: FC<IProps> = ({}) => {
                   >
                     <motion.div
                       key={region}
-                      {...growIn}
+                      {...growIn()}
                       className="inline-block max-w-32 overflow-hidden text-ellipsis"
                     >
                       <SelectValue />

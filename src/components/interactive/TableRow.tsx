@@ -3,7 +3,7 @@ import { InferSelectModel } from "drizzle-orm";
 import { useTranslation } from "next-i18next";
 import IconButton from "../IconButton";
 
-const SearchTableRow: React.FC<{
+const TableRow: React.FC<{
   track: InferSelectModel<typeof songs>;
 }> = ({ track }) => {
   const { t } = useTranslation();
@@ -37,4 +37,4 @@ const SearchTableRow: React.FC<{
   );
 };
 
-export default SearchTableRow;
+export default TableRow;

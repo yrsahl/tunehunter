@@ -2,7 +2,7 @@ import { LoadingIndicator } from "@/components/Indicators";
 import { api } from "@/utils/api";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "next-i18next";
-import SearchTableRow from "../SearchTableRow";
+import TableRow from "../TableRow";
 import LoginPromptMockTable from "./LoginPromptMockTable";
 
 const WishlistTable = ({}) => {
@@ -37,7 +37,7 @@ const WishlistTable = ({}) => {
         <table className="w-full">
           <tbody>
             {wishlistEntries?.map((wishlistEntry) => (
-              <SearchTableRow key={wishlistEntry.song.id} track={wishlistEntry.song} />
+              <TableRow key={wishlistEntry.song.id} track={wishlistEntry.song} />
             ))}
           </tbody>
         </table>

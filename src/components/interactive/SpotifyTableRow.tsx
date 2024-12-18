@@ -3,11 +3,13 @@ import { useTranslation } from "next-i18next";
 import IconButton from "../IconButton";
 import { MusicPlayingIndicator } from "../Indicators";
 
-const SpotifyTableRow: React.FC<{
+interface SpotifyTableRowProps {
   track: SpotifyTrack;
   currentlyPlaying?: boolean;
   userCountry?: string;
-}> = ({ track, currentlyPlaying }) => {
+}
+
+const SpotifyTableRow = ({ track, currentlyPlaying }: SpotifyTableRowProps) => {
   const { t } = useTranslation();
 
   const startSearch = () => {

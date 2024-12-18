@@ -2,7 +2,7 @@ import { LoadingIndicator } from "@/components/Indicators";
 import { api } from "@/utils/api";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "next-i18next";
-import SearchTableRow from "../SearchTableRow";
+import TableRow from "../TableRow";
 import LoginPromptMockTable from "./LoginPromptMockTable";
 
 const HistoryTable = ({}) => {
@@ -37,7 +37,7 @@ const HistoryTable = ({}) => {
         <table className="w-full">
           <tbody>
             {historyEntries?.map((historyEntry, index) => (
-              <SearchTableRow key={`${historyEntry.song.id}/${index}`} track={historyEntry.song} />
+              <TableRow key={`${historyEntry.song.id}/${index}`} track={historyEntry.song} />
             ))}
           </tbody>
         </table>

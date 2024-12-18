@@ -13,6 +13,7 @@ Solidify settings:
 
 Add:
 - Trending/History/Wishlist functionality
+- Responsive Layout
 
 
 

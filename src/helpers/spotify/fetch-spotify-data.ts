@@ -10,7 +10,7 @@ import {
 
 const SONG_LIMIT = 30;
 
-// User data (fetched with user token)
+// User data (user oauth)
 const USER_PROFILE_ENDPOINT = "https://api.spotify.com/v1/me";
 const CURRENTLY_PLAYING_ENDPOINT = "https://api.spotify.com/v1/me/player/currently-playing";
 const QUEUE_ENDPOINT = "https://api.spotify.com/v1/me/player/queue";
@@ -56,7 +56,7 @@ export const fetchTopTracks = (token: string) => {
   return fetchSpotifyData<SpotifyTracks>(token, TOP_TRACKS_ENDPOINT);
 };
 
-// Search data (fetched with app token)
+// Search data (client credentials)
 const SEARCH_ENDPOINT = "https://api.spotify.com/v1/search";
 
 export const fetchSpotifySearchData = async (appToken: string, query: string) => {

@@ -3,7 +3,7 @@ import { LoadingIndicator } from "@/components/Indicators";
 import { api } from "@/utils/api";
 import { useTranslation } from "react-i18next";
 import { Tab } from "../Search/SearchTabs";
-import SearchTableRow from "../SearchTableRow";
+import TableRow from "../TableRow";
 
 interface TrendingTableProps {
   setSearchTab: (tab: Tab | "") => void;
@@ -37,7 +37,7 @@ const TrendingTable = ({ setSearchTab }: TrendingTableProps) => {
         <table className="w-full">
           <tbody>
             {trendingEntries?.map((trendingEntry) => (
-              <SearchTableRow key={trendingEntry.song.id} track={trendingEntry.song} />
+              <TableRow key={trendingEntry.song.id} track={trendingEntry.song} />
             ))}
           </tbody>
         </table>

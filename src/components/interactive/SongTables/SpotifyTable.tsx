@@ -75,7 +75,7 @@ const SpotifyTable = () => {
           >
             {tab == "topTracks" && spotifyUserData.topTracks?.items.length == 0 && (
               <motion.div
-                {...fadeInAndOut}
+                {...fadeInAndOut(0.15)}
                 className="absolute-center flex items-center justify-center"
               >
                 <p className="text-center">{t("search.spotify.topTracks.empty")}</p>
@@ -84,7 +84,7 @@ const SpotifyTable = () => {
             {tab == "queue" &&
               (!spotifyUserData.queue || spotifyUserData.queue?.queue.length == 0) && (
                 <motion.div
-                  {...fadeInAndOut}
+                  {...fadeInAndOut(0.15)}
                   className="absolute-center flex items-center justify-center"
                 >
                   <p className="text-center">{t("search.spotify.queue.empty")}</p>
@@ -92,7 +92,7 @@ const SpotifyTable = () => {
               )}
             {tab == "recentlyPlayed" && spotifyUserData.recentlyPlayed?.items.length == 0 && (
               <motion.div
-                {...fadeInAndOut}
+                {...fadeInAndOut(0.15)}
                 className="absolute-center flex items-center justify-center"
               >
                 <p className="text-center">{t("search.spotify.recentlyPlayed.empty")}</p>
@@ -101,7 +101,7 @@ const SpotifyTable = () => {
             <table className="w-full">
               {spotifyUserData && (
                 <AnimatePresence mode="wait">
-                  <motion.tbody key={tab} {...fadeInAndOut}>
+                  <motion.tbody key={tab} {...fadeInAndOut(0.15)}>
                     {tab == "queue" &&
                       spotifyUserData.queue?.queue.map((track, index) => (
                         <SpotifyTableRow key={`${track.id}/${index}`} track={track} />

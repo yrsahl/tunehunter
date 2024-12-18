@@ -1,12 +1,20 @@
+import IconButton from "@/components/IconButton";
 import { LoadingIndicator } from "@/components/Indicators";
 import { Input } from "@/components/ui/input";
-import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
+import { fadeInAndOut } from "@/helpers/animations";
+import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { debounce } from "lodash";
 import { Search } from "lucide-react";
 import dynamic from "next/dynamic";
-import { FC, FormEvent, useCallback, useEffect, useState } from "react";
-const SearchSettings = dynamic(() => import("@/components/interactive/SearchSettings"), {
+import {
+  FormEvent,
+  forwardRef,
+  ForwardRefRenderFunction,
+  ReactNode,
+  useEffect,
+  useState,
+} from "react";
+const SearchSettings = dynamic(() => import("@/components/interactive/Search/SearchSettings"), {
   ssr: false,
 });
 
@@ -25,68 +33,57 @@ const placeholderValues = [
   "Ariana Grande - 7 Rings",
 ];
 
-const SearchBar: FC<IProps> = ({}) => {
-  const router = useRouterWithHelpers();
-  const [searchValue, setSearchValue] = useState("");
-  const [currentPlaceholder, setCurrentPlaceholder] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+interface ISearchBarProps {
+  searchInput: string;
+  isSearchDataLoading: boolean;
+  handleSearchSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  resetSearch: () => void;
+  showResults: boolean;
+  children?: ReactNode;
+}
 
+const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = (
+  {
+    searchInput,
+    isSearchDataLoading,
+    handleSearchSubmit,
+    handleInputChange,
+    resetSearch,
+    showResults,
+    children,
+  }: ISearchBarProps,
+  ref,
+) => {
+  const [currentPlaceholder, setCurrentPlaceholder] = useState("");
+
+  // Puts a random placeholder song value into the search bar
   useEffect(() => {
     const rndPlaceholderIndex = Math.floor(Math.random() * placeholderValues.length);
     const rndPlaceholder = placeholderValues[rndPlaceholderIndex];
     setCurrentPlaceholder(rndPlaceholder!);
   }, []);
 
-  const startSearch = (songId: string) => {
-    // Get id from modal before pushing
-    router.push(`/results?id=${songId}`);
-  };
-
-  const displaySongMatches = async () => {
-    setIsLoading(true);
-    // Query itunes api
-    console.log("displaying song matches");
-    // Simulate 3s timeout
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
-  };
-
-  // On enter
-  const handleSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // displaySongMatches();
-  };
-
-  // On debounce
-  const handleInputChange = (searchTerm: string) => {
-    setSearchValue(searchTerm);
-    debouncedDisplaySongMatches.cancel();
-    debouncedDisplaySongMatches();
-  };
-
-  const debouncedDisplaySongMatches = useCallback(
-    debounce(() => displaySongMatches(), 600),
-    [],
-  );
-
   return (
-    <div className="w-full">
+    <div ref={ref} className="relative w-[36rem]">
       <form
-        className="relative mx-auto flex max-w-xl flex-col items-center"
+        className="relative mx-auto flex w-full flex-col items-center"
         onSubmit={handleSearchSubmit}
       >
         <Input
           type="text"
           placeholder={currentPlaceholder}
           sizeVariant="lg"
-          className="overflow-ellipsis border-2 border-primary pl-14 pr-14 text-lg placeholder:text-muted-foreground focus-visible:ring-primary"
-          value={searchValue}
-          onChange={(e) => handleInputChange(e.target.value)}
+          className={cn(
+            "overflow-ellipsis border-2 border-primary px-14 text-lg ring-0 transition-all duration-300 placeholder:text-muted-foreground focus-visible:ring-0",
+            showResults && "rounded-b-none border-b-0",
+          )}
+          value={searchInput}
+          onChange={handleInputChange}
         />
-        <span className="absolute left-8 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          {isLoading && (
-            <AnimatePresence>
+        <span className="absolute left-4 top-1/2 -translate-y-1/2">
+          <AnimatePresence>
+            {isSearchDataLoading && (
               <motion.div
                 className="flex h-8 justify-center"
                 initial={{ opacity: 0 }}
@@ -95,22 +92,28 @@ const SearchBar: FC<IProps> = ({}) => {
               >
                 <LoadingIndicator size={20} />
               </motion.div>
-            </AnimatePresence>
-          )}
-          {!isLoading && (
-            <AnimatePresence>
+            )}
+            {!isSearchDataLoading && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                 <Search />
               </motion.div>
-            </AnimatePresence>
-          )}
+            )}
+          </AnimatePresence>
         </span>
-        <div className="absolute right-2 top-1/2 flex -translate-x-1/2 -translate-y-[13px] items-center justify-center">
+        <div className="absolute right-4 top-1/2 flex -translate-y-1/2 gap-2">
+          <AnimatePresence>
+            {showResults && (
+              <motion.div {...fadeInAndOut()}>
+                <IconButton icon="x" size="icon" variant="ghostDestructive" onClick={resetSearch} />
+              </motion.div>
+            )}
+          </AnimatePresence>
           <SearchSettings />
         </div>
       </form>
+      {children}
     </div>
   );
 };
 
-export default SearchBar;
+export default forwardRef(SearchBar);

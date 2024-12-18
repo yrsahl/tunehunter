@@ -1,4 +1,4 @@
-import { refreshAccessToken } from "@/helpers/refresh-token";
+import { requestNewAccessToken } from "@/helpers/spotify/fetch-spotify-tokens";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { db } from "@/server/db";
 import { accounts } from "@/server/db/schema";
@@ -21,7 +21,7 @@ export const accountRouter = createTRPCRouter({
 
       // Update token if expired
       if (account?.expires_at && account?.refresh_token && Date.now() / 1000 > account.expires_at) {
-        const { access_token, expires_at } = await refreshAccessToken(account.refresh_token);
+        const { access_token, expires_at } = await requestNewAccessToken(account.refresh_token);
         await db
           .update(accounts)
           .set({ access_token, expires_at })

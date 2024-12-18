@@ -6,7 +6,7 @@ import { type Adapter } from "next-auth/adapters";
 import { env } from "@/env";
 import { eq } from "drizzle-orm";
 
-import { refreshAccessToken } from "@/helpers/refresh-token";
+import { requestNewAccessToken } from "@/helpers/spotify/fetch-spotify-tokens";
 import { db } from "@/server/db";
 import { pgTable } from "drizzle-orm/pg-core";
 import EmailProvider from "next-auth/providers/email";
@@ -69,7 +69,7 @@ export const authOptions: NextAuthOptions = {
 
     signIn: async ({ user, account }) => {
       if (account?.expires_at && account?.refresh_token && Date.now() / 1000 > account.expires_at) {
-        const { access_token, expires_at } = await refreshAccessToken(account.refresh_token);
+        const { access_token, expires_at } = await requestNewAccessToken(account.refresh_token);
         await db
           .update(accounts)
           .set({ access_token, expires_at })

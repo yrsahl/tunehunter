@@ -1,4 +1,4 @@
-import { fetchSpotifyUserData } from "@/helpers/fetch-spotify-data";
+import { fetchSpotifyUserData } from "@/helpers/spotify/fetch-spotify-data";
 import { SpotifyUserData } from "@/types/spotify";
 import { api } from "@/utils/api";
 import { useSession } from "next-auth/react";
@@ -20,7 +20,7 @@ export const useSpotifyContext = () => useContext(SpotifyContext);
 
 export const SpotifyProvider = ({ children }: { children: ReactNode }) => {
   const [spotifyUserData, setSpotifyUserData] = useState<SpotifyUserData | null>(null);
-  const [isSpotifyUserDataLoading, setisSpotifyUserDataLoading] = useState(false);
+  const [isSpotifyUserDataLoading, setIsSpotifyUserDataLoading] = useState(false);
   const { data: userData } = useSession();
 
   const { data: spotifyAccountData } = api.account.getSpotifyAccountById.useQuery(
@@ -40,15 +40,15 @@ export const SpotifyProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Otherwise start fetching
-    setisSpotifyUserDataLoading(true);
+    setIsSpotifyUserDataLoading(true);
 
     try {
       const response = await fetchSpotifyUserData(accessToken);
       setSpotifyUserData(response);
-      setisSpotifyUserDataLoading(false);
+      setIsSpotifyUserDataLoading(false);
     } catch (error) {
       console.error(error);
-      setisSpotifyUserDataLoading(false);
+      setIsSpotifyUserDataLoading(false);
     }
   };
 
