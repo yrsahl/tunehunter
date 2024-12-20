@@ -1,23 +1,43 @@
 import { useSearchDataContext } from "@/contexts/SearchDataContext";
+import { api } from "@/utils/api";
 import { debounce } from "lodash";
+import { useSession } from "next-auth/react";
 import { FormEvent, useCallback, useState } from "react";
 
 const useSearchFunctions = () => {
   const [searchInput, setSearchInput] = useState("");
   const { requestSearchData, resetSearchData } = useSearchDataContext();
+  const { data: userData } = useSession();
+
+  const { data: spotifyAccountData } = api.account.getSpotifyAccountById.useQuery(
+    { userId: userData?.user.id! },
+    {
+      refetchOnWindowFocus: false,
+      enabled: !!userData,
+      refetchInterval: 30 * 60 * 1000, // Refetch every 30 minutes to refresh the access token
+    },
+  );
+  const { data: clientCredentialsData } = api.clientCredentials.getToken.useQuery(undefined, {
+    refetchInterval: 30 * 60 * 1000, // Refetch every 30 minutes to refresh the access token
+  });
+  const userAccessToken = spotifyAccountData?.data?.access_token;
+  const appAccessToken = clientCredentialsData?.token;
+  const accessToken = userAccessToken || appAccessToken;
 
   // On enter -> set directly
   const handleSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    requestSearchData(searchInput);
+    if (!accessToken) return;
+    requestSearchData(searchInput, accessToken);
   };
 
   // On input -> debounce
   const debouncedRequestSearchData = useCallback(
     debounce((searchTerm: string) => {
-      requestSearchData(searchTerm);
+      if (!accessToken) return;
+      requestSearchData(searchTerm, accessToken);
     }, 600),
-    [],
+    [userAccessToken, appAccessToken],
   );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,6 +49,7 @@ const useSearchFunctions = () => {
     if (input) debouncedRequestSearchData(e.target.value);
     else {
       debouncedRequestSearchData.cancel();
+      resetSearchData();
     }
   };
 

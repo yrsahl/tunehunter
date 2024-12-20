@@ -37,6 +37,7 @@ const SearchTabs: FC<IProps> = ({}) => {
     {
       refetchOnWindowFocus: false,
       enabled: !!userData,
+      refetchInterval: 30 * 60 * 1000, // Refetch every 30 minutes to refresh the access token
     },
   );
 

@@ -1,6 +1,9 @@
 ---- CORE
 
 spotify api search with devyannik account
+- figure out if accounts."expires_at" needs to integer instead of timestamp
+- then get back to the actual work of getting client credential tokens (and refresh) to work
+
 search options
 Results styles & functionality
 

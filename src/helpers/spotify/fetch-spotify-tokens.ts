@@ -31,7 +31,7 @@ export const requestClientCredentialsToken = async () => {
 
     return {
       access_token: data.access_token,
-      expires_at: Math.round((Date.now() + data.expires_in * 1000) / 1000),
+      expires: new Date(Date.now() + data.expires_in * 1000),
     };
   } catch (error) {
     return {
@@ -69,7 +69,7 @@ export const requestNewAccessToken = async (oldRefreshToken: string) => {
 
     return {
       access_token: data.access_token,
-      expires_at: Math.round((Date.now() + data.expires_in * 1000) / 1000),
+      expires_at: Math.round((Date.now() + data.expires_in * 1000) / 1000), // Unicorn! Needs to stay like this (integer) for NextAuth
     };
   } catch (error) {
     return {

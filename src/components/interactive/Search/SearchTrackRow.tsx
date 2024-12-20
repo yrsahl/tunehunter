@@ -22,7 +22,7 @@ const SearchTrackRow = ({ track }: SpotifyTableRowProps) => {
   };
 
   return (
-    <motion.tr whileHover={{ scale: 1.05 }} className="cursor-pointer">
+    <motion.tr whileHover={{ scale: 1.03 }} className="cursor-pointer">
       <Link href={trackSearchHref} className="contents">
         <td className="py-3 pr-8">
           <a href={track.external_urls.spotify} target="_blank">

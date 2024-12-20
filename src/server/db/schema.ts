@@ -43,7 +43,7 @@ export const accounts = pgTable(
     providerAccountId: text("providerAccountId").notNull(),
     refresh_token: text("refresh_token"),
     access_token: text("access_token"),
-    expires_at: integer("expires_at"),
+    expires_at: integer("expires_at"), // This shit needs to stay as is (integer and name) for NextAuth to work
     token_type: text("token_type"),
     scope: text("scope"),
     id_token: text("id_token"),
@@ -59,6 +59,11 @@ export const accounts = pgTable(
 export const accountsRelations = relations(accounts, ({ one }) => ({
   user: one(users, { fields: [accounts.userId], references: [users.id] }),
 }));
+
+export const clientCredentialsToken = pgTable("clientCredentialsToken", {
+  token: varchar("token", { length: 255 }).notNull().primaryKey(),
+  expires: timestamp("expires", { mode: "date" }).notNull(),
+});
 
 export const sessions = pgTable(
   "session",

@@ -28,12 +28,13 @@ export const SpotifyUserDataProvider = ({ children }: { children: ReactNode }) =
     {
       refetchOnWindowFocus: false,
       enabled: !!userData,
+      refetchInterval: 30 * 60 * 1000, // Refetch every 30 minutes for a refreshed access token
     },
   );
   const userAccessToken = spotifyAccountData?.data?.access_token;
 
   const refreshSpotifyUserData = async () => {
-    // Reset if we have no valid token
+    // Reset if we have no token
     if (!userAccessToken) {
       setSpotifyUserData(null);
       return;
