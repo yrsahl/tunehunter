@@ -12,12 +12,12 @@ const SearchTabs = dynamic(() => import("@/components/interactive/Search/SearchT
 });
 
 export const Home: NextPage = () => {
-  const { showResults, searchBarRef } = useSearchBar();
+  const { showResults, searchBarRef, searchSettingsRef } = useSearchBar();
   const { searchData } = useSearchDataContext();
 
   return (
     <div className="-mt-2 flex min-h-72 w-full max-w-4xl flex-col items-center gap-5">
-      <SearchBar ref={searchBarRef} showResults={showResults}>
+      <SearchBar ref={searchBarRef} searchSettingsRef={searchSettingsRef} showResults={showResults}>
         <AnimatePresence mode="wait">
           {showResults && searchData && <SearchResults searchData={searchData} />}
         </AnimatePresence>

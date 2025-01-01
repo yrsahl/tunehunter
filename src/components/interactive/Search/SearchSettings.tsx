@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Cog } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "next-i18next";
-import { FC } from "react";
 import IconButton from "../../IconButton";
 import { Label } from "../../ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
@@ -13,9 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Slider } from "../../ui/slider";
 import { Switch } from "../../ui/switch";
 
-interface IProps {}
-
-const SearchSettings: FC<IProps> = ({}) => {
+const SearchSettings = ({}) => {
   const { t } = useTranslation("");
   const { status } = useSession();
   const loggedIn = status === "authenticated";

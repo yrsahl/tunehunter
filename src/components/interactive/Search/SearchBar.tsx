@@ -27,12 +27,13 @@ const placeholderValues = [
 ];
 
 interface ISearchBarProps {
+  searchSettingsRef: React.RefObject<HTMLDivElement>;
   showResults: boolean;
   children?: ReactNode;
 }
 
 const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = (
-  { showResults, children }: ISearchBarProps,
+  { searchSettingsRef, showResults, children }: ISearchBarProps,
   ref,
 ) => {
   const [currentPlaceholder, setCurrentPlaceholder] = useState("");
@@ -82,7 +83,10 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = (
             )}
           </AnimatePresence>
         </span>
-        <div className="absolute right-4 top-1/2 flex -translate-y-1/2 gap-2">
+        <div
+          className="absolute right-4 top-1/2 flex -translate-y-1/2 gap-2"
+          ref={searchSettingsRef}
+        >
           <AnimatePresence>
             {searchData && showResults && (
               <motion.div {...fadeInAndOut()}>
