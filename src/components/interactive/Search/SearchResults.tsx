@@ -15,11 +15,11 @@ const SearchResults = ({ searchData }: SearchTableProps) => {
     >
       <div className="px-3 py-3 sm:px-5 md:px-7">
         <table>
-          <tbody>
+          <motion.tbody {...fadeInAndOut(0.5)} key={searchData.tracks?.href}>
             {searchData.tracks?.items.map((track) => (
               <SearchTrackRow key={track.id} track={track} />
             ))}
-          </tbody>
+          </motion.tbody>
         </table>
       </div>
     </motion.div>
