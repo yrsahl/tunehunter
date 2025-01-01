@@ -8,9 +8,6 @@ const useSearchBar = () => {
   const handleClickSearchBar = (event: MouseEvent) => {
     if (!searchBarRef.current || !searchSettingsRef.current) return; // No refs
 
-    console.log("ref", searchSettingsRef);
-    console.log("ref 2", searchBarRef);
-
     // Do nothing if options are clicked
     if (searchSettingsRef.current.contains(event.target as Node)) {
       return;

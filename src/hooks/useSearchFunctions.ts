@@ -3,6 +3,7 @@ import { api } from "@/utils/api";
 import { debounce } from "lodash";
 import { useSession } from "next-auth/react";
 import { FormEvent, useCallback, useState } from "react";
+import { useSearchSettingsStore } from "./stores/useSearchSettingsStore";
 
 const useSearchFunctions = () => {
   const [searchInput, setSearchInput] = useState("");
@@ -24,20 +25,29 @@ const useSearchFunctions = () => {
   const appAccessToken = clientCredentialsData?.token;
   const accessToken = userAccessToken || appAccessToken;
 
+  // Any settings set?
+  const { searchForClubMixesOnly, minimumLengthOption, minimumLengthSeconds } =
+    useSearchSettingsStore();
+  const searchSettings = {
+    searchForClubMixesOnly,
+    minimumLengthOption,
+    minimumLengthSeconds,
+  };
+
   // On enter -> set directly
   const handleSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!accessToken) return;
-    requestSearchData(searchInput, accessToken);
+    requestSearchData(accessToken, searchInput, searchSettings);
   };
 
   // On input -> debounce
   const debouncedRequestSearchData = useCallback(
     debounce((searchTerm: string) => {
       if (!accessToken) return;
-      requestSearchData(searchTerm, accessToken);
+      requestSearchData(accessToken, searchTerm, searchSettings);
     }, 600),
-    [userAccessToken, appAccessToken],
+    [userAccessToken, appAccessToken, ...Object.values(searchSettings)],
   );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

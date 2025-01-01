@@ -3,12 +3,20 @@ import { LoadingIndicator } from "@/components/Indicators";
 import { Input } from "@/components/ui/input";
 import { useSearchDataContext } from "@/contexts/SearchDataContext";
 import { fadeInAndOut } from "@/helpers/animations";
+import { useSearchSettingsStore } from "@/hooks/stores/useSearchSettingsStore";
 import useSearchFunctions from "@/hooks/useSearchFunctions";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Search } from "lucide-react";
 import dynamic from "next/dynamic";
-import { forwardRef, ForwardRefRenderFunction, ReactNode, useEffect, useState } from "react";
+import React, {
+  createRef,
+  forwardRef,
+  ForwardRefRenderFunction,
+  ReactNode,
+  useEffect,
+  useState,
+} from "react";
 const SearchSettings = dynamic(() => import("@/components/interactive/Search/SearchSettings"), {
   ssr: false,
 });
@@ -39,6 +47,7 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = (
   const [currentPlaceholder, setCurrentPlaceholder] = useState("");
   const { handleSearchSubmit, searchInput, handleInputChange, resetSearch } = useSearchFunctions();
   const { searchData, isSearchDataLoading } = useSearchDataContext();
+  const formRef = createRef<HTMLFormElement>();
 
   // Puts a random placeholder song value into the search bar
   useEffect(() => {
@@ -47,11 +56,19 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = (
     setCurrentPlaceholder(rndPlaceholder!);
   }, []);
 
+  // Trigger form submit when settings change
+  const searchSettings = useSearchSettingsStore();
+  useEffect(() => {
+    if (!searchData) return;
+    formRef.current?.requestSubmit();
+  }, [...Object.values(searchSettings)]);
+
   return (
     <div ref={ref} className="relative w-[36rem]">
       <form
         className="relative mx-auto flex w-full flex-col items-center"
         onSubmit={handleSearchSubmit}
+        ref={formRef}
       >
         <Input
           type="text"

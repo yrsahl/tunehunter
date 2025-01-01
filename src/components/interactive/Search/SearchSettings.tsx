@@ -1,6 +1,6 @@
 import { growIn, slideInAndOutFromAbove } from "@/helpers/animations";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
-import { useLocalStorage } from "@uidotdev/usehooks";
+import { useSearchSettingsStore } from "@/hooks/stores/useSearchSettingsStore";
 import { AnimatePresence, motion } from "framer-motion";
 import { Cog } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -12,21 +12,26 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Slider } from "../../ui/slider";
 import { Switch } from "../../ui/switch";
 
+type SearchSettings = {
+  searchForClubMixesOnly: boolean;
+  minimumLengthOption: boolean;
+  minimumLengthSeconds: number;
+};
+
 const SearchSettings = ({}) => {
   const { t } = useTranslation("");
   const { status } = useSession();
   const loggedIn = status === "authenticated";
 
   // State
-  const [searchForClubMixesOnly, setSearchForClubMixesOnly] = useLocalStorage(
-    "clubmixesonly",
-    false,
-  );
-  const [minimumLengthOption, setMinimumLengthOption] = useLocalStorage(
-    "minimumlengthoption",
-    false,
-  );
-  const [minimumLengthSeconds, setMinimumLengthSeconds] = useLocalStorage("minimumlength", 120);
+  const {
+    searchForClubMixesOnly,
+    minimumLengthOption,
+    minimumLengthSeconds,
+    setSearchForClubMixesOnly,
+    setMinimumLengthOption,
+    setMinimumLengthSeconds,
+  } = useSearchSettingsStore();
   const { region, changeRegion, createRegionName, setRegionByLocation, sortedRegions } =
     useRegionSettings();
 

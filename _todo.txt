@@ -1,7 +1,8 @@
 ---- CORE
 
 search
-- options
+- keep search results open when settings change -> give ref to results div and change logic
+- always try get 30 results, even with options
 
 Results styles & functionality
 
@@ -21,6 +22,8 @@ Add:
 
 
 ---- THEN
+SearchResults: load more after initial 30
+
 Add (cypress) tests
 SENTRY & Upstash
 
