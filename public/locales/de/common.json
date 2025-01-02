@@ -85,10 +85,11 @@
       "Default": ""
     },
     "prompts": {
-      "login": "Du bist nicht eingeloggt",
-      "spotify": "Verbinde deinen Spotify-Account, um deine gehörten Lieder einzusehen.",
-      "wishlist": "Log' dich ein, um deine Wunschliste einzusehen.",
-      "history": "Log' dich ein, um deinen Verlauf einzusehen."
+      "login": "Erstelle einen Account oder logge dich ein, um diesen Inhalt zu sehen!",
+      "spotify": "Erstelle einen Account oder logge dich ein, um deine Spotify Lieder zu sehen!",
+      "spotifySignedIn": "Verbinde deinen Spotify-Account, um deine zuletzt gehörten Lieder zu sehen.",
+      "wishlist": "Erstelle einen Account oder logge dich ein, um deine Wunschliste zu sehen!",
+      "history": "Erstelle einen Account oder logge dich ein, um deinen Verlauf zu sehen!"
     },
     "redirecting": "Weiterleitung",
     "returnToSignIn": "Zurück zum Login",

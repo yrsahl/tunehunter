@@ -12,6 +12,8 @@ Thoughts
 
 Results styles & functionality
 
+
+
 Solidify auth:
 - E-mail templates
 - Email login with token

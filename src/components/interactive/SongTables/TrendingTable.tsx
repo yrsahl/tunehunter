@@ -2,11 +2,11 @@ import CustomIcon from "@/components/CustomIcon";
 import { LoadingIndicator } from "@/components/Indicators";
 import { api } from "@/utils/api";
 import { useTranslation } from "react-i18next";
-import { Tab } from "../Search/SearchTabs";
+import { SearchTabVariant } from "../Search/SearchTabBar";
 import TableRow from "../TableRow";
 
 interface TrendingTableProps {
-  setSearchTab: (tab: Tab | "") => void;
+  setSearchTab: (tab: SearchTabVariant | "") => void;
 }
 
 const TrendingTable = ({ setSearchTab }: TrendingTableProps) => {

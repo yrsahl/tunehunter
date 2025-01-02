@@ -85,10 +85,11 @@
       "Default": ""
     },
     "prompts": {
-      "login": "No has iniciado sesión",
-      "spotify": "Conecta tu cuenta de Spotify para ver tus canciones recientes.",
-      "wishlist": "Inicia sesión para ver tu Lista de deseos.",
-      "history": "Inicia sesión para ver tu Historial."
+      "login": "¡Crea una cuenta o Inicia sesión para ver este contenido!",
+      "spotify": "¡Crea una cuenta o Inicia sesión para ver tus canciones de Spotify!",
+      "spotifySignedIn": "Conecta tu cuenta de Spotify para ver tus canciones recientes.",
+      "wishlist": "¡Crea una cuenta o Inicia sesión para ver tu Lista de Deseos!",
+      "history": "¡Crea una cuenta o Inicia sesión para ver tu Historial!"
     },
     "redirecting": "Redirigiendo",
     "returnToSignIn": "Volver a iniciar sesión",

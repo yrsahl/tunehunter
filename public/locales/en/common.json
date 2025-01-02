@@ -85,10 +85,11 @@
       "Default": ""
     },
     "prompts": {
-      "login": "Login to view this content.",
-      "spotify": "Connect your Spotify account to see your recently played songs.",
-      "wishlist": "Log in to view your wishlist.",
-      "history": "Log in to view your history."
+      "login": "Create an account or Sign In to view this content!",
+      "spotify": "Create an account or Sign In to view your Spotify songs!",
+      "spotifySignedIn": "Connect your Spotify account to see your recently played songs.",
+      "wishlist": "Create an account or Sign In to view your Wishlist!",
+      "history": "Create an account or Sign In to view your History!"
     },
     "redirecting": "Redirecting",
     "returnToSignIn": "Return to sign in page",
