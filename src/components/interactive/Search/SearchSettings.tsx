@@ -109,7 +109,7 @@ const SearchSettings = ({}) => {
             <>
               <div className="flex items-center">
                 <Label htmlFor="region" className="flex items-center font-thin">
-                  {t("settings.region")}:
+                  {t("settings.region.title")}:
                 </Label>
                 <Select onValueChange={changeRegion} value={region}>
                   <SelectTrigger

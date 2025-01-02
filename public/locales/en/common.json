@@ -38,37 +38,53 @@
   },
   "search": {
     "tabs": {
-      "trending": { "header": "Trending", "empty": "Nothing's trending right now..." },
-      "spotify": { "header": "Spotify" },
-      "history": { "header": "History", "empty": "You haven't started a search yet." },
-      "wishlist": { "header": "Wishlist", "empty": "Your wishlist is empty." }
+      "trending": {
+        "header": "Trending",
+        "empty": "Nothing's trending right now..."
+      },
+      "spotify": {
+        "header": "Spotify",
+        "subTabs": {
+          "recentlyPlayed": {
+            "header": "Recently Played",
+            "empty": "You haven't listened to any songs on Spotify recently."
+          },
+          "topTracks": {
+            "header": "Most Played",
+            "empty": "We received no data for your most played songs."
+          },
+          "queue": { "header": "Queue", "empty": "Your queue is currently empty." }
+        }
+      },
+      "history": {
+        "header": "History",
+        "subTabs": {
+          "purchases": {
+            "header": "Purchases",
+            "empty": "You haven't bought anything yet."
+          },
+          "searches": {
+            "header": "Searches",
+            "empty": "You haven't searched for anything yet."
+          }
+        }
+      },
+      "wishlist": {
+        "header": "Wishlist",
+        "empty": "Your wishlist is empty. Add songs by clicking the heart icon on the results page!"
+      }
     },
-    "spotify": {
-      "account": "Spotify account",
-      "connectPrompt": "Connect your Spotify account",
-      "connectPromptSm": "Connect Spotify",
-      "dataMissing": "We could not load your Spotify data. Please try again later.",
-      "recentlyPlayed": {
-        "header": "Recently Played",
-        "empty": "You haven't listened to any songs on Spotify recently."
+    "results": {
+      "header": {
+        "store": "Music store",
+        "quality": "Quality",
+        "price": "Price",
+        "artistsshare": "Artist's share",
+        "link": "Link"
       },
-      "topTracks": {
-        "header": "Most Played",
-        "empty": "We received no data for your most played songs."
-      },
-      "queue": { "header": "Queue", "empty": "Your queue is currently empty." }
+      "buy": "Buy",
+      "backtostart": "Back to the start"
     }
-  },
-  "results": {
-    "header": {
-      "store": "Music store",
-      "quality": "Quality",
-      "price": "Price",
-      "artistsshare": "Artist's share",
-      "link": "Link"
-    },
-    "buy": "Buy",
-    "backtostart": "Back to the start"
   },
   "auth": {
     "errors": {
@@ -187,10 +203,14 @@
       "setMinimumLength": "Minimum length"
     },
     "profile": {
-      "spotifyConnected": "Connected as {{accountName}}",
-      "unlink": {
-        "title": "Unlink Spotify account?",
-        "text": "Please confirm that you want to unlink your Spotify account {{accountName}}."
+      "spotify": {
+        "account": "Spotify Account",
+        "connect": "Connect Spotify",
+        "connected": "Connected as {{accountName}}",
+        "unlink": {
+          "title": "Unlink Spotify account?",
+          "text": "Please confirm that you want to unlink your Spotify account {{accountName}}."
+        }
       }
     },
     "language": {

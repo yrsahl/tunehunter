@@ -6,10 +6,10 @@ import { api } from "@/utils/api";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "next-i18next";
-import { SearchTabVariant } from "./SearchTabBar";
+import type { SearchTabType } from "./SearchTabBar";
 
 type AccessScopes = "all" | "signed-in-to-spotify" | "signed-in";
-const tabAccessMap: Record<SearchTabVariant, AccessScopes> = {
+const tabAccessMap: Record<SearchTabType, AccessScopes> = {
   trending: "all",
   spotify: "signed-in-to-spotify",
   history: "signed-in",
@@ -17,12 +17,12 @@ const tabAccessMap: Record<SearchTabVariant, AccessScopes> = {
 };
 
 interface SearchTabProps {
-  tabVariant: SearchTabVariant;
-  activeSearchTab: SearchTabVariant | "";
-  setActiveSearchTab: (newTab: SearchTabVariant | "") => void;
+  searchTab: SearchTabType;
+  activeSearchTab: SearchTabType | "";
+  setActiveSearchTab: (newTab: SearchTabType | "") => void;
 }
 
-const SearchTab = ({ tabVariant, activeSearchTab, setActiveSearchTab }: SearchTabProps) => {
+const SearchTab = ({ searchTab, activeSearchTab, setActiveSearchTab }: SearchTabProps) => {
   const { data: userData, status: sessionStatus } = useSession();
   const router = useRouterWithHelpers();
   const loggedIn = sessionStatus === "authenticated";
@@ -37,15 +37,15 @@ const SearchTab = ({ tabVariant, activeSearchTab, setActiveSearchTab }: SearchTa
     },
   );
 
-  const getTabTranslation = (tab: SearchTabVariant) => t(`search.tabs.${tab}.header`);
-  const getTooltipTranslation = (tab: SearchTabVariant) => t(`auth.prompts.${tab}`);
-  const isTabEnabled = (tab: SearchTabVariant) => {
+  const getTabTranslation = (tab: SearchTabType) => t(`search.tabs.${tab}.header`);
+  const getTooltipTranslation = (tab: SearchTabType) => t(`auth.prompts.${tab}`);
+  const isTabEnabled = (tab: SearchTabType) => {
     if (tabAccessMap[tab] === "signed-in-to-spotify") return !!spotifyAccount?.data; // If needs to be signed in, enabled if spotify data
     if (tabAccessMap[tab] === "signed-in") return loggedIn; // If needs signed in, enabled if logged in
     return true; // Enabled otherwise
   };
 
-  const handleTabClick = (newTab: SearchTabVariant) => {
+  const handleTabClick = (newTab: SearchTabType) => {
     if (newTab === activeSearchTab) {
       setActiveSearchTab("");
       router.setParams({ search: "" });
@@ -57,29 +57,29 @@ const SearchTab = ({ tabVariant, activeSearchTab, setActiveSearchTab }: SearchTa
 
   return (
     <motion.button
-      key={tabVariant}
-      onClick={() => handleTabClick(tabVariant)}
-      disabled={!isTabEnabled(tabVariant)}
+      key={searchTab}
+      onClick={() => handleTabClick(searchTab)}
+      disabled={!isTabEnabled(searchTab)}
       className={cn(
         "whitespace-nowrap border-b-2 text-foreground transition-all enabled:hover:border-primary/50",
-        activeSearchTab === tabVariant ? "!border-primary" : "border-transparent",
+        activeSearchTab === searchTab ? "!border-primary" : "border-transparent",
       )}
     >
-      {!isTabEnabled(tabVariant) && (
-        <Tooltip key={tabVariant}>
+      {!isTabEnabled(searchTab) && (
+        <Tooltip key={searchTab}>
           <TooltipTrigger className="cursor-not-allowed text-muted-foreground/30">
             <div className="flex items-center gap-2 px-1 pb-1">
-              <CustomIcon icon={tabVariant} variant={"primary-muted"} />
-              {getTabTranslation(tabVariant)}
+              <CustomIcon icon={searchTab} variant={"primary-muted"} />
+              {getTabTranslation(searchTab)}
             </div>
           </TooltipTrigger>
-          <TooltipContent>{getTooltipTranslation(tabVariant)}</TooltipContent>
+          <TooltipContent>{getTooltipTranslation(searchTab)}</TooltipContent>
         </Tooltip>
       )}
-      {!!isTabEnabled(tabVariant) && (
+      {!!isTabEnabled(searchTab) && (
         <div className="flex items-center gap-2 px-1 pb-1">
-          <CustomIcon icon={tabVariant} variant={"primary"} />
-          {getTabTranslation(tabVariant)}
+          <CustomIcon icon={searchTab} variant={"primary"} />
+          {getTabTranslation(searchTab)}
         </div>
       )}
     </motion.button>

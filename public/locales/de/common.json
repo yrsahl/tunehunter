@@ -39,36 +39,40 @@
   "search": {
     "tabs": {
       "trending": { "header": "Aktuell", "empty": "Keine Einträge bisher..." },
-      "spotify": { "header": "Spotify" },
-      "history": { "header": "Verlauf", "empty": "Du hast noch keine Suche gestartet." },
+      "spotify": {
+        "header": "Spotify",
+        "subTabs": {
+          "recentlyPlayed": {
+            "header": "Zuletzt gehört",
+            "empty": "Du hast in letzter Zeit keine Lieder bei Spotify gehört."
+          },
+          "topTracks": {
+            "header": "Meistgehört",
+            "empty": "Wir haben keine Daten zu deinen meistgehörten Liedern gefunden."
+          },
+          "queue": { "header": "Warteschlange", "empty": "Deine Warteschlange ist leer." }
+        }
+      },
+      "history": {
+        "header": "Verlauf",
+        "subTabs": {
+          "purchases": { "header": "Käufe", "empty": "Du hast noch nichts gekauft." },
+          "searches": { "header": "Suchen", "empty": "Du hast noch keine Suchen durchgeführt." }
+        }
+      },
       "wishlist": { "header": "Wunschliste", "empty": "Deine Wunschliste ist leer." }
     },
-    "spotify": {
-      "account": "Spotify-Account",
-      "connectPrompt": "Verbinde deinen Spotify-Account",
-      "connectPromptSm": "Verbinde Spotify",
-      "dataMissing": "Wir konnten deine Spotify Daten nicht laden. Bitte versuche es später erneut.",
-      "recentlyPlayed": {
-        "header": "Zuletzt gehört",
-        "empty": "Du hast in letzter Zeit keine Lieder bei Spotify gehört."
+    "results": {
+      "header": {
+        "store": "Plattform",
+        "quality": "Qualität",
+        "price": "Preis",
+        "artistsshare": "Künstleranteil",
+        "link": "Link"
       },
-      "topTracks": {
-        "header": "Meistgehört",
-        "empty": "Wir haben keine Daten zu deinen meistgehörten Liedern gefunden."
-      },
-      "queue": { "header": "Warteschlange", "empty": "Deine Warteschlange ist leer." }
+      "buy": "Kaufen",
+      "backtostart": "Zurück zum Start"
     }
-  },
-  "results": {
-    "header": {
-      "store": "Plattform",
-      "quality": "Qualität",
-      "price": "Preis",
-      "artistsshare": "Künstleranteil",
-      "link": "Link"
-    },
-    "buy": "Kaufen",
-    "backtostart": "Zurück zum Start"
   },
   "auth": {
     "errors": {
@@ -185,10 +189,14 @@
       "setMinimumLength": "Mindestlänge"
     },
     "profile": {
-      "spotifyConnected": "Verbunden als {{accountName}}",
-      "unlink": {
-        "title": "Spotify-Verknüfung löschen?",
-        "text": "Bitte bestätige, dass du die Verbindung zu deinem Spotify-Account {{accountName}} löschen möchtest."
+      "spotify": {
+        "account": "Spotify Account",
+        "connect": "Spotify verbinden",
+        "connected": "Verbunden als {{accountName}}",
+        "unlink": {
+          "title": "Spotify-Account trennen?",
+          "text": "Bitte bestätige, dass du deinen Spotify-Account {{accountName}} trennen möchtest."
+        }
       }
     },
     "language": {

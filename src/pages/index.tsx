@@ -7,7 +7,7 @@ import type { GetStaticProps, NextPage } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import dynamic from "next/dynamic";
 import nextI18nConfig from "../../next-i18next.config.mjs";
-const SearchTabs = dynamic(() => import("@/components/interactive/Search/SearchTabBar"), {
+const SearchTabBar = dynamic(() => import("@/components/interactive/Search/SearchTabBar"), {
   ssr: false,
 });
 
@@ -22,7 +22,7 @@ export const Home: NextPage = () => {
           {showResults && searchData && <SearchResults searchData={searchData} />}
         </AnimatePresence>
       </SearchBar>
-      <SearchTabs />
+      <SearchTabBar />
     </div>
   );
 };

@@ -119,7 +119,7 @@ const ProfileMenu = () => {
 
         {/* Spotify */}
         <p className="col-span-2 flex items-center justify-end font-thin">
-          {t("search.spotify.account")}
+          {t("settings.profile.spotify.account")}
         </p>
         {spotifyAccount?.data && (
           <>
@@ -139,10 +139,10 @@ const ProfileMenu = () => {
             </a>
             <ConfirmationModal
               dialogAction={() => handleUnlinkSpotify(userData.user.id)}
-              dialogText={t("settings.profile.unlink.text", {
+              dialogText={t("settings.profile.spotify.unlink.text", {
                 accountName: spotifyUserData?.profileData?.display_name,
               })}
-              dialogTitle={t("settings.profile.unlink.title")}
+              dialogTitle={t("settings.profile.spotify.unlink.title")}
             >
               <div>
                 <IconButton icon="x" variant="ghostPrimary" size="icon" iconSize="20px" />
@@ -155,7 +155,7 @@ const ProfileMenu = () => {
             <IconButton
               icon={"spotify"}
               variant="outlinePrimary"
-              text={t("search.spotify.connectPromptSm")}
+              text={t("settings.profile.spotify.connect")}
               size="sm"
               onClick={handleLinkSpotify}
             />

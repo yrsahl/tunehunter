@@ -10,6 +10,9 @@ Thoughts
 - Filter results: one search for every filter -> interweave results
 - Min length: recursively fill up (hit the next endpoint for more songs until enough)
 
+Make profile button shine when hovered over inactive tab
+
+
 Results styles & functionality
 
 
@@ -25,6 +28,9 @@ Solidify settings:
 Add:
 - Trending/History/Wishlist functionality
 - Responsive Layout
+
+Fix:
+- Layout shift callback page
 
 
 

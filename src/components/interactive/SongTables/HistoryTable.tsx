@@ -3,7 +3,6 @@ import { api } from "@/utils/api";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "next-i18next";
 import TableRow from "../TableRow";
-import LoginPromptMockTable from "./LoginPromptMockTable";
 
 const HistoryTable = ({}) => {
   const { status } = useSession();
@@ -13,9 +12,6 @@ const HistoryTable = ({}) => {
     enabled: loggedIn,
   });
 
-  if (!loggedIn) {
-    return <LoginPromptMockTable promptText={t("auth.prompts.history")} icon="userBold" />;
-  }
   if (isLoading) {
     return (
       <div className="flex h-full justify-center">

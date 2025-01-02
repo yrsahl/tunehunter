@@ -38,37 +38,44 @@
   },
   "search": {
     "tabs": {
-      "trending": { "header": "Trending", "empty": "Nada está en tendencia en este momento..." },
-      "spotify": { "header": "Spotify" },
-      "history": { "header": "Historial", "empty": "Aún no has iniciado una búsqueda." },
-      "wishlist": { "header": "Lista de deseos", "empty": "Tu lista de deseos está vacía." }
+      "trending": { "header": "Trending", "empty": "No hay tendencias por ahora..." },
+      "spotify": {
+        "header": "Spotify",
+        "subTabs": {
+          "recentlyPlayed": {
+            "header": "Reproducidas recientemente",
+            "empty": "No has escuchado ninguna canción en Spotify recientemente."
+          },
+          "topTracks": {
+            "header": "Más escuchadas",
+            "empty": "No recibimos datos de tus canciones más escuchadas."
+          },
+          "queue": { "header": "Cola", "empty": "Tu cola está vacía." }
+        }
+      },
+      "history": {
+        "header": "Historial",
+        "subTabs": {
+          "purchases": { "header": "Compras", "empty": "Aún no has comprado nada." },
+          "searches": { "header": "Búsquedas", "empty": "Aún no has buscado nada." }
+        }
+      },
+      "wishlist": {
+        "header": "Lista de deseos",
+        "empty": "Tu lista de deseos está vacía. ¡Agrega canciones haciendo clic en el ícono de corazón en la página de resultados!"
+      }
     },
-    "spotify": {
-      "account": "Cuenta de Spotify",
-      "connectPrompt": "Conecta tu cuenta de Spotify",
-      "connectPromptSm": "Conectar Spotify",
-      "dataMissing": "No pudimos cargar tu data de Spotify. Por favor intenta de nuevo más tarde.",
-      "recentlyPlayed": {
-        "header": "Recientes",
-        "empty": "No has escuchado canciones en Spotify recientemente."
+    "results": {
+      "header": {
+        "store": "Tienda",
+        "quality": "Calidad",
+        "price": "Precio",
+        "artistsshare": "Corte del artista",
+        "link": "Link"
       },
-      "topTracks": {
-        "header": "Más escuchadas",
-        "empty": "No recibimos data de tus canciones más escuchadas."
-      },
-      "queue": { "header": "Cola", "empty": "No hay canciones en la cola." }
+      "buy": "Comprar",
+      "backtostart": "Volver al principio"
     }
-  },
-  "results": {
-    "header": {
-      "store": "Tienda",
-      "quality": "Calidad",
-      "price": "Precio",
-      "artistsshare": "Corte del artista",
-      "link": "Link"
-    },
-    "buy": "Comprar",
-    "backtostart": "Volver al principio"
   },
   "auth": {
     "errors": {
@@ -185,10 +192,14 @@
       "setMinimumLength": "Duración mínima"
     },
     "profile": {
-      "spotifyConnected": "Conectado como {{accountName}}",
-      "unlink": {
-        "title": "¿Desvincular cuenta de Spotify?",
-        "text": "Por favor confirma que deseas desvincular tu cuenta de Spotify {{accountName}}."
+      "spotify": {
+        "account": "Cuenta de Spotify",
+        "connect": "Conectar Spotify",
+        "connected": "Conectado como {{accountName}}",
+        "unlink": {
+          "title": "¿Desvincular cuenta de Spotify?",
+          "text": "Por favor confirma que deseas desvincular tu cuenta de Spotify {{accountName}}."
+        }
       }
     },
     "language": {

@@ -42,7 +42,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <Analytics />
       <SessionProvider session={session}>
         <SpotifyUserDataProvider>
-          <TooltipProvider delayDuration={500}>
+          <TooltipProvider delayDuration={150}>
             <ThemeProvider attribute="class" defaultTheme="auto" enableSystem={false}>
               <Layout>
                 <SearchDataProvider>
