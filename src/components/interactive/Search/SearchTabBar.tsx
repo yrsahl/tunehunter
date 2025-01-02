@@ -1,4 +1,5 @@
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
+import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { FC, useEffect, useState } from "react";
 import SearchTab from "./SearchTab";
@@ -38,6 +39,7 @@ const SearchTabBar: FC<IProps> = ({}) => {
       </div>
       <AnimatePresence mode="wait">
         {activeSearchTab !== "" && (
+          // Grow on open and shrink on close
           <motion.div
             initial={{ height: "0rem" }}
             animate={{ height: "16rem" }}
@@ -45,7 +47,17 @@ const SearchTabBar: FC<IProps> = ({}) => {
             transition={{ duration: 0.5, ease: "easeInOut" }}
             className="relative mt-4 h-full w-full resize-y overflow-hidden rounded-3xl border-[1px] border-foreground/30 bg-primary/10 md:w-4/5 "
           >
-            <SearchTabContent activeTab={activeSearchTab} />
+            {/* Fade content on tab change */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+              key={activeSearchTab}
+              className={cn("relative mx-auto flex h-full w-full flex-col items-center")}
+            >
+              <SearchTabContent activeTab={activeSearchTab} />
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

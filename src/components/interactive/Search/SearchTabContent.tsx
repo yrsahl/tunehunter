@@ -22,6 +22,8 @@ const SearchTabContent = ({ activeTab }: SearchTabContentProps) => {
   const { t } = useTranslation();
   const { data, isLoading } = useTabContentData(activeTab, activeSubTab);
 
+  const tabHasSubTabs = subTabsMap[activeTab].length > 0;
+
   if (isLoading) {
     return (
       <div className="flex h-full justify-center">
@@ -39,20 +41,22 @@ const SearchTabContent = ({ activeTab }: SearchTabContentProps) => {
 
   return (
     <>
-      <div className="border-x-1 absolute left-1/2 top-0 z-10 flex w-full max-w-[450px] -translate-x-1/2 items-center justify-around rounded-b-sm border-b-[1px] border-primary bg-background px-1 py-[6px]">
-        {subTabsMap[activeTab].map((subTabVariant) => (
-          <button
-            key={subTabVariant}
-            className={cn(
-              "whitespace-nowrap text-base transition-colors hover:text-foreground",
-              subTabVariant === activeSubTab ? "text-foreground" : "text-muted-foreground",
-            )}
-            onClick={() => setActiveSubTab(subTabVariant)}
-          >
-            {t(`search.tabs.${activeTab}.subTabs.${subTabVariant}.header`)}
-          </button>
-        ))}
-      </div>
+      {tabHasSubTabs && (
+        <div className="border-x-1 absolute left-1/2 top-0 z-10 mx-10 flex w-[calc(100%-20px)] -translate-x-1/2 items-end justify-around rounded-b-sm border-b-[1px] border-primary bg-background py-[6px]">
+          {subTabsMap[activeTab].map((subTabVariant) => (
+            <button
+              key={subTabVariant}
+              className={cn(
+                "whitespace-nowrap text-base transition-colors hover:text-foreground",
+                subTabVariant === activeSubTab ? "text-foreground" : "text-muted-foreground",
+              )}
+              // onClick={() => setActiveSubTab(subTabVariant)}
+            >
+              {t(`search.tabs.${activeTab}.subTabs.${subTabVariant}.header`)}
+            </button>
+          ))}
+        </div>
+      )}
       {/* {tabContentMap[activeTab]} */}
     </>
   );
