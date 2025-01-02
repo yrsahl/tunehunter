@@ -49,9 +49,10 @@ const ProfileMenu = () => {
   const { data: spotifyAccount } = api.account.getSpotifyAccountById.useQuery(
     { userId: userData?.user.id! },
     {
-      refetchOnWindowFocus: false,
       enabled: !!userData,
       refetchInterval: 30 * 60 * 1000, // Refetch every 30 minutes to refresh the access token
+      refetchIntervalInBackground: true,
+      refetchOnWindowFocus: false,
     },
   );
   // Check for errors from linking spotify

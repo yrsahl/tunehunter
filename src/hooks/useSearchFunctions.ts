@@ -13,9 +13,10 @@ const useSearchFunctions = () => {
   const { data: spotifyAccountData } = api.account.getSpotifyAccountById.useQuery(
     { userId: userData?.user.id! },
     {
-      refetchOnWindowFocus: false,
       enabled: !!userData,
       refetchInterval: 30 * 60 * 1000, // Refetch every 30 minutes to refresh the access token
+      refetchIntervalInBackground: true,
+      refetchOnWindowFocus: false,
     },
   );
   const { data: clientCredentialsData } = api.clientCredentials.getToken.useQuery(undefined, {

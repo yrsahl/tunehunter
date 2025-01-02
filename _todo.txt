@@ -4,6 +4,12 @@ search
 - keep search results open when settings change -> give ref to results div and change logic
 - always try get 30 results, even with options
 
+Thoughts
+- Set results to 12 or 24
+- Filters: club, extended, original
+- Filter results: one search for every filter -> interweave results
+- Min length: recursively fill up (hit the next endpoint for more songs until enough)
+
 Results styles & functionality
 
 Solidify auth:

@@ -26,9 +26,10 @@ export const SpotifyUserDataProvider = ({ children }: { children: ReactNode }) =
   const { data: spotifyAccountData } = api.account.getSpotifyAccountById.useQuery(
     { userId: userData?.user.id! },
     {
-      refetchOnWindowFocus: false,
       enabled: !!userData,
       refetchInterval: 30 * 60 * 1000, // Refetch every 30 minutes for a refreshed access token
+      refetchIntervalInBackground: true,
+      refetchOnWindowFocus: false,
     },
   );
   const userAccessToken = spotifyAccountData?.data?.access_token;
