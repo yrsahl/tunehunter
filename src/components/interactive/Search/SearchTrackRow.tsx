@@ -28,7 +28,7 @@ const SearchTrackRow = ({ track }: SpotifyTableRowProps) => {
           <a href={track.external_urls.spotify} target="_blank">
             <div className="flex items-center gap-4">
               <div className="avatar">
-                <div className="mask mask-squircle h-9 w-9">
+                <div className="mask mask-squircle h-11 w-11">
                   <img src={track.album.images[0]?.url} />
                 </div>
               </div>
@@ -43,10 +43,10 @@ const SearchTrackRow = ({ track }: SpotifyTableRowProps) => {
             </p>
           )}
         </td>
-        <td className="pr-4 align-middle">
+        <td className=" pr-4 align-middle">
           <span>{track.name}</span>
         </td>
-        <td className="text-right align-middle">{trackDuration}</td>
+        <td className="text-right align-middle text-base opacity-50">{trackDuration}</td>
       </Link>
     </motion.tr>
   );

@@ -11,7 +11,7 @@ const SearchResults = ({ searchData }: SearchTableProps) => {
   return (
     <motion.div
       {...fadeInAndOut()}
-      className="absolute z-50 h-60 w-full overflow-scroll rounded-b-lg border border-t-[1px] border-primary bg-background/30 backdrop-blur-md"
+      className="absolute z-50 h-60 w-full overflow-scroll rounded-b-lg border border-t-[1px] border-primary bg-background/30 text-lg backdrop-blur-md"
     >
       <div className="px-3 py-3 sm:px-5 md:px-7">
         {/* <p className="text-center text-foreground/50">
