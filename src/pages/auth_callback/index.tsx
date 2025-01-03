@@ -65,7 +65,8 @@ const AuthCallbackPage: NextPage = ({}) => {
   }, [router.isReady, loggedIn, isSpotifyAccountDataLoading, spotifyUserData, accessToken]);
 
   return (
-    <>
+    // The weird 280px value comes from the min-h-72 from the main page size; however flex calculates the 2rem gap differently in both cases for some reason so I manually adjusted
+    <div className="min-h-[280px]">
       {!error && (
         <div className="flex items-baseline gap-2">
           <p className="text-lg text-foreground">Redirecting</p>
@@ -73,7 +74,7 @@ const AuthCallbackPage: NextPage = ({}) => {
         </div>
       )}
       {error && <p>{error}</p>}
-    </>
+    </div>
   );
 };
 

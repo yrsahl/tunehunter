@@ -20,14 +20,14 @@ const Layout = ({ children }: PropsWithChildren) => {
       )}
       <main className="page-container relative flex max-h-[calc(100%-80px)] flex-1 flex-col">
         <div className="flex h-full flex-col">
-          <div className="flex-grow-[6]"></div> {/* Empty space */}
+          <div className="flex-grow-[6.6]"></div> {/* Empty space */}
           <div className="hide-scrollbars max-h-full w-full overflow-y-auto py-6">
             <div className="flex w-full flex-col items-center justify-center gap-8">
               <Header />
               {children}
             </div>
           </div>
-          <div className="flex-grow-[4]" /> {/* Empty space */}
+          <div className="flex-grow-[3.3]" /> {/* Empty space */}
         </div>
       </main>
       <div className="h-20 w-full">

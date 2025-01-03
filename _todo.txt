@@ -1,10 +1,5 @@
 ---- CORE
 
-Replace language with ?
-- Legal
-- Info
-- Other products
-
 Set region on account creation
 
 search
@@ -42,6 +37,7 @@ Solidify settings:
 Add:
 - Trending/History/Wishlist functionality
 - Responsive Layout
+- Sidebar: Legal, Info, Other products
 
 Fix:
 - Layout shift callback page
