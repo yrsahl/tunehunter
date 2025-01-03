@@ -5,16 +5,18 @@ import { fadeInAndOut } from "@/helpers/animations";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { useTranslation } from "next-i18next";
 import { useState } from "react";
+import { SpotifySubTab, spotifySubTabs } from "../Search/SearchTabContent";
 import SpotifyTableRow from "../SpotifyTableRow";
 
-export const spotifyTableTabs = ["recentlyPlayed", "queue", "topTracks"] as const;
-export type SpotifyTableTab = (typeof spotifyTableTabs)[number];
+const SpotifyTabHeaderMap = {
+  recently_played: "Recently Played",
+  queue: "Queue",
+  top_tracks: "Top Tracks",
+};
 
 const SpotifyTable = () => {
-  const [tab, setTab] = useState<SpotifyTableTab>("recentlyPlayed");
-  const { t } = useTranslation();
+  const [tab, setTab] = useState<SpotifySubTab>("recently_played");
   const { status } = useSession();
   const loggedIn = status === "authenticated";
   const { spotifyUserData, refreshSpotifyUserData, isSpotifyUserDataLoading } =
@@ -31,7 +33,7 @@ const SpotifyTable = () => {
   return (
     <div className="h-full w-full px-3 sm:px-5 md:px-7">
       <div className="border-x-1 absolute left-1/2 top-0 z-10 flex w-full max-w-[450px] -translate-x-1/2 items-center justify-around rounded-b-sm border-b-[1px] border-primary bg-background px-1 py-[6px]">
-        {spotifyTableTabs.map((spotifyTableTab) => (
+        {spotifySubTabs.map((spotifyTableTab) => (
           <button
             key={spotifyTableTab}
             className={cn(
@@ -41,7 +43,7 @@ const SpotifyTable = () => {
             onClick={() => setTab(spotifyTableTab)}
             disabled={!spotifyUserData}
           >
-            {t(`search.spotify.${spotifyTableTab}.header`)}
+            {SpotifyTabHeaderMap[spotifyTableTab]}
           </button>
         ))}
       </div>
@@ -61,12 +63,12 @@ const SpotifyTable = () => {
           spotifyUserData && "overflow-scroll",
         )}
       >
-        {tab == "topTracks" && spotifyUserData?.topTracks?.items.length == 0 && (
+        {tab == "top_tracks" && spotifyUserData?.topTracks?.items.length == 0 && (
           <motion.div
             {...fadeInAndOut(0.15)}
             className="absolute-center flex items-center justify-center"
           >
-            <p className="text-center">{t("search.spotify.topTracks.empty")}</p>
+            <p className="text-center">We received no data for your most played songs.</p>
           </motion.div>
         )}
         {tab == "queue" &&
@@ -75,15 +77,15 @@ const SpotifyTable = () => {
               {...fadeInAndOut(0.15)}
               className="absolute-center flex items-center justify-center"
             >
-              <p className="text-center">{t("search.spotify.queue.empty")}</p>
+              <p className="text-center">Your queue is currently empty.</p>
             </motion.div>
           )}
-        {tab == "recentlyPlayed" && spotifyUserData?.recentlyPlayed?.items.length == 0 && (
+        {tab == "recently_played" && spotifyUserData?.recentlyPlayed?.items.length == 0 && (
           <motion.div
             {...fadeInAndOut(0.15)}
             className="absolute-center flex items-center justify-center"
           >
-            <p className="text-center">{t("search.spotify.recentlyPlayed.empty")}</p>
+            <p className="text-center">You haven't listened to any songs on Spotify recently.</p>
           </motion.div>
         )}
         <table className="w-full">
@@ -94,7 +96,7 @@ const SpotifyTable = () => {
                   spotifyUserData.queue?.queue.map((track, index) => (
                     <SpotifyTableRow key={`${track.id}/${index}`} track={track} />
                   ))}
-                {tab == "recentlyPlayed" && (
+                {tab == "recently_played" && (
                   <>
                     {spotifyUserData.currentlyPlaying?.is_playing && (
                       <SpotifyTableRow
@@ -108,7 +110,7 @@ const SpotifyTable = () => {
                     ))}
                   </>
                 )}
-                {tab == "topTracks" &&
+                {tab == "top_tracks" &&
                   spotifyUserData.topTracks?.items.map((track) => (
                     <SpotifyTableRow key={track.id} track={track} />
                   ))}

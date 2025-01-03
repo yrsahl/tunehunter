@@ -7,7 +7,6 @@ import useAuthError from "@/hooks/useAuthErrors";
 import { type Providers } from "@/interfaces/providers";
 import { api } from "@/utils/api";
 import { getProviders, signIn } from "next-auth/react";
-import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import { useEffect, useState, type FC, type FormEvent } from "react";
 import { toast } from "sonner";
@@ -21,7 +20,6 @@ interface IProps {
 }
 
 const SignInForm: FC<IProps> = ({ email, setEmail, setMenuState }) => {
-  const { t } = useTranslation("");
   const [providers, setProviders] = useState<Providers>();
   const router = useRouter();
   // const userQuery = api.user.getUser.useQuery({ email }, { enabled: true });
@@ -49,8 +47,6 @@ const SignInForm: FC<IProps> = ({ email, setEmail, setMenuState }) => {
   }
 
   const OAuthProviders = [providers.spotify];
-  const getSignInWithProviderText = (provider: string) =>
-    t("auth.signIn.withProvider", { provider });
 
   const handleSignInWithEmail = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -79,12 +75,12 @@ const SignInForm: FC<IProps> = ({ email, setEmail, setMenuState }) => {
         });
     });
     toast.promise(mailSentPromise, {
-      loading: t("toast.mail.loading"),
+      loading: "Trying to send you an e-mail...",
       success: () => {
         setMenuState(MenuState.MagicLinkSent);
-        return t("toast.mail.successLogin");
+        return "An e-mail with a login link has been sent to you!";
       },
-      error: t("toast.mail.error"),
+      error: "We could not send you an e-mail. Please check the mail address try again later.",
     });
   };
 
@@ -100,21 +96,21 @@ const SignInForm: FC<IProps> = ({ email, setEmail, setMenuState }) => {
         />
         <IconButton
           type="submit"
-          text={t("auth.signIn.withEmail")}
+          text="Sign In with E-Mail"
           disabled={!email}
           icon="mail"
           size="lg"
         />
       </form>
       <Separator borderColor="border-foreground">
-        <p className="px-2 text-xs uppercase">{t("general.or")}</p>
+        <p className="px-2 text-xs uppercase">or</p>
       </Separator>
       {OAuthProviders &&
         Object.values(OAuthProviders).map((provider, index) => (
           <div key={provider?.id ?? index}>
             <IconButton
               icon={isCustomIcon(provider.id) ? provider.id : "fallback"}
-              text={getSignInWithProviderText(provider.name)}
+              text={`Sign In with ${provider.name}`}
               size="lg"
               onClick={() => provider?.id && signInWithProvider(provider.id, router.locale ?? "")}
             />
@@ -125,7 +121,7 @@ const SignInForm: FC<IProps> = ({ email, setEmail, setMenuState }) => {
         className="-mt-1 border-0 font-thin uppercase text-foreground"
         onClick={() => setMenuState(MenuState.Register)}
       >
-        {t("auth.signIn.registerPrompt")}
+        Don't have an account?
       </Button>
     </div>
   );

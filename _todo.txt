@@ -1,5 +1,12 @@
 ---- CORE
 
+Replace language with ?
+- Legal
+- Info
+- Other products
+
+Set region on account creation
+
 search
 - keep search results open when settings change -> give ref to results div and change logic
 - always try get 30 results, even with options
@@ -12,10 +19,17 @@ Thoughts
 
 Make profile button shine when hovered over inactive tab
 
-
 Results styles & functionality
 
+Paid plan
+- Account creation: Free / Pro
+- DB user status field: level Basic - Pro
 
+Settings
+- Region
+- PRO settings
+    - Set filters?
+    - Set minimum length?
 
 Solidify auth:
 - E-mail templates
@@ -36,6 +50,8 @@ Fix:
 
 
 ---- THEN
+Stresstest + Monitoring
+
 SearchResults: load more after initial 30
 
 Add (cypress) tests

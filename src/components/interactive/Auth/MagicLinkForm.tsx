@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { useTranslation } from "next-i18next";
 import { type FC } from "react";
 import IconButton from "../../IconButton";
 import AuthCard from "./AuthCard";
@@ -11,21 +10,17 @@ interface IProps {
 }
 
 const MagicLinkForm: FC<IProps> = ({ email, setMenuState }) => {
-  const { t } = useTranslation("");
-
   return (
-    <AuthCard description={t("auth.magicLink.sent", { email })} size="small">
+    <AuthCard
+      description="We sent you a mail with a login link! If you can't find it, please also have a look in your spam folder."
+      size="small"
+    >
       <div className="flex w-full flex-col items-center gap-2">
         <a href="mailto:" className="w-full">
-          <IconButton
-            text={t("auth.magicLink.openMails")}
-            icon="mailOpen"
-            size="lg"
-            variant="primary"
-          />
+          <IconButton text="Open mails" icon="mailOpen" size="lg" variant="primary" />
         </a>
         <Button variant="link" onClick={() => setMenuState(MenuState.SignIn)}>
-          {t("auth.returnToSignIn")}
+          Return to Sign In page
         </Button>
       </div>
     </AuthCard>

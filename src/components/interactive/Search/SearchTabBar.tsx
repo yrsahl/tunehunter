@@ -7,19 +7,18 @@ import SearchTabContent from "./SearchTabContent";
 
 interface IProps {}
 
-const searchTabs = ["trending", "spotify", "history", "wishlist"] as const;
-export type SearchTabType = (typeof searchTabs)[number];
-const isSearchTab = (tab: string): tab is SearchTabType =>
-  searchTabs.includes(tab as SearchTabType);
+const tabs = ["trending", "spotify", "history", "wishlist"] as const;
+export type Tab = (typeof tabs)[number];
+const isTab = (tab: string): tab is Tab => tabs.includes(tab as Tab);
 
 const SearchTabBar: FC<IProps> = ({}) => {
   const router = useRouterWithHelpers();
-  const [activeSearchTab, setActiveSearchTab] = useState<SearchTabType | "">("");
+  const [activeSearchTab, setActiveSearchTab] = useState<Tab | "">("");
 
   // Restore active tab if param is present
   useEffect(() => {
     const searchParam = router.getParams("search");
-    if (router.isReady && searchParam && isSearchTab(searchParam)) {
+    if (router.isReady && searchParam && isTab(searchParam)) {
       setActiveSearchTab(searchParam);
     } else {
       setActiveSearchTab("");
@@ -29,7 +28,7 @@ const SearchTabBar: FC<IProps> = ({}) => {
   return (
     <>
       <div className="flex min-w-0 flex-wrap justify-center gap-4">
-        {searchTabs.map((searchTabVariant) => (
+        {tabs.map((searchTabVariant) => (
           <SearchTab
             searchTab={searchTabVariant}
             activeSearchTab={activeSearchTab}

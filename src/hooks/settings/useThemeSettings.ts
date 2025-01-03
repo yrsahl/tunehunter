@@ -5,7 +5,7 @@ import { useTheme } from "next-themes";
 import { useEffect } from "react";
 import useUserSettings from "./useUserSettings";
 
-export const AutoThemePreferences = ["auto", "manual"];
+export const AutoThemePreferences = ["auto", "manual"] as const;
 export type AutoThemePreference = (typeof AutoThemePreferences)[number];
 
 // Uses DB for storage as it's a user-only setting

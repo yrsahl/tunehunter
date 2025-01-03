@@ -1,5 +1,4 @@
 import { SpotifyTrack } from "@/types/spotify";
-import { useTranslation } from "next-i18next";
 import IconButton from "../IconButton";
 import { MusicPlayingIndicator } from "../Indicators";
 
@@ -10,8 +9,6 @@ interface SpotifyTableRowProps {
 }
 
 const SpotifyTableRow = ({ track, currentlyPlaying }: SpotifyTableRowProps) => {
-  const { t } = useTranslation();
-
   const startSearch = () => {
     console.log("searching...");
   };
@@ -42,7 +39,7 @@ const SpotifyTableRow = ({ track, currentlyPlaying }: SpotifyTableRowProps) => {
         <span>{track.name}</span>
       </td>
       <td className="text-right">
-        <IconButton variant="primary" text={t("general.search")} size="sm" />
+        <IconButton variant="primary" text="Search" size="sm" />
       </td>
     </tr>
   );

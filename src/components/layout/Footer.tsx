@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import LanguagePicker from "../interactive/Footer/LanguagePicker";
+import InfoButton from "../interactive/Footer/InfoButton";
 import ProfileButton from "../interactive/Footer/ProfileButton";
 import { ThemeToggle } from "../interactive/Footer/ThemeToggle";
 
@@ -14,7 +14,7 @@ const Footer = () => {
           <ProfileButton />
         </div>
         <div className="flex flex-1 justify-center">
-          <LanguagePicker />
+          <InfoButton />
         </div>
       </div>
     </Suspense>

@@ -12,16 +12,26 @@ import { RegisterSchema } from "@/schemas";
 import { api } from "@/utils/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
-import { useTranslation } from "next-i18next";
 import { useEffect, useState, useTransition, type FC } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { makeZodI18nMap } from "zod-i18n-map";
 import IconButton from "../../IconButton";
 import AuthCard from "./AuthCard";
 import { MenuState } from "./AuthMenu";
 import FormError from "./FormError";
 import FormSuccess from "./FormSuccess";
+
+const RegisterResponseMap = {
+  errors: {
+    GENERAL_ERROR:
+      "Something went wrong on our side and were unable to create an account for you, sorry! Please try again later.",
+    INVALID_FIELDS: "Please check your input!",
+    ACCOUNT_ALREADY_EXISTS: "An account with this mail already exists!",
+    USERNAME_ALREADY_EXISTS: "An account with this username already exists!",
+  } as const,
+  success: "Account successfully created!",
+} as const;
+export type RegisterErrorCode = keyof (typeof RegisterResponseMap)["errors"];
 
 interface IProps {
   email: string;
@@ -33,8 +43,6 @@ const RegisterForm: FC<IProps> = ({ email, menuState, setMenuState }) => {
   const [accountCreated, setAccountCreated] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
-  const { t } = useTranslation("");
-  z.setErrorMap(makeZodI18nMap({ t }));
   const [isPending, startTransition] = useTransition();
   const createAccount = api.user.createAccount.useMutation();
   const form = useForm<z.infer<typeof RegisterSchema>>({
@@ -60,9 +68,9 @@ const RegisterForm: FC<IProps> = ({ email, menuState, setMenuState }) => {
         { ...values },
         {
           onSettled: (data) => {
-            if (data?.error) setError(t(`auth.registration.process.${data.error}`));
+            if (data?.error) setError(RegisterResponseMap.errors[data.error]);
             if (data?.success) {
-              setSuccess(t(`auth.registration.process.${data.success}`));
+              setSuccess(RegisterResponseMap.success);
               setAccountCreated(true);
               signIn("email", { email: values.email, redirect: false });
             }
@@ -74,7 +82,7 @@ const RegisterForm: FC<IProps> = ({ email, menuState, setMenuState }) => {
   };
 
   return (
-    <AuthCard title={t("auth.registration.registration")} size="small">
+    <AuthCard title="Registration" size="small">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full flex-col space-y-12">
           <div className="flex flex-col space-y-6">
@@ -84,7 +92,7 @@ const RegisterForm: FC<IProps> = ({ email, menuState, setMenuState }) => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-base font-normal">{t("general.mail")}</FormLabel>
+                  <FormLabel className="text-base font-normal">Mail</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -102,7 +110,7 @@ const RegisterForm: FC<IProps> = ({ email, menuState, setMenuState }) => {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-base font-normal">{t("general.userName")}</FormLabel>
+                  <FormLabel className="text-base font-normal">User name</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -125,20 +133,20 @@ const RegisterForm: FC<IProps> = ({ email, menuState, setMenuState }) => {
               <div className="flex flex-col items-center gap-2">
                 <IconButton
                   type="submit"
-                  text={t("auth.registration.register")}
+                  text="Register"
                   disabled={isPending}
                   icon="signUp"
                   size="default"
                   variant="primary"
                 />
                 <Button variant="link" onClick={() => setMenuState(MenuState.SignIn)}>
-                  {t("auth.returnToSignIn")}
+                  Return to Sign In page
                 </Button>
               </div>
             )}
             {!!accountCreated && (
               <IconButton
-                text={t("general.continue")}
+                text="Continue"
                 onClick={() => setMenuState(MenuState.MagicLinkSent)}
                 variant="primary"
               />

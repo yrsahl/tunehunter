@@ -1,12 +1,10 @@
 import { LoadingIndicator } from "@/components/Indicators";
 import { api } from "@/utils/api";
 import { useSession } from "next-auth/react";
-import { useTranslation } from "next-i18next";
 import TableRow from "../TableRow";
 
 const HistoryTable = ({}) => {
   const { status } = useSession();
-  const { t } = useTranslation();
   const loggedIn = status === "authenticated";
   const { data: historyEntries, isLoading } = api.song.getHistory.useQuery(undefined, {
     enabled: loggedIn,
@@ -22,7 +20,7 @@ const HistoryTable = ({}) => {
   if (historyEntries?.length == 0) {
     return (
       <div className="flex h-full items-center justify-center">
-        <p>{t("search.tabs.history.empty")}</p>
+        <p>No data here.</p>
       </div>
     );
   }

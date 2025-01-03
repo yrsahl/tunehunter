@@ -5,28 +5,32 @@ import { cn } from "@/lib/utils";
 import { api } from "@/utils/api";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { useTranslation } from "next-i18next";
-import type { SearchTabType } from "./SearchTabBar";
+import type { Tab } from "./SearchTabBar";
 
 type AccessScopes = "all" | "signed-in-to-spotify" | "signed-in";
-const tabAccessMap: Record<SearchTabType, AccessScopes> = {
+const tabAccessMap: Record<Tab, AccessScopes> = {
   trending: "all",
   spotify: "signed-in-to-spotify",
   history: "signed-in",
   wishlist: "signed-in",
 };
+const tabTooltipRestrictionMap: Record<Tab, string> = {
+  trending: "", // Always accessible
+  spotify: "Create an account or Sign In to view your Spotify songs!",
+  wishlist: "Create an account or Sign In to view your Wishlist!",
+  history: "Create an account or Sign In to view your History!",
+};
 
 interface SearchTabProps {
-  searchTab: SearchTabType;
-  activeSearchTab: SearchTabType | "";
-  setActiveSearchTab: (newTab: SearchTabType | "") => void;
+  searchTab: Tab;
+  activeSearchTab: Tab | "";
+  setActiveSearchTab: (newTab: Tab | "") => void;
 }
 
 const SearchTab = ({ searchTab, activeSearchTab, setActiveSearchTab }: SearchTabProps) => {
   const { data: userData, status: sessionStatus } = useSession();
   const router = useRouterWithHelpers();
   const loggedIn = sessionStatus === "authenticated";
-  const { t } = useTranslation("");
   const { data: spotifyAccount } = api.account.getSpotifyAccountById.useQuery(
     { userId: userData?.user.id! },
     {
@@ -37,15 +41,13 @@ const SearchTab = ({ searchTab, activeSearchTab, setActiveSearchTab }: SearchTab
     },
   );
 
-  const getTabTranslation = (tab: SearchTabType) => t(`search.tabs.${tab}.header`);
-  const getTooltipTranslation = (tab: SearchTabType) => t(`auth.prompts.${tab}`);
-  const isTabEnabled = (tab: SearchTabType) => {
+  const isTabEnabled = (tab: Tab) => {
     if (tabAccessMap[tab] === "signed-in-to-spotify") return !!spotifyAccount?.data; // If needs to be signed in, enabled if spotify data
     if (tabAccessMap[tab] === "signed-in") return loggedIn; // If needs signed in, enabled if logged in
     return true; // Enabled otherwise
   };
 
-  const handleTabClick = (newTab: SearchTabType) => {
+  const handleTabClick = (newTab: Tab) => {
     if (newTab === activeSearchTab) {
       setActiveSearchTab("");
       router.setParams({ search: "" });
@@ -70,16 +72,16 @@ const SearchTab = ({ searchTab, activeSearchTab, setActiveSearchTab }: SearchTab
           <TooltipTrigger className="cursor-not-allowed text-muted-foreground/30">
             <div className="flex items-center gap-2 px-1 pb-1">
               <CustomIcon icon={searchTab} variant={"primary-muted"} />
-              {getTabTranslation(searchTab)}
+              <span className="capitalize">{searchTab}</span>
             </div>
           </TooltipTrigger>
-          <TooltipContent>{getTooltipTranslation(searchTab)}</TooltipContent>
+          <TooltipContent>{tabTooltipRestrictionMap[searchTab]}</TooltipContent>
         </Tooltip>
       )}
       {!!isTabEnabled(searchTab) && (
         <div className="flex items-center gap-2 px-1 pb-1">
           <CustomIcon icon={searchTab} variant={"primary"} />
-          {getTabTranslation(searchTab)}
+          <span className="capitalize">{searchTab}</span>
         </div>
       )}
     </motion.button>

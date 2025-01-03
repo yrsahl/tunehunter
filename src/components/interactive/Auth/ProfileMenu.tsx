@@ -18,7 +18,6 @@ import useProfileFunctions from "@/hooks/useProfileFunctions";
 import { api } from "@/utils/api";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { useTranslation } from "next-i18next";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import IconButton from "../../IconButton";
@@ -29,7 +28,6 @@ import ConfirmationModal from "../Modals/ConfirmationModal";
 import AuthCard from "./AuthCard";
 
 const ProfileMenu = () => {
-  const { t } = useTranslation("");
   const [changeMailDialogOpen, setChangeMailDialogOpen] = useState(false);
   const { handleDeleteAccount, handleLinkSpotify, handleSignOut, handleUnlinkSpotify } =
     useProfileFunctions();
@@ -65,7 +63,7 @@ const ProfileMenu = () => {
       <div className="mt-4 w-fit">
         <IconButton
           onClick={handleSignOut}
-          text={t("profile.logout")}
+          text="Log out"
           variant="primary"
           size="lg"
           icon="signOut"
@@ -99,7 +97,7 @@ const ProfileMenu = () => {
 
       <div className="grid w-full grid-cols-[repeat(5,max-content)] gap-x-12 gap-y-6">
         {/* Mail */}
-        <p className="col-span-2 flex items-center justify-end font-thin">{t("general.mail")}</p>
+        <p className="col-span-2 flex items-center justify-end font-thin">Mail</p>
         <p className="col-span-2 flex items-center overflow-x-clip text-ellipsis font-thin">
           {userMail}
         </p>
@@ -118,9 +116,7 @@ const ProfileMenu = () => {
         </div>
 
         {/* Spotify */}
-        <p className="col-span-2 flex items-center justify-end font-thin">
-          {t("settings.profile.spotify.account")}
-        </p>
+        <p className="col-span-2 flex items-center justify-end font-thin">Spotify Account</p>
         {spotifyAccount?.data && (
           <>
             <a
@@ -139,10 +135,8 @@ const ProfileMenu = () => {
             </a>
             <ConfirmationModal
               dialogAction={() => handleUnlinkSpotify(userData.user.id)}
-              dialogText={t("settings.profile.spotify.unlink.text", {
-                accountName: spotifyUserData?.profileData?.display_name,
-              })}
-              dialogTitle={t("settings.profile.spotify.unlink.title")}
+              dialogText={`Please confirm that you want to unlink your Spotify account ${spotifyUserData?.profileData?.display_name}.`}
+              dialogTitle="Unlink Spotify account?"
             >
               <div>
                 <IconButton icon="x" variant="ghostPrimary" size="icon" iconSize="20px" />
@@ -155,7 +149,7 @@ const ProfileMenu = () => {
             <IconButton
               icon={"spotify"}
               variant="outlinePrimary"
-              text={t("settings.profile.spotify.connect")}
+              text="Connect Spotify"
               size="sm"
               onClick={handleLinkSpotify}
             />
@@ -168,7 +162,7 @@ const ProfileMenu = () => {
 
         {/* Region */}
         <Label htmlFor="region" className="col-span-2 flex items-center justify-end font-thin">
-          {t("settings.region.title")}
+          Region
         </Label>
         <div className="col-span-2">
           <Select onValueChange={changeRegion} value={region}>
@@ -206,7 +200,7 @@ const ProfileMenu = () => {
 
         {/* Theme */}
         <p className="col-span-2 flex items-center justify-end gap-1 font-thin">
-          <span>{t("settings.theme.switch")}</span>
+          <span>Switch Theme</span>
         </p>
         <div className="col-span-2">
           <Select value={autoThemePreference} onValueChange={changeAutoThemePreference}>
@@ -224,7 +218,7 @@ const ProfileMenu = () => {
             <SelectContent>
               {AutoThemePreferences.map((autoThemePreference) => (
                 <SelectItem key={autoThemePreference} value={autoThemePreference} className="py-2">
-                  {t(`settings.theme.${autoThemePreference}`)}
+                  {autoThemePreference === "auto" ? "Automatically" : "Manually"}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -235,7 +229,10 @@ const ProfileMenu = () => {
             <TooltipTrigger className="cursor-default">
               <CustomIcon icon="info" variant="ghost-foreground" width="18px" height="18px" />
             </TooltipTrigger>
-            <TooltipContent className="border border-foreground/30 bg-background px-4 py-2 text-center text-foreground"></TooltipContent>
+            <TooltipContent className="border border-foreground/30 bg-background px-4 py-2 text-center text-foreground">
+              'Automatically' sets the theme based on the time and position of the sun in your
+              location. 'Manually' does not set the theme on your behalf.
+            </TooltipContent>
           </Tooltip>
         </div>
 
@@ -244,30 +241,21 @@ const ProfileMenu = () => {
         </div>
 
         {/* Feedback */}
-        <p className="col-span-2 flex items-center justify-end font-thin">
-          {t("profile.haveFeedback")}
-        </p>
+        <p className="col-span-2 flex items-center justify-end font-thin">Have Feedback?</p>
         <a href="mailto:hello@tunehunter.app?subject=Feedback" className="col-span-3">
-          <IconButton text={t("profile.writeUs")} variant="outlinePrimary" size="sm" icon="mail" />
+          <IconButton text="Write Us!" variant="outlinePrimary" size="sm" icon="mail" />
         </a>
 
         {/* Delete account */}
-        <p className="col-span-2 flex items-center justify-end font-thin">
-          {t("profile.wantToGo")}
-        </p>
+        <p className="col-span-2 flex items-center justify-end font-thin">Want to go?</p>
         <div className="col-span-3">
           <ConfirmationModal
             dialogAction={() => handleDeleteAccount(userData.user.id)}
-            dialogText={t("profile.deleteAccount.promptText")}
-            dialogTitle={t("profile.deleteAccount.promptTitle")}
+            dialogText="This action cannot be undone. This will permanently delete your account and all related data."
+            dialogTitle="Are you absolutely sure?"
           >
             <div>
-              <IconButton
-                text={t("profile.deleteAccount.button")}
-                variant="outlineDestructive"
-                size="sm"
-                icon="x"
-              />
+              <IconButton text="Delete Account" variant="outlineDestructive" size="sm" icon="x" />
             </div>
           </ConfirmationModal>
         </div>
@@ -277,7 +265,7 @@ const ProfileMenu = () => {
       <div className="mb-2 mt-6 w-fit">
         <IconButton
           onClick={handleSignOut}
-          text={t("profile.logout")}
+          text="Log out"
           variant="primary"
           size="lg"
           icon="signOut"

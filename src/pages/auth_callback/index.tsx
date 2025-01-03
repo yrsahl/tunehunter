@@ -3,17 +3,13 @@ import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
 import { playJingle } from "@/helpers/play-jingle";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { api } from "@/utils/api";
-import type { GetStaticProps, NextPage } from "next";
+import type { NextPage } from "next";
 import { useSession } from "next-auth/react";
-import { useTranslation } from "next-i18next";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import nextI18nConfig from "../../../next-i18next.config.mjs";
 
 const AuthCallbackPage: NextPage = ({}) => {
   const router = useRouterWithHelpers();
-  const { t } = useTranslation();
   const { data: userData, status } = useSession();
   const { spotifyUserData } = useSpotifyUserDataContext();
   const [error, setError] = useState<string | null>(null);
@@ -54,11 +50,11 @@ const AuthCallbackPage: NextPage = ({}) => {
     // Toast
     if (actionParam === "link") {
       toast.success(
-        t("toast.connect.success", { account: spotifyUserData?.profileData?.display_name }),
+        `Spotify account ${spotifyUserData?.profileData?.display_name} successfully linked!`,
         { duration: 1800 },
       );
     } else {
-      toast.success(t("toast.login.success"), { duration: 1800 });
+      toast.success("Successfully logged in!", { duration: 1800 });
     }
 
     // Redirect
@@ -72,21 +68,13 @@ const AuthCallbackPage: NextPage = ({}) => {
     <>
       {!error && (
         <div className="flex items-baseline gap-2">
-          <p className="text-lg text-foreground">{t("auth.redirecting")}</p>
+          <p className="text-lg text-foreground">Redirecting</p>
           <RedirectIndicator size={12} />
         </div>
       )}
       {error && <p>{error}</p>}
     </>
   );
-};
-
-export const getStaticProps: GetStaticProps = async ({ locale }) => {
-  return {
-    props: {
-      ...(await serverSideTranslations(locale ?? "en", "common", nextI18nConfig)),
-    },
-  };
 };
 
 export default AuthCallbackPage;

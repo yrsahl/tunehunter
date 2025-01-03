@@ -29,7 +29,6 @@ import useProfileFunctions from "@/hooks/useProfileFunctions";
 import { ConfirmMailSchema, VerificationCodeSchema } from "@/schemas";
 import { api } from "@/utils/api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslation } from "next-i18next";
 import { ReactNode, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -42,7 +41,6 @@ interface ChangeMailDialogProps {
 }
 
 const ChangeMailModal = ({ children, open, setOpen }: ChangeMailDialogProps) => {
-  const { t } = useTranslation("");
   const [formStatus, setFormStatus] = useState<"confirmMail" | "verifyCode">("confirmMail");
   const [error, setError] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
@@ -87,7 +85,7 @@ const ChangeMailModal = ({ children, open, setOpen }: ChangeMailDialogProps) => 
     // Check if account exists already
     const account = await utils.user.getUserByEmail.fetch({ email });
     if (account) {
-      setError(t("toast.edit.mail.alreadyExists"));
+      setError("An account with this mail already exists!");
       return;
     }
 
@@ -123,11 +121,10 @@ const ChangeMailModal = ({ children, open, setOpen }: ChangeMailDialogProps) => 
         {formStatus === "confirmMail" && (
           <>
             <AlertDialogHeader>
-              <AlertDialogTitle>
-                {t("profile.changeMail.dialogTitle")} - Step 1 of 2
-              </AlertDialogTitle>
+              <AlertDialogTitle>Change your Mail - Step 1 of 2</AlertDialogTitle>
               <AlertDialogDescription>
-                {t("profile.changeMail.dialogDescription")}
+                Please enter your new mail address and confirm it. We will then send you a
+                verification code.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <Form {...confirmMailForm}>
@@ -141,9 +138,7 @@ const ChangeMailModal = ({ children, open, setOpen }: ChangeMailDialogProps) => 
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-base font-normal">
-                          {t("profile.changeMail.newMail")}
-                        </FormLabel>
+                        <FormLabel className="text-base font-normal">New mail:</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
@@ -168,9 +163,7 @@ const ChangeMailModal = ({ children, open, setOpen }: ChangeMailDialogProps) => 
                     name="confirmEmail"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-base font-normal">
-                          {t("profile.changeMail.confirmMail")}
-                        </FormLabel>
+                        <FormLabel className="text-base font-normal">Confirm mail:</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
@@ -195,15 +188,13 @@ const ChangeMailModal = ({ children, open, setOpen }: ChangeMailDialogProps) => 
               </form>
             </Form>
             <AlertDialogFooter>
-              <AlertDialogCancel onClick={handleDialogCancel}>
-                {t("general.cancel")}
-              </AlertDialogCancel>
+              <AlertDialogCancel onClick={handleDialogCancel}>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 type="submit"
                 onClick={confirmMailForm.handleSubmit(onConfirmMailFormSubmit)}
                 disabled={!email || !confirmEmail || email !== confirmEmail}
               >
-                {t("general.continue")}
+                Continue
               </AlertDialogAction>
             </AlertDialogFooter>
           </>
@@ -211,10 +202,10 @@ const ChangeMailModal = ({ children, open, setOpen }: ChangeMailDialogProps) => 
         {formStatus === "verifyCode" && (
           <>
             <AlertDialogHeader>
-              <AlertDialogTitle>
-                {t("profile.changeMail.dialogTitle")} - Step 2 of 2
-              </AlertDialogTitle>
-              <AlertDialogDescription>{t("profile.changeMail.codePrompt")}</AlertDialogDescription>
+              <AlertDialogTitle>Change your Mail - Step 2 of 2</AlertDialogTitle>
+              <AlertDialogDescription>
+                Please enter the verification code we sent you.
+              </AlertDialogDescription>
             </AlertDialogHeader>
 
             <Form {...verificationCodeForm}>
@@ -250,12 +241,12 @@ const ChangeMailModal = ({ children, open, setOpen }: ChangeMailDialogProps) => 
               </form>
             </Form>
             <AlertDialogFooter>
-              <AlertDialogCancel onClick={handleDialogBack}>{t("general.back")}</AlertDialogCancel>
+              <AlertDialogCancel onClick={handleDialogBack}>Back</AlertDialogCancel>
               <AlertDialogAction
                 onClick={verificationCodeForm.handleSubmit(onVerificationCodeFormSubmit)}
                 disabled={confirmationCode.length !== 6}
               >
-                {t("general.confirm")}
+                Confirm
               </AlertDialogAction>
             </AlertDialogFooter>
           </>

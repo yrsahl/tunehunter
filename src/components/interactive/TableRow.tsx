@@ -1,13 +1,10 @@
 import { songs } from "@/server/db/schema";
 import { InferSelectModel } from "drizzle-orm";
-import { useTranslation } from "next-i18next";
 import IconButton from "../IconButton";
 
 const TableRow: React.FC<{
   track: InferSelectModel<typeof songs>;
 }> = ({ track }) => {
-  const { t } = useTranslation();
-
   const artists = track.artists.split(",");
 
   return (
@@ -31,7 +28,7 @@ const TableRow: React.FC<{
         <span>{track.title}</span>
       </td>
       <td className="text-right">
-        <IconButton variant="primary" text={t("general.search")} size="sm" />
+        <IconButton variant="primary" text="Search" size="sm" />
       </td>
     </tr>
   );

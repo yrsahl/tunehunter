@@ -9,7 +9,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useTranslation } from "next-i18next";
 import { MouseEventHandler, ReactNode } from "react";
 
 interface ConfirmationPromptProps {
@@ -25,8 +24,6 @@ const ConfirmationModal = ({
   dialogAction,
   children,
 }: ConfirmationPromptProps) => {
-  const { t } = useTranslation("");
-
   return (
     <AlertDialog>
       <AlertDialogTrigger className="w-full" asChild>
@@ -38,8 +35,8 @@ const ConfirmationModal = ({
           <AlertDialogDescription>{dialogText}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>{t("general.cancel")}</AlertDialogCancel>
-          <AlertDialogAction onClick={dialogAction}>{t("general.continue")}</AlertDialogAction>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={dialogAction}>Continue</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

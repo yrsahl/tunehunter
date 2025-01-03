@@ -4,7 +4,6 @@ import { useSearchSettingsStore } from "@/hooks/stores/useSearchSettingsStore";
 import { AnimatePresence, motion } from "framer-motion";
 import { Cog } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useTranslation } from "next-i18next";
 import IconButton from "../../IconButton";
 import { Label } from "../../ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
@@ -19,7 +18,6 @@ type SearchSettings = {
 };
 
 const SearchSettings = ({}) => {
-  const { t } = useTranslation("");
   const { status } = useSession();
   const loggedIn = status === "authenticated";
 
@@ -52,13 +50,13 @@ const SearchSettings = ({}) => {
         {/* <div className="absolute inset-0 -z-10 bg-background opacity-80" /> */}
 
         <p className="text-center text-lg  text-foreground underline underline-offset-8">
-          {t("settings.search.title")}
+          Search Settings
         </p>
         <div className="grid grid-cols-[240px_minmax(50px,_max-content)] gap-x-8 gap-y-3 opacity-100">
           {/* Minimum length */}
           <Label htmlFor="minimumlength" className="flex items-center font-thin">
             <p>
-              {t("settings.search.setMinimumLength")}
+              Minimum length
               {minimumLengthOption ? ":" : "?"}
             </p>
           </Label>
@@ -92,7 +90,7 @@ const SearchSettings = ({}) => {
 
           {/* Club Mixes only */}
           <Label htmlFor="clubmixesonly" className="flex items-center font-thin">
-            {t("settings.search.searchForClubMixesOnly")}
+            Club / extended mixes only
             {!searchForClubMixesOnly && <span>?</span>}
           </Label>
           <div className="flex h-10 items-center justify-end">
@@ -109,7 +107,7 @@ const SearchSettings = ({}) => {
             <>
               <div className="flex items-center">
                 <Label htmlFor="region" className="flex items-center font-thin">
-                  {t("settings.region.title")}:
+                  Region
                 </Label>
                 <Select onValueChange={changeRegion} value={region}>
                   <SelectTrigger

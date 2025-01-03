@@ -4,26 +4,41 @@ import { ErrorFormat } from "@/helpers/trpc-errors";
 import { wait } from "@/helpers/wait";
 import { api } from "@/utils/api";
 import { signOut, useSession } from "next-auth/react";
-import { useTranslation } from "next-i18next";
 import { toast } from "sonner";
 import useRouterWithHelpers from "./useRouterWithHelpers";
 
+const handleServerError = (
+  opts: { message: string },
+  failedActionDescription: string,
+  loadingToast: string | number,
+) => {
+  let errorMessage = "";
+  try {
+    const errors = JSON.parse(opts.message);
+    if (Array.isArray(errors)) {
+      errorMessage = (errors[0] as ErrorFormat).message;
+    }
+  } catch {
+    errorMessage = opts.message;
+  }
+  toast.error(
+    `Something went wrong ${errorMessage && `(Server response: '${errorMessage}')`} and we could not ${failedActionDescription}, sorry! Please try again later.`,
+    {
+      id: loadingToast,
+      dismissible: true,
+      duration: Infinity,
+    },
+  );
+};
+
 const useProfileFunctions = () => {
   const router = useRouterWithHelpers();
-  const { t } = useTranslation("");
   const { data: userData, update } = useSession();
   const utils = api.useUtils();
 
   const deleteAccount = api.user.deleteUserAndAccountsByUserId.useMutation();
   const unlinkSpotifyAccount = api.user.unlinkSpotifyAccount.useMutation();
   const editUserMail = api.user.editUserMail.useMutation();
-
-  const getUnlinkSpotifyErrorText = (errorMessage: string) =>
-    t("toast.unlinkSpotify.error", { error: errorMessage });
-  const getDeleteAccountErrorText = (errorMessage: string) =>
-    t("toast.deleteAccount.error", { error: errorMessage });
-  const getEditUserMailErrorText = (errorMessage: string) =>
-    t("toast.edit.mail.error", { error: errorMessage });
 
   const handleChangeMail = async (newEmail: string) => {
     if (!userData) {
@@ -34,34 +49,17 @@ const useProfileFunctions = () => {
       return;
     }
 
-    // Display error text, change colors for input, i18 strings
+    // Display error text, change colors for input
+    const loadingToast = toast.loading("Changing mail...");
     editUserMail.mutate(
       { id: userData.user.id, email: newEmail },
       {
         onSuccess: () => {
           update();
           toast.dismiss();
-          toast.success(t("toast.edit.mail.success"));
+          toast.success("Mail successfully updated!");
         },
-        onError: (opts) => {
-          let errorMessage = "";
-
-          // Internally thrown error
-          try {
-            const errors = JSON.parse(opts.message);
-            if (Array.isArray(errors)) {
-              errorMessage = (errors[0] as ErrorFormat).message;
-            }
-          } catch {
-            // Custom errors
-            errorMessage = opts.message;
-          }
-
-          toast.error(getEditUserMailErrorText(errorMessage), {
-            dismissible: true,
-            duration: Infinity,
-          });
-        },
+        onError: (opts) => handleServerError(opts, "update your mail", loadingToast),
       },
     );
   };
@@ -78,11 +76,12 @@ const useProfileFunctions = () => {
     toast.promise(
       wait(500).then(() => signOut({ redirect: false })),
       {
-        loading: t("toast.logout.loading"),
+        loading: "Logging you out...",
         success: () => {
-          return t("toast.logout.success");
+          return "Successfully logged out!";
         },
-        error: t("toast.logout.error"),
+        error:
+          "Something went wrong and we could not log you out! You're now bound to us forever! Joke, please try again later :)",
       },
     );
     toast.dismiss();
@@ -93,7 +92,7 @@ const useProfileFunctions = () => {
       throw new Error("User must be logged in to request account deletion.");
     }
 
-    const loadingToast = toast.loading(t("toast.deleteAccount.loading"));
+    const loadingToast = toast.loading("Deleting account...");
     deleteAccount.mutate(
       { userId },
       {
@@ -101,24 +100,15 @@ const useProfileFunctions = () => {
           signOut({ redirect: false });
           router.push("/");
           playJingle("reverse");
-          toast.success(t("toast.deleteAccount.success"), { id: loadingToast });
+          toast.success("Account successfully deleted! All the best 👋", { id: loadingToast });
         },
-        onError: (opts) => {
-          const error: ErrorFormat = JSON.parse(opts.message)[0];
-          const errorMessage = error.message;
-
-          toast.error(getDeleteAccountErrorText(errorMessage), {
-            id: loadingToast,
-            dismissible: true,
-            duration: Infinity,
-          });
-        },
+        onError: (opts) => handleServerError(opts, "delete your account", loadingToast),
       },
     );
   };
 
   const handleUnlinkSpotify = async (userId: string) => {
-    const loadingToast = toast.loading(t("toast.unlinkSpotify.loading"));
+    const loadingToast = toast.loading("Remove Spotify account link...");
     unlinkSpotifyAccount.mutate(
       { userId },
       {
@@ -128,18 +118,11 @@ const useProfileFunctions = () => {
             .then(() => {
               if (router.getParams("search") == "spotify") router.setParams({ search: "" });
             })
-            .then(() => toast.success(t("toast.unlinkSpotify.success"), { id: loadingToast }));
+            .then(() =>
+              toast.success("Spotify account successfully unlinked!", { id: loadingToast }),
+            );
         },
-        onError: (opts) => {
-          const error: ErrorFormat = JSON.parse(opts.message)[0];
-          const errorMessage = error.message;
-
-          toast.error(getUnlinkSpotifyErrorText(errorMessage), {
-            id: loadingToast,
-            dismissible: true,
-            duration: Infinity,
-          });
-        },
+        onError: (opts) => handleServerError(opts, "unlink your Spotify account", loadingToast),
       },
     );
   };

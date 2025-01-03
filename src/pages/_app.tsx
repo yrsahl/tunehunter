@@ -3,11 +3,9 @@ import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
 
 import { api } from "@/utils/api";
-import { appWithTranslation } from "next-i18next";
 
 import { ThemeProvider } from "@/components/ThemeProvider";
 import "@/styles/globals.css";
-import nextI18nConfig from "../../next-i18next.config.mjs";
 import Layout from "./layout";
 
 import { Toaster } from "sonner";
@@ -57,7 +55,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
   );
 };
 
-const I18nApp = appWithTranslation(MyApp, nextI18nConfig);
-const TRPCApp = api.withTRPC(I18nApp);
+const TRPCApp = api.withTRPC(MyApp);
 
 export default TRPCApp;

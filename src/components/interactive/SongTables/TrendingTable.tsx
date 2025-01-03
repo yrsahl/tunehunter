@@ -1,11 +1,9 @@
 import { LoadingIndicator } from "@/components/Indicators";
 import { api } from "@/utils/api";
-import { useTranslation } from "react-i18next";
 import TableRow from "../TableRow";
 
 const TrendingTable = ({}) => {
   const { data: trendingEntries, isLoading } = api.song.getTrending.useQuery();
-  const { t } = useTranslation();
 
   if (isLoading) {
     return (
@@ -17,7 +15,7 @@ const TrendingTable = ({}) => {
   if (trendingEntries?.length == 0) {
     return (
       <div className="flex h-full items-center justify-center">
-        <p>{t("search.tabs.trending.empty")}</p>
+        <p>Nothing's trending right now...</p>
       </div>
     );
   }

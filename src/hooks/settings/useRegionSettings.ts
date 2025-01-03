@@ -11,7 +11,6 @@ import { getUserLocation } from "@/helpers/user-location";
 import { iso1A2Code } from "@rapideditor/country-coder"; // ESM import named
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { useSession } from "next-auth/react";
-import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { toast } from "sonner";
@@ -23,7 +22,6 @@ import useUserSettings from "./useUserSettings";
 
 const useRegionSettings = () => {
   const router = useRouter();
-  const { t } = useTranslation("");
   const [region, setRegion] = useLocalStorage("region", "de");
   const { status, data: userData } = useSession();
   const loggedIn = status === "authenticated";
@@ -58,7 +56,10 @@ const useRegionSettings = () => {
   const setRegionByLocation = () => {
     getUserLocation().then((location) => {
       if ("error" in location) {
-        toast.error(t("toast.retrieveLocation.error"), { dismissible: true, duration: Infinity });
+        toast.error(
+          "We could not determine your location. Please choose it manually or try again later!",
+          { dismissible: true, duration: Infinity },
+        );
         return;
       }
 
@@ -66,11 +67,12 @@ const useRegionSettings = () => {
       const countryCode = iso1A2Code([longitude, latitude]);
       if (countryCode) {
         changeRegion(countryCode.toLowerCase());
-        toast.success(
-          t("toast.retrieveLocation.success", { country: createRegionName(countryCode) }),
-        );
+        toast.success(`We've located you in ${createRegionName(countryCode)}!`);
       } else {
-        toast.error(t("toast.retrieveLocation.error"), { dismissible: true, duration: Infinity });
+        toast.error(
+          "We could not determine your location. Please choose it manually or try again later!",
+          { dismissible: true, duration: Infinity },
+        );
       }
     });
   };

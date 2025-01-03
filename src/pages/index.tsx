@@ -3,10 +3,8 @@ import SearchResults from "@/components/interactive/Search/SearchResults";
 import { useSearchDataContext } from "@/contexts/SearchDataContext";
 import useSearchBar from "@/hooks/useSearchBar";
 import { AnimatePresence } from "framer-motion";
-import type { GetStaticProps, NextPage } from "next";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import type { NextPage } from "next";
 import dynamic from "next/dynamic";
-import nextI18nConfig from "../../next-i18next.config.mjs";
 const SearchTabBar = dynamic(() => import("@/components/interactive/Search/SearchTabBar"), {
   ssr: false,
 });
@@ -25,14 +23,6 @@ export const Home: NextPage = () => {
       <SearchTabBar />
     </div>
   );
-};
-
-export const getStaticProps: GetStaticProps = async ({ locale }) => {
-  return {
-    props: {
-      ...(await serverSideTranslations(locale ?? "en", "common", nextI18nConfig)),
-    },
-  };
 };
 
 export default Home;

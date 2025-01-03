@@ -1,7 +1,30 @@
-import { SearchTabType } from "@/components/interactive/Search/SearchTabBar";
+import {
+  historySubTabs,
+  spotifySubTabs,
+  trendingSubTabs,
+  wishlistSubTabs,
+} from "@/components/interactive/Search/SearchTabContent";
 import { useState } from "react";
 
-const useTabContentData = (activeTab: SearchTabType, activeSubTab: string) => {
+type TabContentDataProps =
+  | {
+      tab: "trending";
+      subTab: (typeof trendingSubTabs)[number];
+    }
+  | {
+      tab: "spotify";
+      subTab: (typeof spotifySubTabs)[number];
+    }
+  | {
+      tab: "history";
+      subTab: (typeof historySubTabs)[number];
+    }
+  | {
+      tab: "wishlist";
+      subTab: (typeof wishlistSubTabs)[number];
+    };
+
+const useTabContentData = ({ tab, subTab }: TabContentDataProps) => {
   const [data, setData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 

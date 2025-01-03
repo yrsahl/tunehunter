@@ -10,8 +10,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import useProfileFunctions from "@/hooks/useProfileFunctions";
-import { useSession } from "next-auth/react";
-import { useTranslation } from "next-i18next";
 import { ReactNode } from "react";
 
 interface ChangeAvatarDialogProps {
@@ -19,8 +17,6 @@ interface ChangeAvatarDialogProps {
 }
 
 const ChangeAvatarModal = ({ children }: ChangeAvatarDialogProps) => {
-  const { t } = useTranslation("");
-  const { data: userData } = useSession();
   const { handleChangeAvatar } = useProfileFunctions();
 
   return (
@@ -34,8 +30,8 @@ const ChangeAvatarModal = ({ children }: ChangeAvatarDialogProps) => {
           <AlertDialogDescription>dialogText</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>{t("general.cancel")}</AlertDialogCancel>
-          <AlertDialogAction onClick={handleChangeAvatar}>{t("general.confirm")}</AlertDialogAction>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={handleChangeAvatar}>Confirm</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

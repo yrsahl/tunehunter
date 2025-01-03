@@ -1,21 +1,15 @@
 import { LoadingIndicator } from "@/components/Indicators";
 import { api } from "@/utils/api";
 import { useSession } from "next-auth/react";
-import { useTranslation } from "next-i18next";
 import TableRow from "../TableRow";
-import LoginPromptMockTable from "./LoginPromptMockTable";
 
 const WishlistTable = ({}) => {
   const { status } = useSession();
-  const { t } = useTranslation();
   const loggedIn = status === "authenticated";
   const { data: wishlistEntries, isLoading } = api.song.getWishlist.useQuery(undefined, {
     enabled: loggedIn,
   });
 
-  if (!loggedIn) {
-    return <LoginPromptMockTable promptText={t("auth.prompts.wishlist")} icon="userBold" />;
-  }
   if (isLoading) {
     return (
       <div className="flex h-full justify-center">
@@ -26,7 +20,7 @@ const WishlistTable = ({}) => {
   if (wishlistEntries?.length == 0) {
     return (
       <div className="flex h-full items-center justify-center">
-        <p>{t("search.tabs.wishlist.empty")}</p>
+        <p>Your wishlist is empty. Add songs by clicking the heart icon on the results page!</p>
       </div>
     );
   }

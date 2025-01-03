@@ -1,12 +1,23 @@
 import bcrypt from "bcrypt";
 import { z } from "zod";
 
+import { RegisterErrorCode } from "@/components/interactive/Auth/RegisterForm";
 import { sendVerificationCodeEmail } from "@/helpers/mail";
 import { RegisterSchema } from "@/schemas";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
 import { accounts, users, verificationTokens } from "@/server/db/schema";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
+
+interface RegisterErrorResponse {
+  error: RegisterErrorCode;
+  success?: undefined;
+}
+interface RegisterSuccessResponse {
+  success: string;
+  error?: undefined;
+}
+type RegisterResponse = RegisterErrorResponse | RegisterSuccessResponse;
 
 export const userRouter = createTRPCRouter({
   // ********* Queries *********
@@ -48,24 +59,26 @@ export const userRouter = createTRPCRouter({
     }),
 
   // ********* Mutations *********
-  createAccount: publicProcedure.input(RegisterSchema).mutation(async ({ ctx, input }) => {
-    const validatedFields = RegisterSchema.safeParse(input);
-    if (!validatedFields.success) return { error: "invalidFields" };
+  createAccount: publicProcedure
+    .input(RegisterSchema)
+    .mutation<RegisterResponse>(async ({ ctx, input }) => {
+      const validatedFields = RegisterSchema.safeParse(input);
+      if (!validatedFields.success) return { error: "INVALID_FIELDS" };
 
-    // Check existing user
-    const mailInUse = await ctx.db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.email, input.email),
-    });
-    if (mailInUse) return { error: "accountAlreadyExists" };
-    const usernameInUse = await ctx.db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.name, input.name),
-    });
-    if (usernameInUse) return { error: "usernameAlreadyExists" };
+      // Check existing user
+      const mailInUse = await ctx.db.query.users.findFirst({
+        where: (users, { eq }) => eq(users.email, input.email),
+      });
+      if (mailInUse) return { error: "ACCOUNT_ALREADY_EXISTS" };
+      const usernameInUse = await ctx.db.query.users.findFirst({
+        where: (users, { eq }) => eq(users.name, input.name),
+      });
+      if (usernameInUse) return { error: "USERNAME_ALREADY_EXISTS" };
 
-    // Create user
-    await ctx.db.insert(users).values({ name: input.name, email: input.email });
-    return { success: "accountCreated" };
-  }),
+      // Create user
+      await ctx.db.insert(users).values({ name: input.name, email: input.email });
+      return { success: "ACCOUNT_CREATED" };
+    }),
 
   storeAndSendVerificationToken: publicProcedure
     .input(z.object({ email: z.string().email(), token: z.string() }))
