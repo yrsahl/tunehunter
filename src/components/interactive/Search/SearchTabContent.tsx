@@ -4,30 +4,26 @@ import useTabContentData from "@/hooks/useTabContentData";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import { Tab } from "./SearchTabBar";
+import { HistoryTab, SpotifyTab, Tab, TrendingTab, WishlistTab } from "./SearchTabBar";
 
-export const spotifySubTabs = ["recently_played", "queue", "most_played"] as const;
-export const trendingSubTabs = [] as const;
-export const historySubTabs = ["purchases", "searches"] as const;
-export const wishlistSubTabs = [] as const;
-export type SubTabs = {
-  trending: (typeof trendingSubTabs)[number];
-  spotify: (typeof spotifySubTabs)[number];
-  history: (typeof historySubTabs)[number];
-  wishlist: (typeof wishlistSubTabs)[number];
-};
-export type SubTab = SubTabs[Tab];
+const spotifySubTabs = ["recently_played", "queue", "most_played"] as const;
+const trendingSubTabs = [] as const;
+const historySubTabs = ["purchases", "searches"] as const;
+const wishlistSubTabs = [] as const;
 
-// [K in Tab]: Ensures that there is a K(ey) for each Tab (e.g. "trending") in the Map
-// Then: For each Key the format must be SubTabErrorMessages for that current Key (e.g. "trending")
-type EmptyTabMessageMap = {
-  [K in Tab]: SubTabErrorMessages<K>;
+type SpotifySubTab = (typeof spotifySubTabs)[number];
+type TrendingSubTab = (typeof trendingSubTabs)[number];
+type HistorySubTab = (typeof historySubTabs)[number];
+type WishlistSubTab = (typeof wishlistSubTabs)[number];
+
+type SubTabMap = {
+  spotify: SpotifySubTab;
+  trending: TrendingSubTab;
+  history: HistorySubTab;
+  wishlist: WishlistSubTab;
 };
-// Type must be of Tab (e.g. "trending")
-// [K in SubTabs[T]]: string -> For each Key in SubTabs, eg. "trending", there must be a string value
-type SubTabErrorMessages<T extends Tab> = {
-  [K in SubTabs[T]]: string;
-};
+
+type SubTab<T extends Tab> = T extends keyof SubTabMap ? SubTabMap[T] : never;
 
 const subTabsMap = {
   spotify: spotifySubTabs,
@@ -35,35 +31,38 @@ const subTabsMap = {
   history: historySubTabs,
   wishlist: wishlistSubTabs,
 };
-const emptyTabMessageMap: EmptyTabMessageMap = {
-  trending: "Nothing's trending right now...",
+
+const emptyTabMessageMap: Record<Tab, SubTab<Tab>> = {
+  trending: "No data to display",
   spotify: {
-    recently_played: "You haven't listened to anything yet.",
-    queue: "Your queue is empty.",
-    most_played: "You haven't listened to anything yet.",
+    recently_played: "No recently played songs to display",
+    queue: "No queue to display",
+    most_played: "No most played songs to display",
   },
   history: {
-    searches: "You haven't searched for anything yet.",
-    purchases: "You haven't purchased anything yet.",
+    purchases: "No purchases to display",
+    searches: "No searches to display",
   },
-  wishlist:
-    "Your wishlist is empty. Add songs by clicking the heart icon next to songs on the results page!",
+  wishlist: "Your wishlist is empty. Add songs by clicking the heart icon on the results page!",
 };
 
 interface SearchTabContentProps {
-  activeTab: Tab;
+  activeTab: SpotifyTab | TrendingTab | HistoryTab | WishlistTab;
 }
 
-const SearchTabContent = ({ activeTab }: SearchTabContentProps) => {
+const SearchTabContent = <T extends SpotifyTab | TrendingTab | HistoryTab | WishlistTab>({
+  activeTab,
+}: SearchTabContentProps) => {
   // Set to first subtab of tab, if there are any
-  const [activeSubTab, setActiveSubTab] = useState<SubTab | undefined>(
-    subTabsMap[activeTab].length > 0 ? subTabsMap[activeTab][0] : undefined,
-  );
+  const [activeSubTab, setActiveSubTab] = useState<SubTabMap[T]>();
+
+  if (activeTab === "spotify") setActiveSubTab("queue");
+
   const { data, isLoading } = useTabContentData(activeTab);
   const tabHasSubTabs = subTabsMap[activeTab].length > 0;
 
   const noDataMessage =
-    tabHasSubTabs && activeSubTab && activeSubTab in emptyTabMessageMap[activeTab]
+    tabHasSubTabs && activeSubTab
       ? emptyTabMessageMap[activeTab][activeSubTab]
       : emptyTabMessageMap[activeTab];
 

@@ -8,7 +8,11 @@ import SearchTabContent from "./SearchTabContent";
 interface IProps {}
 
 const tabs = ["trending", "spotify", "history", "wishlist"] as const;
-export type Tab = (typeof tabs)[number];
+export type SpotifyTab = "spotify";
+export type TrendingTab = "trending";
+export type HistoryTab = "history";
+export type WishlistTab = "wishlist";
+export type Tab = SpotifyTab | TrendingTab | HistoryTab | WishlistTab;
 const isTab = (tab: string): tab is Tab => tabs.includes(tab as Tab);
 
 const SearchTabBar: FC<IProps> = ({}) => {
