@@ -1,28 +1,50 @@
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { FC, useEffect, useState } from "react";
-import SearchTab from "./SearchTab";
+import { useEffect, useState } from "react";
+import SearchTabButton from "./SearchTabButton";
 import SearchTabContent from "./SearchTabContent";
 
-interface IProps {}
+// Tabs
+export const searchTabs = ["trending", "spotify", "history", "wishlist"] as const;
+export type SearchTab = (typeof searchTabs)[number];
+export const isSearchTab = (value: string): value is SearchTab =>
+  searchTabs.includes(value as SearchTab);
 
-const tabs = ["trending", "spotify", "history", "wishlist"] as const;
-export type SpotifyTab = "spotify";
-export type TrendingTab = "trending";
-export type HistoryTab = "history";
-export type WishlistTab = "wishlist";
-export type Tab = SpotifyTab | TrendingTab | HistoryTab | WishlistTab;
-const isTab = (tab: string): tab is Tab => tabs.includes(tab as Tab);
+// Subtabs
+export const searchSubTabs = [
+  "recently_played",
+  "queue",
+  "most_played",
+  "purchases",
+  "searches",
+] as const;
+export type SearchSubTab = (typeof searchSubTabs)[number];
+export const isSearchSubTab = (value: string): value is SearchSubTab =>
+  searchSubTabs.includes(value as SearchSubTab);
 
-const SearchTabBar: FC<IProps> = ({}) => {
+// Relate them
+type TabData = {
+  tab: SearchTab;
+  subTabs: SearchSubTab[];
+};
+export const searchTabMap: TabData[] = [
+  { tab: "trending", subTabs: [] },
+  { tab: "spotify", subTabs: ["recently_played", "queue", "most_played"] },
+  { tab: "history", subTabs: ["purchases", "searches"] },
+  { tab: "wishlist", subTabs: [] },
+] as const;
+export const isSubTabOfTab = (tab: SearchTab, subTab: SearchSubTab) =>
+  searchTabMap.find((data) => data.tab === tab)?.subTabs.includes(subTab) ?? false;
+
+const SearchTabBar = () => {
   const router = useRouterWithHelpers();
-  const [activeSearchTab, setActiveSearchTab] = useState<Tab | "">("");
+  const [activeSearchTab, setActiveSearchTab] = useState<SearchTab | "">("");
 
   // Restore active tab if param is present
   useEffect(() => {
     const searchParam = router.getParams("search");
-    if (router.isReady && searchParam && isTab(searchParam)) {
+    if (router.isReady && searchParam && isSearchTab(searchParam)) {
       setActiveSearchTab(searchParam);
     } else {
       setActiveSearchTab("");
@@ -32,9 +54,9 @@ const SearchTabBar: FC<IProps> = ({}) => {
   return (
     <>
       <div className="flex min-w-0 flex-wrap justify-center gap-4">
-        {tabs.map((searchTabVariant) => (
-          <SearchTab
-            searchTab={searchTabVariant}
+        {searchTabs.map((searchTab) => (
+          <SearchTabButton
+            searchTab={searchTab}
             activeSearchTab={activeSearchTab}
             setActiveSearchTab={setActiveSearchTab}
           />

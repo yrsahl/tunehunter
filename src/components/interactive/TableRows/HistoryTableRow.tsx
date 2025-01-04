@@ -1,6 +1,6 @@
 import { songs } from "@/server/db/schema";
 import { InferSelectModel } from "drizzle-orm";
-import IconButton from "../IconButton";
+import IconButton from "../../IconButton";
 
 const TableRow: React.FC<{
   track: InferSelectModel<typeof songs>;

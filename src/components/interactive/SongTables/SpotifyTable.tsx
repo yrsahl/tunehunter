@@ -6,8 +6,7 @@ import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import { SpotifySubTab, spotifySubTabs } from "../Search/SearchTabContent";
-import SpotifyTableRow from "../SpotifyTableRow";
+import SpotifyTableRow from "../TableRows/SpotifyTableRow";
 
 const SpotifyTabHeaderMap = {
   recently_played: "Recently Played",
@@ -16,7 +15,7 @@ const SpotifyTabHeaderMap = {
 };
 
 const SpotifyTable = () => {
-  const [tab, setTab] = useState<SpotifySubTab>("recently_played");
+  const [tab, setTab] = useState("recently_played");
   const { status } = useSession();
   const loggedIn = status === "authenticated";
   const { spotifyUserData, refreshSpotifyUserData, isSpotifyUserDataLoading } =
@@ -32,7 +31,7 @@ const SpotifyTable = () => {
 
   return (
     <div className="h-full w-full px-3 sm:px-5 md:px-7">
-      <div className="border-x-1 absolute left-1/2 top-0 z-10 flex w-full max-w-[450px] -translate-x-1/2 items-center justify-around rounded-b-sm border-b-[1px] border-primary bg-background px-1 py-[6px]">
+      {/* <div className="border-x-1 absolute left-1/2 top-0 z-10 flex w-full max-w-[450px] -translate-x-1/2 items-center justify-around rounded-b-sm border-b-[1px] border-primary bg-background px-1 py-[6px]">
         {spotifySubTabs.map((spotifyTableTab) => (
           <button
             key={spotifyTableTab}
@@ -46,7 +45,7 @@ const SpotifyTable = () => {
             {SpotifyTabHeaderMap[spotifyTableTab]}
           </button>
         ))}
-      </div>
+      </div> */}
       <div className="absolute right-8 top-3 z-10 cursor-pointer opacity-60">
         <IconButton
           icon="refresh"

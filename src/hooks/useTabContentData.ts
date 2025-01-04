@@ -1,7 +1,7 @@
-import { Tab } from "@/components/interactive/Search/SearchTabBar";
+import { SearchTab } from "@/components/interactive/Search/SearchTabBar";
 import { useState } from "react";
 
-const useTabContentData = (tab: Tab) => {
+const useTabContentData = (tab: SearchTab) => {
   const [data, setData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 

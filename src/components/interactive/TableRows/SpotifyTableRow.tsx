@@ -1,6 +1,6 @@
 import { SpotifyTrack } from "@/types/spotify";
-import IconButton from "../IconButton";
-import { MusicPlayingIndicator } from "../Indicators";
+import IconButton from "../../IconButton";
+import { MusicPlayingIndicator } from "../../Indicators";
 
 interface SpotifyTableRowProps {
   track: SpotifyTrack;

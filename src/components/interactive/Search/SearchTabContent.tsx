@@ -4,78 +4,47 @@ import useTabContentData from "@/hooks/useTabContentData";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import { HistoryTab, SpotifyTab, Tab, TrendingTab, WishlistTab } from "./SearchTabBar";
+import { SearchSubTab, SearchTab, searchTabMap } from "./SearchTabBar";
 
-const spotifySubTabs = ["recently_played", "queue", "most_played"] as const;
-const trendingSubTabs = [] as const;
-const historySubTabs = ["purchases", "searches"] as const;
-const wishlistSubTabs = [] as const;
-
-type SpotifySubTab = (typeof spotifySubTabs)[number];
-type TrendingSubTab = (typeof trendingSubTabs)[number];
-type HistorySubTab = (typeof historySubTabs)[number];
-type WishlistSubTab = (typeof wishlistSubTabs)[number];
-
-type SubTabMap = {
-  spotify: SpotifySubTab;
-  trending: TrendingSubTab;
-  history: HistorySubTab;
-  wishlist: WishlistSubTab;
+const emptyTabMessageMap: Record<SearchTab, string> = {
+  trending: "Nothing's trending right now...",
+  spotify: "",
+  history: "",
+  wishlist: "Your wishlist is empty! Add songs by clicking the heart icon on the results page.",
 };
 
-type SubTab<T extends Tab> = T extends keyof SubTabMap ? SubTabMap[T] : never;
-
-const subTabsMap = {
-  spotify: spotifySubTabs,
-  trending: trendingSubTabs,
-  history: historySubTabs,
-  wishlist: wishlistSubTabs,
+const emptySubTabMessageMap: Record<SearchSubTab, string> = {
+  recently_played: "You haven't listened to anything on Spotify recently!",
+  queue: "Your queue is empty!",
+  most_played: "Songs you've played the most (in Spotify) will appear here!",
+  purchases: "Your recent purchases will appear here!",
+  searches: "Your recent searches will appear here!",
 };
 
-const emptyTabMessageMap: Record<Tab, SubTab<Tab>> = {
-  trending: "No data to display",
-  spotify: {
-    recently_played: "No recently played songs to display",
-    queue: "No queue to display",
-    most_played: "No most played songs to display",
-  },
-  history: {
-    purchases: "No purchases to display",
-    searches: "No searches to display",
-  },
-  wishlist: "Your wishlist is empty. Add songs by clicking the heart icon on the results page!",
-};
-
-interface SearchTabContentProps {
-  activeTab: SpotifyTab | TrendingTab | HistoryTab | WishlistTab;
-}
-
-const SearchTabContent = <T extends SpotifyTab | TrendingTab | HistoryTab | WishlistTab>({
-  activeTab,
-}: SearchTabContentProps) => {
+const SearchTabContent = ({ activeTab }: { activeTab: SearchTab }) => {
+  const subTabs = searchTabMap.find((data) => data.tab === activeTab)?.subTabs;
+  const hasSubTabs = subTabs && subTabs.length > 0;
   // Set to first subtab of tab, if there are any
-  const [activeSubTab, setActiveSubTab] = useState<SubTabMap[T]>();
-
-  if (activeTab === "spotify") setActiveSubTab("queue");
-
+  const [activeSubTab, setActiveSubTab] = useState<SearchSubTab | undefined>(
+    subTabs?.[0] ?? undefined,
+  );
   const { data, isLoading } = useTabContentData(activeTab);
-  const tabHasSubTabs = subTabsMap[activeTab].length > 0;
 
-  const noDataMessage =
-    tabHasSubTabs && activeSubTab
-      ? emptyTabMessageMap[activeTab][activeSubTab]
-      : emptyTabMessageMap[activeTab];
+  const noDataMessage = activeSubTab
+    ? emptySubTabMessageMap[activeSubTab]
+    : emptyTabMessageMap[activeTab];
 
   return (
     <>
-      {tabHasSubTabs && (
-        <div className="border-x-1 absolute left-1/2 top-0 z-10 flex w-auto -translate-x-1/2 justify-around gap-16 rounded-b-sm border-b-[1px] border-primary bg-background px-6 py-[6px]">
-          {subTabsMap[activeTab].map((subTab) => {
+      {hasSubTabs && (
+        <div className="border-x-1 absolute left-1/2 top-0 z-10 flex w-auto -translate-x-1/2 justify-around gap-0 rounded-b-sm border-b-[1px] border-primary bg-background px-6 py-[6px]">
+          {subTabs.map((subTab) => {
             return (
               <button
                 key={subTab}
                 className={cn(
-                  "whitespace-nowrap text-base capitalize transition-colors hover:text-foreground",
+                  // Hardcoded width of 32 to make all buttons the same size as the largest one (min-w-0 flex-1 doesn't work here)
+                  "flex w-32 justify-center whitespace-nowrap text-base capitalize transition-colors hover:text-foreground",
                   subTab === activeSubTab ? "text-foreground" : "text-muted-foreground",
                 )}
                 onClick={() => setActiveSubTab(subTab)}

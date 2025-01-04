@@ -1,7 +1,7 @@
 import { LoadingIndicator } from "@/components/Indicators";
 import { api } from "@/utils/api";
 import { useSession } from "next-auth/react";
-import TableRow from "../TableRow";
+import TableRow from "../TableRows/TrendingTableRow";
 
 const HistoryTable = ({}) => {
   const { status } = useSession();

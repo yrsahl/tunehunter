@@ -1,6 +1,6 @@
 import { LoadingIndicator } from "@/components/Indicators";
 import { api } from "@/utils/api";
-import TableRow from "../TableRow";
+import TableRow from "../TableRows/TrendingTableRow";
 
 const TrendingTable = ({}) => {
   const { data: trendingEntries, isLoading } = api.song.getTrending.useQuery();

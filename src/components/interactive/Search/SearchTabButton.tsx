@@ -5,29 +5,33 @@ import { cn } from "@/lib/utils";
 import { api } from "@/utils/api";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
-import type { Tab } from "./SearchTabBar";
+import type { SearchTab } from "./SearchTabBar";
 
 type AccessScopes = "all" | "signed-in-to-spotify" | "signed-in";
-const tabAccessMap: Record<Tab, AccessScopes> = {
+const tabAccessMap: Record<SearchTab, AccessScopes> = {
   trending: "all",
   spotify: "signed-in-to-spotify",
   history: "signed-in",
   wishlist: "signed-in",
 };
-const tabTooltipRestrictionMap: Record<Tab, string> = {
+const tabTooltipRestrictionMap: Record<SearchTab, string> = {
   trending: "", // Always accessible
   spotify: "Create an account or Sign In to view your Spotify songs!",
   wishlist: "Create an account or Sign In to view your Wishlist!",
   history: "Create an account or Sign In to view your History!",
 };
 
-interface SearchTabProps {
-  searchTab: Tab;
-  activeSearchTab: Tab | "";
-  setActiveSearchTab: (newTab: Tab | "") => void;
+interface SearchTabButtonProps {
+  searchTab: SearchTab;
+  activeSearchTab: SearchTab | "";
+  setActiveSearchTab: (newTab: SearchTab | "") => void;
 }
 
-const SearchTab = ({ searchTab, activeSearchTab, setActiveSearchTab }: SearchTabProps) => {
+const SearchTabButton = ({
+  searchTab,
+  activeSearchTab,
+  setActiveSearchTab,
+}: SearchTabButtonProps) => {
   const { data: userData, status: sessionStatus } = useSession();
   const router = useRouterWithHelpers();
   const loggedIn = sessionStatus === "authenticated";
@@ -41,19 +45,19 @@ const SearchTab = ({ searchTab, activeSearchTab, setActiveSearchTab }: SearchTab
     },
   );
 
-  const isTabEnabled = (tab: Tab) => {
-    if (tabAccessMap[tab] === "signed-in-to-spotify") return !!spotifyAccount?.data; // If needs to be signed in, enabled if spotify data
-    if (tabAccessMap[tab] === "signed-in") return loggedIn; // If needs signed in, enabled if logged in
+  const isSearchTabEnabled = (searchTab: SearchTab) => {
+    if (tabAccessMap[searchTab] === "signed-in-to-spotify") return !!spotifyAccount?.data; // If needs to be signed in, enabled if spotify data
+    if (tabAccessMap[searchTab] === "signed-in") return loggedIn; // If needs signed in, enabled if logged in
     return true; // Enabled otherwise
   };
 
-  const handleTabClick = (newTab: Tab) => {
-    if (newTab === activeSearchTab) {
+  const handleTabClick = (newSearchTab: SearchTab) => {
+    if (newSearchTab === activeSearchTab) {
       setActiveSearchTab("");
       router.setParams({ search: "" });
     } else {
-      setActiveSearchTab(newTab);
-      router.setParams({ search: newTab });
+      setActiveSearchTab(newSearchTab);
+      router.setParams({ search: newSearchTab });
     }
   };
 
@@ -61,13 +65,13 @@ const SearchTab = ({ searchTab, activeSearchTab, setActiveSearchTab }: SearchTab
     <motion.button
       key={searchTab}
       onClick={() => handleTabClick(searchTab)}
-      disabled={!isTabEnabled(searchTab)}
+      disabled={!isSearchTabEnabled(searchTab)}
       className={cn(
         "whitespace-nowrap border-b-2 text-foreground transition-all enabled:hover:border-primary/50",
         activeSearchTab === searchTab ? "!border-primary" : "border-transparent",
       )}
     >
-      {!isTabEnabled(searchTab) && (
+      {!isSearchTabEnabled(searchTab) && (
         <Tooltip key={searchTab}>
           <TooltipTrigger className="cursor-not-allowed text-muted-foreground/30">
             <div className="flex items-center gap-2 px-1 pb-1">
@@ -78,7 +82,7 @@ const SearchTab = ({ searchTab, activeSearchTab, setActiveSearchTab }: SearchTab
           <TooltipContent>{tabTooltipRestrictionMap[searchTab]}</TooltipContent>
         </Tooltip>
       )}
-      {!!isTabEnabled(searchTab) && (
+      {!!isSearchTabEnabled(searchTab) && (
         <div className="flex items-center gap-2 px-1 pb-1">
           <CustomIcon icon={searchTab} variant={"primary"} />
           <span className="capitalize">{searchTab}</span>
@@ -88,4 +92,4 @@ const SearchTab = ({ searchTab, activeSearchTab, setActiveSearchTab }: SearchTab
   );
 };
 
-export default SearchTab;
+export default SearchTabButton;
