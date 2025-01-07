@@ -1,6 +1,5 @@
 import { LoadingIndicator } from "@/components/Indicators";
 import { fadeInAndOut } from "@/helpers/animations";
-import useTabContentData from "@/hooks/useTabContentData";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
@@ -21,15 +20,20 @@ const emptySubTabMessageMap: Record<SearchSubTab, string> = {
   searches: "Your recent searches will appear here!",
 };
 
-const SearchTabContent = ({ activeTab }: { activeTab: SearchTab }) => {
+interface SearchTabContentProps {
+  activeTab: SearchTab;
+  isDataLoading: boolean;
+  data: any;
+  refetchData: (tabToBeRefeteched?: SearchTab) => void;
+}
+
+const SearchTabContent = ({ activeTab, isDataLoading, data }: SearchTabContentProps) => {
   const subTabs = searchTabMap.find((data) => data.tab === activeTab)?.subTabs;
   const hasSubTabs = subTabs && subTabs.length > 0;
   // Set to first subtab of tab, if there are any
   const [activeSubTab, setActiveSubTab] = useState<SearchSubTab | undefined>(
     subTabs?.[0] ?? undefined,
   );
-  const { data, isLoading } = useTabContentData(activeTab);
-
   const noDataMessage = activeSubTab
     ? emptySubTabMessageMap[activeSubTab]
     : emptyTabMessageMap[activeTab];
@@ -55,12 +59,12 @@ const SearchTabContent = ({ activeTab }: { activeTab: SearchTab }) => {
           })}
         </div>
       )}
-      {isLoading && (
+      {isDataLoading && (
         <div className="flex h-full justify-center">
           <LoadingIndicator size={60} />
         </div>
       )}
-      {!data && !isLoading && (
+      {!data && !isDataLoading && (
         <div className="flex h-full max-w-[66%] items-center justify-center text-center">
           <p>{noDataMessage}</p>
         </div>

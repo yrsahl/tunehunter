@@ -1,6 +1,8 @@
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
+import useSearchTabsContentData from "@/hooks/useTabContentData";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import SearchTabButton from "./SearchTabButton";
 import SearchTabContent from "./SearchTabContent";
@@ -40,6 +42,12 @@ export const isSubTabOfTab = (tab: SearchTab, subTab: SearchSubTab) =>
 const SearchTabBar = () => {
   const router = useRouterWithHelpers();
   const [activeSearchTab, setActiveSearchTab] = useState<SearchTab | "">("");
+  const { data: sessionData } = useSession();
+  const {
+    data: searchTabsContentData,
+    isLoading: isSearchTabContentDataLoading,
+    refreshData: refreshSearchTabsContentData,
+  } = useSearchTabsContentData(sessionData?.user.id);
 
   // Restore active tab if param is present
   useEffect(() => {
@@ -81,7 +89,12 @@ const SearchTabBar = () => {
               key={activeSearchTab}
               className={cn("relative mx-auto flex h-full w-full flex-col items-center")}
             >
-              <SearchTabContent activeTab={activeSearchTab} />
+              <SearchTabContent
+                activeTab={activeSearchTab}
+                isDataLoading={isSearchTabContentDataLoading}
+                data={searchTabsContentData}
+                refetchData={refreshSearchTabsContentData}
+              />
             </motion.div>
           </motion.div>
         )}

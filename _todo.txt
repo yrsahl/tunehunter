@@ -1,9 +1,17 @@
 ---- CORE
 
+motion.tbody per category
+- then load data there per tab, or load before and pass
 
 Finish table content data fetching
+- Pass the user id? Or is ctx.session.user.id enough?
+- Duplicate data getHistoryPurchases, getHistorySearches + Queries?
+  - Add type: Search | Purchase
 
-Set region on account creation
+Trending logic: query new song_view_count materializedview once every 15 minutes
+
+
+
 
 
 
@@ -69,6 +77,8 @@ Thoughts
 Make profile button shine when hovered over inactive tab
 
 Results styles & functionality
+
+Set region on account creation
 
 Paid plan
 - Account creation: Free / Pro

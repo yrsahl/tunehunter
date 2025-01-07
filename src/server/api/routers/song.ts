@@ -1,12 +1,9 @@
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
+import { songCountView } from "@/server/db/schema";
 
 export const songRouter = createTRPCRouter({
   getTrending: publicProcedure.query(({ ctx }) => {
-    return ctx.db.query.queries.findMany({
-      orderBy: (queries, { desc }) => [desc(queries.searchedAt)],
-      with: { song: true },
-      limit: 30,
-    });
+    return ctx.db.select().from(songCountView).orderBy(songCountView.queryCount);
   }),
 
   getHistory: protectedProcedure.query(({ ctx }) => {

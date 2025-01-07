@@ -2,6 +2,7 @@ import { relations, sql } from "drizzle-orm";
 import {
   index,
   integer,
+  pgMaterializedView,
   pgTable,
   primaryKey,
   serial,
@@ -112,6 +113,16 @@ export const queries = pgTable(
   (table) => ({
     pk: primaryKey({ columns: [table.userId, table.songId] }),
   }),
+);
+
+export const songCountView = pgMaterializedView("songCountView").as((qb) =>
+  qb
+    .select({
+      songId: queries.songId,
+      queryCount: sql<number>`count(*)`.as("queryCount"),
+    })
+    .from(queries)
+    .groupBy(queries.songId),
 );
 
 export const queriesRelations = relations(queries, ({ one }) => ({

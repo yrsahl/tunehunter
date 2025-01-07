@@ -1,6 +1,5 @@
 import { LoadingIndicator } from "@/components/Indicators";
 import { api } from "@/utils/api";
-import TableRow from "../TableRows/TrendingTableRow";
 
 const TrendingTable = ({}) => {
   const { data: trendingEntries, isLoading } = api.song.getTrending.useQuery();
@@ -28,9 +27,9 @@ const TrendingTable = ({}) => {
       <div className="hide-scrollbars relative h-full w-full overflow-scroll pb-6 pt-12">
         <table className="w-full">
           <tbody>
-            {trendingEntries?.map((trendingEntry) => (
-              <TableRow key={trendingEntry.song.id} track={trendingEntry.song} />
-            ))}
+            {/* {trendingEntries?.map((trendingEntry) => (
+              <TableRow key={trendingEntry.songId} track={trendingEntry.song} />
+            ))} */}
           </tbody>
         </table>
       </div>
