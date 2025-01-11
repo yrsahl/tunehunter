@@ -1,31 +1,22 @@
 import { SearchTab } from "@/components/interactive/Search/SearchTabBar";
 import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
-import { songCountView, wishlists } from "@/server/db/schema";
 import {
   SpotifyCurrentlyPlaying,
   SpotifyQueue,
   SpotifyRecentlyPlayed,
   SpotifyTracks,
-  SpotifyUserData,
 } from "@/types/spotify";
 import { api } from "@/utils/api";
-import { InferSelectModel } from "drizzle-orm";
 
-export type SpotifySearchTabData = {
+export type SpotifyTabData = {
   currentlyPlaying: SpotifyCurrentlyPlaying | null;
   queue: SpotifyQueue | null;
   recentlyPlayed: SpotifyRecentlyPlayed | null;
-  topTracks: SpotifyTracks | null;
+  mostPlayed: SpotifyTracks | null;
 };
 
-type SearchTabsContentData = {
-  trendingData?: (typeof songCountView.$inferSelect)[];
-  // historyData?: InferSelectModel<typeof >;
-  wishlistData?: InferSelectModel<typeof wishlists>[];
-  spotifyData?: SpotifyUserData;
-};
-
-const useSearchTabsContentData = (userId?: string) => {
+// Use all data when SearchTabContent is rendered, not on a Tab level
+const useSearchTabsData = (userId?: string) => {
   const { data: trendingData, isLoading: isTrendingDataLoading } = api.song.getTrending.useQuery();
   const { data: historyData, isLoading: isHistoryDataLoading } = api.song.getHistory.useQuery();
   const { data: wishlistData, isLoading: isWishlistDataLoading } = api.song.getWishlist.useQuery();
@@ -33,24 +24,25 @@ const useSearchTabsContentData = (userId?: string) => {
     useSpotifyUserDataContext();
   const utils = api.useUtils();
 
-  const spotifyData = {
-    currentlyPlaying: spotifyUserData?.currentlyPlaying ?? null,
-    queue: spotifyUserData?.queue ?? [],
-    mostPlayed: spotifyUserData?.topTracks ?? [],
-    recentlyPlayed: spotifyUserData?.recentlyPlayed ?? [],
-  };
-  const data: SearchTabsContentData = {
-    trendingData,
-    // historyData,
-    wishlistData,
-    // spotifyData
-  };
-
-  const isLoading =
+  const isDataLoading =
     isHistoryDataLoading ||
     isWishlistDataLoading ||
     isTrendingDataLoading ||
     isSpotifyUserDataLoading;
+
+  const spotifyData: SpotifyTabData = {
+    currentlyPlaying: spotifyUserData?.currentlyPlaying || null,
+    queue: spotifyUserData?.queue || null,
+    mostPlayed: spotifyUserData?.topTracks || null,
+    recentlyPlayed: spotifyUserData?.recentlyPlayed || null,
+  };
+
+  const data = {
+    trendingData,
+    historyData,
+    wishlistData,
+    spotifyData,
+  };
 
   const refetchData = (tabToBeRefetched?: SearchTab) => {
     // Single tab
@@ -66,9 +58,9 @@ const useSearchTabsContentData = (userId?: string) => {
 
   return {
     data,
-    isLoading,
-    refreshData: refetchData,
+    isDataLoading,
+    refetchData,
   };
 };
 
-export default useSearchTabsContentData;
+export default useSearchTabsData;

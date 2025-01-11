@@ -1,9 +1,15 @@
 import { LoadingIndicator } from "@/components/Indicators";
 import { fadeInAndOut } from "@/helpers/animations";
+import useSearchTabsData from "@/hooks/useSearchTabsData";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { SearchSubTab, SearchTab, searchTabMap } from "./SearchTabBar";
+import HistoryTable from "./SearchTabContent/HistoryTable";
+import SpotifyTable from "./SearchTabContent/SpotifyTable";
+import TrendingTable from "./SearchTabContent/TrendingTable";
+import WishlistTable from "./SearchTabContent/WishlistTable";
 
 const emptyTabMessageMap: Record<SearchTab, string> = {
   trending: "Nothing's trending right now...",
@@ -22,14 +28,12 @@ const emptySubTabMessageMap: Record<SearchSubTab, string> = {
 
 interface SearchTabContentProps {
   activeTab: SearchTab;
-  isDataLoading: boolean;
-  data: any;
-  refetchData: (tabToBeRefeteched?: SearchTab) => void;
 }
 
-const SearchTabContent = ({ activeTab, isDataLoading, data }: SearchTabContentProps) => {
+const SearchTabContent = ({ activeTab }: SearchTabContentProps) => {
   const subTabs = searchTabMap.find((data) => data.tab === activeTab)?.subTabs;
   const hasSubTabs = subTabs && subTabs.length > 0;
+
   // Set to first subtab of tab, if there are any
   const [activeSubTab, setActiveSubTab] = useState<SearchSubTab | undefined>(
     subTabs?.[0] ?? undefined,
@@ -37,6 +41,10 @@ const SearchTabContent = ({ activeTab, isDataLoading, data }: SearchTabContentPr
   const noDataMessage = activeSubTab
     ? emptySubTabMessageMap[activeSubTab]
     : emptyTabMessageMap[activeTab];
+
+  // Data fetching
+  const { data: sessionData } = useSession();
+  const { data, isDataLoading, refetchData } = useSearchTabsData(sessionData?.user.id);
 
   return (
     <>
@@ -70,19 +78,28 @@ const SearchTabContent = ({ activeTab, isDataLoading, data }: SearchTabContentPr
         </div>
       )}
       {!!data && (
-        <div className="hide-scrollbars relative h-full w-full overflow-scroll pb-6 pt-12">
-          <table className="w-full">
-            <AnimatePresence mode="wait">
-              <motion.tbody key={activeSubTab} {...fadeInAndOut(0.15)}>
-                Hi
-                {/* {activeTab === "trending" && <TableRow data={data} />}
-              {activeTab === "spotify"} && <SpotifyTableRow data={data} />}
-              {activeTab === "history" && <HistoryTableRow data={data} />}
-              {activeTab === "wishlist" && <WishlistTableRow data={data} />} */}
-              </motion.tbody>
-            </AnimatePresence>
-          </table>
-        </div>
+        <AnimatePresence mode="wait">
+          <div className="h-full w-full px-3 sm:px-5 md:px-7">
+            <motion.div
+              className="hide-scrollbars relative h-full w-full overflow-scroll pb-6 pt-12"
+              key={activeSubTab}
+              {...fadeInAndOut(0.15)}
+            >
+              {activeTab === "trending" && <TrendingTable data={data.trendingData} />}
+              {activeTab === "spotify" && (
+                <SpotifyTable
+                  data={data.spotifyData}
+                  refetchData={refetchData}
+                  activeTab={activeSubTab}
+                />
+              )}
+              {activeTab === "history" && (
+                <HistoryTable data={data.historyData} activeTab={activeSubTab} />
+              )}
+              {activeTab === "wishlist" && <WishlistTable data={data.wishlistData} />}
+            </motion.div>
+          </div>
+        </AnimatePresence>
       )}
     </>
   );
