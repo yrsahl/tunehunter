@@ -166,6 +166,6 @@
     @apply border-border tracking-wider;
   }
   body {
-    @apply bg-background text-foreground placeholder:text-muted-foreground;
+    @apply bg-gradient-to-b from-background to-muted text-foreground placeholder:text-muted-foreground;
   }
 }
