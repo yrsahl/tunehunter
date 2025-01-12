@@ -61,7 +61,7 @@ const IconButton: FC<IProps> = ({
   return (
     <Button
       className={cn(
-        "group flex w-full gap-2 font-light tracking-widest opacity-100 transition-all disabled:opacity-50",
+        "group flex w-full gap-2 font-light opacity-100 transition-all disabled:opacity-50",
         size === "icon" && `h-8 w-8`,
         className,
       )}
@@ -78,7 +78,7 @@ const IconButton: FC<IProps> = ({
           height={iconSize}
         />
       )}
-      {text && <p className={textStyle}>{text}</p>}
+      {text && <p className={textStyle ? textStyle : "uppercase tracking-widest"}>{text}</p>}
       {children}
       {icon && iconPosition == "right" && (
         <CustomIcon

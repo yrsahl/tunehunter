@@ -235,12 +235,6 @@ const ProfileMenu = () => {
 
         <div className="col-span-5" />
 
-        {/* Feedback */}
-        <p className="col-span-2 flex items-center justify-end font-thin">Have Feedback?</p>
-        <a href="mailto:hello@tunehunter.app?subject=Feedback" className="col-span-3">
-          <IconButton text="Write Us!" variant="outlinePrimary" size="sm" icon="mail" />
-        </a>
-
         {/* Delete account */}
         <p className="col-span-2 flex items-center justify-end font-thin">Want to go?</p>
         <div className="col-span-3">

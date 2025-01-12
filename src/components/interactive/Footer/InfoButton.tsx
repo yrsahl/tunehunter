@@ -47,21 +47,57 @@ const InfoButton = () => {
               </a>
             </p>
           </SheetTitle>
-          <SheetDescription className="pt-2 text-base" asChild>
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-4 text-foreground/70">
-                <p>
-                  This app allows you to search for music in different online stores, saving you
-                  time when buying and comparing from online music vendors like Beatport and
-                  Bandcamp.
-                </p>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse vari us enim
-                  in eros elementum tristique. Duis cursus, odio auctor viverra scelerisque, magna
-                  nunc ultricies felis, eget ultricies lectus enim nec purus.
-                </p>
+          <SheetDescription asChild>
+            <div className="flex flex-col gap-6 text-pretty pt-3 text-justify  text-foreground/70">
+              <div className="flex flex-col gap-8 text-base text-inherit">
+                <div className="flex flex-col gap-4">
+                  <p>
+                    This app allows you to search for music in different online stores, saving you
+                    time when buying and comparing from online music vendors like Beatport and
+                    Bandcamp.
+                  </p>
+                  <p>
+                    You may create an account to save your favorite tracks to your wishlist, view
+                    your search history, access your Spotify data (when linking your account), and
+                    more!
+                  </p>
+                </div>
+                <div className="m-auto flex w-[90%] flex-col gap-4">
+                  <a href="mailto:contact@tunehunter.app?subject=Feedback">
+                    <IconButton
+                      text="Have feedback?"
+                      variant="primary"
+                      size="default"
+                      icon="mail"
+                    />
+                  </a>
+                  <a href="mailto:contact@tunehunter.app?subject=Feedback">
+                    <IconButton
+                      text="Other inquiries?"
+                      variant="accent"
+                      size="default"
+                      icon="mail"
+                    />
+                  </a>
+                </div>
               </div>
-              {/* <Separator className="border-primary" spacing="small" /> */}
+              {/* <div className="text-base">
+                <Separator className="border-primary" spacing="base" />
+                <div className="flex flex-col gap-6">
+                  <p>Here's some more stuff we've built:</p>
+                  <div className="flex flex-col gap-6">
+                    <a href="https://tuneguard.com" target="_blank">
+                      <IconButton text="TuneGuard" variant="outlineAccent" size="default" />
+                    </a>
+                    <a href="https://geotunes.com" target="_blank">
+                      <IconButton text="GeoTunes" variant="outlinePrimary" size="default" />
+                    </a>
+                    <a href="https://soundsphere.com" target="_blank">
+                      <IconButton text="SoundSphere" variant="outlineSuccess" size="default" />
+                    </a>
+                  </div>
+                </div>
+              </div> */}
             </div>
           </SheetDescription>
         </SheetHeader>
