@@ -1,7 +1,5 @@
 ---- CORE
 
-background longer
-
 Finish table content data fetching
 - Pass the user id? Or is ctx.session.user.id enough?
 - Duplicate data getHistoryPurchases, getHistorySearches + Queries?
@@ -11,6 +9,7 @@ Finish table content data fetching
 Load tunehunter userdata + trending and also spotifydata on callback page
 - Login: everything but check for spotify account
 - Spotify callback: everything
+
 
 Trending logic: query new song_view_count materializedview once every 15 minutes
 

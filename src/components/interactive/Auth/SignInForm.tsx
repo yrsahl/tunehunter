@@ -102,7 +102,7 @@ const SignInForm: FC<IProps> = ({ email, setEmail, setMenuState }) => {
           size="lg"
         />
       </form>
-      <Separator borderColor="border-foreground">
+      <Separator className="border-foreground">
         <p className="px-2 text-xs uppercase">or</p>
       </Separator>
       {OAuthProviders &&

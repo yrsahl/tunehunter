@@ -1,5 +1,4 @@
 import CustomIcon from "@/components/CustomIcon";
-import { Separator } from "@/components/my-ui/separator";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -156,9 +155,7 @@ const ProfileMenu = () => {
           </div>
         )}
 
-        <div className="col-span-5">
-          <Separator />
-        </div>
+        <div className="col-span-5" />
 
         {/* Region */}
         <Label htmlFor="region" className="col-span-2 flex items-center justify-end font-thin">
@@ -236,9 +233,7 @@ const ProfileMenu = () => {
           </Tooltip>
         </div>
 
-        <div className="col-span-5">
-          <Separator />
-        </div>
+        <div className="col-span-5" />
 
         {/* Feedback */}
         <p className="col-span-2 flex items-center justify-end font-thin">Have Feedback?</p>

@@ -16,6 +16,7 @@ interface IProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   iconPosition?: "left" | "right";
   iconSize?: string;
   text?: string;
+  textStyle?: string;
   variant?: CustomButtonVariant;
   size?: CustomButtonSizeVariant;
 }
@@ -48,6 +49,7 @@ const IconButton: FC<IProps> = ({
   icon,
   iconPosition = "left",
   iconSize,
+  textStyle,
   variant = "default",
   bordered,
   size,
@@ -59,7 +61,7 @@ const IconButton: FC<IProps> = ({
   return (
     <Button
       className={cn(
-        "group flex w-full gap-2 font-light uppercase tracking-widest opacity-100 transition-all disabled:opacity-50",
+        "group flex w-full gap-2 font-light tracking-widest opacity-100 transition-all disabled:opacity-50",
         size === "icon" && `h-8 w-8`,
         className,
       )}
@@ -76,7 +78,7 @@ const IconButton: FC<IProps> = ({
           height={iconSize}
         />
       )}
-      {text && <p>{text}</p>}
+      {text && <p className={textStyle}>{text}</p>}
       {children}
       {icon && iconPosition == "right" && (
         <CustomIcon

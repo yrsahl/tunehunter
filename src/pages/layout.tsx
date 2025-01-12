@@ -1,8 +1,6 @@
+import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 const Particles = dynamic(() => import("@/components/layout/Particles"), {
-  ssr: false,
-});
-const Footer = dynamic(() => import("@/components/layout/Footer"), {
   ssr: false,
 });
 
