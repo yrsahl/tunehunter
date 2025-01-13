@@ -1,4 +1,3 @@
-import CustomIcon from "@/components/CustomIcon";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -7,7 +6,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
 import { growIn } from "@/helpers/animations";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
@@ -114,49 +112,6 @@ const ProfileMenu = () => {
           </ChangeMailModal>
         </div>
 
-        {/* Spotify */}
-        <p className="col-span-2 flex items-center justify-end font-thin">Spotify Account</p>
-        {spotifyAccount?.data && (
-          <>
-            <a
-              href={`https://open.spotify.com/user/${spotifyAccount.data.providerAccountId}`}
-              target="_blank"
-              className="col-span-2"
-            >
-              <IconButton
-                className="flex justify-start p-0 text-success"
-                icon="external"
-                iconPosition="right"
-                variant="link"
-                text={spotifyUserData?.profileData?.display_name}
-                size="sm"
-              />
-            </a>
-            <ConfirmationModal
-              dialogAction={() => handleUnlinkSpotify(userData.user.id)}
-              dialogText={`Please confirm that you want to unlink your Spotify account ${spotifyUserData?.profileData?.display_name}.`}
-              dialogTitle="Unlink Spotify account?"
-            >
-              <div>
-                <IconButton icon="x" variant="ghostPrimary" size="icon" iconSize="20px" />
-              </div>
-            </ConfirmationModal>
-          </>
-        )}
-        {!spotifyAccount?.data && (
-          <div className="col-span-3">
-            <IconButton
-              icon={"spotify"}
-              variant="outlinePrimary"
-              text="Connect Spotify"
-              size="sm"
-              onClick={handleLinkSpotify}
-            />
-          </div>
-        )}
-
-        <div className="col-span-5" />
-
         {/* Region */}
         <Label htmlFor="region" className="col-span-2 flex items-center justify-end font-thin">
           Region
@@ -195,48 +150,73 @@ const ProfileMenu = () => {
           />
         </div>
 
+        {/* Spotify */}
+        <p className="col-span-2 flex items-center justify-end font-thin">Spotify</p>
+        {spotifyAccount?.data && (
+          <>
+            <a
+              href={`https://open.spotify.com/user/${spotifyAccount.data.providerAccountId}`}
+              target="_blank"
+              className="col-span-2"
+            >
+              <IconButton
+                className="flex justify-start p-0 text-success"
+                icon="external"
+                iconPosition="right"
+                variant="link"
+                text={spotifyUserData?.profileData?.display_name}
+                size="sm"
+              />
+            </a>
+            <ConfirmationModal
+              dialogAction={() => handleUnlinkSpotify(userData.user.id)}
+              dialogText={`Please confirm that you want to unlink your Spotify account ${spotifyUserData?.profileData?.display_name}.`}
+              dialogTitle="Unlink Spotify account?"
+            >
+              <div>
+                <IconButton icon="x" variant="ghostPrimary" size="icon" iconSize="20px" />
+              </div>
+            </ConfirmationModal>
+          </>
+        )}
+        {!spotifyAccount?.data && (
+          <div className="col-span-3">
+            <IconButton
+              icon={"spotify"}
+              variant="outlinePrimary"
+              text="Connect"
+              size="sm"
+              onClick={handleLinkSpotify}
+            />
+          </div>
+        )}
+
         {/* Theme */}
         <p className="col-span-2 flex items-center justify-end gap-1 font-thin">
-          <span>Switch Theme</span>
+          <span>Theme</span>
         </p>
-        <div className="col-span-2">
+        <div className="col-span-3">
           <Select value={autoThemePreference} onValueChange={changeAutoThemePreference}>
             <SelectTrigger
               id="region"
-              className="h-9 max-w-44 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 text-base font-thin text-foreground focus:ring-0 focus:ring-offset-0"
+              className="h-9 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 text-base font-thin text-foreground focus:ring-0 focus:ring-offset-0"
             >
-              <motion.div
-                {...growIn()}
-                className="inline-block max-w-36 overflow-hidden text-ellipsis"
-              >
+              <motion.div {...growIn()} className="inline-block overflow-hidden text-ellipsis">
                 <SelectValue />
               </motion.div>
             </SelectTrigger>
             <SelectContent>
               {AutoThemePreferences.map((autoThemePreference) => (
                 <SelectItem key={autoThemePreference} value={autoThemePreference} className="py-2">
-                  {autoThemePreference === "auto" ? "Automatically" : "Manually"}
+                  {autoThemePreference === "auto" ? "Determine by sunset" : "Choose manually"}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
-        <div className="col-span-1 flex items-center justify-center">
-          <Tooltip>
-            <TooltipTrigger className="cursor-default">
-              <CustomIcon icon="info" variant="ghost-foreground" width="18px" height="18px" />
-            </TooltipTrigger>
-            <TooltipContent className="border border-foreground/30 bg-background px-4 py-2 text-center text-foreground">
-              'Automatically' sets the theme based on the time and position of the sun in your
-              location. 'Manually' does not set the theme on your behalf.
-            </TooltipContent>
-          </Tooltip>
-        </div>
-
-        <div className="col-span-5" />
 
         {/* Delete account */}
-        <p className="col-span-2 flex items-center justify-end font-thin">Want to go?</p>
+        <p className="col-span-2 flex items-center justify-end font-thin">Account</p>
         <div className="col-span-3">
           <ConfirmationModal
             dialogAction={() => handleDeleteAccount(userData.user.id)}

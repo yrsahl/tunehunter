@@ -32,7 +32,7 @@ const InfoButton = () => {
               <h2 className="tracking-wider">Tune</h2>
               <h2 className="tracking-wider text-primary">Hunter</h2>
             </div>
-            <p className="flex items-center gap-1 pl-2 text-sm font-normal text-foreground/70">
+            {/* <p className="flex items-center gap-1 pl-2 text-sm font-normal text-foreground/70">
               <span>By</span>
               <a href="https://alvarnystudios.com/" target="_blank">
                 <IconButton
@@ -45,38 +45,46 @@ const InfoButton = () => {
                   className="gap-1 p-0 font-quicksand "
                 />
               </a>
-            </p>
+            </p> */}
           </SheetTitle>
           <SheetDescription asChild>
-            <div className="flex flex-col gap-6 text-pretty pt-3 text-justify  text-foreground/70">
+            <div className="flex flex-col gap-6 text-pretty pt-3 text-justify text-foreground/70">
               <div className="flex flex-col gap-8 text-base text-inherit">
                 <div className="flex flex-col gap-4">
                   <p>
-                    This app allows you to search for music in different online stores, saving you
-                    time when buying and comparing from online music vendors like Beatport and
-                    Bandcamp.
+                    ... has one purpose: to find you the music you want to buy online, quicker. When
+                    you enter a song title we search for it across different online vendor’s stores
+                    (Beatport, Bandcamp, Amazon Music & Apple Music) and show your where it’s
+                    available, the available formats and qualities, and at what price.
                   </p>
-                  <p>
-                    You may create an account to save your favorite tracks to your wishlist, view
-                    your search history, access your Spotify data (when linking your account), and
-                    more!
+                  <p className="flex flex-col gap-[6px]">
+                    <span>
+                      By creating an account you can also unlock more features that may help you
+                      with that, such as:
+                    </span>
+                    <ul className="list-inside list-disc space-y-1">
+                      <li>Accessing your Spotify data</li>
+                      <li>Viewing your search history</li>
+                      <li>Adding songs to your wish list</li>
+                      <li>More to come!</li>
+                    </ul>
                   </p>
                 </div>
                 <div className="m-auto flex w-[90%] flex-col gap-4">
                   <a href="mailto:contact@tunehunter.app?subject=Feedback">
                     <IconButton
-                      text="Have feedback?"
                       variant="primary"
+                      text="Have feedback?"
                       size="default"
                       icon="mail"
                     />
                   </a>
-                  <a href="mailto:contact@tunehunter.app?subject=Feedback">
+                  <a href="mailto:contact@tunehunter.app">
                     <IconButton
-                      text="Other inquiries?"
-                      variant="accent"
+                      text="Buy me a coffee"
+                      variant="success"
                       size="default"
-                      icon="mail"
+                      icon="coffee"
                     />
                   </a>
                 </div>
@@ -84,7 +92,7 @@ const InfoButton = () => {
               {/* <div className="text-base">
                 <Separator className="border-primary" spacing="base" />
                 <div className="flex flex-col gap-6">
-                  <p>Here's some more stuff we've built:</p>
+                  <p>We've also built:</p>
                   <div className="flex flex-col gap-6">
                     <a href="https://tuneguard.com" target="_blank">
                       <IconButton text="TuneGuard" variant="outlineAccent" size="default" />
