@@ -1,5 +1,7 @@
 ---- CORE
 
+Coffee link
+
 Finish table content data fetching
 - Pass the user id? Or is ctx.session.user.id enough?
 - Duplicate data getHistoryPurchases, getHistorySearches + Queries?

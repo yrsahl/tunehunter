@@ -55,18 +55,18 @@ const InfoButton = () => {
                     ... has one purpose: to find you the music you want to buy online, quicker. When
                     you enter a song title we search for it across different online vendor’s stores
                     (Beatport, Bandcamp, Amazon Music & Apple Music) and show your where it’s
-                    available, the available formats and qualities, and at what price.
+                    available, the formats and qualities, and at what price.
                   </p>
                   <p className="flex flex-col gap-[6px]">
                     <span>
-                      By creating an account you can also unlock more features that may help you
-                      with that, such as:
+                      By creating an account you can unlock more features to help you with your
+                      search, such as:
                     </span>
                     <ul className="list-inside list-disc space-y-1 pl-2">
                       <li>Accessing your Spotify data</li>
                       <li>Viewing your search history</li>
                       <li>Adding songs to your wish list</li>
-                      <li>More to come!</li>
+                      <li>And more to come!</li>
                     </ul>
                   </p>
                 </div>
