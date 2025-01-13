@@ -49,7 +49,7 @@ const InfoButton = () => {
           </SheetTitle>
           <SheetDescription asChild>
             <div className="flex flex-col gap-6 text-pretty pt-3 text-justify text-foreground/70">
-              <div className="flex flex-col gap-8 text-base text-inherit">
+              <div className="flex flex-col gap-12 text-base text-inherit">
                 <div className="flex flex-col gap-4">
                   <p>
                     ... has one purpose: to find you the music you want to buy online, quicker. When
@@ -62,7 +62,7 @@ const InfoButton = () => {
                       By creating an account you can also unlock more features that may help you
                       with that, such as:
                     </span>
-                    <ul className="list-inside list-disc space-y-1">
+                    <ul className="list-inside list-disc space-y-1 pl-2">
                       <li>Accessing your Spotify data</li>
                       <li>Viewing your search history</li>
                       <li>Adding songs to your wish list</li>
