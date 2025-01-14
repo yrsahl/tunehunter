@@ -17,23 +17,23 @@ export const growIn = (duration = 0.3) => ({
   transition: { duration },
 });
 
-export const slideInFromAbove = (duration = 0.5) => ({
-  initial: { opacity: 0, y: -10 },
+export const slideInFromAbove = (duration = 0.5, distance = 10) => ({
+  initial: { opacity: 0, y: -distance },
   animate: { opacity: 1, y: 0 },
   transition: { duration },
 });
 
-export const slideInAndOutFromAbove = (duration = 0.5) => ({
-  initial: { opacity: 0, y: -10 },
+export const slideInAndOutFromAbove = (duration = 0.5, distance = 10) => ({
+  initial: { opacity: 0, y: -distance },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -10 },
+  exit: { opacity: 0, y: -distance },
   transition: { duration },
 });
 
-export const slideInAndOutFromLeft = (duration = 0.5) => ({
-  initial: { opacity: 0, x: -10 },
+export const slideInAndOutFromLeft = (duration = 0.5, distance = 10) => ({
+  initial: { opacity: 0, x: -distance },
   animate: { opacity: 1, x: 0 },
-  exit: { opacity: 0, x: -10 },
+  exit: { opacity: 0, x: -distance },
   transition: { duration },
 });
 

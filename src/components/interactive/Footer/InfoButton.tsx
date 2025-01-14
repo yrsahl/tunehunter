@@ -9,9 +9,18 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { slideInAndOutFromAbove } from "@/helpers/animations";
 import { quicksand } from "@/pages/layout";
+import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
 
 const InfoButton = () => {
+  const [showSupportFrame, setShowSupportFrame] = useState(false);
+
+  const toggleSupportFrame = () => {
+    setShowSupportFrame(!showSupportFrame);
+  };
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -47,7 +56,7 @@ const InfoButton = () => {
               </a>
             </p> */}
           </SheetTitle>
-          <SheetDescription asChild>
+          <SheetDescription asChild className="relative">
             <div className="flex flex-col gap-6 text-pretty pt-3 text-justify text-foreground/80">
               <div className="flex flex-col gap-12 text-base text-inherit">
                 <div className="flex flex-col gap-4">
@@ -74,11 +83,29 @@ const InfoButton = () => {
                   <a href="mailto:contact@tunehunter.app?subject=Feedback">
                     <IconButton variant="primary" text="Have feedback?" size="lg" icon="mail" />
                   </a>
-                  <a href="mailto:contact@tunehunter.app">
-                    <IconButton text="Buy me a coffee" variant="success" size="lg" icon="coffee" />
-                  </a>
+                  <div className="relative">
+                    <IconButton
+                      text="Buy me a coffee"
+                      variant="success"
+                      size="lg"
+                      icon="coffee"
+                      onClick={toggleSupportFrame}
+                    />
+                    <AnimatePresence>
+                      {showSupportFrame && (
+                        <motion.iframe
+                          id="kofiframe"
+                          src="https://ko-fi.com/alvarny/?hidefeed=true&widget=true&embed=true&preview=true"
+                          className="absolute -left-4 top-20 h-96 w-[319px] rounded-md border-none"
+                          title="alvarny"
+                          {...slideInAndOutFromAbove(0.5, 20)}
+                        />
+                      )}
+                    </AnimatePresence>
+                  </div>
                 </div>
               </div>
+
               {/* <div className="text-base">
                 <Separator className="border-primary" spacing="base" />
                 <div className="flex flex-col gap-6">
