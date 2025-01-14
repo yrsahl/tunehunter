@@ -48,12 +48,12 @@ const InfoButton = () => {
             </p> */}
           </SheetTitle>
           <SheetDescription asChild>
-            <div className="flex flex-col gap-6 text-pretty pt-3 text-justify text-foreground/70">
+            <div className="flex flex-col gap-6 text-pretty pt-3 text-justify text-foreground/80">
               <div className="flex flex-col gap-12 text-base text-inherit">
                 <div className="flex flex-col gap-4">
                   <p>
-                    ... has one purpose: to find you the music you want to buy online, quicker. When
-                    you enter a song title we search for it across different online vendor’s stores
+                    ... has one purpose: to find the music you want to buy online, quicker. When you
+                    enter a song title we search for it across different online vendor’s stores
                     (Beatport, Bandcamp, Amazon Music & Apple Music) and show your where it’s
                     available, the formats and qualities, and at what price.
                   </p>
@@ -72,20 +72,10 @@ const InfoButton = () => {
                 </div>
                 <div className="m-auto flex w-[90%] flex-col gap-4">
                   <a href="mailto:contact@tunehunter.app?subject=Feedback">
-                    <IconButton
-                      variant="primary"
-                      text="Have feedback?"
-                      size="default"
-                      icon="mail"
-                    />
+                    <IconButton variant="primary" text="Have feedback?" size="lg" icon="mail" />
                   </a>
                   <a href="mailto:contact@tunehunter.app">
-                    <IconButton
-                      text="Buy me a coffee"
-                      variant="success"
-                      size="default"
-                      icon="coffee"
-                    />
+                    <IconButton text="Buy me a coffee" variant="success" size="lg" icon="coffee" />
                   </a>
                 </div>
               </div>

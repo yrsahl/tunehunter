@@ -65,7 +65,14 @@ Trending logic: query new song_view_count materializedview once every 15 minutes
 
 
 
+Move the whole thing up a little, feels like its sinking
+Sidebar opacity text up
+Create a logo
 
+Spotify quota reached -> search our own DB -> show “Currently unavailable” and disable input
+
+Tunehunter.app -> Under construction
+dev.tunehunter.app erstellen
 
 
 search

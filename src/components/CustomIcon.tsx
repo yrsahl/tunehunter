@@ -44,6 +44,8 @@ const CustomIcon: FC<CustomIconProps> = ({
         return "fill-secondary-foreground";
       case "accent-foreground":
         return "fill-accent-foreground";
+      case "success-foreground":
+        return "fill-success-foreground";
       case "destructive-foreground":
         return "fill-destructive-foreground";
       case "ghost-foreground":
