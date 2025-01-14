@@ -93,13 +93,17 @@ const InfoButton = () => {
                     />
                     <AnimatePresence>
                       {showSupportFrame && (
-                        <motion.iframe
-                          id="kofiframe"
-                          src="https://ko-fi.com/alvarny/?hidefeed=true&widget=true&embed=true&preview=true"
-                          className="absolute -left-4 top-20 h-96 w-[319px] rounded-md border-none"
-                          title="alvarny"
-                          {...slideInAndOutFromAbove(0.5, 20)}
-                        />
+                        <motion.div
+                          className="absolute -left-4 top-20  h-96 w-[319px] rounded-md bg-white"
+                          {...slideInAndOutFromAbove(0.5, 24)}
+                        >
+                          <iframe
+                            id="kofiframe"
+                            src="https://ko-fi.com/alvarny/?hidefeed=true&widget=true&embed=true&preview=true"
+                            className="h-full w-full rounded-md border-none"
+                            title="alvarny"
+                          />
+                        </motion.div>
                       )}
                     </AnimatePresence>
                   </div>
