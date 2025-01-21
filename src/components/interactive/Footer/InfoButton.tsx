@@ -61,8 +61,8 @@ const InfoButton = () => {
               <div className="flex flex-col gap-12 text-base text-inherit">
                 <div className="flex flex-col gap-4">
                   <p>
-                    ... has one purpose: to find the music you want to buy online, quicker. When you
-                    enter a song title we search for it across different online vendor’s stores
+                    ... has one purpose: to find you the music you want to buy online, quicker. When
+                    you enter a song title we search for it across different online vendor’s stores
                     (Beatport, Bandcamp, Amazon Music & Apple Music) and show your where it’s
                     available, the formats and qualities, and at what price.
                   </p>
