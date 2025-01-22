@@ -3,7 +3,6 @@ import { fadeInAndOut } from "@/helpers/animations";
 import useSearchTabsData from "@/hooks/useSearchTabsData";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { SearchSubTab, SearchTab, searchTabMap } from "./SearchTabBar";
 import HistoryTable from "./SearchTabContent/HistoryTable";
@@ -43,8 +42,7 @@ const SearchTabContent = ({ activeTab }: SearchTabContentProps) => {
     : emptyTabMessageMap[activeTab];
 
   // Data fetching
-  const { data: sessionData } = useSession();
-  const { data, isDataLoading, refetchData } = useSearchTabsData(sessionData?.user.id);
+  const { data, isDataLoading, refetchData } = useSearchTabsData();
 
   return (
     <>

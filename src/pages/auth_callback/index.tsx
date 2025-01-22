@@ -11,10 +11,13 @@ import { toast } from "sonner";
 const AuthCallbackPage: NextPage = ({}) => {
   const router = useRouterWithHelpers();
   const { data: userData, status } = useSession();
-  const { spotifyUserData } = useSpotifyUserDataContext();
   const [error, setError] = useState<string | null>(null);
   const loggedIn = status === "authenticated";
 
+  // Check for spotify user data
+  const { spotifyUserData } = useSpotifyUserDataContext();
+
+  // Check if we got an access key
   const { data: spotifyAccountData, isLoading: isSpotifyAccountDataLoading } =
     api.account.getSpotifyAccountById.useQuery(
       { userId: userData?.user.id! },

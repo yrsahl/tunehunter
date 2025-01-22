@@ -7,6 +7,7 @@ import {
   SpotifyTracks,
 } from "@/types/spotify";
 import { api } from "@/utils/api";
+import { useSession } from "next-auth/react";
 
 export type SpotifyTabData = {
   currentlyPlaying: SpotifyCurrentlyPlaying | null;
@@ -16,10 +17,18 @@ export type SpotifyTabData = {
 };
 
 // Use all data when SearchTabContent is rendered, not on a Tab level
-const useSearchTabsData = (userId?: string) => {
+const useSearchTabsData = () => {
+  const { status } = useSession();
+  const loggedIn = status === "authenticated";
   const { data: trendingData, isLoading: isTrendingDataLoading } = api.song.getTrending.useQuery();
-  const { data: historyData, isLoading: isHistoryDataLoading } = api.song.getHistory.useQuery();
-  const { data: wishlistData, isLoading: isWishlistDataLoading } = api.song.getWishlist.useQuery();
+  const { data: historyData, isLoading: isHistoryDataLoading } = api.song.getHistory.useQuery(
+    undefined,
+    { enabled: loggedIn },
+  );
+  const { data: wishlistData, isLoading: isWishlistDataLoading } = api.song.getWishlist.useQuery(
+    undefined,
+    { enabled: loggedIn },
+  );
   const { spotifyUserData, refreshSpotifyUserData, isSpotifyUserDataLoading } =
     useSpotifyUserDataContext();
   const utils = api.useUtils();
