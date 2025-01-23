@@ -1,8 +1,12 @@
-type TrendingTabContentProps = {
-  data: any; //api.song.getTrending.useQuery;
-};
+import { useSearchTabData } from "@/contexts/SearchTabDataContext";
 
-const TrendingTable = ({ data }: TrendingTabContentProps) => {
+const TrendingTable = () => {
+  const {
+    trending: { data, refetchData, isLoading },
+  } = useSearchTabData();
+
+  const trendingData = data!; // Must exist due to checks in parent SearchTabContent
+
   return (
     <table className="w-full">
       {

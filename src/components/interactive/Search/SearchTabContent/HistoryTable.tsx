@@ -1,11 +1,17 @@
+import { useSearchTabData } from "@/contexts/SearchTabDataContext";
 import { SearchSubTab } from "../SearchTabBar";
 
 interface HistoryTabContentProps {
-  data: any;
   activeTab?: SearchSubTab;
 }
 
-const HistoryTable = ({ data, activeTab }: HistoryTabContentProps) => {
+const HistoryTable = ({ activeTab }: HistoryTabContentProps) => {
+  const {
+    history: { data, refetchData, isLoading },
+  } = useSearchTabData();
+
+  const historyData = data!; // Must exist due to checks in parent SearchTabContent
+
   return <table className="w-full"></table>;
 };
 

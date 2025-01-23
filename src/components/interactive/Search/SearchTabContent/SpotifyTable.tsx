@@ -1,7 +1,7 @@
 import IconButton from "@/components/IconButton";
 import { MusicPlayingIndicator } from "@/components/Indicators";
+import { useSearchTabData } from "@/contexts/SearchTabDataContext";
 import { fadeInAndOut } from "@/helpers/animations";
-import { SpotifyTabData } from "@/hooks/useSearchTabsData";
 import { SpotifyTrack } from "@/types/spotify";
 import { AnimatePresence, motion } from "framer-motion";
 import { SearchSubTab } from "../SearchTabBar";
@@ -13,12 +13,16 @@ const SpotifyTabHeaderMap = {
 };
 
 interface SpotifyTabContentProps {
-  data: SpotifyTabData;
-  refetchData: () => void;
   activeTab?: SearchSubTab;
 }
 
-const SpotifyTable = ({ data, refetchData, activeTab }: SpotifyTabContentProps) => {
+const SpotifyTable = ({ activeTab }: SpotifyTabContentProps) => {
+  const {
+    spotify: { data, refetchData, isLoading },
+  } = useSearchTabData();
+
+  const spotifyData = data!; // Must exist due to checks in parent SearchTabContent
+
   interface SpotifyTableRowProps {
     track: SpotifyTrack;
     currentlyPlaying?: boolean;
@@ -69,26 +73,28 @@ const SpotifyTable = ({ data, refetchData, activeTab }: SpotifyTabContentProps) 
       <table className="w-full">
         <AnimatePresence mode="wait">
           <motion.tbody key={activeTab} {...fadeInAndOut(0.15)}>
-            {activeTab == "queue" &&
-              data.queue?.queue.map((track, index) => (
-                <TableRow key={`${track.id}/${index}`} track={track} />
-              ))}
             {activeTab == "recently_played" && (
               <>
-                {data.currentlyPlaying?.is_playing && (
+                {spotifyData.currentlyPlaying?.is_playing && (
                   <TableRow
-                    key={data.currentlyPlaying.item.id}
-                    track={data.currentlyPlaying.item}
+                    key={spotifyData.currentlyPlaying.item.id}
+                    track={spotifyData.currentlyPlaying.item}
                     currentlyPlaying={true}
                   />
                 )}
-                {data.recentlyPlayed?.items.map((track, index) => (
+                {spotifyData.recentlyPlayed?.items.map((track, index) => (
                   <TableRow key={`${track.track.id}/${index}`} track={track.track} />
                 ))}
               </>
             )}
+            {activeTab == "queue" &&
+              spotifyData.queue?.queue.map((track, index) => (
+                <TableRow key={`${track.id}/${index}`} track={track} />
+              ))}
             {activeTab == "most_played" &&
-              data.mostPlayed?.items.map((track) => <TableRow key={track.id} track={track} />)}
+              spotifyData.mostPlayed?.items.map((track) => (
+                <TableRow key={track.id} track={track} />
+              ))}
           </motion.tbody>
         </AnimatePresence>
       </table>

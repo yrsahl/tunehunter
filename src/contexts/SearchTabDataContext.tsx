@@ -1,45 +1,167 @@
-import { createContext, ReactNode, useContext } from "react";
+import { SearchTab } from "@/components/interactive/Search/SearchTabBar";
+import useSpotifySongData, { SpotifyTabData } from "@/hooks/useSpotifySongData";
+import { AppRouter } from "@/server/api/root";
+import { api } from "@/utils/api";
+import { inferProcedureOutput } from "@trpc/server";
+import { useSession } from "next-auth/react";
+import { createContext, ReactNode, useContext, useEffect } from "react";
+import { useSpotifyUserDataContext } from "./SpotifyUserDataContext";
+
+// Load all the SearchTab data in once place and distribute it later
 
 interface ISearchTabDataContext {
-  trendingData: {
-    data: null;
+  isTabDataLoading: (tab: SearchTab) => boolean;
+  isTabDataReady: (tab: SearchTab) => boolean;
+  trending: {
+    data?: inferProcedureOutput<AppRouter["song"]["getTrending"]> | null;
     isLoading: boolean;
+    refetchData: () => void;
   };
-  spotifyData: {
-    data: null;
+  spotify: {
+    data: SpotifyTabData | null;
     isLoading: boolean;
+    refetchData: () => void;
   };
-  historyData: {
-    data: null;
+  history: {
+    data?: inferProcedureOutput<AppRouter["song"]["getHistory"]> | null;
     isLoading: boolean;
+    refetchData: () => void;
   };
-  wishlistData: {
-    data: null;
+  wishlist: {
+    data?: inferProcedureOutput<AppRouter["song"]["getWishlist"]> | null;
     isLoading: boolean;
+    refetchData: () => void;
   };
 }
 
-const SearchDataContext = createContext<ISearchTabDataContext>({
-  trendingData: {
+const SearchTabDataContext = createContext<ISearchTabDataContext>({
+  isTabDataLoading: () => false,
+  isTabDataReady: () => false,
+  trending: {
     data: null,
     isLoading: false,
+    refetchData: () => {},
   },
-  spotifyData: {
+  spotify: {
     data: null,
     isLoading: false,
+    refetchData: () => {},
   },
-  historyData: {
+  history: {
     data: null,
     isLoading: false,
+    refetchData: () => {},
   },
-  wishlistData: {
+  wishlist: {
     data: null,
     isLoading: false,
+    refetchData: () => {},
   },
 });
 
-export const useSearchTabData = () => useContext(SearchDataContext);
+export const useSearchTabData = () => useContext(SearchTabDataContext);
 
 export const SearchTabDataProvider = ({ children }: { children: ReactNode }) => {
-  return {};
+  const { status } = useSession();
+  const loggedIn = status === "authenticated";
+  const utils = api.useUtils();
+  const { spotifyConnected } = useSpotifyUserDataContext();
+
+  // Fetch data
+  const { data: trendingData, isLoading: isTrendingDataLoading } = api.song.getTrending.useQuery();
+  const { data: historyData, isLoading: isHistoryDataLoading } = api.song.getHistory.useQuery(
+    undefined,
+    { enabled: loggedIn },
+  );
+  const { data: wishlistData, isLoading: isWishlistDataLoading } = api.song.getWishlist.useQuery(
+    undefined,
+    { enabled: loggedIn },
+  );
+  const {
+    data: spotifyData,
+    isLoading: isSpotifyDataLoading,
+    refetchData: refreshSpotifyData,
+  } = useSpotifySongData();
+
+  // Refresh data
+  const refetchTrendingData = () => {
+    utils.song.getHistory.invalidate();
+  };
+  const refetchHistoryData = () => {
+    utils.song.getHistory.invalidate();
+  };
+  const refetchWishlistData = () => {
+    utils.song.getWishlist.invalidate();
+  };
+
+  // Check for a given tab to use in the SearchTabContent component to share loading and error message styles
+  const isTabDataLoading = (tab?: SearchTab) => {
+    switch (tab) {
+      case "trending":
+        return isTrendingDataLoading;
+      case "spotify":
+        return isSpotifyDataLoading;
+      case "history":
+        return isHistoryDataLoading;
+      case "wishlist":
+        return isWishlistDataLoading;
+      default:
+        return false;
+    }
+  };
+  const isTabDataReady = (tab?: SearchTab) => {
+    switch (tab) {
+      case "trending":
+        return !isTrendingDataLoading && !!trendingData;
+      case "spotify":
+        return !isSpotifyDataLoading && !!spotifyData;
+      case "history":
+        return !isHistoryDataLoading && !!historyData;
+      case "wishlist":
+        return !isWishlistDataLoading && !!wishlistData;
+      default:
+        return false;
+    }
+  };
+
+  // On login or spotify connect, get all the data
+  useEffect(() => {
+    if (!loggedIn) return;
+
+    refetchHistoryData();
+    refetchWishlistData();
+
+    if (!spotifyConnected) return;
+
+    refreshSpotifyData();
+  }, [loggedIn, spotifyConnected]);
+
+  const returnObject = {
+    isTabDataLoading,
+    isTabDataReady,
+    trending: {
+      data: trendingData,
+      isLoading: isTrendingDataLoading,
+      refetchData: refetchTrendingData,
+    },
+    spotify: {
+      data: spotifyData,
+      isLoading: isSpotifyDataLoading,
+      refetchData: refreshSpotifyData,
+    },
+    history: {
+      data: historyData,
+      isLoading: isHistoryDataLoading,
+      refetchData: refetchHistoryData,
+    },
+    wishlist: {
+      data: wishlistData,
+      isLoading: isWishlistDataLoading,
+      refetchData: refetchWishlistData,
+    },
+  };
+
+  return (
+    <SearchTabDataContext.Provider value={returnObject}>{children}</SearchTabDataContext.Provider>
+  );
 };

@@ -1,6 +1,6 @@
 import { LoadingIndicator } from "@/components/Indicators";
+import { useSearchTabData } from "@/contexts/SearchTabDataContext";
 import { fadeInAndOut } from "@/helpers/animations";
-import useSearchTabsData from "@/hooks/useSearchTabsData";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
@@ -41,8 +41,15 @@ const SearchTabContent = ({ activeTab }: SearchTabContentProps) => {
     ? emptySubTabMessageMap[activeSubTab]
     : emptyTabMessageMap[activeTab];
 
-  // Data fetching
-  const { data, isDataLoading, refetchData } = useSearchTabsData();
+  const { isTabDataLoading, isTabDataReady } = useSearchTabData();
+  const isDataLoading = isTabDataLoading(activeTab);
+  const isDataReady = isTabDataReady(activeTab);
+
+  console.log("SearchTabContent");
+  console.log("activeTab", activeTab);
+  console.log("activeSubTab", activeSubTab);
+  console.log("isDataLoading", isDataLoading);
+  console.log("isDataReady", isDataReady);
 
   return (
     <>
@@ -70,12 +77,12 @@ const SearchTabContent = ({ activeTab }: SearchTabContentProps) => {
           <LoadingIndicator size={60} />
         </div>
       )}
-      {!data && !isDataLoading && (
+      {!isDataLoading && !isDataReady && (
         <div className="flex h-full max-w-[66%] items-center justify-center text-center">
           <p>{noDataMessage}</p>
         </div>
       )}
-      {!!data && (
+      {isTabDataReady(activeTab) && (
         <AnimatePresence mode="wait">
           <div className="h-full w-full px-3 sm:px-5 md:px-7">
             <motion.div
@@ -83,18 +90,10 @@ const SearchTabContent = ({ activeTab }: SearchTabContentProps) => {
               key={activeSubTab}
               {...fadeInAndOut(0.15)}
             >
-              {activeTab === "trending" && <TrendingTable data={data.trendingData} />}
-              {activeTab === "spotify" && (
-                <SpotifyTable
-                  data={data.spotifyData}
-                  refetchData={refetchData}
-                  activeTab={activeSubTab}
-                />
-              )}
-              {activeTab === "history" && (
-                <HistoryTable data={data.historyData} activeTab={activeSubTab} />
-              )}
-              {activeTab === "wishlist" && <WishlistTable data={data.wishlistData} />}
+              {activeTab === "trending" && <TrendingTable />}
+              {activeTab === "spotify" && <SpotifyTable activeTab={activeSubTab} />}
+              {activeTab === "history" && <HistoryTable activeTab={activeSubTab} />}
+              {activeTab === "wishlist" && <WishlistTable />}
             </motion.div>
           </div>
         </AnimatePresence>

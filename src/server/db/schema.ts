@@ -2,6 +2,7 @@ import { relations, sql } from "drizzle-orm";
 import {
   index,
   integer,
+  pgEnum,
   pgMaterializedView,
   pgTable,
   primaryKey,
@@ -96,7 +97,10 @@ export const verificationTokens = pgTable(
   }),
 );
 
-// Interesting data
+// TODO: replace type's type (varchar) with this tpyeEnum on a later day
+const typeEnum = pgEnum("type", ["search", "purchase"]);
+
+// What people are searching or buying
 export const queries = pgTable(
   "query",
   {
@@ -106,23 +110,14 @@ export const queries = pgTable(
     songId: integer("song_id")
       .notNull()
       .references(() => songs.id),
-    searchedAt: timestamp("created_at", { withTimezone: true })
+    type: varchar("type", { length: 255 }).default("search").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.userId, table.songId] }),
   }),
-);
-
-export const songCountView = pgMaterializedView("songCountView").as((qb) =>
-  qb
-    .select({
-      songId: queries.songId,
-      queryCount: sql<number>`count(*)`.as("queryCount"),
-    })
-    .from(queries)
-    .groupBy(queries.songId),
 );
 
 export const queriesRelations = relations(queries, ({ one }) => ({
@@ -165,11 +160,18 @@ export const wishlistsRelations = relations(wishlists, ({ one }) => ({
   }),
 }));
 
+// A particular artist
+export const artists = pgTable("artist", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  region: varchar("region", { length: 255 }).notNull(),
+});
+
+// A song identified by its (spotify) id
 export const songs = pgTable("song", {
   id: serial("id").primaryKey(),
-  artists: varchar("artists", { length: 255 }).notNull(),
-  name: varchar("name", { length: 255 }).notNull(),
-  duration: varchar("duration", { length: 255 }).notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  duration: integer("duration").notNull(),
   album: varchar("album", { length: 255 }).notNull(),
   albumArtUrl: varchar("album_art_url", { length: 255 }).notNull(),
   year: varchar("year", { length: 255 }).notNull(),
@@ -183,6 +185,23 @@ export const songsRelations = relations(songs, ({ many }) => ({
   wishlists: many(wishlists),
 }));
 
+// Many-to-many artists and songs
+export const songArtists = pgTable(
+  "song_artists",
+  {
+    songId: integer("song_id")
+      .notNull()
+      .references(() => songs.id, { onDelete: "cascade" }),
+    artistId: integer("artist_id")
+      .notNull()
+      .references(() => artists.id, { onDelete: "cascade" }),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.songId, table.artistId] }),
+  }),
+);
+
+// A song vendor, i.e. BandCamp
 export const songVendors = pgTable("songVendor", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
@@ -193,6 +212,7 @@ export const songVendorsRelations = relations(songVendors, ({ many }) => ({
   songListings: many(songListings),
 }));
 
+// Individual song listings on a given vendor
 export const songListings = pgTable(
   "songListing",
   {
@@ -222,3 +242,14 @@ export const songListingsRelations = relations(songListings, ({ one }) => ({
     references: [songVendors.id],
   }),
 }));
+
+// VIEW
+export const songCountView = pgMaterializedView("songCountView").as((qb) =>
+  qb
+    .select({
+      songId: queries.songId,
+      queryCount: sql<number>`count(*)`.as("queryCount"),
+    })
+    .from(queries)
+    .groupBy(queries.songId),
+);

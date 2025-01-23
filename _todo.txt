@@ -1,20 +1,7 @@
 ---- CORE
 
-
-
-
-Load tunehunter userdata + trending and also spotifydata on callback page
-- Login: everything but check for spotify account
-- Spotify callback: everything
-- TrendingTable check if data is present, else load
-
-
-Finish table content data fetching
-- Duplicate data getHistoryPurchases, getHistorySearches + Queries?
-  - Add type: Search | Purchase
-
-
 Trending logic: query new song_view_count materializedview once every 15 minutes
+- Cronjob on NeonDB
 
 
 

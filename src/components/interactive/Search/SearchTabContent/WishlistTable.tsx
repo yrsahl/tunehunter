@@ -1,8 +1,12 @@
-interface WishlistTabContentProps {
-  data: any;
-}
+import { useSearchTabData } from "@/contexts/SearchTabDataContext";
 
-const WishlistTable = ({ data }: WishlistTabContentProps) => {
+const WishlistTable = () => {
+  const {
+    wishlist: { data, refetchData, isLoading },
+  } = useSearchTabData();
+
+  const wishlistData = data!; // Must exist due to checks in parent
+
   return <table className="w-full"></table>;
 };
 
