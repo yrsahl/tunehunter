@@ -227,6 +227,7 @@ export const songListingsRelations = relations(songListings, ({ one }) => ({
 }));
 
 // VIEW
+// TODO: change to cron job (updates every 15 minutes) when on paid plan on Neon
 export const songCountView = pgMaterializedView("songCountView").as((qb) =>
   qb
     .select({

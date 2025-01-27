@@ -5,6 +5,9 @@ const TrendingTable = () => {
     trending: { data, refetchData, isLoading },
   } = useSearchTabData();
 
+  // await db.refreshMaterializedView(newYorkers).concurrently();
+  // await db.refreshMaterializedView(newYorkers).withNoData();
+
   const trendingData = data!; // Must exist due to checks in parent SearchTabContent
 
   return (
