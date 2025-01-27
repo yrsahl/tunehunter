@@ -59,6 +59,7 @@ const SearchTabBar = () => {
             searchTab={searchTab}
             activeSearchTab={activeSearchTab}
             setActiveSearchTab={setActiveSearchTab}
+            key={searchTab}
           />
         ))}
       </div>

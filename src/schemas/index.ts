@@ -14,6 +14,34 @@ export const VerificationCodeSchema = z.object({
   verificationCode: z.string().min(1, "Verification code is required"),
 });
 
+export const AddUserActivitySchema = z.object({
+  type: z.enum(["search", "purchase", "wishlist"]),
+  songId: z.string(),
+});
+
+export const GetUserActivitySchema = z.object({
+  type: z.enum(["search", "purchase", "wishlist"]),
+});
+
+export const AddSongSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  duration: z.number(),
+  album: z.string(),
+  albumArtUrl: z.string().optional(),
+  year: z.string(),
+  genre: z.string(),
+  spotifyUrl: z.string(),
+});
+
+export const AddArtistSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  spotifyUrl: z.string(),
+  popularity: z.number().optional(),
+  followers: z.number().optional(),
+});
+
 export const ClientCredentialsTokenSchema = z
   .object({
     token: z.string().min(1),

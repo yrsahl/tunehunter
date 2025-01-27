@@ -30,8 +30,7 @@ export const users = pgTable("user", {
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
   sessions: many(sessions),
-  queries: many(queries),
-  wishlists: many(wishlists),
+  userActivities: many(userActivities),
 }));
 
 export const accounts = pgTable(
@@ -97,83 +96,52 @@ export const verificationTokens = pgTable(
   }),
 );
 
-// TODO: replace type's type (varchar) with this tpyeEnum on a later day
-const typeEnum = pgEnum("type", ["search", "purchase"]);
+// Needs to be explicitly exported to be picked up by 'db:push' script
+export const activityTypeEnum = pgEnum("activity_type", ["search", "purchase", "wishlist"]);
 
 // What people are searching or buying
-export const queries = pgTable(
-  "query",
-  {
-    userId: text("userId")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    songId: integer("song_id")
-      .notNull()
-      .references(() => songs.id),
-    type: varchar("type", { length: 255 }).default("search").notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-  },
-  (table) => ({
-    pk: primaryKey({ columns: [table.userId, table.songId] }),
-  }),
-);
+export const userActivities = pgTable("userActivity", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
+  songId: varchar("song_id", { length: 255 }).references(() => songs.id),
+  type: activityTypeEnum().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+});
 
-export const queriesRelations = relations(queries, ({ one }) => ({
+export const userActivitiesRelations = relations(userActivities, ({ one }) => ({
   user: one(users, {
-    fields: [queries.userId],
+    fields: [userActivities.userId],
     references: [users.id],
   }),
   song: one(songs, {
-    fields: [queries.songId],
+    fields: [userActivities.songId],
     references: [songs.id],
   }),
 }));
 
-export const wishlists = pgTable(
-  "wishlist",
-  {
-    userId: text("userId")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    songId: integer("song_id")
-      .notNull()
-      .references(() => songs.id),
-    addedAt: timestamp("createdAt", { withTimezone: true })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-  },
-  (table) => ({
-    compoundKey: primaryKey({ columns: [table.userId, table.songId] }),
-  }),
-);
-
-export const wishlistsRelations = relations(wishlists, ({ one }) => ({
-  user: one(users, {
-    fields: [wishlists.userId],
-    references: [users.id],
-  }),
-  song: one(songs, {
-    fields: [wishlists.songId],
-    references: [songs.id],
-  }),
-}));
+// Genres
+export const genres = pgTable("genre", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+});
 
 // A particular artist
 export const artists = pgTable("artist", {
-  id: serial("id").primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
-  region: varchar("region", { length: 255 }).notNull(),
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  popularity: integer("popularity"),
+  followers: integer("followers"),
 });
 
 // A song identified by its (spotify) id
 export const songs = pgTable("song", {
-  id: serial("id").primaryKey(),
+  id: text("id").primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
   duration: integer("duration").notNull(),
   album: varchar("album", { length: 255 }).notNull(),
-  albumArtUrl: varchar("album_art_url", { length: 255 }).notNull(),
+  albumArtUrl: varchar("album_art_url", { length: 255 }),
   year: varchar("year", { length: 255 }).notNull(),
   genre: varchar("genre", { length: 255 }).notNull(),
   spotifyUrl: varchar("spotify_url", { length: 255 }).notNull(),
@@ -181,23 +149,38 @@ export const songs = pgTable("song", {
 
 export const songsRelations = relations(songs, ({ many }) => ({
   songListings: many(songListings),
-  queries: many(queries),
-  wishlists: many(wishlists),
+  userActivities: many(userActivities),
 }));
 
 // Many-to-many artists and songs
 export const songArtists = pgTable(
-  "song_artists",
+  "songArtists",
   {
-    songId: integer("song_id")
+    songId: text("song_id")
       .notNull()
       .references(() => songs.id, { onDelete: "cascade" }),
-    artistId: integer("artist_id")
+    artistId: text("artist_id")
       .notNull()
       .references(() => artists.id, { onDelete: "cascade" }),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.songId, table.artistId] }),
+  }),
+);
+
+// Many-to-many artists and genres
+export const artistGenres = pgTable(
+  "artistGenres",
+  {
+    artistId: text("artist_id")
+      .notNull()
+      .references(() => artists.id, { onDelete: "cascade" }),
+    genreId: integer("genre_id")
+      .notNull()
+      .references(() => genres.id, { onDelete: "cascade" }),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.artistId, table.genreId] }),
   }),
 );
 
@@ -216,7 +199,7 @@ export const songVendorsRelations = relations(songVendors, ({ many }) => ({
 export const songListings = pgTable(
   "songListing",
   {
-    songId: integer("song_id")
+    songId: varchar("song_id", { length: 255 })
       .notNull()
       .references(() => songs.id),
     vendorId: integer("vendor_id")
@@ -247,9 +230,9 @@ export const songListingsRelations = relations(songListings, ({ one }) => ({
 export const songCountView = pgMaterializedView("songCountView").as((qb) =>
   qb
     .select({
-      songId: queries.songId,
-      queryCount: sql<number>`count(*)`.as("queryCount"),
+      songId: userActivities.songId,
+      queryCount: sql<number>`count(*)`.as("searchCount"),
     })
-    .from(queries)
-    .groupBy(queries.songId),
+    .from(userActivities)
+    .groupBy(userActivities.songId),
 );

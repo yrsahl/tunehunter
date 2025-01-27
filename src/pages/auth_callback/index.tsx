@@ -22,7 +22,7 @@ const AuthCallbackPage: NextPage = ({}) => {
     api.account.getSpotifyAccountById.useQuery(
       { userId: userData?.user.id! },
       {
-        enabled: !!userData,
+        enabled: loggedIn,
         refetchInterval: 30 * 60 * 1000, // Refetch every 30 minutes to refresh the access token
         refetchIntervalInBackground: true,
         refetchOnWindowFocus: false,

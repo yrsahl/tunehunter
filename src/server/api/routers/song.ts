@@ -1,9 +1,18 @@
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
+import { AddSongSchema } from "@/schemas";
+import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { songCountView, songs } from "@/server/db/schema";
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
+import { z } from "zod";
 
 export const songRouter = createTRPCRouter({
-  getTrending: publicProcedure.query(({ ctx }) => {
+  // ********* Queries *********
+  getSongById: publicProcedure.input(z.object({ id: z.string() })).query(({ ctx, input }) => {
+    return ctx.db.query.songs.findFirst({
+      where: (songs, { eq }) => eq(songs.id, input.id),
+    });
+  }),
+
+  getTrendingSongs: publicProcedure.query(({ ctx }) => {
     return ctx.db
       .select({
         id: songCountView.songId,
@@ -17,34 +26,26 @@ export const songRouter = createTRPCRouter({
       .orderBy(songCountView.queryCount);
   }),
 
-  getHistory: protectedProcedure.query(async ({ ctx }) => {
-    const searchHistoryData = await ctx.db.query.queries.findMany({
-      where: (queries, { eq }) =>
-        and(eq(queries.userId, ctx.session.user.id), eq(queries.type, "search")),
-      with: { song: true },
-      orderBy: (queries, { desc }) => [desc(queries.createdAt)],
-      limit: 30,
+  // ********* Mutations *********
+  addSong: publicProcedure.input(AddSongSchema).mutation(async ({ ctx, input }) => {
+    const song = await ctx.db.query.songs.findFirst({
+      where: (songs, { eq }) => eq(songs.id, input.id),
     });
-    const purchaseHistoryData = await ctx.db.query.queries.findMany({
-      where: (purchases, { eq }) =>
-        and(eq(purchases.userId, ctx.session.user.id), eq(purchases.type, "purchase")),
-      with: { song: true },
-      orderBy: (purchases, { desc }) => [desc(purchases.createdAt)],
-      limit: 30,
+    if (song) return { info: "SONG_ALREADY_EXISTS" };
+
+    await ctx.db.insert(songs).values({
+      id: input.id,
+      title: input.title,
+      duration: input.duration,
+      album: input.album,
+      albumArtUrl: input.albumArtUrl,
+      year: input.year,
+      genre: input.genre,
+      spotifyUrl: input.spotifyUrl,
     });
 
     return {
-      search: searchHistoryData,
-      purchase: purchaseHistoryData,
+      success: "SONG_ADDED",
     };
-  }),
-
-  getWishlist: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.query.wishlists.findMany({
-      where: (wishlist, { eq }) => eq(wishlist.userId, ctx.session.user.id),
-      with: { song: true },
-      orderBy: (wishlist, { desc }) => [desc(wishlist.addedAt)],
-      limit: 30,
-    });
   }),
 });

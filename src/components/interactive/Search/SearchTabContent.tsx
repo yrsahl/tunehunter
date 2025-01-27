@@ -45,12 +45,6 @@ const SearchTabContent = ({ activeTab }: SearchTabContentProps) => {
   const isDataLoading = isTabDataLoading(activeTab);
   const isDataReady = isTabDataReady(activeTab);
 
-  console.log("SearchTabContent");
-  console.log("activeTab", activeTab);
-  console.log("activeSubTab", activeSubTab);
-  console.log("isDataLoading", isDataLoading);
-  console.log("isDataReady", isDataReady);
-
   return (
     <>
       {hasSubTabs && (
@@ -82,7 +76,7 @@ const SearchTabContent = ({ activeTab }: SearchTabContentProps) => {
           <p>{noDataMessage}</p>
         </div>
       )}
-      {isTabDataReady(activeTab) && (
+      {isDataReady && (
         <AnimatePresence mode="wait">
           <div className="h-full w-full px-3 sm:px-5 md:px-7">
             <motion.div
