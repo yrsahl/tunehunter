@@ -80,8 +80,6 @@ export const SearchTabDataProvider = ({ children }: { children: ReactNode }) => 
     refetchData: refreshSpotifyData,
   } = useSpotifySongData();
 
-  // Data formats
-
   // Refresh data
   const refetchTrendingData = () => {
     utils.song.getTrendingSongs.invalidate();

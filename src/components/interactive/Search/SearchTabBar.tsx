@@ -31,7 +31,7 @@ type TabData = {
 export const searchTabMap: TabData[] = [
   { tab: "trending", subTabs: [] },
   { tab: "spotify", subTabs: ["recently_played", "queue", "most_played"] },
-  { tab: "history", subTabs: ["purchases", "searches"] },
+  { tab: "history", subTabs: ["searches", "purchases"] },
   { tab: "wishlist", subTabs: [] },
 ] as const;
 export const isSubTabOfTab = (tab: SearchTab, subTab: SearchSubTab) =>
@@ -50,6 +50,8 @@ const SearchTabBar = () => {
       setActiveSearchTab("");
     }
   }, [router.isReady, router.query]);
+
+  console.log("searchtab bar rendering");
 
   return (
     <>

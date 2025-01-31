@@ -1,8 +1,7 @@
 import IconButton from "@/components/IconButton";
-import { MusicPlayingIndicator } from "@/components/Indicators";
+import { TableRow } from "@/components/ui/table";
 import { useSearchTabData } from "@/contexts/SearchTabDataContext";
 import { fadeInAndOut } from "@/helpers/animations";
-import { SpotifyTrack } from "@/types/spotify";
 import { AnimatePresence, motion } from "framer-motion";
 import { SearchSubTab } from "../SearchTabBar";
 
@@ -22,41 +21,6 @@ const SpotifyTable = ({ activeTab }: SpotifyTabContentProps) => {
   } = useSearchTabData();
 
   const spotifyData = data!; // Must exist due to checks in parent SearchTabContent
-
-  interface SpotifyTableRowProps {
-    track: SpotifyTrack;
-    currentlyPlaying?: boolean;
-  }
-  const TableRow = ({ track, currentlyPlaying }: SpotifyTableRowProps) => (
-    <tr className="max-h-16">
-      <td className="py-2 pr-8">
-        <a href={track.external_urls.spotify} target="_blank">
-          <div className="flex items-center gap-4">
-            <div className="avatar">
-              <div className="mask mask-squircle h-12 w-12">
-                <img src={track.album.images[0]?.url} />
-              </div>
-            </div>
-            {currentlyPlaying && <MusicPlayingIndicator size={12} />}
-          </div>
-        </a>
-      </td>
-      <td className="max-h-16 overflow-hidden pr-4">
-        <p>{track.artists[0]?.name}</p>
-        {track.artists[1] && (
-          <p className="overflow-ellipsis whitespace-nowrap text-muted-foreground">
-            {track.artists[1]?.name}
-          </p>
-        )}
-      </td>
-      <td className="pr-4">
-        <span>{track.name}</span>
-      </td>
-      <td className="text-right">
-        <IconButton variant="primary" text="Search" size="sm" />
-      </td>
-    </tr>
-  );
 
   return (
     <>

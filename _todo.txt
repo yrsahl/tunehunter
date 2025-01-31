@@ -1,9 +1,7 @@
 ---- CORE
+Then other tables
 
-Trending logic: query new song_view_count materializedview once every 15 minutes
-- Cronjob on NeonDB
-
-
+Then region in search
 
 
 
@@ -44,13 +42,14 @@ Trending logic: query new song_view_count materializedview once every 15 minutes
 
 
 
+Fix coffee pop up being not visible
+Fix scroll infobar
+
+Ai trending: once a day recommend something
 
 
-
-
-
-
-
+Useract
+- region on search
 
 
 Move the whole thing up a little, feels like its sinking
@@ -125,11 +124,12 @@ Pay functionality: Stripe
 - Supporter
 - Extra features
 
+Neon DB refresh materialized view every 15 minutes via cron job
+
 
 
 ---- Fork
 Fit into eco-system
-- Remove i18n and replace with sidebar
 - Remove page-side login and replace with SSO
 - Keep settings
 

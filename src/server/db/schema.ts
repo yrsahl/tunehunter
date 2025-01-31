@@ -97,7 +97,9 @@ export const verificationTokens = pgTable(
 );
 
 // Needs to be explicitly exported to be picked up by 'db:push' script
-export const activityTypeEnum = pgEnum("activity_type", ["search", "purchase", "wishlist"]);
+export const userActivityTypes = ["search", "purchase", "wishlist"] as const;
+export type UserActivityType = (typeof userActivityTypes)[number];
+export const activityTypeEnum = pgEnum("activity_type", userActivityTypes);
 
 // What people are searching or buying
 export const userActivities = pgTable("userActivity", {
@@ -232,7 +234,7 @@ export const songCountView = pgMaterializedView("songCountView").as((qb) =>
   qb
     .select({
       songId: userActivities.songId,
-      queryCount: sql<number>`count(*)`.as("searchCount"),
+      searchCount: sql<number>`count(*)`.as("searchCount"),
     })
     .from(userActivities)
     .groupBy(userActivities.songId),

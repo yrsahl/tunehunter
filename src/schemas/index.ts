@@ -42,6 +42,13 @@ export const AddArtistSchema = z.object({
   followers: z.number().optional(),
 });
 
+export const AddSearchResultsSchema = z.array(
+  z.object({
+    song: AddSongSchema,
+    artists: z.array(AddArtistSchema),
+  }),
+);
+
 export const ClientCredentialsTokenSchema = z
   .object({
     token: z.string().min(1),

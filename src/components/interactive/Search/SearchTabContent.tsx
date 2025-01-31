@@ -2,6 +2,7 @@ import { LoadingIndicator } from "@/components/Indicators";
 import { useSearchTabData } from "@/contexts/SearchTabDataContext";
 import { fadeInAndOut } from "@/helpers/animations";
 import { cn } from "@/lib/utils";
+import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { SearchSubTab, SearchTab, searchTabMap } from "./SearchTabBar";
@@ -11,7 +12,7 @@ import TrendingTable from "./SearchTabContent/TrendingTable";
 import WishlistTable from "./SearchTabContent/WishlistTable";
 
 const emptyTabMessageMap: Record<SearchTab, string> = {
-  trending: "Nothing's trending right now...",
+  trending: "",
   spotify: "",
   history: "",
   wishlist: "Your wishlist is empty! Add songs by clicking the heart icon on the results page.",
@@ -43,7 +44,6 @@ const SearchTabContent = ({ activeTab }: SearchTabContentProps) => {
 
   const { isTabDataLoading, isTabDataReady } = useSearchTabData();
   const isDataLoading = isTabDataLoading(activeTab);
-  const isDataReady = isTabDataReady(activeTab);
 
   return (
     <>
@@ -71,16 +71,14 @@ const SearchTabContent = ({ activeTab }: SearchTabContentProps) => {
           <LoadingIndicator size={60} />
         </div>
       )}
-      {!isDataLoading && !isDataReady && (
-        <div className="flex h-full max-w-[66%] items-center justify-center text-center">
-          <p>{noDataMessage}</p>
-        </div>
-      )}
-      {isDataReady && (
+      {!isDataLoading && (
         <AnimatePresence mode="wait">
           <div className="h-full w-full px-3 sm:px-5 md:px-7">
             <motion.div
-              className="hide-scrollbars relative h-full w-full overflow-scroll pb-6 pt-12"
+              className={clsx(
+                "hide-scrollbars relative h-full w-full overflow-scroll pb-4",
+                hasSubTabs ? "pt-12" : "pt-4",
+              )}
               key={activeSubTab}
               {...fadeInAndOut(0.15)}
             >

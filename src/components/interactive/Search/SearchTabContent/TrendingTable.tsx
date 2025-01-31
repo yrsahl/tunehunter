@@ -1,43 +1,25 @@
 import { useSearchTabData } from "@/contexts/SearchTabDataContext";
+import NoDataMessage from "./NoDataMessage";
+import TableRow from "./TableRow";
 
 const TrendingTable = () => {
   const {
     trending: { data, refetchData, isLoading },
   } = useSearchTabData();
 
-  // await db.refreshMaterializedView(newYorkers).concurrently();
-  // await db.refreshMaterializedView(newYorkers).withNoData();
-
-  const trendingData = data!; // Must exist due to checks in parent SearchTabContent
-
   return (
-    <table className="w-full">
-      {
-        // <tr className="max-h-16">
-        //   <td className="py-2 pr-8">
-        //     <div className="avatar">
-        //       <div className="mask mask-squircle h-12 w-12">
-        //         <img src={track.albumArtUrl} />
-        //       </div>
-        //     </div>
-        //   </td>
-        //   <td className="max-h-16 overflow-hidden pr-4">
-        //     <p>{artists[0]}</p>
-        //     {artists[1] && (
-        //       <p className="overflow-ellipsis whitespace-nowrap text-muted-foreground">
-        //         {track.artists[1]}
-        //       </p>
-        //     )}
-        //   </td>
-        //   <td className="pr-4">
-        //     <span>{track.title}</span>
-        //   </td>
-        //   <td className="text-right">
-        //     <IconButton variant="primary" text="Search" size="sm" />
-        //   </td>
-        // </tr>
-      }
-    </table>
+    <>
+      {!data && <NoDataMessage message="Nothing's trending right now..." />}
+      {!!data && (
+        <table className="w-full">
+          <tbody>
+            {data.map((trendingTrack) => (
+              <TableRow key={trendingTrack.song.id} track={trendingTrack} showDuration={true} />
+            ))}
+          </tbody>
+        </table>
+      )}
+    </>
   );
 };
 
