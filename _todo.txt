@@ -1,7 +1,5 @@
 ---- CORE
 
-Make profile button shine when hovered over inactive tab
-
 
 
 

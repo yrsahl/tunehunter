@@ -1,5 +1,6 @@
 import CustomIcon from "@/components/CustomIcon";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useDisabledTabStore } from "@/hooks/stores/useDisabledTabStore";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { cn } from "@/lib/utils";
 import { api } from "@/utils/api";
@@ -35,6 +36,7 @@ const SearchTabButton = ({
   const { data: userData, status: sessionStatus } = useSession();
   const router = useRouterWithHelpers();
   const loggedIn = sessionStatus === "authenticated";
+  const { setDisabledTabButtonHovered } = useDisabledTabStore();
   const { data: spotifyAccount } = api.account.getSpotifyAccountById.useQuery(
     { userId: userData?.user.id! },
     {
@@ -66,22 +68,29 @@ const SearchTabButton = ({
   return (
     <Tooltip key={searchTab}>
       <TooltipTrigger asChild>
-        <motion.button
-          key={searchTab}
-          onClick={() => handleTabClick(searchTab)}
-          disabled={!isTabEnabled}
-          className={cn(
-            "whitespace-nowrap border-b-2 text-foreground transition-all enabled:hover:border-primary/50",
-            isTabActive ? "!border-primary" : "border-transparent",
-            !isTabEnabled && "cursor-not-allowed text-muted-foreground/30",
-          )}
+        <div
+          onMouseEnter={() => !isTabEnabled && setDisabledTabButtonHovered(true)}
+          onMouseLeave={() => !isTabEnabled && setDisabledTabButtonHovered(false)}
         >
-          <div className="flex items-center gap-2 px-1 pb-1">
-            <CustomIcon icon={searchTab} variant={isTabEnabled ? "primary" : "primary-muted"} />
-            <span className="capitalize">{searchTab}</span>
-          </div>
-          {!isTabEnabled && <TooltipContent>{tabTooltipRestrictionMap[searchTab]}</TooltipContent>}
-        </motion.button>
+          <motion.button
+            key={searchTab}
+            onClick={() => handleTabClick(searchTab)}
+            disabled={!isTabEnabled}
+            className={cn(
+              "whitespace-nowrap border-b-2 text-foreground transition-all enabled:hover:border-primary/50",
+              isTabActive ? "!border-primary" : "border-transparent",
+              !isTabEnabled && "cursor-not-allowed text-muted-foreground/30",
+            )}
+          >
+            <div className="flex items-center gap-2 px-1 pb-1">
+              <CustomIcon icon={searchTab} variant={isTabEnabled ? "primary" : "primary-muted"} />
+              <span className="capitalize">{searchTab}</span>
+            </div>
+            {!isTabEnabled && (
+              <TooltipContent>{tabTooltipRestrictionMap[searchTab]}</TooltipContent>
+            )}
+          </motion.button>
+        </div>
       </TooltipTrigger>
     </Tooltip>
   );
