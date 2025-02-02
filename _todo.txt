@@ -1,5 +1,16 @@
 ---- CORE
 
+Make profile button shine when hovered over inactive tab
+
+
+
+
+
+
+
+
+
+
 spotifytable
 
 Then region in search
@@ -43,8 +54,7 @@ Then region in search
 
 
 
-Fix coffee pop up being not visible
-Fix scroll infobar
+
 
 Ai trending: once a day recommend something
 
@@ -74,7 +84,7 @@ Thoughts
 - Filter results: one search for every filter -> interweave results
 - Min length: recursively fill up (hit the next endpoint for more songs until enough)
 
-Make profile button shine when hovered over inactive tab
+
 
 Results styles & functionality
 

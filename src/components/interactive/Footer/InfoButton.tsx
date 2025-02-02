@@ -91,10 +91,10 @@ const InfoButton = () => {
                       icon="coffee"
                       onClick={toggleSupportFrame}
                     />
-                    <AnimatePresence>
+                    <AnimatePresence mode="wait">
                       {showSupportFrame && (
                         <motion.div
-                          className="absolute -left-4 top-20  h-96 w-[319px] rounded-md bg-white"
+                          className="absolute -left-4 top-20 h-96 w-[319px] rounded-md bg-white"
                           {...slideInAndOutFromAbove(0.5, 24)}
                         >
                           <iframe
@@ -103,6 +103,7 @@ const InfoButton = () => {
                             className="h-full w-full rounded-md border-none"
                             title="alvarny"
                           />
+                          <div className="h-6"></div>
                         </motion.div>
                       )}
                     </AnimatePresence>
