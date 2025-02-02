@@ -1,3 +1,4 @@
+import { useSearchTabData } from "@/contexts/SearchTabDataContext";
 import { fadeInAndOut } from "@/helpers/animations";
 import { SpotifySearchData, SpotifyTrack } from "@/types/spotify";
 import { api } from "@/utils/api";
@@ -11,10 +12,14 @@ interface SearchTableProps {
 const SearchResults = ({ searchData }: SearchTableProps) => {
   const router = useRouter();
   const addSearchActivity = api.userActivities.addSearchActivity.useMutation();
+  const { history } = useSearchTabData();
 
   const startSearch = async (track: SpotifyTrack) => {
     // Store activity
     addSearchActivity.mutateAsync({ songId: track.id });
+
+    // Refresh history data
+    history.refetchData();
 
     // Push to router -> trigger results query
     const trackSearchHref = {

@@ -1,5 +1,8 @@
 ---- CORE
-Then other tables
+
+animation when changing
+
+spotifytable
 
 Then region in search
 

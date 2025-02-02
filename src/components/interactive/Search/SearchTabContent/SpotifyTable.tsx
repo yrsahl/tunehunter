@@ -20,6 +20,10 @@ const SpotifyTable = ({ activeTab }: SpotifyTabContentProps) => {
     spotify: { data, refetchData, isLoading },
   } = useSearchTabData();
 
+  // recently_played: "You haven't listened to anything on Spotify recently!",
+  // queue: "Your queue is empty!",
+  // most_played: "Songs you've played the most (in Spotify) will appear here!",
+
   const spotifyData = data!; // Must exist due to checks in parent SearchTabContent
 
   return (
