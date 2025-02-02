@@ -25,7 +25,9 @@ export const Home: NextPage = () => {
         </AnimatePresence>
       </SearchBar>
       <SearchTabBar activeSearchTab={activeSearchTab} setActiveSearchTab={setActiveSearchTab} />
-      {activeSearchTab !== "" && <SearchTabContent activeSearchTab={activeSearchTab} />}
+      <AnimatePresence mode="wait">
+        {activeSearchTab !== "" && <SearchTabContent activeSearchTab={activeSearchTab} />}
+      </AnimatePresence>
     </div>
   );
 };
