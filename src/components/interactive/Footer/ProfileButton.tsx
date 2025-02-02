@@ -58,9 +58,7 @@ const ProfileButton = () => {
       <ProfileBackground open={profileModalOpen} enableAnimation={enableModalAnimation} />
       <motion.div
         animate={disabledTabButtonHovered ? { scale: [1, 1.1, 1] } : { scale: 1 }}
-        transition={
-          disabledTabButtonHovered ? { duration: 0.8, repeat: Infinity } : { duration: 0.8 }
-        }
+        transition={disabledTabButtonHovered ? { duration: 1, repeat: Infinity } : { duration: 1 }}
       >
         <Button
           variant="primary"
