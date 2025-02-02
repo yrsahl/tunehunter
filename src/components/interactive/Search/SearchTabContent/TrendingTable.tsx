@@ -1,5 +1,7 @@
 import { LoadingIndicator } from "@/components/Indicators";
 import { useSearchTabData } from "@/contexts/SearchTabDataContext";
+import { fadeInAndOut } from "@/helpers/animations";
+import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import NoDataMessage from "./NoDataMessage";
 import TableBody from "./TableBody";
@@ -32,65 +34,125 @@ const TrendingTable = () => {
           <LoadingIndicator size={60} />
         </div>
       )}
-      {activeSubTab === "for_you" && (
-        <>
-          {!isLoading && !forYouTrendingDataExists ? (
-            <NoDataMessage message="XXX" />
-          ) : (
-            <TableBody hasHeader={true}>
-              <>
-                {data?.map((purchasedTrack, index) => (
-                  <TableRow
-                    key={`${index}-${purchasedTrack.song.id}`}
-                    track={purchasedTrack}
-                    showDuration={true}
-                  />
-                ))}
-              </>
-            </TableBody>
+      <AnimatePresence mode="wait">
+        <motion.div key={activeSubTab} {...fadeInAndOut(0.2)} className="h-full">
+          {activeSubTab === "for_you" && (
+            <>
+              {!isLoading && !forYouTrendingDataExists ? (
+                <NoDataMessage message="XXX" />
+              ) : (
+                <TableBody hasHeader={true}>
+                  <>
+                    {data?.map((purchasedTrack, index) => (
+                      <TableRow
+                        key={`${index}-${purchasedTrack.song.id}`}
+                        track={purchasedTrack}
+                        showDuration={true}
+                      />
+                    ))}
+                  </>
+                </TableBody>
+              )}
+            </>
           )}
-        </>
-      )}
-      {activeSubTab === "local" && (
-        <>
-          {!isLoading && !localTrendingDataExists ? (
-            <NoDataMessage message="XXX" />
-          ) : (
-            <TableBody hasHeader={true}>
-              <>
-                {data?.map((purchasedTrack, index) => (
-                  <TableRow
-                    key={`${index}-${purchasedTrack.song.id}`}
-                    track={purchasedTrack}
-                    showDuration={true}
-                  />
-                ))}
-              </>
-            </TableBody>
+          {activeSubTab === "local" && (
+            <>
+              {!isLoading && !localTrendingDataExists ? (
+                <NoDataMessage message="XXX" />
+              ) : (
+                <TableBody hasHeader={true}>
+                  <>
+                    {data?.map((purchasedTrack, index) => (
+                      <TableRow
+                        key={`${index}-${purchasedTrack.song.id}`}
+                        track={purchasedTrack}
+                        showDuration={true}
+                      />
+                    ))}
+                  </>
+                </TableBody>
+              )}
+            </>
           )}
-        </>
-      )}
-      {activeSubTab === "global" && (
-        <>
-          {!isLoading && !globalTrendingDataExists ? (
-            <NoDataMessage message="XXX" />
-          ) : (
-            <TableBody hasHeader={true}>
-              <>
-                {data?.map((purchasedTrack, index) => (
-                  <TableRow
-                    key={`${index}-${purchasedTrack.song.id}`}
-                    track={purchasedTrack}
-                    showDuration={true}
-                  />
-                ))}
-              </>
-            </TableBody>
+          {activeSubTab === "global" && (
+            <>
+              {!isLoading && !globalTrendingDataExists ? (
+                <NoDataMessage message="XXX" />
+              ) : (
+                <TableBody hasHeader={true}>
+                  <>
+                    {data?.map((purchasedTrack, index) => (
+                      <TableRow
+                        key={`${index}-${purchasedTrack.song.id}`}
+                        track={purchasedTrack}
+                        showDuration={true}
+                      />
+                    ))}
+                  </>
+                </TableBody>
+              )}
+            </>
           )}
-        </>
-      )}
+        </motion.div>
+      </AnimatePresence>
     </>
   );
 };
 
 export default TrendingTable;
+
+// {activeSubTab === "for_you" && (
+//   <motion.div key={activeSubTab} {...fadeInAndOut(0.15)}>
+//     {!isLoading && !forYouTrendingDataExists ? (
+//       <NoDataMessage message="XXX" />
+//     ) : (
+//       <TableBody hasHeader={true}>
+//         <>
+//           {data?.map((purchasedTrack, index) => (
+//             <TableRow
+//               key={`${index}-${purchasedTrack.song.id}`}
+//               track={purchasedTrack}
+//               showDuration={true}
+//             />
+//           ))}
+//         </>
+//       </TableBody>
+//     )}
+//   </motion.div>
+// )}
+// {activeSubTab === "local" && (
+//   <motion.div key={activeSubTab} {...fadeInAndOut(0.15)}>
+//     {!isLoading && !localTrendingDataExists ? (
+//       <NoDataMessage message="XXX" />
+//     ) : (
+//       <TableBody hasHeader={true}>
+//         <>
+//           {data?.map((purchasedTrack, index) => (
+//             <TableRow
+//               key={`${index}-${purchasedTrack.song.id}`}
+//               track={purchasedTrack}
+//               showDuration={true}
+//             />
+//           ))}
+//         </>
+//       </TableBody>
+//     )}
+//   </motion.div>
+// )}
+// {activeSubTab === "global" && (
+//   <motion.div key={activeSubTab} {...fadeInAndOut(0.15)}>
+//     {!isLoading && !globalTrendingDataExists ? (
+//       <NoDataMessage message="XXX" />
+//     ) : (
+//       <TableBody hasHeader={true}>
+//         <>
+//           {data?.map((purchasedTrack, index) => (
+//             <TableRow
+//               key={`${index}-${purchasedTrack.song.id}`}
+//               track={purchasedTrack}
+//               showDuration={true}
+//             />
+//           ))}
+//         </>
+//       </TableBody>
+//     )}

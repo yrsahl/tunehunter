@@ -1,5 +1,7 @@
 import { LoadingIndicator } from "@/components/Indicators";
 import { useSearchTabData } from "@/contexts/SearchTabDataContext";
+import { fadeInAndOut } from "@/helpers/animations";
+import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import NoDataMessage from "./NoDataMessage";
 import TableBody from "./TableBody";
@@ -30,44 +32,48 @@ const HistoryTable = () => {
           <LoadingIndicator size={60} />
         </div>
       )}
-      {activeSubTab === "purchases" && (
-        <>
-          {!isLoading && !purchaseHistoryExists ? (
-            <NoDataMessage message="Your recent purchases will appear here!" />
-          ) : (
-            <TableBody hasHeader={true}>
-              <>
-                {data?.purchaseHistory.map((purchasedTrack, index) => (
-                  <TableRow
-                    key={`${index}-${purchasedTrack.song.id}`}
-                    track={purchasedTrack}
-                    showDuration={true}
-                  />
-                ))}
-              </>
-            </TableBody>
+      <AnimatePresence mode="wait">
+        <motion.div key={activeSubTab} {...fadeInAndOut(0.2)} className="h-full">
+          {activeSubTab === "purchases" && (
+            <>
+              {!isLoading && !purchaseHistoryExists ? (
+                <NoDataMessage message="Your recent purchases will appear here!" />
+              ) : (
+                <TableBody hasHeader={true}>
+                  <>
+                    {data?.purchaseHistory.map((purchasedTrack, index) => (
+                      <TableRow
+                        key={`${index}-${purchasedTrack.song.id}`}
+                        track={purchasedTrack}
+                        showDuration={true}
+                      />
+                    ))}
+                  </>
+                </TableBody>
+              )}
+            </>
           )}
-        </>
-      )}
-      {activeSubTab === "searches" && (
-        <>
-          {!isLoading && !searchHistoryExists ? (
-            <NoDataMessage message="Your recent searches will appear here!" />
-          ) : (
-            <TableBody hasHeader={true}>
-              <>
-                {data?.searchHistory.map((searchedTrack, index) => (
-                  <TableRow
-                    key={`${index}-${searchedTrack.song.id}`}
-                    track={searchedTrack}
-                    showDuration={true}
-                  />
-                ))}
-              </>
-            </TableBody>
+          {activeSubTab === "searches" && (
+            <>
+              {!isLoading && !searchHistoryExists ? (
+                <NoDataMessage message="Your recent searches will appear here!" />
+              ) : (
+                <TableBody hasHeader={true}>
+                  <>
+                    {data?.searchHistory.map((searchedTrack, index) => (
+                      <TableRow
+                        key={`${index}-${searchedTrack.song.id}`}
+                        track={searchedTrack}
+                        showDuration={true}
+                      />
+                    ))}
+                  </>
+                </TableBody>
+              )}
+            </>
           )}
-        </>
-      )}
+        </motion.div>
+      </AnimatePresence>
     </>
   );
 };
