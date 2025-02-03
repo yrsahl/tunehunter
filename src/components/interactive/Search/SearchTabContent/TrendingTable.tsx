@@ -1,9 +1,9 @@
-import { LoadingIndicator } from "@/components/Indicators";
 import { useSearchTabData } from "@/contexts/SearchTabDataContext";
 import { fadeInAndOut } from "@/helpers/animations";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import NoDataMessage from "./NoDataMessage";
+import SkeletonTable from "./SkeletonTable";
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 import TableRow from "./TableRow";
@@ -33,11 +33,7 @@ const TrendingTable = () => {
         setActiveSubTab={setActiveSubTab}
         className="w-24"
       />
-      {isLoading && (
-        <div className="flex h-full justify-center">
-          <LoadingIndicator size={60} />
-        </div>
-      )}
+      {isLoading && <SkeletonTable hasHeader={true} tab="trending" />}
       {!isLoading && (
         <AnimatePresence mode="wait">
           <motion.div key={activeSubTab} {...fadeInAndOut(0.2)} className="h-full">

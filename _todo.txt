@@ -1,6 +1,7 @@
 ---- CORE
 
-Skeleton loaders
+Wishlist
+
 Trending: today / week / month
 
 
