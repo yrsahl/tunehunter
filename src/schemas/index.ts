@@ -28,7 +28,7 @@ export const AddSongSchema = z.object({
   title: z.string(),
   duration: z.number(),
   album: z.string(),
-  albumArtUrl: z.string().optional(),
+  albumArtUrl: z.union([z.string(), z.null()]),
   year: z.string(),
   genre: z.string(),
   spotifyUrl: z.string(),
@@ -37,9 +37,8 @@ export const AddSongSchema = z.object({
 export const AddArtistSchema = z.object({
   id: z.string(),
   name: z.string(),
-  spotifyUrl: z.string(),
-  popularity: z.number().optional(),
-  followers: z.number().optional(),
+  popularity: z.union([z.number(), z.null()]),
+  followers: z.union([z.number(), z.null()]),
 });
 
 export const AddSearchResultsSchema = z.array(

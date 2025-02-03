@@ -1,25 +1,20 @@
 import IconButton from "@/components/IconButton";
-import { MusicPlayingIndicator } from "@/components/Indicators";
 import { Track } from "@/types/song";
+import clsx from "clsx";
+import { ReactNode } from "react";
 
 interface TableRowProps {
   track: Track;
   showDuration?: boolean;
-  enableWishlist?: boolean;
-  showCurrentlyPlaying?: boolean;
+  extraElement?: ReactNode;
 }
 
 const TableRow = ({
   track: { song, artists },
-  showCurrentlyPlaying = false,
   showDuration = false,
-  enableWishlist = false,
+  extraElement,
 }: TableRowProps) => (
   <tr className="max-h-16" key={song.id}>
-    {/* <td className="pr-4 font-bold">
-              <span>{index + 1}.</span>
-            </td> */}
-    {/* Image */}
     <td className="py-2 pr-8">
       <div className="flex items-center gap-4">
         <div className="avatar">
@@ -32,8 +27,11 @@ const TableRow = ({
             )}
           </div>
         </div>
-        {showCurrentlyPlaying && <MusicPlayingIndicator size={12} />}
       </div>
+    </td>
+    {/* Extra Element */}
+    <td className={clsx("align-middle", extraElement ? "pr-6" : "pr-0")}>
+      <div className="flex">{extraElement}</div>
     </td>
     {/* Artist(s) */}
     <td className="pr-4">

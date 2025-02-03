@@ -1,6 +1,14 @@
 ---- CORE
 
-icons for different tabs
+
+
+
+
+Results
+
+
+
+
 
 Then region in search
 Set region on account creation
@@ -74,10 +82,6 @@ Thoughts
 - Filters: club, extended, original
 - Filter results: one search for every filter -> interweave results
 - Min length: recursively fill up (hit the next endpoint for more songs until enough)
-
-
-
-Results styles & functionality
 
 
 Paid plan

@@ -17,9 +17,9 @@ const tabAccessMap: Record<SearchTab, AccessScopes> = {
 };
 const tabTooltipRestrictionMap: Record<SearchTab, string> = {
   trending: "", // Always accessible
-  spotify: "Create an account or Sign In to view your Spotify songs!",
-  wishlist: "Create an account or Sign In to view your Wishlist!",
-  history: "Create an account or Sign In to view your History!",
+  spotify: "Create an account or sign in to view your Spotify songs!",
+  wishlist: "Create an account or sign in to view your Wishlist!",
+  history: "Create an account or sign in to view your History!",
 };
 
 interface SearchTabButtonProps {
@@ -87,7 +87,9 @@ const SearchTabButton = ({
               <span className="capitalize">{searchTab}</span>
             </div>
             {!isTabEnabled && (
-              <TooltipContent>{tabTooltipRestrictionMap[searchTab]}</TooltipContent>
+              <TooltipContent className="border-foreground/30 bg-background text-foreground">
+                {tabTooltipRestrictionMap[searchTab]}
+              </TooltipContent>
             )}
           </motion.button>
         </div>

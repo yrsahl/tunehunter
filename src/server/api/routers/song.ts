@@ -113,7 +113,6 @@ export const songRouter = createTRPCRouter({
         artists.map((artist) => ({
           id: artist.id,
           name: artist.name,
-          spotifyUrl: artist.spotifyUrl,
           popularity: artist.popularity,
           followers: artist.followers,
         })),

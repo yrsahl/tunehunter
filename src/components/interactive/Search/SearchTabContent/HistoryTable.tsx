@@ -1,6 +1,8 @@
 import { LoadingIndicator } from "@/components/Indicators";
+import InfoWithToolTip from "@/components/InfoWithTooltip";
 import { useSearchTabData } from "@/contexts/SearchTabDataContext";
 import { fadeInAndOut } from "@/helpers/animations";
+import { formatDate } from "@/helpers/format-date";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import NoDataMessage from "./NoDataMessage";
@@ -35,26 +37,7 @@ const HistoryTable = () => {
       )}
       {!isLoading && (
         <AnimatePresence mode="wait">
-          <motion.div key={activeSubTab} {...fadeInAndOut(0.2)} className="h-full">
-            {activeSubTab === "purchases" && (
-              <>
-                {purchaseHistoryExists ? (
-                  <TableBody hasHeader={true}>
-                    <>
-                      {data?.purchaseHistory.map((purchasedTrack, index) => (
-                        <TableRow
-                          key={`${index}-${purchasedTrack.song.id}`}
-                          track={purchasedTrack}
-                          showDuration={true}
-                        />
-                      ))}
-                    </>
-                  </TableBody>
-                ) : (
-                  <NoDataMessage message="Your recent purchases will appear here!" />
-                )}
-              </>
-            )}
+          <motion.div key={activeSubTab} {...fadeInAndOut(0.2)} className="h-full w-full">
             {activeSubTab === "searches" && (
               <>
                 {searchHistoryExists ? (
@@ -65,12 +48,41 @@ const HistoryTable = () => {
                           key={`${index}-${searchedTrack.song.id}`}
                           track={searchedTrack}
                           showDuration={true}
+                          extraElement={
+                            <InfoWithToolTip
+                              tooltip={`Searched on ${formatDate(searchedTrack.createdAt)}`}
+                            />
+                          }
                         />
                       ))}
                     </>
                   </TableBody>
                 ) : (
                   <NoDataMessage message="Your recent searches will appear here!" />
+                )}
+              </>
+            )}
+            {activeSubTab === "purchases" && (
+              <>
+                {purchaseHistoryExists ? (
+                  <TableBody hasHeader={true}>
+                    <>
+                      {data?.purchaseHistory.map((purchasedTrack, index) => (
+                        <TableRow
+                          key={`${index}-${purchasedTrack.song.id}`}
+                          track={purchasedTrack}
+                          showDuration={true}
+                          extraElement={
+                            <InfoWithToolTip
+                              tooltip={`Purchased on ${formatDate(purchasedTrack.createdAt)}`}
+                            />
+                          }
+                        />
+                      ))}
+                    </>
+                  </TableBody>
+                ) : (
+                  <NoDataMessage message="Your recent purchases will appear here!" />
                 )}
               </>
             )}

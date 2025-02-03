@@ -1,5 +1,7 @@
 import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
 import { Track } from "@/types/song";
+import { api } from "@/utils/api";
+import { useEffect, useState } from "react";
 
 export type SpotifyTabData = {
   currentlyPlaying: Track | null;
@@ -11,6 +13,8 @@ export type SpotifyTabData = {
 const useSpotifySongData = () => {
   const { spotifyUserData, refetchSpotifyUserData, isSpotifyUserDataLoading } =
     useSpotifyUserDataContext();
+  const storeSearchResults = api.song.storeSearchResults.useMutation();
+  const [isDataStored, setIsDataStored] = useState(false);
 
   const { currentlyPlaying, queue, topTracks, recentlyPlayed } = spotifyUserData || {};
 
@@ -97,6 +101,23 @@ const useSpotifySongData = () => {
     recentlyPlayed: spotifyRecentlyPlayed || null,
   };
 
+  useEffect(() => {
+    if (!spotifyData || isDataStored) return;
+
+    const { queue, topTracks, recentlyPlayed } = spotifyData;
+    if (!(queue && topTracks && recentlyPlayed)) {
+      return;
+    }
+
+    // Store in DB
+    const allResults: Track[] = [...queue, ...topTracks, ...recentlyPlayed].filter(
+      (result) => result !== null,
+    );
+    storeSearchResults.mutate(allResults);
+    setIsDataStored(true);
+  }, [spotifyData, isDataStored]);
+
+  // Return
   return {
     data: spotifyData,
     isLoading: isSpotifyUserDataLoading,
