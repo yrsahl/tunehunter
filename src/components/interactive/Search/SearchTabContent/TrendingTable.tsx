@@ -1,4 +1,3 @@
-import IconButton from "@/components/IconButton";
 import { useSearchTabData } from "@/contexts/SearchTabDataContext";
 import { fadeInAndOut } from "@/helpers/animations";
 import { AnimatePresence, motion } from "framer-motion";
@@ -33,7 +32,7 @@ const TrendingTable = () => {
         subTabs={trendingSubTabs}
         setActiveSubTab={setActiveSubTab}
       />
-      <div className="absolute right-8 top-3 z-10 cursor-pointer opacity-60">
+      {/* <div className="absolute right-8 top-3 z-10 cursor-pointer opacity-60">
         <IconButton
           icon="refresh"
           size="icon"
@@ -42,7 +41,7 @@ const TrendingTable = () => {
           className="border-0"
           onClick={refetchData}
         />
-      </div>
+      </div> */}
       {isLoading && <SkeletonTable hasHeader={true} tab="trending" />}
       {!isLoading && (
         <AnimatePresence mode="wait">

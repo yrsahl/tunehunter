@@ -39,7 +39,6 @@ export const songRouter = createTRPCRouter({
     }
 
     // Else refresh view and return new results
-    console.log("awaiting all promises");
     await Promise.all([
       ctx.db.refreshMaterializedView(trendingViewToday),
       ctx.db.refreshMaterializedView(trendingViewLast7Days),
