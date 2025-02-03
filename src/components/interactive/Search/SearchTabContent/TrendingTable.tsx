@@ -5,14 +5,19 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import NoDataMessage from "./NoDataMessage";
 import TableBody from "./TableBody";
+import TableHeader from "./TableHeader";
 import TableRow from "./TableRow";
 
-const trendingSubTabs = ["for_you", "local", "global"] as const;
+const trendingSubTabs = ["today", "week", "month"] as const;
 export type TrendingSubTab = (typeof trendingSubTabs)[number];
+
+// Today, Week, Month
+// Local, global
+// Genre
 
 const TrendingTable = () => {
   const {
-    trending: { data, refetchData, isLoading },
+    trending: { data, isLoading },
   } = useSearchTabData();
   const [activeSubTab, setActiveSubTab] = useState<TrendingSubTab>(trendingSubTabs[0]);
 
@@ -22,12 +27,12 @@ const TrendingTable = () => {
 
   return (
     <>
-      {/* <TableHeader<TrendingSubTab>
+      <TableHeader<TrendingSubTab>
         activeSubTab={activeSubTab}
         subTabs={trendingSubTabs}
         setActiveSubTab={setActiveSubTab}
         className="w-24"
-      /> */}
+      />
       {isLoading && (
         <div className="flex h-full justify-center">
           <LoadingIndicator size={60} />
@@ -36,10 +41,10 @@ const TrendingTable = () => {
       {!isLoading && (
         <AnimatePresence mode="wait">
           <motion.div key={activeSubTab} {...fadeInAndOut(0.2)} className="h-full">
-            {activeSubTab === "for_you" && (
+            {activeSubTab === "today" && (
               <>
                 {forYouTrendingDataExists ? (
-                  <TableBody hasHeader={false}>
+                  <TableBody hasHeader={true}>
                     <>
                       {data?.map((purchasedTrack, index) => (
                         <TableRow
@@ -56,7 +61,7 @@ const TrendingTable = () => {
                 )}
               </>
             )}
-            {activeSubTab === "local" && (
+            {activeSubTab === "week" && (
               <>
                 {localTrendingDataExists ? (
                   <TableBody hasHeader={true}>
@@ -66,6 +71,7 @@ const TrendingTable = () => {
                           key={`${index}-${purchasedTrack.song.id}`}
                           track={purchasedTrack}
                           showDuration={true}
+                          extraElement={`${index + 1}.`}
                         />
                       ))}
                     </>
@@ -75,7 +81,7 @@ const TrendingTable = () => {
                 )}
               </>
             )}
-            {activeSubTab === "global" && (
+            {activeSubTab === "month" && (
               <>
                 {globalTrendingDataExists ? (
                   <TableBody hasHeader={true}>
@@ -85,6 +91,7 @@ const TrendingTable = () => {
                           key={`${index}-${purchasedTrack.song.id}`}
                           track={purchasedTrack}
                           showDuration={true}
+                          extraElement={`${index + 1}.`}
                         />
                       ))}
                     </>
