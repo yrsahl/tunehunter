@@ -1,5 +1,6 @@
 import { useSearchTabData } from "@/contexts/SearchTabDataContext";
 import { fadeInAndOut } from "@/helpers/animations";
+import useRegionSettings from "@/hooks/settings/useRegionSettings";
 import { SpotifySearchData, SpotifyTrack } from "@/types/spotify";
 import { api } from "@/utils/api";
 import { motion } from "framer-motion";
@@ -14,10 +15,11 @@ const SearchResults = ({ searchData, searchResultsRef }: SearchTableProps) => {
   const router = useRouter();
   const addSearchActivity = api.userActivities.addSearchActivity.useMutation();
   const { history } = useSearchTabData();
+  const { region } = useRegionSettings();
 
   const startSearch = async (track: SpotifyTrack) => {
     // Store activity
-    addSearchActivity.mutateAsync({ songId: track.id });
+    addSearchActivity.mutateAsync({ songId: track.id, region });
 
     // Refresh history data
     history.refetchData();

@@ -18,6 +18,7 @@ export const VerificationCodeSchema = z.object({
 export const AddUserActivitySchema = z.object({
   type: z.enum(["search", "purchase", "wishlist"]),
   songId: z.string(),
+  region: z.string(),
 });
 
 export const GetUserActivitySchema = z.object({

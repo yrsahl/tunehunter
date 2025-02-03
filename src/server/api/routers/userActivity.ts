@@ -46,11 +46,12 @@ export const userActivitiesRouter = createTRPCRouter({
   // ********* Mutations *********
   // Guests and registered users may add search activities
   addSearchActivity: publicProcedure
-    .input(z.object({ songId: z.string() }))
+    .input(z.object({ songId: z.string(), region: z.string() }))
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(userActivities).values({
         userId: ctx.session?.user.id || null,
         songId: input.songId,
+        region: input.region,
         type: "search",
         createdAt: new Date(),
       });
@@ -63,6 +64,7 @@ export const userActivitiesRouter = createTRPCRouter({
       await ctx.db.insert(userActivities).values({
         userId: ctx.session.user.id,
         songId: input.songId,
+        region: input.region,
         type: input.type,
         createdAt: new Date(),
       });

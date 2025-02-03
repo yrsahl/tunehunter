@@ -1,11 +1,5 @@
 ---- CORE
 
-Region in search -> DB
-
-
-
-
-
 Skeleton loaders
 Trending: today / week / month
 

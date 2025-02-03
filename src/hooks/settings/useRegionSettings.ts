@@ -41,7 +41,6 @@ const useRegionSettings = () => {
   }, [userSettings]);
 
   const changeRegion = (country: CountryCode) => {
-    console.log("newRegion", country);
     if (loggedIn) {
       updatePreferredRegion?.(country);
       toast.success(`Changed your Region to ${createCountryName(country.toUpperCase())}!`);
