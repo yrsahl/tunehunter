@@ -1,17 +1,11 @@
 ---- CORE
 
 
-
-
-
-
-
-
-
-
 spotifytable
 
 Then region in search
+Set region on account creation
+
 
 
 
@@ -86,7 +80,6 @@ Thoughts
 
 Results styles & functionality
 
-Set region on account creation
 
 Paid plan
 - Account creation: Free / Pro

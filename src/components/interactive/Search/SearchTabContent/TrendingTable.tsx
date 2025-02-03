@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import NoDataMessage from "./NoDataMessage";
 import TableBody from "./TableBody";
-import TableHeader from "./TableHeader";
 import TableRow from "./TableRow";
 
 const trendingSubTabs = ["for_you", "local", "global"] as const;
@@ -23,12 +22,12 @@ const TrendingTable = () => {
 
   return (
     <>
-      <TableHeader<TrendingSubTab>
+      {/* <TableHeader<TrendingSubTab>
         activeSubTab={activeSubTab}
         subTabs={trendingSubTabs}
         setActiveSubTab={setActiveSubTab}
         className="w-24"
-      />
+      /> */}
       {isLoading && (
         <div className="flex h-full justify-center">
           <LoadingIndicator size={60} />
@@ -41,7 +40,7 @@ const TrendingTable = () => {
               {!isLoading && !forYouTrendingDataExists ? (
                 <NoDataMessage message="XXX" />
               ) : (
-                <TableBody hasHeader={true}>
+                <TableBody hasHeader={false}>
                   <>
                     {data?.map((purchasedTrack, index) => (
                       <TableRow
