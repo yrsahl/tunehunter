@@ -46,6 +46,7 @@ const TrendingTable = () => {
                           key={`${index}-${purchasedTrack.song.id}`}
                           track={purchasedTrack}
                           showDuration={true}
+                          extraElement={`${index + 1}.`}
                         />
                       ))}
                     </>
