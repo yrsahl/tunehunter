@@ -2,9 +2,6 @@
 
 Wishlist
 
-Trending: today / week / month
-
-
 
 TrendingSettings: 
 - Local / global

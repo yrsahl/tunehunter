@@ -109,7 +109,7 @@ export const SearchTabDataProvider = ({ children }: { children: ReactNode }) => 
   const isTabDataReady = (tab?: SearchTab) => {
     switch (tab) {
       case "trending":
-        return !isTrendingDataLoading && !!trendingData && trendingData.length > 0;
+        return !isTrendingDataLoading && !!trendingData;
       case "spotify":
         return !isSpotifyDataLoading && !!spotifyData;
       case "history":

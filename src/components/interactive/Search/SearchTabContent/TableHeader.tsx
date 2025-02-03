@@ -28,7 +28,7 @@ const TableHeader = <T,>({
             )}
             onClick={() => setActiveSubTab(subTab)}
           >
-            {String(subTab).replace("_", " ")}
+            {String(subTab).replaceAll("_", " ")}
           </button>
         );
       })}

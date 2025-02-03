@@ -1,4 +1,4 @@
-import { relations, sql } from "drizzle-orm";
+import { gte, relations, sql } from "drizzle-orm";
 import {
   index,
   integer,
@@ -231,12 +231,19 @@ export const songListingsRelations = relations(songListings, ({ one }) => ({
 
 // VIEW
 // TODO: change to cron job (updates every 15 minutes) when on paid plan on Neon
-export const songCountView = pgMaterializedView("songCountView").as((qb) =>
-  qb
-    .select({
-      songId: userActivities.songId,
-      searchCount: sql<number>`count(*)`.as("searchCount"),
-    })
-    .from(userActivities)
-    .groupBy(userActivities.songId),
-);
+const createTrendingView = (viewName: string, interval: string) => {
+  return pgMaterializedView(viewName).as((qb) =>
+    qb
+      .select({
+        songId: userActivities.songId,
+        searchCount: sql<number>`count(*)`.as("searchCount"),
+      })
+      .from(userActivities)
+      .groupBy(userActivities.songId)
+      .where(gte(userActivities.createdAt, sql`now() - interval ${interval}`)),
+  );
+};
+
+export const trendingViewToday = createTrendingView("trendingViewToday", "'1 day'");
+export const trendingViewLast7Days = createTrendingView("trendingViewLast7Days", "'7 days'");
+export const trendingViewLast30Days = createTrendingView("trendingViewLast30Days", "'30 days'");

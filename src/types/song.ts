@@ -15,6 +15,12 @@ export type UserActivityTrack = {
   createdAt: Date;
 } & Track;
 
+export type TrendingTracks = {
+  today: TrendingTrack[];
+  last7Days: TrendingTrack[];
+  last30Days: TrendingTrack[];
+};
+
 export type UserHistory = {
   userId: string;
   searchHistory: UserActivityTrack[];
