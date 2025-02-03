@@ -13,7 +13,7 @@ const SearchTabBar = dynamic(() => import("@/components/interactive/Search/Searc
 });
 
 export const Home: NextPage = () => {
-  const { showResults, searchBarRef, searchSettingsRef } = useSearchBar();
+  const { showResults, searchBarRef, searchSettingsRef, searchResultsRef } = useSearchBar();
   const { searchData } = useSearchDataContext();
   const [activeSearchTab, setActiveSearchTab] = useState<SearchTab | "">("");
 
@@ -21,7 +21,9 @@ export const Home: NextPage = () => {
     <div className="-mt-2 flex min-h-72 w-full max-w-4xl flex-col items-center gap-5">
       <SearchBar ref={searchBarRef} searchSettingsRef={searchSettingsRef} showResults={showResults}>
         <AnimatePresence mode="wait">
-          {showResults && searchData && <SearchResults searchData={searchData} />}
+          {showResults && searchData && (
+            <SearchResults searchData={searchData} searchResultsRef={searchResultsRef} />
+          )}
         </AnimatePresence>
       </SearchBar>
       <SearchTabBar activeSearchTab={activeSearchTab} setActiveSearchTab={setActiveSearchTab} />

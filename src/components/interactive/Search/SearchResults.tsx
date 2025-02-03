@@ -7,9 +7,10 @@ import { useRouter } from "next/router";
 
 interface SearchTableProps {
   searchData: SpotifySearchData;
+  searchResultsRef: React.RefObject<HTMLTableElement>;
 }
 
-const SearchResults = ({ searchData }: SearchTableProps) => {
+const SearchResults = ({ searchData, searchResultsRef }: SearchTableProps) => {
   const router = useRouter();
   const addSearchActivity = api.userActivities.addSearchActivity.useMutation();
   const { history } = useSearchTabData();
@@ -20,6 +21,7 @@ const SearchResults = ({ searchData }: SearchTableProps) => {
 
     // Refresh history data
     history.refetchData();
+    // setShowResults(false);
 
     // Push to router -> trigger results query
     const trackSearchHref = {
@@ -38,7 +40,7 @@ const SearchResults = ({ searchData }: SearchTableProps) => {
         {/* <p className="text-center text-foreground/50">
           {searchData.tracks?.total} results found for 'love'.
         </p> */}
-        <table>
+        <table ref={searchResultsRef}>
           <motion.tbody {...fadeInAndOut(0.5)} key={searchData.tracks?.href}>
             {searchData.tracks?.items.map((track) => (
               <motion.tr

@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from "react";
+import useRouterWithHelpers from "./useRouterWithHelpers";
 
 const useSearchBar = () => {
   const [showResults, setShowResults] = useState(false);
   const searchBarRef = useRef<HTMLDivElement>(null);
   const searchSettingsRef = useRef<HTMLDivElement>(null);
+  const searchResultsRef = useRef<HTMLTableElement>(null);
+  const { getParams } = useRouterWithHelpers();
+  const id = getParams("id");
 
   const handleClickSearchBar = (event: MouseEvent) => {
     if (!searchBarRef.current || !searchSettingsRef.current) return; // No refs
@@ -14,9 +18,14 @@ const useSearchBar = () => {
     }
 
     // If click is placed within search bar, show results
-    if (searchBarRef.current.contains(event.target as Node)) setShowResults(true);
-    if (!searchBarRef.current.contains(event.target as Node)) setShowResults(false);
+    if (searchBarRef.current.contains(event.target as Node)) {
+      setShowResults(true);
+    }
+    if (!searchBarRef.current.contains(event.target as Node)) {
+      setShowResults(false);
+    }
   };
+
   useEffect(() => {
     document.addEventListener("mousedown", handleClickSearchBar);
     return () => {
@@ -24,10 +33,16 @@ const useSearchBar = () => {
     };
   }, []);
 
+  // Hide results on new id (new search)
+  useEffect(() => {
+    setShowResults(false);
+  }, [id]);
+
   return {
     showResults,
     searchBarRef,
     searchSettingsRef,
+    searchResultsRef,
   };
 };
 

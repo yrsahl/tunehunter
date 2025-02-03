@@ -1,13 +1,15 @@
 ---- CORE
 
+Skeleton loaders
+
+Trending: today / week / month
+
 TrendingSettings: 
 - Local / global
 - PRO: specific region
 - Genre: <>
 
 Results
-
-
 
 
 
