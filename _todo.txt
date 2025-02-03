@@ -1,7 +1,6 @@
 ---- CORE
 
-
-spotifytable
+icons for different tabs
 
 Then region in search
 Set region on account creation

@@ -26,54 +26,57 @@ const HistoryTable = () => {
         activeSubTab={activeSubTab}
         subTabs={historySubTabs}
         setActiveSubTab={setActiveSubTab}
+        className="w-28"
       />
       {isLoading && (
         <div className="flex h-full justify-center">
           <LoadingIndicator size={60} />
         </div>
       )}
-      <AnimatePresence mode="wait">
-        <motion.div key={activeSubTab} {...fadeInAndOut(0.2)} className="h-full">
-          {activeSubTab === "purchases" && (
-            <>
-              {!isLoading && !purchaseHistoryExists ? (
-                <NoDataMessage message="Your recent purchases will appear here!" />
-              ) : (
-                <TableBody hasHeader={true}>
-                  <>
-                    {data?.purchaseHistory.map((purchasedTrack, index) => (
-                      <TableRow
-                        key={`${index}-${purchasedTrack.song.id}`}
-                        track={purchasedTrack}
-                        showDuration={true}
-                      />
-                    ))}
-                  </>
-                </TableBody>
-              )}
-            </>
-          )}
-          {activeSubTab === "searches" && (
-            <>
-              {!isLoading && !searchHistoryExists ? (
-                <NoDataMessage message="Your recent searches will appear here!" />
-              ) : (
-                <TableBody hasHeader={true}>
-                  <>
-                    {data?.searchHistory.map((searchedTrack, index) => (
-                      <TableRow
-                        key={`${index}-${searchedTrack.song.id}`}
-                        track={searchedTrack}
-                        showDuration={true}
-                      />
-                    ))}
-                  </>
-                </TableBody>
-              )}
-            </>
-          )}
-        </motion.div>
-      </AnimatePresence>
+      {!isLoading && (
+        <AnimatePresence mode="wait">
+          <motion.div key={activeSubTab} {...fadeInAndOut(0.2)} className="h-full">
+            {activeSubTab === "purchases" && (
+              <>
+                {purchaseHistoryExists ? (
+                  <TableBody hasHeader={true}>
+                    <>
+                      {data?.purchaseHistory.map((purchasedTrack, index) => (
+                        <TableRow
+                          key={`${index}-${purchasedTrack.song.id}`}
+                          track={purchasedTrack}
+                          showDuration={true}
+                        />
+                      ))}
+                    </>
+                  </TableBody>
+                ) : (
+                  <NoDataMessage message="Your recent purchases will appear here!" />
+                )}
+              </>
+            )}
+            {activeSubTab === "searches" && (
+              <>
+                {searchHistoryExists ? (
+                  <TableBody hasHeader={true}>
+                    <>
+                      {data?.searchHistory.map((searchedTrack, index) => (
+                        <TableRow
+                          key={`${index}-${searchedTrack.song.id}`}
+                          track={searchedTrack}
+                          showDuration={true}
+                        />
+                      ))}
+                    </>
+                  </TableBody>
+                ) : (
+                  <NoDataMessage message="Your recent searches will appear here!" />
+                )}
+              </>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      )}
     </>
   );
 };

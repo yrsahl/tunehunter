@@ -26,6 +26,7 @@ export const SpotifyUserDataProvider = ({ children }: { children: ReactNode }) =
   const { data: userData, status } = useSession();
   const loggedIn = status === "authenticated";
 
+  // Fetch Spotify account from our DB
   const { data: spotifyAccountData } = api.account.getSpotifyAccountById.useQuery(
     { userId: userData?.user.id! },
     {
@@ -38,6 +39,7 @@ export const SpotifyUserDataProvider = ({ children }: { children: ReactNode }) =
   const spotifyConnected = loggedIn && !!spotifyAccountData?.data;
   const userAccessToken = spotifyAccountData?.data?.access_token;
 
+  // Fetch data from Spotify
   const refetchSpotifyUserData = async () => {
     // Reset if we have no token
     if (!userAccessToken) {

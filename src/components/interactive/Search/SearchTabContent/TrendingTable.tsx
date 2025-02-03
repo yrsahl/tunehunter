@@ -33,67 +33,69 @@ const TrendingTable = () => {
           <LoadingIndicator size={60} />
         </div>
       )}
-      <AnimatePresence mode="wait">
-        <motion.div key={activeSubTab} {...fadeInAndOut(0.2)} className="h-full">
-          {activeSubTab === "for_you" && (
-            <>
-              {!isLoading && !forYouTrendingDataExists ? (
-                <NoDataMessage message="XXX" />
-              ) : (
-                <TableBody hasHeader={false}>
-                  <>
-                    {data?.map((purchasedTrack, index) => (
-                      <TableRow
-                        key={`${index}-${purchasedTrack.song.id}`}
-                        track={purchasedTrack}
-                        showDuration={true}
-                      />
-                    ))}
-                  </>
-                </TableBody>
-              )}
-            </>
-          )}
-          {activeSubTab === "local" && (
-            <>
-              {!isLoading && !localTrendingDataExists ? (
-                <NoDataMessage message="XXX" />
-              ) : (
-                <TableBody hasHeader={true}>
-                  <>
-                    {data?.map((purchasedTrack, index) => (
-                      <TableRow
-                        key={`${index}-${purchasedTrack.song.id}`}
-                        track={purchasedTrack}
-                        showDuration={true}
-                      />
-                    ))}
-                  </>
-                </TableBody>
-              )}
-            </>
-          )}
-          {activeSubTab === "global" && (
-            <>
-              {!isLoading && !globalTrendingDataExists ? (
-                <NoDataMessage message="XXX" />
-              ) : (
-                <TableBody hasHeader={true}>
-                  <>
-                    {data?.map((purchasedTrack, index) => (
-                      <TableRow
-                        key={`${index}-${purchasedTrack.song.id}`}
-                        track={purchasedTrack}
-                        showDuration={true}
-                      />
-                    ))}
-                  </>
-                </TableBody>
-              )}
-            </>
-          )}
-        </motion.div>
-      </AnimatePresence>
+      {!isLoading && (
+        <AnimatePresence mode="wait">
+          <motion.div key={activeSubTab} {...fadeInAndOut(0.2)} className="h-full">
+            {activeSubTab === "for_you" && (
+              <>
+                {forYouTrendingDataExists ? (
+                  <TableBody hasHeader={false}>
+                    <>
+                      {data?.map((purchasedTrack, index) => (
+                        <TableRow
+                          key={`${index}-${purchasedTrack.song.id}`}
+                          track={purchasedTrack}
+                          showDuration={true}
+                        />
+                      ))}
+                    </>
+                  </TableBody>
+                ) : (
+                  <NoDataMessage message="Nothing's trending right now..." />
+                )}
+              </>
+            )}
+            {activeSubTab === "local" && (
+              <>
+                {localTrendingDataExists ? (
+                  <TableBody hasHeader={true}>
+                    <>
+                      {data?.map((purchasedTrack, index) => (
+                        <TableRow
+                          key={`${index}-${purchasedTrack.song.id}`}
+                          track={purchasedTrack}
+                          showDuration={true}
+                        />
+                      ))}
+                    </>
+                  </TableBody>
+                ) : (
+                  <NoDataMessage message="XXX" />
+                )}
+              </>
+            )}
+            {activeSubTab === "global" && (
+              <>
+                {globalTrendingDataExists ? (
+                  <TableBody hasHeader={true}>
+                    <>
+                      {data?.map((purchasedTrack, index) => (
+                        <TableRow
+                          key={`${index}-${purchasedTrack.song.id}`}
+                          track={purchasedTrack}
+                          showDuration={true}
+                        />
+                      ))}
+                    </>
+                  </TableBody>
+                ) : (
+                  <NoDataMessage message="XXX" />
+                )}
+              </>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      )}
     </>
   );
 };

@@ -1,4 +1,5 @@
 import IconButton from "@/components/IconButton";
+import { MusicPlayingIndicator } from "@/components/Indicators";
 import { Track } from "@/types/song";
 
 interface TableRowProps {
@@ -31,6 +32,7 @@ const TableRow = ({
             )}
           </div>
         </div>
+        {showCurrentlyPlaying && <MusicPlayingIndicator size={12} />}
       </div>
     </td>
     {/* Artist(s) */}
