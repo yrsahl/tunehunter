@@ -8,9 +8,19 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { growIn } from "@/helpers/animations";
+import useRegionSettings from "@/hooks/settings/useRegionSettings";
 import { RegisterSchema } from "@/schemas";
 import { api } from "@/utils/api";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { motion } from "framer-motion";
 import { signIn } from "next-auth/react";
 import { useEffect, useState, useTransition, type FC } from "react";
 import { useForm } from "react-hook-form";
@@ -40,6 +50,7 @@ interface IProps {
 }
 
 const RegisterForm: FC<IProps> = ({ email, menuState, setMenuState }) => {
+  const { createRegionName, sortedRegions } = useRegionSettings();
   const [accountCreated, setAccountCreated] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
@@ -50,6 +61,7 @@ const RegisterForm: FC<IProps> = ({ email, menuState, setMenuState }) => {
     defaultValues: {
       email: email,
       name: "",
+      region: "de",
     },
   });
 
@@ -124,6 +136,36 @@ const RegisterForm: FC<IProps> = ({ email, menuState, setMenuState }) => {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="region"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base font-normal">Region</FormLabel>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger id="region" className="border-2 border-primary">
+                        <motion.div
+                          key={field.value}
+                          {...growIn()}
+                          className="inline-block overflow-hidden text-ellipsis whitespace-nowrap text-base"
+                        >
+                          <SelectValue />
+                        </motion.div>
+                      </SelectTrigger>
+                      <SelectContent className="border-foreground/30">
+                        {sortedRegions.map((region) => (
+                          <SelectItem key={region} value={region.toLowerCase()}>
+                            {createRegionName(region)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormError message={error} />
             <FormSuccess message={success} />
           </div>
@@ -140,7 +182,7 @@ const RegisterForm: FC<IProps> = ({ email, menuState, setMenuState }) => {
                   variant="primary"
                 />
                 <Button variant="link" onClick={() => setMenuState(MenuState.SignIn)}>
-                  Return to Sign In page
+                  Sign In instead
                 </Button>
               </div>
             )}

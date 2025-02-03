@@ -107,6 +107,7 @@ export const userActivities = pgTable("userActivity", {
   userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
   songId: varchar("song_id", { length: 255 }).references(() => songs.id),
   type: activityTypeEnum().notNull(),
+  region: varchar("region", { length: 255 }).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),

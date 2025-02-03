@@ -1,5 +1,5 @@
 // ISO 3166-1 alpha-2 codes (https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
-export const Regions = [
+export const CountryCodes = [
   "AD",
   "AE",
   "AF",
@@ -248,11 +248,12 @@ export const Regions = [
   "ZM",
   "ZW",
 ];
-export type Region = (typeof Regions)[number];
-export const isRegion = (region: string): region is Region => Regions.includes(region as Region);
+export type CountryCode = (typeof CountryCodes)[number];
+export const isCountryCode = (region: string): region is CountryCode =>
+  CountryCodes.includes(region as CountryCode);
 
 // Map country codes to country names
-export const countryNamesEnglish: Record<Region, string> = {
+export const countryNamesEnglish: Record<CountryCode, string> = {
   AD: "Andorra",
   AE: "United Arab Emirates",
   AF: "Afghanistan",
@@ -502,7 +503,7 @@ export const countryNamesEnglish: Record<Region, string> = {
   ZW: "Zimbabwe",
 };
 
-export const countryNamesGerman: Record<Region, string> = {
+export const countryNamesGerman: Record<CountryCode, string> = {
   AD: "Andorra",
   AE: "Vereinigte Arabische Emirate",
   AF: "Afghanistan",

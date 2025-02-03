@@ -1,9 +1,12 @@
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { cn } from "@/lib/utils";
+import dynamic from "next/dynamic";
 import { useEffect, useState, type FC } from "react";
 import MagicLinkForm from "./MagicLinkForm";
-import RegisterForm from "./RegisterForm";
 import SignInForm from "./SignInForm";
+const RegisterForm = dynamic(() => import("@/components/interactive/Auth/RegisterForm"), {
+  ssr: false,
+});
 
 export enum MenuState {
   SignIn,

@@ -1,20 +1,29 @@
 ---- CORE
 
-Skeleton loaders
+Region in search -> DB
 
+
+
+
+
+Skeleton loaders
 Trending: today / week / month
+
+
 
 TrendingSettings: 
 - Local / global
 - PRO: specific region
 - Genre: <>
 
+
+
+
 Results
 
 
 
-Then region in search
-Set region on account creation
+
 
 
 
