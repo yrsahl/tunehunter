@@ -10,7 +10,7 @@ import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 import TableRow from "./TableRow";
 
-const spotifySubTabs = ["recently_played", "queue", "top_tracks"] as const;
+const spotifySubTabs = ["recently_played", "queue", "most_played"] as const;
 export type SpotifySubTab = (typeof spotifySubTabs)[number];
 
 const SpotifyTable = () => {
@@ -91,7 +91,7 @@ const SpotifyTable = () => {
                 )}
               </>
             )}
-            {activeSubTab === "top_tracks" && (
+            {activeSubTab === "most_played" && (
               <>
                 {!topTracksDataExists && (
                   <NoDataMessage message="Songs you've played the most (in Spotify) will appear here!" />

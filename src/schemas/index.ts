@@ -21,6 +21,11 @@ export const AddUserActivitySchema = z.object({
   region: z.string(),
 });
 
+export const RemoveUserActivitySchema = z.object({
+  type: z.enum(["search", "purchase", "wishlist"]),
+  songId: z.string(),
+});
+
 export const GetUserActivitySchema = z.object({
   type: z.enum(["search", "purchase", "wishlist"]),
 });

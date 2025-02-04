@@ -1,6 +1,33 @@
 ---- CORE
 
-Wishlist
+Invalidates not being removed sometimes
+
+Results
+
+
+Responsive
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Spotify api down -> search own db
 
 
 TrendingSettings: 
@@ -11,7 +38,6 @@ TrendingSettings:
 
 
 
-Results
 
 
 
@@ -28,35 +54,8 @@ Results
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Fix:
+- double toasts login
 
 
 Ai trending: once a day recommend something

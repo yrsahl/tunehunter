@@ -17,7 +17,7 @@ export type TrendingSubTab = (typeof trendingSubTabs)[number];
 
 const TrendingTable = () => {
   const {
-    trending: { data, refetchData, isLoading },
+    trending: { data, isLoading },
   } = useSearchTabData();
   const [activeSubTab, setActiveSubTab] = useState<TrendingSubTab>(trendingSubTabs[0]);
 

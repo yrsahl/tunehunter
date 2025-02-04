@@ -16,12 +16,14 @@ interface ConfirmationPromptProps {
   dialogTitle: string;
   dialogText: string;
   dialogAction: MouseEventHandler<HTMLButtonElement>;
+  dialogActionText?: string;
 }
 
 const ConfirmationModal = ({
   dialogTitle,
   dialogText,
   dialogAction,
+  dialogActionText = "Continue",
   children,
 }: ConfirmationPromptProps) => {
   return (
@@ -36,7 +38,7 @@ const ConfirmationModal = ({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={dialogAction}>Continue</AlertDialogAction>
+          <AlertDialogAction onClick={dialogAction}>{dialogActionText}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

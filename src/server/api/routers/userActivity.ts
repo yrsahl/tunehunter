@@ -1,4 +1,4 @@
-import { AddUserActivitySchema, GetUserActivitySchema } from "@/schemas";
+import { AddUserActivitySchema, GetUserActivitySchema, RemoveUserActivitySchema } from "@/schemas";
 import { db } from "@/server/db";
 import { artists, songArtists, songs, userActivities, UserActivityType } from "@/server/db/schema";
 import { UserHistory } from "@/types/song";
@@ -68,6 +68,20 @@ export const userActivitiesRouter = createTRPCRouter({
         type: input.type,
         createdAt: new Date(),
       });
+    }),
+
+  removeUserActivityByType: protectedProcedure
+    .input(RemoveUserActivitySchema)
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .delete(userActivities)
+        .where(
+          and(
+            eq(userActivities.userId, ctx.session.user.id),
+            eq(userActivities.songId, input.songId),
+            eq(userActivities.type, input.type),
+          ),
+        );
     }),
 });
 
