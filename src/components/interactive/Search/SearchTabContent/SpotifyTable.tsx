@@ -83,7 +83,7 @@ const SpotifyTable = () => {
                           key={`${index}-${queueTrack.song.id}`}
                           track={queueTrack}
                           showDuration={true}
-                          extraElement={index === 0 ? "Next!" : `${index + 1}.`}
+                          extraElement={index === 0 ? "Next" : `${index + 1}.`}
                         />
                       ))}
                     </>
