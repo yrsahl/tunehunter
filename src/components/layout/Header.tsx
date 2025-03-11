@@ -17,7 +17,7 @@ const Header = () => {
           onClick={handleClick}
         >
           <h1 className="tracking-wider">Tune</h1>
-          <h1 className="tracking-wider text-primary">HunterDev</h1>
+          <h1 className="tracking-wider text-primary">Hunter</h1>
         </button>
       </div>
       {/* <p className="text-md italic text-muted-foreground">
