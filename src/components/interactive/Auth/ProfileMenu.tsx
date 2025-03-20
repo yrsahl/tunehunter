@@ -144,7 +144,7 @@ const ProfileMenu = () => {
             variant="ghostPrimary"
             size="icon"
             icon="mapPin"
-            iconSize="24px"
+            iconSize="20px"
             bordered="default"
             onClick={setRegionByLocation}
           />
