@@ -13,7 +13,7 @@ const Header = () => {
     <div className="flex flex-col items-center gap-2">
       <div className="w-fit">
         <button
-          className="font-quicksand flex items-center text-5xl shadow-primary drop-shadow-xl"
+          className="flex items-center font-quicksand text-5xl shadow-primary drop-shadow-xl"
           onClick={handleClick}
         >
           <h1 className="tracking-wider">Tune</h1>

@@ -102,12 +102,11 @@ const SearchSettings = ({}) => {
           </div>
 
           {/* Region */}
-
           {!loggedIn && (
             <>
               <div className="flex items-center">
                 <Label htmlFor="region" className="flex items-center font-thin">
-                  Region
+                  Region:
                 </Label>
                 <Select onValueChange={changeRegion} value={region}>
                   <SelectTrigger

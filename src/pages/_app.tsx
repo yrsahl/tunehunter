@@ -12,6 +12,7 @@ import { Toaster } from "sonner";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SearchDataProvider } from "@/contexts/SearchDataContext";
+import { SearchTabDataProvider } from "@/contexts/SearchTabDataContext";
 import { SpotifyUserDataProvider } from "@/contexts/SpotifyUserDataContext";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -44,7 +45,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
             <ThemeProvider attribute="class" defaultTheme="auto" enableSystem={false}>
               <Layout>
                 <SearchDataProvider>
-                  <Component {...pageProps} />
+                  <SearchTabDataProvider>
+                    <Component {...pageProps} />
+                  </SearchTabDataProvider>
                 </SearchDataProvider>
               </Layout>
             </ThemeProvider>

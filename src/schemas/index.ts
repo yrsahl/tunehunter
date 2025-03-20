@@ -3,6 +3,7 @@ import { z } from "zod";
 export const RegisterSchema = z.object({
   email: z.string().email({ message: "E-Mail is required" }),
   name: z.string().min(3, "Minimum 3 characters required"),
+  region: z.string({ message: "Region is required" }),
 });
 
 export const ConfirmMailSchema = z.object({
@@ -13,6 +14,46 @@ export const ConfirmMailSchema = z.object({
 export const VerificationCodeSchema = z.object({
   verificationCode: z.string().min(1, "Verification code is required"),
 });
+
+export const AddUserActivitySchema = z.object({
+  type: z.enum(["search", "purchase", "wishlist"]),
+  songId: z.string(),
+  region: z.string(),
+});
+
+export const RemoveUserActivitySchema = z.object({
+  type: z.enum(["search", "purchase", "wishlist"]),
+  songId: z.string(),
+});
+
+export const GetUserActivitySchema = z.object({
+  type: z.enum(["search", "purchase", "wishlist"]),
+});
+
+export const AddSongSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  duration: z.number(),
+  album: z.string(),
+  albumArtUrl: z.union([z.string(), z.null()]),
+  year: z.string(),
+  genre: z.string(),
+  spotifyUrl: z.string(),
+});
+
+export const AddArtistSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  popularity: z.union([z.number(), z.null()]),
+  followers: z.union([z.number(), z.null()]),
+});
+
+export const AddSearchResultsSchema = z.array(
+  z.object({
+    song: AddSongSchema,
+    artists: z.array(AddArtistSchema),
+  }),
+);
 
 export const ClientCredentialsTokenSchema = z
   .object({

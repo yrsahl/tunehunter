@@ -11,15 +11,18 @@ import { toast } from "sonner";
 const AuthCallbackPage: NextPage = ({}) => {
   const router = useRouterWithHelpers();
   const { data: userData, status } = useSession();
-  const { spotifyUserData } = useSpotifyUserDataContext();
   const [error, setError] = useState<string | null>(null);
   const loggedIn = status === "authenticated";
 
+  // Check for spotify user data
+  const { spotifyUserData } = useSpotifyUserDataContext();
+
+  // Check if we got an access key
   const { data: spotifyAccountData, isLoading: isSpotifyAccountDataLoading } =
     api.account.getSpotifyAccountById.useQuery(
       { userId: userData?.user.id! },
       {
-        enabled: !!userData,
+        enabled: loggedIn,
         refetchInterval: 30 * 60 * 1000, // Refetch every 30 minutes to refresh the access token
         refetchIntervalInBackground: true,
         refetchOnWindowFocus: false,

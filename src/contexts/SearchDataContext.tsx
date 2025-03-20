@@ -1,6 +1,7 @@
 import SearchSettings from "@/components/interactive/Search/SearchSettings";
 import { fetchSpotifySearchData } from "@/helpers/spotify/fetch-spotify-data";
-import { SpotifySearchData } from "@/types/spotify";
+import { SpotifySearchData, SpotifyTrack } from "@/types/spotify";
+import { api } from "@/utils/api";
 import { createContext, ReactNode, useContext, useState } from "react";
 
 interface ISearchDataContext {
@@ -22,6 +23,33 @@ export const useSearchDataContext = () => useContext(SearchDataContext);
 export const SearchDataProvider = ({ children }: { children: ReactNode }) => {
   const [searchData, setSearchData] = useState<SpotifySearchData | null>(null);
   const [isSearchDataLoading, setIsSearchDataLoading] = useState(false);
+  const storeSearchResults = api.song.storeSearchResults.useMutation();
+
+  const storeTracksInDb = (tracks: SpotifyTrack[]) => {
+    const results = tracks.map((track) => {
+      return {
+        song: {
+          id: track.id,
+          title: track.name,
+          duration: track.duration_ms,
+          album: track.album.name,
+          albumArtUrl: track.album.images[0]?.url || null,
+          year: track.album.release_date,
+          genre: track.album.album_type,
+          spotifyUrl: track.external_urls.spotify,
+        },
+        artists: track.artists.map((artist) => {
+          return {
+            id: artist.id,
+            name: artist.name,
+            popularity: null,
+            followers: null,
+          };
+        }),
+      };
+    });
+    storeSearchResults.mutate(results);
+  };
 
   // Search spotify catalog
   const requestSearchData = (
@@ -59,9 +87,9 @@ export const SearchDataProvider = ({ children }: { children: ReactNode }) => {
         }
 
         // Query data until we have limit of songs
-
         setSearchData(searchData);
         setIsSearchDataLoading(false);
+        storeTracksInDb(searchData.tracks.items);
       });
     } catch (error) {
       console.error(error);

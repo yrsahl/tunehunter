@@ -8,12 +8,13 @@ import { useSearchSettingsStore } from "./stores/useSearchSettingsStore";
 const useSearchFunctions = () => {
   const [searchInput, setSearchInput] = useState("");
   const { requestSearchData, resetSearchData } = useSearchDataContext();
-  const { data: userData } = useSession();
+  const { data: userData, status } = useSession();
+  const loggedIn = status === "authenticated";
 
   const { data: spotifyAccountData } = api.account.getSpotifyAccountById.useQuery(
     { userId: userData?.user.id! },
     {
-      enabled: !!userData,
+      enabled: loggedIn,
       refetchInterval: 30 * 60 * 1000, // Refetch every 30 minutes to refresh the access token
       refetchIntervalInBackground: true,
       refetchOnWindowFocus: false,

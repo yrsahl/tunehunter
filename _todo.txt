@@ -1,17 +1,13 @@
 ---- CORE
 
-Finish table content data fetching
-- Pass the user id? Or is ctx.session.user.id enough?
-- Duplicate data getHistoryPurchases, getHistorySearches + Queries?
-  - Add type: Search | Purchase
+Invalidates not being removed sometimes
 
 
-Load tunehunter userdata + trending and also spotifydata on callback page
-- Login: everything but check for spotify account
-- Spotify callback: everything
+
+Results
 
 
-Trending logic: query new song_view_count materializedview once every 15 minutes
+Responsive
 
 
 
@@ -33,6 +29,13 @@ Trending logic: query new song_view_count materializedview once every 15 minutes
 
 
 
+Spotify api down -> search own db
+
+
+TrendingSettings: 
+- Local / global
+- PRO: specific region
+- Genre: <>
 
 
 
@@ -53,14 +56,15 @@ Trending logic: query new song_view_count materializedview once every 15 minutes
 
 
 
+Fix:
+- double toasts login
 
 
+Ai trending: once a day recommend something
 
 
-
-
-
-
+Useract
+- region on search
 
 
 Move the whole thing up a little, feels like its sinking
@@ -84,11 +88,6 @@ Thoughts
 - Filter results: one search for every filter -> interweave results
 - Min length: recursively fill up (hit the next endpoint for more songs until enough)
 
-Make profile button shine when hovered over inactive tab
-
-Results styles & functionality
-
-Set region on account creation
 
 Paid plan
 - Account creation: Free / Pro
@@ -135,11 +134,12 @@ Pay functionality: Stripe
 - Supporter
 - Extra features
 
+Neon DB refresh materialized view every 15 minutes via cron job
+
 
 
 ---- Fork
 Fit into eco-system
-- Remove i18n and replace with sidebar
 - Remove page-side login and replace with SSO
 - Keep settings
 

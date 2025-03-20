@@ -169,3 +169,34 @@
     @apply bg-gradient-to-b from-background to-muted text-foreground placeholder:text-muted-foreground;
   }
 }
+
+@keyframes shine {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.shine-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.shine-effect::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary)) 0%,
+    hsl(318.46, 46.429%, 89.02%) 50%,
+    hsl(var(--primary)) 100%
+  );
+  background-size: 200% 200%;
+  animation: shine 2s linear infinite;
+}

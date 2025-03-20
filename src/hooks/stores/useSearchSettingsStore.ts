@@ -21,7 +21,7 @@ export const useSearchSettingsStore = create<SearchSettingsStore>()(
       setMinimumLengthSeconds: (value: number) => set({ minimumLengthSeconds: value }),
     }),
     {
-      name: "search-settings", // name of the item in the storage (must be unique)
+      name: "search-settings",
     },
   ),
 );

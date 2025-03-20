@@ -1,10 +1,10 @@
 import {
+  CountryCode,
+  CountryCodes,
   countryNamesEnglish,
   countryNamesGerman,
   countryNamesSpanish,
-  isRegion,
-  Region,
-  Regions,
+  isCountryCode,
   sortRegions,
 } from "@/helpers/region";
 import { getUserLocation } from "@/helpers/user-location";
@@ -30,31 +30,34 @@ const useRegionSettings = () => {
     userSettingsUpdaters: { updatePreferredRegion },
   } = useUserSettings(userData?.user.id);
 
-  const sortedRegions = sortRegions(Regions, router.locale || "en");
+  const sortedRegions = sortRegions(CountryCodes, router.locale || "en");
 
   // Set region from DB
   useEffect(() => {
     const preferredRegion = userSettings?.region;
-    if (preferredRegion && isRegion(preferredRegion) && preferredRegion !== region) {
+    if (preferredRegion && isCountryCode(preferredRegion) && preferredRegion !== region) {
       changeRegion(preferredRegion);
     }
   }, [userSettings]);
 
-  const changeRegion = (newRegion: Region) => {
+  const changeRegion = (country: CountryCode) => {
     if (loggedIn) {
-      updatePreferredRegion?.(newRegion);
+      updatePreferredRegion?.(country);
+      toast.success(`Changed your Region to ${createCountryName(country.toUpperCase())}!`);
     }
-    setRegion(newRegion);
+    setRegion(country);
   };
 
-  const createRegionName = (region: string) => {
-    if (router.locale === "de") return countryNamesGerman[region];
-    if (router.locale === "es") return countryNamesSpanish[region];
-    return countryNamesEnglish[region];
+  const createCountryName = (country: CountryCode) => {
+    if (router.locale === "de") return countryNamesGerman[country];
+    if (router.locale === "es") return countryNamesSpanish[country];
+    return countryNamesEnglish[country];
   };
 
   const setRegionByLocation = () => {
+    toast.loading("Determining your location...");
     getUserLocation().then((location) => {
+      toast.dismiss();
       if ("error" in location) {
         toast.error(
           "We could not determine your location. Please choose it manually or try again later!",
@@ -67,7 +70,6 @@ const useRegionSettings = () => {
       const countryCode = iso1A2Code([longitude, latitude]);
       if (countryCode) {
         changeRegion(countryCode.toLowerCase());
-        toast.success(`We've located you in ${createRegionName(countryCode)}!`);
       } else {
         toast.error(
           "We could not determine your location. Please choose it manually or try again later!",
@@ -80,7 +82,7 @@ const useRegionSettings = () => {
   return {
     region,
     changeRegion,
-    createRegionName,
+    createRegionName: createCountryName,
     setRegionByLocation,
     sortedRegions,
   };

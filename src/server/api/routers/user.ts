@@ -76,7 +76,9 @@ export const userRouter = createTRPCRouter({
       if (usernameInUse) return { error: "USERNAME_ALREADY_EXISTS" };
 
       // Create user
-      await ctx.db.insert(users).values({ name: input.name, email: input.email });
+      await ctx.db
+        .insert(users)
+        .values({ name: input.name, email: input.email, region: input.region });
       return { success: "ACCOUNT_CREATED" };
     }),
 

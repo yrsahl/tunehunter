@@ -1,5 +1,6 @@
 import CustomIcon from "@/components/CustomIcon";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useDisabledTabStore } from "@/hooks/stores/useDisabledTabStore";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { cn } from "@/lib/utils";
 import { api } from "@/utils/api";
@@ -16,9 +17,9 @@ const tabAccessMap: Record<SearchTab, AccessScopes> = {
 };
 const tabTooltipRestrictionMap: Record<SearchTab, string> = {
   trending: "", // Always accessible
-  spotify: "Create an account or Sign In to view your Spotify songs!",
-  wishlist: "Create an account or Sign In to view your Wishlist!",
-  history: "Create an account or Sign In to view your History!",
+  spotify: "Create an account or sign in to view your Spotify songs!",
+  wishlist: "Create an account or sign in to view your Wishlist!",
+  history: "Create an account or sign in to view your History!",
 };
 
 interface SearchTabButtonProps {
@@ -35,10 +36,11 @@ const SearchTabButton = ({
   const { data: userData, status: sessionStatus } = useSession();
   const router = useRouterWithHelpers();
   const loggedIn = sessionStatus === "authenticated";
+  const { setDisabledTabButtonHovered } = useDisabledTabStore();
   const { data: spotifyAccount } = api.account.getSpotifyAccountById.useQuery(
     { userId: userData?.user.id! },
     {
-      enabled: !!userData,
+      enabled: loggedIn,
       refetchInterval: 30 * 60 * 1000, // Refetch every 30 minutes to refresh the access token,
       refetchIntervalInBackground: true,
       refetchOnWindowFocus: false,
@@ -50,6 +52,8 @@ const SearchTabButton = ({
     if (tabAccessMap[searchTab] === "signed-in") return loggedIn; // If needs signed in, enabled if logged in
     return true; // Enabled otherwise
   };
+  const isTabEnabled = isSearchTabEnabled(searchTab);
+  const isTabActive = activeSearchTab === searchTab;
 
   const handleTabClick = (newSearchTab: SearchTab) => {
     if (newSearchTab === activeSearchTab) {
@@ -62,33 +66,35 @@ const SearchTabButton = ({
   };
 
   return (
-    <motion.button
-      key={searchTab}
-      onClick={() => handleTabClick(searchTab)}
-      disabled={!isSearchTabEnabled(searchTab)}
-      className={cn(
-        "whitespace-nowrap border-b-2 text-foreground transition-all enabled:hover:border-primary/50",
-        activeSearchTab === searchTab ? "!border-primary" : "border-transparent",
-      )}
-    >
-      {!isSearchTabEnabled(searchTab) && (
-        <Tooltip key={searchTab}>
-          <TooltipTrigger className="cursor-not-allowed text-muted-foreground/30">
+    <Tooltip key={searchTab}>
+      <TooltipTrigger asChild>
+        <div
+          onMouseEnter={() => !isTabEnabled && setDisabledTabButtonHovered(true)}
+          onMouseLeave={() => !isTabEnabled && setDisabledTabButtonHovered(false)}
+        >
+          <motion.button
+            key={searchTab}
+            onClick={() => handleTabClick(searchTab)}
+            disabled={!isTabEnabled}
+            className={cn(
+              "whitespace-nowrap border-b-2 text-foreground transition-all enabled:hover:border-primary/50",
+              isTabActive ? "!border-primary" : "border-transparent",
+              !isTabEnabled && "cursor-not-allowed text-muted-foreground/30",
+            )}
+          >
             <div className="flex items-center gap-2 px-1 pb-1">
-              <CustomIcon icon={searchTab} variant={"primary-muted"} />
+              <CustomIcon icon={searchTab} variant={isTabEnabled ? "primary" : "primary-muted"} />
               <span className="capitalize">{searchTab}</span>
             </div>
-          </TooltipTrigger>
-          <TooltipContent>{tabTooltipRestrictionMap[searchTab]}</TooltipContent>
-        </Tooltip>
-      )}
-      {!!isSearchTabEnabled(searchTab) && (
-        <div className="flex items-center gap-2 px-1 pb-1">
-          <CustomIcon icon={searchTab} variant={"primary"} />
-          <span className="capitalize">{searchTab}</span>
+            {!isTabEnabled && (
+              <TooltipContent className="border-foreground/30 bg-background text-foreground">
+                {tabTooltipRestrictionMap[searchTab]}
+              </TooltipContent>
+            )}
+          </motion.button>
         </div>
-      )}
-    </motion.button>
+      </TooltipTrigger>
+    </Tooltip>
   );
 };
 

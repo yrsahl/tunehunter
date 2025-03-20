@@ -57,9 +57,9 @@ const InfoButton = () => {
             </p> */}
           </SheetTitle>
           <SheetDescription asChild className="relative">
-            <div className="flex flex-col gap-6 text-pretty pt-3 text-justify text-foreground/80">
+            <div className="flex flex-col gap-6 text-pretty pt-3 text-justify text-foreground">
               <div className="flex flex-col gap-12 text-base text-inherit">
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-4 text-foreground/70">
                   <p>
                     ... has one purpose: to find you the music you want to buy online, quicker. When
                     you enter a song title we search for it across different online vendor’s stores
@@ -91,10 +91,10 @@ const InfoButton = () => {
                       icon="coffee"
                       onClick={toggleSupportFrame}
                     />
-                    <AnimatePresence>
+                    <AnimatePresence mode="wait">
                       {showSupportFrame && (
                         <motion.div
-                          className="absolute -left-4 top-20  h-96 w-[319px] rounded-md bg-white"
+                          className="absolute -left-4 top-20 h-96 w-[319px] rounded-md bg-white"
                           {...slideInAndOutFromAbove(0.5, 24)}
                         >
                           <iframe
@@ -103,6 +103,7 @@ const InfoButton = () => {
                             className="h-full w-full rounded-md border-none"
                             title="alvarny"
                           />
+                          <div className="h-6"></div>
                         </motion.div>
                       )}
                     </AnimatePresence>
