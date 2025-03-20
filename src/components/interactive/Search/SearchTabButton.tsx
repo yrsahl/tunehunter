@@ -70,7 +70,7 @@ const SearchTabButton = ({
       <TooltipTrigger asChild>
         <div
           onMouseEnter={() => !isTabEnabled && setDisabledTabButtonHovered(true)}
-          onMouseLeave={() => !isTabEnabled && setDisabledTabButtonHovered(false)}
+          onMouseLeave={() => setDisabledTabButtonHovered(false)}
         >
           <motion.button
             key={searchTab}

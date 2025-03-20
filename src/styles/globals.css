@@ -199,4 +199,10 @@
   );
   background-size: 200% 200%;
   animation: shine 2s linear infinite;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.shine-effect-active::before {
+  opacity: 1;
 }

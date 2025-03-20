@@ -64,8 +64,8 @@ const ProfileButton = () => {
           variant="primary"
           size="lg"
           className={cn(
-            "menu-transition relative z-40 w-20 border-[1px] border-background",
-            disabledTabButtonHovered && "shine-effect",
+            "menu-transition shine-effect relative z-40 w-20 border-[1px] border-background",
+            disabledTabButtonHovered && "shine-effect-active",
             profileModalOpen && "bg-background text-foreground hover:bg-background/80",
           )}
           onClick={toggleProfileModal}
