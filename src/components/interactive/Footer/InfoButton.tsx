@@ -61,10 +61,9 @@ const InfoButton = () => {
               <div className="flex flex-col gap-12 text-base text-inherit">
                 <div className="flex flex-col gap-4 text-foreground/70">
                   <p>
-                    ... has one purpose: to find you the music you want to buy online, quicker. When
-                    you enter a song title we search for it across different online vendor’s stores
-                    (Beatport, Bandcamp, Amazon Music & Apple Music) and show your where it’s
-                    available, the formats and qualities, and at what price.
+                    ... has one purpose: It finds you the music you want to buy, quicker. TuneHunter
+                    seraches across different online stores like Beatport, Bandcamp or Apple Music
+                    to show you where it is available, in what quality and to what price.
                   </p>
                   <p className="flex flex-col gap-[6px]">
                     <span>
@@ -72,10 +71,9 @@ const InfoButton = () => {
                       search, such as:
                     </span>
                     <ul className="list-inside list-disc space-y-1 pl-2">
-                      <li>Accessing your Spotify data</li>
                       <li>Viewing your search history</li>
                       <li>Adding songs to your wish list</li>
-                      <li>And more to come!</li>
+                      <li>Accessing your Spotify data</li>
                     </ul>
                   </p>
                 </div>
