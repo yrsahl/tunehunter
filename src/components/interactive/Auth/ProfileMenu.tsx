@@ -125,7 +125,7 @@ const ProfileMenu = () => {
               <motion.div
                 key={region}
                 {...growIn()}
-                className="inline-block max-w-36 overflow-hidden text-ellipsis"
+                className="inline-block w-36 overflow-hidden text-ellipsis text-start"
               >
                 <SelectValue />
               </motion.div>

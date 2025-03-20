@@ -46,11 +46,11 @@ const SearchSettings = ({}) => {
           <Cog />
         </motion.div>
       </PopoverTrigger>
-      <PopoverContent className="flex flex-col gap-4 px-6 py-4">
+      <PopoverContent className="flex flex-col items-center gap-4 px-6 py-4">
         {/* <div className="absolute inset-0 -z-10 bg-background opacity-80" /> */}
 
-        <p className="text-center text-lg  text-foreground underline underline-offset-8">
-          Search Settings
+        <p className="border-b-[1px] border-foreground px-2 pb-1 text-lg text-foreground">
+          <span>Search Settings</span>
         </p>
         <div className="grid grid-cols-[240px_minmax(50px,_max-content)] gap-x-8 gap-y-3 opacity-100">
           {/* Minimum length */}
@@ -111,12 +111,12 @@ const SearchSettings = ({}) => {
                 <Select onValueChange={changeRegion} value={region}>
                   <SelectTrigger
                     id="region"
-                    className="h-9 max-w-44 justify-start gap-2 text-ellipsis border-none bg-transparent px-1 text-base text-foreground focus:ring-0 focus:ring-offset-0"
+                    className="h-9 max-w-44 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 px-1 text-base font-thin text-foreground focus:ring-0 focus:ring-offset-0"
                   >
                     <motion.div
                       key={region}
                       {...growIn()}
-                      className="inline-block max-w-32 overflow-hidden text-ellipsis"
+                      className="inline-block w-36 overflow-hidden text-ellipsis text-start"
                     >
                       <SelectValue />
                     </motion.div>
@@ -136,6 +136,7 @@ const SearchSettings = ({}) => {
                   size="icon"
                   icon="mapPin"
                   iconSize="28px"
+                  className="h-10 w-10"
                   bordered="default"
                   onClick={setRegionByLocation}
                 />

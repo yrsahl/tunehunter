@@ -2,8 +2,6 @@ import {
   CountryCode,
   CountryCodes,
   countryNamesEnglish,
-  countryNamesGerman,
-  countryNamesSpanish,
   isCountryCode,
   sortRegions,
 } from "@/helpers/region";
@@ -43,14 +41,11 @@ const useRegionSettings = () => {
   const changeRegion = (country: CountryCode) => {
     if (loggedIn) {
       updatePreferredRegion?.(country);
-      toast.success(`Changed your Region to ${createCountryName(country.toUpperCase())}!`);
     }
     setRegion(country);
   };
 
-  const createCountryName = (country: CountryCode) => {
-    if (router.locale === "de") return countryNamesGerman[country];
-    if (router.locale === "es") return countryNamesSpanish[country];
+  const createRegionName = (country: CountryCode) => {
     return countryNamesEnglish[country];
   };
 
@@ -67,9 +62,12 @@ const useRegionSettings = () => {
       }
 
       const { latitude, longitude } = location;
-      const countryCode = iso1A2Code([longitude, latitude]);
+      const countryCode = iso1A2Code([longitude, latitude])?.toLowerCase();
+      if (countryCode === region) return;
+
       if (countryCode) {
-        changeRegion(countryCode.toLowerCase());
+        changeRegion(countryCode);
+        toast.success(`Set your region to ${createRegionName(countryCode.toUpperCase())}!`);
       } else {
         toast.error(
           "We could not determine your location. Please choose it manually or try again later!",
@@ -82,7 +80,7 @@ const useRegionSettings = () => {
   return {
     region,
     changeRegion,
-    createRegionName: createCountryName,
+    createRegionName,
     setRegionByLocation,
     sortedRegions,
   };
