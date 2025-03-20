@@ -32,7 +32,7 @@ export const SearchDataProvider = ({ children }: { children: ReactNode }) => {
           id: track.id,
           title: track.name,
           duration: track.duration_ms,
-          album: track.album.name,
+          album: track.album.name || null,
           albumArtUrl: track.album.images[0]?.url || null,
           year: track.album.release_date,
           genre: track.album.album_type,
@@ -88,6 +88,7 @@ export const SearchDataProvider = ({ children }: { children: ReactNode }) => {
 
         // Query data until we have limit of songs
         setSearchData(searchData);
+        console.log("searchData", searchData);
         setIsSearchDataLoading(false);
         storeTracksInDb(searchData.tracks.items);
       });

@@ -34,7 +34,7 @@ export const AddSongSchema = z.object({
   id: z.string(),
   title: z.string(),
   duration: z.number(),
-  album: z.string(),
+  album: z.union([z.string(), z.null()]),
   albumArtUrl: z.union([z.string(), z.null()]),
   year: z.string(),
   genre: z.string(),

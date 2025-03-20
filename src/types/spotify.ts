@@ -131,18 +131,18 @@ export type SpotifyTrack = {
 
 export type SpotifyAlbum = {
   album_type: string;
-  artists: SpotifySimplifiedArtist[];
+  artists: SpotifySimplifiedArtist[] | null;
   available_markets: string[];
   external_urls: SpotifyExternalUrls;
   href: string;
-  id: string;
-  images: SpotifyImage[];
-  name: string;
+  id: string | null;
+  images: SpotifyImage[] | [];
+  name: string | null;
   release_date: string;
   release_date_precision: string;
-  total_tracks: number;
+  total_tracks: number | null;
   type: string;
-  uri: string;
+  uri: string | null;
 };
 
 export type SpotifySimplifiedArtist = {
