@@ -172,7 +172,7 @@ const RegisterForm: FC<IProps> = ({ email, menuState, setMenuState }) => {
 
           <div className="m-auto w-4/5">
             {!accountCreated && (
-              <div className="flex flex-col items-center gap-2">
+              <div className="flex flex-col items-center gap-1">
                 <IconButton
                   type="submit"
                   text="Register"
@@ -181,7 +181,11 @@ const RegisterForm: FC<IProps> = ({ email, menuState, setMenuState }) => {
                   size="default"
                   variant="primary"
                 />
-                <Button variant="link" onClick={() => setMenuState(MenuState.SignIn)}>
+                <Button
+                  variant="link"
+                  className="text-xs font-normal uppercase tracking-widest"
+                  onClick={() => setMenuState(MenuState.SignIn)}
+                >
                   Sign In instead
                 </Button>
               </div>

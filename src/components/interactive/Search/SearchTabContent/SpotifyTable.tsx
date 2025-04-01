@@ -19,10 +19,16 @@ const SpotifyTable = () => {
   } = useSearchTabData();
 
   const [activeSubTab, setActiveSubTab] = useState<SpotifySubTab>(spotifySubTabs[0]);
+  const [rotateAngleIcon, setRotateAngleIcon] = useState(0);
 
   const recentlyPlayedDataExists = data?.recentlyPlayed && data?.recentlyPlayed?.length > 0;
   const queueDataExists = data?.queue && data?.queue?.length > 0;
   const topTracksDataExists = data?.topTracks && data?.topTracks?.length > 0;
+
+  const handleClick = () => {
+    setRotateAngleIcon(rotateAngleIcon + 360); // Rotate
+    refetchData(); // Fetch
+  };
 
   return (
     <>
@@ -31,16 +37,23 @@ const SpotifyTable = () => {
         subTabs={spotifySubTabs}
         setActiveSubTab={setActiveSubTab}
       />
-      <div className="absolute right-8 top-3 z-10 cursor-pointer opacity-60">
+      <motion.div
+        className="absolute right-8 top-3 z-10 cursor-pointer opacity-60"
+        animate={{ rotate: rotateAngleIcon }}
+        onMouseEnter={() => setRotateAngleIcon(rotateAngleIcon + 15)}
+        onMouseLeave={() => setRotateAngleIcon(rotateAngleIcon - 15)}
+        whileTap={{ scale: 0.9 }}
+        transition={{ duration: 0.3 }}
+        onClick={handleClick}
+      >
         <IconButton
           icon="refresh"
           size="icon"
           iconSize="22px"
           variant="ghostPrimary"
           className="border-0"
-          onClick={refetchData}
         />
-      </div>
+      </motion.div>
       {isLoading && <SkeletonTable hasHeader={true} tab="spotify" />}
       {!isLoading && (
         <AnimatePresence mode="wait">

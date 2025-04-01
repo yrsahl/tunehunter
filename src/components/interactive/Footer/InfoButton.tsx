@@ -10,19 +10,30 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { slideInAndOutFromAbove } from "@/helpers/animations";
+import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { quicksand } from "@/pages/layout";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 
 const InfoButton = () => {
   const [showSupportFrame, setShowSupportFrame] = useState(false);
+  const [infoFrameOpen, setInfoFrameOpen] = useState(false);
+  const router = useRouterWithHelpers();
 
   const toggleSupportFrame = () => {
     setShowSupportFrame(!showSupportFrame);
   };
 
+  const handleCreateAccountClick = () => {
+    // Hide info frame
+    setInfoFrameOpen(false);
+
+    // Open register frame
+    router.setParams({ profile: "register" });
+  };
+
   return (
-    <Sheet>
+    <Sheet open={infoFrameOpen} onOpenChange={setInfoFrameOpen}>
       <SheetTrigger asChild>
         <Button size="lg" className="w-20 border-[1px] border-foreground/30">
           <CustomIcon
@@ -58,17 +69,24 @@ const InfoButton = () => {
           </SheetTitle>
           <SheetDescription asChild className="relative">
             <div className="flex flex-col gap-6 text-pretty pt-3 text-justify text-foreground">
-              <div className="flex flex-col gap-12 text-base text-inherit">
+              <div className="flex flex-col gap-10 text-base text-inherit">
                 <div className="flex flex-col gap-4 text-foreground/70">
                   <p>
                     ... has one purpose: It finds you the music you want to buy, quicker. TuneHunter
                     seraches across different online stores like Beatport, Bandcamp or Apple Music
                     to show you where it is available, in what quality and to what price.
                   </p>
-                  <p className="flex flex-col gap-[6px]">
+                  <p className="flex flex-col gap-[10px]">
                     <span>
-                      By creating an account you can unlock more features to help you with your
-                      search, such as:
+                      You can{" "}
+                      <Button
+                        variant="link"
+                        onClick={handleCreateAccountClick}
+                        className="h-auto p-0 text-base font-normal underline"
+                      >
+                        create an account
+                      </Button>{" "}
+                      to unlock more features to help you with your search:
                     </span>
                     <ul className="list-inside list-disc space-y-1 pl-2">
                       <li>Viewing your search history</li>

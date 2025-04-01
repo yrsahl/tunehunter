@@ -1,5 +1,9 @@
 ---- CORE
 
+Close sidebar on Register click
+Make buy me a coffee move up instead of down
+Turn button into c when open
+
 Invalidates not being removed sometimes
 
 
