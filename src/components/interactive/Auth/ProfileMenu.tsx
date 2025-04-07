@@ -1,3 +1,5 @@
+import CustomIcon from "@/components/CustomIcon";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -159,14 +161,16 @@ const ProfileMenu = () => {
               target="_blank"
               className="col-span-2"
             >
-              <IconButton
-                className="flex justify-start p-0 text-success"
-                icon="external"
-                iconPosition="right"
+              <Button
+                className="flex justify-start gap-2 p-0 font-light uppercase text-success"
                 variant="link"
-                text={spotifyUserData?.profileData?.display_name}
                 size="sm"
-              />
+              >
+                <span className="max-w-40 overflow-hidden text-ellipsis">
+                  {spotifyUserData?.profileData?.display_name}
+                </span>
+                <CustomIcon icon="external" />
+              </Button>
             </a>
             <ConfirmationModal
               dialogAction={() => handleUnlinkSpotify(userData.user.id)}
