@@ -38,7 +38,7 @@ const SpotifyTable = () => {
         setActiveSubTab={setActiveSubTab}
       />
       <motion.div
-        className="absolute bottom-3 top-3 z-10 hidden cursor-pointer opacity-60 sm:right-4 sm:block md:right-8"
+        className="absolute bottom-3 z-10 hidden cursor-pointer opacity-60 sm:bottom-auto sm:right-4 sm:top-3 sm:block md:right-8"
         animate={{ rotate: rotateAngleIcon }}
         onMouseEnter={() => setRotateAngleIcon(rotateAngleIcon + 15)}
         onMouseLeave={() => setRotateAngleIcon(rotateAngleIcon - 15)}
