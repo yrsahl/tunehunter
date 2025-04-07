@@ -32,20 +32,10 @@ const TrendingTable = () => {
         subTabs={trendingSubTabs}
         setActiveSubTab={setActiveSubTab}
       />
-      {/* <div className="absolute right-8 top-3 z-10 cursor-pointer opacity-60">
-        <IconButton
-          icon="refresh"
-          size="icon"
-          iconSize="22px"
-          variant="ghostPrimary"
-          className="border-0"
-          onClick={refetchData}
-        />
-      </div> */}
       {isLoading && <SkeletonTable hasHeader={true} tab="trending" />}
       {!isLoading && (
         <AnimatePresence mode="wait">
-          <motion.div key={activeSubTab} {...fadeInAndOut(0.2)} className="h-full">
+          <motion.div key={activeSubTab} {...fadeInAndOut(0.2)} className="h-full w-full">
             {activeSubTab === "today" && (
               <>
                 {trendingDataTodayExists ? (
