@@ -64,7 +64,7 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = (
   }, [...Object.values(searchSettings)]);
 
   return (
-    <div ref={ref} className="relative w-[36rem]">
+    <div ref={ref} className="relative w-full max-w-[36rem]">
       <form
         className="relative mx-auto flex w-full flex-col items-center"
         onSubmit={handleSearchSubmit}

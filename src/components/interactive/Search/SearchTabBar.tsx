@@ -27,7 +27,7 @@ const SearchTabBar = ({ activeSearchTab, setActiveSearchTab }: SearchTabBarProps
   }, [router.isReady, router.query]);
 
   return (
-    <div className="flex min-w-0 flex-wrap justify-center gap-4">
+    <div className="flex min-w-0 flex-wrap justify-center gap-4 overflow-hidden sm:self-auto">
       {searchTabs.map((searchTab) => (
         <SearchTabButton
           searchTab={searchTab}

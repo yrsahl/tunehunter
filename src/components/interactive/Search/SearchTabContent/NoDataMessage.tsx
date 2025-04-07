@@ -4,7 +4,7 @@ interface EmptyTableProps {
 
 const NoDataMessage = ({ message }: EmptyTableProps) => {
   return (
-    <div className="flex h-full w-full items-center justify-center text-center">
+    <div className="flex h-full w-full items-center justify-center px-8 text-center">
       <p>{message}</p>
     </div>
   );

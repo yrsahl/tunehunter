@@ -11,17 +11,21 @@ import {
 } from "@/components/ui/sheet";
 import { slideInAndOutFromAbove } from "@/helpers/animations";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
+import { cn } from "@/lib/utils";
 import { quicksand } from "@/pages/layout";
 import { AnimatePresence, motion } from "framer-motion";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 
 const InfoButton = () => {
-  const [showSupportFrame, setShowSupportFrame] = useState(false);
+  const [supportFrameOpen, setSupportFrameOpen] = useState(false);
   const [infoFrameOpen, setInfoFrameOpen] = useState(false);
   const router = useRouterWithHelpers();
+  const { status } = useSession();
+  const loggedIn = status === "authenticated";
 
   const toggleSupportFrame = () => {
-    setShowSupportFrame(!showSupportFrame);
+    setSupportFrameOpen(!supportFrameOpen);
   };
 
   const handleCreateAccountClick = () => {
@@ -76,47 +80,68 @@ const InfoButton = () => {
                     seraches across different online stores like Beatport, Bandcamp or Apple Music
                     to show you where it is available, in what quality and to what price.
                   </p>
-                  <p className="flex flex-col gap-[10px]">
-                    <span>
-                      You can{" "}
-                      <Button
-                        variant="link"
-                        onClick={handleCreateAccountClick}
-                        className="h-auto p-0 text-base font-normal underline"
-                      >
-                        create an account
-                      </Button>{" "}
-                      to unlock more features to help you with your search:
-                    </span>
-                    <ul className="list-inside list-disc space-y-1 pl-2">
-                      <li>Viewing your search history</li>
-                      <li>Adding songs to your wish list</li>
-                      <li>Accessing your Spotify data</li>
-                    </ul>
-                  </p>
+                  {!loggedIn && (
+                    <p className="flex flex-col gap-[10px]">
+                      <span>
+                        You can{" "}
+                        <Button
+                          variant="link"
+                          onClick={handleCreateAccountClick}
+                          className="h-auto p-0 text-base font-normal underline"
+                        >
+                          create an account
+                        </Button>{" "}
+                        to unlock more features to help you with your search:
+                      </span>
+                      <ul className="list-inside list-disc space-y-1 pl-2">
+                        <li>Viewing your search history</li>
+                        <li>Adding songs to your wish list</li>
+                        <li>Accessing your Spotify data</li>
+                      </ul>
+                    </p>
+                  )}
                 </div>
                 <div className="m-auto flex w-[90%] flex-col gap-4">
                   <a href="mailto:contact@tunehunter.app?subject=Feedback">
                     <IconButton variant="primary" text="Have feedback?" size="lg" icon="mail" />
                   </a>
                   <div className="relative">
-                    <IconButton
-                      text="Buy me a coffee"
+                    <Button
                       variant="success"
                       size="lg"
-                      icon="coffee"
+                      className="menu-transition flex w-full justify-center font-light uppercase"
                       onClick={toggleSupportFrame}
-                    />
+                    >
+                      <div
+                        className={cn(
+                          "absolute-center menu-transition flex gap-2",
+                          supportFrameOpen ? "scale-100 opacity-100" : "scale-75 opacity-0",
+                        )}
+                      >
+                        <CustomIcon icon="x" variant="success" />
+                        <span>Close</span>
+                      </div>
+
+                      <div
+                        className={cn(
+                          "absolute-center menu-transition flex gap-2",
+                          supportFrameOpen ? "scale-75 opacity-0" : "scale-100 opacity-100",
+                        )}
+                      >
+                        <CustomIcon icon="coffee" variant="success" />
+                        <span>Buy me a coffee</span>
+                      </div>
+                    </Button>
                     <AnimatePresence mode="wait">
-                      {showSupportFrame && (
+                      {supportFrameOpen && (
                         <motion.div
-                          className="absolute -left-4 top-20 h-96 w-[319px] rounded-md bg-white"
+                          className="absolute -left-4 top-20 h-96 w-[270px] rounded-md bg-white sm:w-[319px]"
                           {...slideInAndOutFromAbove(0.5, 24)}
                         >
                           <iframe
                             id="kofiframe"
                             src="https://ko-fi.com/alvarny/?hidefeed=true&widget=true&embed=true&preview=true"
-                            className="h-full w-full rounded-md border-none"
+                            className="h-full w-full scale-[.8] rounded-md border-none sm:scale-100"
                             title="alvarny"
                           />
                           <div className="h-6"></div>

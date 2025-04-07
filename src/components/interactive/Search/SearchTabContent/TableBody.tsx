@@ -8,10 +8,10 @@ interface TableProps {
 
 const TableBody = ({ hasHeader, children }: TableProps) => {
   return (
-    <div className="h-full w-full px-3 sm:px-5 md:px-7">
+    <div className="h-full w-full ">
       <div
         className={clsx(
-          "hide-scrollbars relative h-full w-full overflow-scroll pb-4",
+          "hide-scrollbars relative h-full w-full overflow-scroll px-3 pb-4 sm:px-5 md:px-7",
           hasHeader ? "pt-12" : "pt-4",
         )}
       >
