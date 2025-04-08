@@ -181,12 +181,8 @@ const RegisterForm: FC<IProps> = ({ email, menuState, setMenuState }) => {
                   size="default"
                   variant="primary"
                 />
-                <Button
-                  variant="link"
-                  className="text-xs font-normal uppercase tracking-widest"
-                  onClick={() => setMenuState(MenuState.SignIn)}
-                >
-                  Sign In instead
+                <Button variant="link" onClick={() => setMenuState(MenuState.SignIn)}>
+                  Go back
                 </Button>
               </div>
             )}

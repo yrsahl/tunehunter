@@ -184,7 +184,7 @@ const ProfileMenu = () => {
           </>
         )}
         {!spotifyAccount?.data && (
-          <div className="col-span-3">
+          <div className="col-span-2">
             <IconButton
               icon={"spotify"}
               variant="outlinePrimary"
@@ -221,7 +221,7 @@ const ProfileMenu = () => {
 
         {/* Delete account */}
         <p className="col-span-2 flex items-center justify-end font-thin">Account</p>
-        <div className="col-span-3">
+        <div className="col-span-2">
           <ConfirmationModal
             dialogAction={() => handleDeleteAccount(userData.user.id)}
             dialogText="This action cannot be undone. This will permanently delete your account and all related data."

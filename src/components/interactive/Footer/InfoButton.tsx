@@ -109,7 +109,7 @@ const InfoButton = () => {
                     <Button
                       variant="success"
                       size="lg"
-                      className="menu-transition flex w-full justify-center font-light uppercase"
+                      className="menu-transition flex w-full justify-center font-light uppercase text-primary-foreground"
                       onClick={toggleSupportFrame}
                     >
                       <div

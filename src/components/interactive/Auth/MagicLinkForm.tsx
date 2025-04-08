@@ -15,12 +15,12 @@ const MagicLinkForm: FC<IProps> = ({ email, setMenuState }) => {
       description="We sent you a mail with a login link! If you can't find it, please also have a look in your spam folder."
       size="small"
     >
-      <div className="flex w-full flex-col items-center gap-2">
+      <div className="flex w-full flex-col items-center gap-1">
         <a href="mailto:" className="w-full">
           <IconButton text="Open mails" icon="mailOpen" size="lg" variant="primary" />
         </a>
         <Button variant="link" onClick={() => setMenuState(MenuState.SignIn)}>
-          Return to Sign In page
+          Go back
         </Button>
       </div>
     </AuthCard>
