@@ -1,4 +1,4 @@
-import { fadeInAndOut } from "@/helpers/animations";
+import { slideInAndOutFromBottom } from "@/helpers/animations";
 import useSearch from "@/hooks/useSearch";
 import { AnimatePresence, motion } from "framer-motion";
 import SearchResultsTable from "./SearchResultsTable";
@@ -11,7 +11,10 @@ const SearchResults = ({}: SearchResultsProps) => {
   return (
     <AnimatePresence mode="wait">
       {currentSearchId && (
-        <motion.div key={currentSearchId} {...fadeInAndOut(0.2)}>
+        <motion.div
+          {...slideInAndOutFromBottom()}
+          className="w-full rounded-3xl border-2 border-primary bg-primary/10"
+        >
           <SearchResultsTable songId={currentSearchId} />
         </motion.div>
       )}

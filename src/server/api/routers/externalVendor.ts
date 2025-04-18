@@ -1,38 +1,37 @@
+import { VendorDataSchema } from "@/schemas";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { z } from "zod";
 
 export const externalVendorRouter = createTRPCRouter({
-  getItunesData: publicProcedure
-    .input(z.object({ songId: z.number() }))
-    .query(async ({ ctx, input }) => {
-      // 1. Try DB first
-      // 2. If no DB, hit external API or scrape
-      // 2a. Store data in DB
-    }),
+  getItunesData: publicProcedure.input(VendorDataSchema).query(async ({ ctx, input }) => {
+    return { store: "itunes" };
 
-  getBeatportData: publicProcedure
-    .input(z.object({ songId: z.number() }))
-    .query(async ({ ctx, input }) => {
-      // 1. Try DB first
-      // 2. If no DB, hit external API or scrape
-      // 2a. Store data in DB
-    }),
+    // 1. Try DB first
+    // 2. If no DB, hit external API or scrape
+    // 2a. Store data in DB
+  }),
 
-  getAmazonData: publicProcedure
-    .input(z.object({ songId: z.number() }))
-    .query(async ({ ctx, input }) => {
-      // 1. Try DB first
-      // 2. If no DB, hit external API or scrape
-      // 2a. Store data in DB
-    }),
+  getBeatportData: publicProcedure.input(VendorDataSchema).query(async ({ ctx, input }) => {
+    return { store: "beatport" };
+    // 1. Try DB first
+    // 2. If no DB, hit external API or scrape
+    // 2a. Store data in DB
+  }),
 
-  getBandcampData: publicProcedure
-    .input(z.object({ songId: z.number() }))
-    .query(async ({ ctx, input }) => {
-      // 1. Try DB first
-      // 2. If no DB, hit external API or scrape
-      // 2a. Store data in DB
-    }),
+  getAmazonData: publicProcedure.input(VendorDataSchema).query(async ({ ctx, input }) => {
+    return { store: "amazon_music" };
+
+    // 1. Try DB first
+    // 2. If no DB, hit external API or scrape
+    // 2a. Store data in DB
+  }),
+
+  getBandcampData: publicProcedure.input(VendorDataSchema).query(async ({ ctx, input }) => {
+    return { store: "bandcamp" };
+
+    // 1. Try DB first
+    // 2. If no DB, hit external API or scrape
+    // 2a. Store data in DB
+  }),
 });
 
 // export const fetchPreviewData = async ({ country, title, artist, duration, album }: DataRequestQuery): Promise<TrackData[]> => {

@@ -30,6 +30,10 @@ export const GetUserActivitySchema = z.object({
   type: z.enum(["search", "purchase", "wishlist"]),
 });
 
+export const VendorDataSchema = z.object({
+  id: z.string(),
+});
+
 export const AddSongSchema = z.object({
   id: z.string(),
   title: z.string(),

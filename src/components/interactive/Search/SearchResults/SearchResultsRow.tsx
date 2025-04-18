@@ -1,21 +1,26 @@
+import { createStoreName } from "@/helpers/storenames";
 import { InfoIcon } from "lucide-react";
 
 interface ISearchResultsRowProps {
-  vendorData: any;
+  data: any;
 }
 
-export default function SearchResultsRow() {
+export default function SearchResultsRow({ data }: ISearchResultsRowProps) {
+  const { store } = data;
+
+  const storeName = createStoreName(store);
+
   return (
     <tr>
       <td>
         <div className="flex items-center space-x-5">
           <div className="avatar ">
             <div className="mask mask-squircle h-12 w-12">
-              <img src={""} alt="Avatar Tailwind CSS Component" />
+              <img src={`logos/${store}.svg`} alt="Avatar Tailwind CSS Component" />
             </div>
           </div>
           <div className="hidden md:block">
-            <div className="font-bold">Apple Music</div>
+            <div className="font-bold">{storeName}</div>
             <div className="text-sm font-normal opacity-50">Germany</div>
           </div>
         </div>

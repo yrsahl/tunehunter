@@ -47,3 +47,17 @@ export const slideInAndOutFromRight = (duration = 0.5) => ({
   exit: { opacity: 0, x: 10 },
   transition: { duration },
 });
+
+export const slideInFromBottom = (duration = 0.5, distance = 10) => ({
+  initial: { opacity: 0, y: distance },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: distance },
+  transition: { duration },
+});
+
+export const slideInAndOutFromBottom = (duration = 0.5, distance = 10) => ({
+  initial: { opacity: 0, y: distance },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: distance },
+  transition: { duration },
+});
