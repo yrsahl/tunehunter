@@ -1,7 +1,7 @@
 import { slideInAndOutFromBottom } from "@/helpers/animations";
 import useSearch from "@/hooks/useSearch";
 import { AnimatePresence, motion } from "framer-motion";
-import SearchResultsTable from "./SearchResultsTable";
+import SearchResultsFrame from "./SearchResultsFrame";
 
 interface SearchResultsProps {}
 
@@ -11,11 +11,8 @@ const SearchResults = ({}: SearchResultsProps) => {
   return (
     <AnimatePresence mode="wait">
       {currentSearchId && (
-        <motion.div
-          {...slideInAndOutFromBottom()}
-          className="w-full rounded-3xl border-2 border-primary bg-primary/10"
-        >
-          <SearchResultsTable songId={currentSearchId} />
+        <motion.div {...slideInAndOutFromBottom()} className="bg-primar mt-3 w-full rounded-3xl">
+          <SearchResultsFrame songId={currentSearchId} />
         </motion.div>
       )}
     </AnimatePresence>

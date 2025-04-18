@@ -8,7 +8,7 @@ interface ISearchResultsProps {
   songId: string;
 }
 
-const SearchResultsTable = ({ songId }: ISearchResultsProps) => {
+const SearchResultsFrame = ({ songId }: ISearchResultsProps) => {
   // 1. Fetch song data
   const { data: songData, isLoading: isSongDataLoading } = api.song.getSongById.useQuery({
     id: songId,
@@ -51,4 +51,4 @@ const SearchResultsTable = ({ songId }: ISearchResultsProps) => {
   );
 };
 
-export default SearchResultsTable;
+export default SearchResultsFrame;
