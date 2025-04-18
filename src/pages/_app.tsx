@@ -11,7 +11,7 @@ import Layout from "./layout";
 import { Toaster } from "sonner";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { SearchDataProvider } from "@/contexts/SearchDataContext";
+import { QueryDataProvider } from "@/contexts/QueryDataContext";
 import { SearchTabDataProvider } from "@/contexts/SearchTabDataContext";
 import { SpotifyUserDataProvider } from "@/contexts/SpotifyUserDataContext";
 import { Analytics } from "@vercel/analytics/next";
@@ -44,11 +44,11 @@ const MyApp: AppType<{ session: Session | null }> = ({
           <TooltipProvider delayDuration={150}>
             <ThemeProvider attribute="class" defaultTheme="auto" enableSystem={false}>
               <Layout>
-                <SearchDataProvider>
+                <QueryDataProvider>
                   <SearchTabDataProvider>
                     <Component {...pageProps} />
                   </SearchTabDataProvider>
-                </SearchDataProvider>
+                </QueryDataProvider>
               </Layout>
             </ThemeProvider>
           </TooltipProvider>

@@ -13,7 +13,7 @@ export type SpotifyTabData = {
 const useSpotifySongData = () => {
   const { spotifyUserData, refetchSpotifyUserData, isSpotifyUserDataLoading } =
     useSpotifyUserDataContext();
-  const storeSearchResults = api.song.storeSearchResults.useMutation();
+  const storeSearchResults = api.song.storeQueryResults.useMutation();
   const [isDataStored, setIsDataStored] = useState(false);
 
   const { currentlyPlaying, queue, topTracks, recentlyPlayed } = spotifyUserData || {};

@@ -52,9 +52,9 @@ const SearchSettings = ({}) => {
         <p className="border-b-[1px] border-foreground px-2 pb-1 text-lg text-foreground">
           <span>Search Settings</span>
         </p>
-        <div className="grid grid-cols-[240px_minmax(50px,_max-content)] gap-x-8 gap-y-3 opacity-100">
+        <div className="grid grid-cols-[240px_minmax(50px,_max-content)] gap-x-8 gap-y-1 opacity-100">
           {/* Minimum length */}
-          <Label htmlFor="minimumlength" className="flex items-center font-thin">
+          <Label htmlFor="minimumlength" className="flex items-center text-base font-thin">
             <p>
               Minimum length
               {minimumLengthOption ? ":" : "?"}

@@ -1,4 +1,4 @@
-import { SearchTab } from "@/components/interactive/Search/SearchTabBar";
+import { SearchTab } from "@/components/interactive/Search/SearchTabs/SearchTabBar";
 import useSpotifySongData, { SpotifyTabData } from "@/hooks/useSpotifySongData";
 import { AppRouter } from "@/server/api/root";
 import { api } from "@/utils/api";

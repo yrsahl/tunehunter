@@ -1,10 +1,10 @@
 import IconButton from "@/components/IconButton";
 import { LoadingIndicator } from "@/components/Indicators";
 import { Input } from "@/components/ui/input";
-import { useSearchDataContext } from "@/contexts/SearchDataContext";
+import { useQueryDataContext } from "@/contexts/QueryDataContext";
 import { fadeInAndOut } from "@/helpers/animations";
 import { useSearchSettingsStore } from "@/hooks/stores/useSearchSettingsStore";
-import useSearchFunctions from "@/hooks/useSearchFunctions";
+import useSearchInput from "@/hooks/useSearchInput";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Search } from "lucide-react";
@@ -45,8 +45,8 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = (
   ref,
 ) => {
   const [currentPlaceholder, setCurrentPlaceholder] = useState("");
-  const { handleSearchSubmit, searchInput, handleInputChange, resetSearch } = useSearchFunctions();
-  const { searchData, isSearchDataLoading } = useSearchDataContext();
+  const { handleSearchSubmit, searchInput, handleInputChange, resetSearch } = useSearchInput();
+  const { queryData, isQueryDataLoading } = useQueryDataContext();
   const formRef = createRef<HTMLFormElement>();
 
   // Puts a random placeholder song value into the search bar
@@ -59,7 +59,7 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = (
   // Trigger form submit when settings change
   const searchSettings = useSearchSettingsStore();
   useEffect(() => {
-    if (!searchData) return;
+    if (!queryData) return;
     formRef.current?.requestSubmit();
   }, [...Object.values(searchSettings)]);
 
@@ -76,14 +76,14 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = (
           sizeVariant="lg"
           className={cn(
             "overflow-ellipsis border-2 border-primary px-14 text-lg ring-0 transition-all duration-300 placeholder:text-muted-foreground focus-visible:ring-0",
-            searchData && showResults && "rounded-b-none border-b-0",
+            queryData && showResults && "rounded-b-none border-b-0",
           )}
           value={searchInput}
           onChange={handleInputChange}
         />
         <span className="absolute left-4 top-1/2 -translate-y-1/2">
           <AnimatePresence>
-            {isSearchDataLoading && (
+            {isQueryDataLoading && (
               <motion.div
                 className="flex h-8 justify-center"
                 initial={{ opacity: 0 }}
@@ -93,7 +93,7 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = (
                 <LoadingIndicator size={20} />
               </motion.div>
             )}
-            {!isSearchDataLoading && (
+            {!isQueryDataLoading && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                 <Search />
               </motion.div>
@@ -105,7 +105,7 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = (
           ref={searchSettingsRef}
         >
           <AnimatePresence>
-            {searchData && showResults && (
+            {queryData && showResults && (
               <motion.div {...fadeInAndOut()}>
                 <IconButton icon="x" size="icon" variant="ghostDestructive" onClick={resetSearch} />
               </motion.div>

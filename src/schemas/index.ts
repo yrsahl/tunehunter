@@ -48,7 +48,7 @@ export const AddArtistSchema = z.object({
   followers: z.union([z.number(), z.null()]),
 });
 
-export const AddSearchResultsSchema = z.array(
+export const AddSearchQueriesSchema = z.array(
   z.object({
     song: AddSongSchema,
     artists: z.array(AddArtistSchema),

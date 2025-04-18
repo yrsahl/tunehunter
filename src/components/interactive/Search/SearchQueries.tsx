@@ -1,37 +1,20 @@
-import { useSearchTabData } from "@/contexts/SearchTabDataContext";
+import { useQueryDataContext } from "@/contexts/QueryDataContext";
 import { fadeInAndOut } from "@/helpers/animations";
-import useRegionSettings from "@/hooks/settings/useRegionSettings";
-import { SpotifySearchData, SpotifyTrack } from "@/types/spotify";
-import { api } from "@/utils/api";
+import useSearch from "@/hooks/useSearch";
 import { motion } from "framer-motion";
-import { useRouter } from "next/router";
 
 interface SearchTableProps {
-  searchData: SpotifySearchData;
-  searchResultsRef: React.RefObject<HTMLTableElement>;
+  searchQueriesRef: React.RefObject<HTMLTableElement>;
 }
 
-const SearchResults = ({ searchData, searchResultsRef }: SearchTableProps) => {
-  const router = useRouter();
-  const addSearchActivity = api.userActivities.addSearchActivity.useMutation();
-  const { history } = useSearchTabData();
-  const { region } = useRegionSettings();
+const SearchQueries = ({ searchQueriesRef }: SearchTableProps) => {
+  const { queryData } = useQueryDataContext();
 
-  const startSearch = async (track: SpotifyTrack) => {
-    // Store activity
-    addSearchActivity.mutateAsync({ songId: track.id, region });
+  const { startSearch } = useSearch();
 
-    // Refresh history data
-    history.refetchData();
-    // setShowResults(false);
-
-    // Push to router -> trigger results query
-    const trackSearchHref = {
-      pathname: router.pathname,
-      query: { ...router.query, id: track.id },
-    };
-    router.push(trackSearchHref);
-  };
+  if (!queryData) {
+    return <></>;
+  }
 
   return (
     <motion.div
@@ -40,15 +23,15 @@ const SearchResults = ({ searchData, searchResultsRef }: SearchTableProps) => {
     >
       <div className="px-3 py-3 sm:px-5 md:px-7">
         {/* <p className="text-center text-foreground/50">
-          {searchData.tracks?.total} results found for 'love'.
+          {queryData.tracks?.total} results found for 'love'.
         </p> */}
-        <table ref={searchResultsRef}>
-          <motion.tbody {...fadeInAndOut(0.5)} key={searchData.tracks?.href}>
-            {searchData.tracks?.items.map((track) => (
+        <table ref={searchQueriesRef}>
+          <motion.tbody {...fadeInAndOut(0.5)} key={queryData.tracks?.href}>
+            {queryData.tracks?.items.map((track) => (
               <motion.tr
                 whileHover={{ scale: 1.03 }}
                 className="cursor-pointer"
-                onClick={() => startSearch(track)}
+                onClick={() => startSearch(track.id)}
                 key={track.id}
               >
                 <td className="py-3 pr-8">
@@ -83,4 +66,4 @@ const SearchResults = ({ searchData, searchResultsRef }: SearchTableProps) => {
   );
 };
 
-export default SearchResults;
+export default SearchQueries;

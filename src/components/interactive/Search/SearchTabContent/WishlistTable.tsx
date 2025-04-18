@@ -1,9 +1,10 @@
 import CustomIcon from "@/components/CustomIcon";
 import { Button } from "@/components/ui/button";
 import { useSearchTabData } from "@/contexts/SearchTabDataContext";
+import { fadeInAndOut } from "@/helpers/animations";
 import { Track } from "@/types/song";
 import { api } from "@/utils/api";
-import { motion, useAnimation } from "framer-motion";
+import { AnimatePresence, motion, useAnimation } from "framer-motion";
 import ConfirmationModal from "../../Modals/ConfirmationModal";
 import NoDataMessage from "./NoDataMessage";
 import SkeletonTable from "./SkeletonTable";
@@ -71,26 +72,30 @@ const WishlistTable = () => {
   };
 
   return (
-    <>
-      {isLoading && <SkeletonTable hasHeader={false} tab="history" />}
-      {!isLoading && !wishlistDataExists && (
-        <NoDataMessage message="Your wishlist is empty! Add songs by clicking the heart icon on the results page." />
-      )}
-      {wishlistDataExists && (
-        <TableBody hasHeader={false}>
-          <>
-            {data.map((wishlistedTrack, index) => (
-              <TableRow
-                key={`${index}-${wishlistedTrack.song.id}`}
-                track={wishlistedTrack}
-                showDuration={true}
-                extraElement={<WishlistStatusIcon track={wishlistedTrack} />}
-              />
-            ))}
-          </>
-        </TableBody>
-      )}
-    </>
+    <AnimatePresence mode="wait">
+      <motion.div {...fadeInAndOut(0.2)} className="h-full w-full">
+        {/* Loading */}
+        {isLoading && <SkeletonTable hasHeader={false} tab="history" />}
+        {/* Ready */}
+        {!isLoading && !wishlistDataExists && (
+          <NoDataMessage message="Your wishlist is empty! Add songs by clicking the heart icon on the results page." />
+        )}
+        {wishlistDataExists && (
+          <TableBody hasHeader={false}>
+            <>
+              {data.map((wishlistedTrack, index) => (
+                <TableRow
+                  key={`${index}-${wishlistedTrack.song.id}`}
+                  track={wishlistedTrack}
+                  showDuration={true}
+                  extraElement={<WishlistStatusIcon track={wishlistedTrack} />}
+                />
+              ))}
+            </>
+          </TableBody>
+        )}
+      </motion.div>
+    </AnimatePresence>
   );
 };
 

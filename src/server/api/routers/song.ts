@@ -1,4 +1,4 @@
-import { AddSearchResultsSchema, AddSongSchema } from "@/schemas";
+import { AddSearchQueriesSchema, AddSongSchema } from "@/schemas";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import {
   artists,
@@ -168,8 +168,9 @@ export const songRouter = createTRPCRouter({
     };
   }),
 
-  storeSearchResults: publicProcedure
-    .input(AddSearchResultsSchema)
+  // Store search queries in the database
+  storeQueryResults: publicProcedure
+    .input(AddSearchQueriesSchema)
     .mutation(async ({ ctx, input }) => {
       // Add songs
       await ctx.db

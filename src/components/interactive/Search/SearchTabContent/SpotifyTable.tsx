@@ -32,11 +32,13 @@ const SpotifyTable = () => {
 
   return (
     <>
+      {/* Header */}
       <TableHeader<SpotifySubTab>
         activeSubTab={activeSubTab}
         subTabs={spotifySubTabs}
         setActiveSubTab={setActiveSubTab}
       />
+      {/* Refresh */}
       <motion.div
         className="absolute bottom-3 z-10 hidden cursor-pointer opacity-60 sm:bottom-auto sm:right-4 sm:top-3 sm:block md:right-8"
         animate={{ rotate: rotateAngleIcon }}
@@ -54,7 +56,9 @@ const SpotifyTable = () => {
           className="border-0"
         />
       </motion.div>
+      {/* Loading */}
       {isLoading && <SkeletonTable hasHeader={true} tab="spotify" />}
+      {/* Ready */}
       {!isLoading && (
         <AnimatePresence mode="wait">
           <motion.div key={activeSubTab} {...fadeInAndOut(0.2)} className="h-full w-full">

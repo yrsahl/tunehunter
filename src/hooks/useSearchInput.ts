@@ -1,16 +1,15 @@
-import { useSearchDataContext } from "@/contexts/SearchDataContext";
+import { useQueryDataContext } from "@/contexts/QueryDataContext";
 import { api } from "@/utils/api";
 import { debounce } from "lodash";
 import { useSession } from "next-auth/react";
 import { FormEvent, useCallback, useState } from "react";
 import { useSearchSettingsStore } from "./stores/useSearchSettingsStore";
 
-const useSearchFunctions = () => {
+const useSearchInput = () => {
   const [searchInput, setSearchInput] = useState("");
-  const { requestSearchData, resetSearchData } = useSearchDataContext();
+  const { requestQueryData, resetQueryData } = useQueryDataContext();
   const { data: userData, status } = useSession();
   const loggedIn = status === "authenticated";
-
   const { data: spotifyAccountData } = api.account.getSpotifyAccountById.useQuery(
     { userId: userData?.user.id! },
     {
@@ -27,7 +26,7 @@ const useSearchFunctions = () => {
   const appAccessToken = clientCredentialsData?.token;
   const accessToken = userAccessToken || appAccessToken;
 
-  // Any settings set?
+  // Are there any settings set?
   const { searchForClubMixesOnly, minimumLengthOption, minimumLengthSeconds } =
     useSearchSettingsStore();
   const searchSettings = {
@@ -36,46 +35,48 @@ const useSearchFunctions = () => {
     minimumLengthSeconds,
   };
 
-  // On enter -> set directly
+  // On enter, request query data immediately
   const handleSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!accessToken) return;
-    requestSearchData(accessToken, searchInput, searchSettings);
+    requestQueryData(accessToken, searchInput, searchSettings);
   };
 
-  // On input -> debounce
+  // On input change, debounce the request
   const debouncedRequestSearchData = useCallback(
     debounce((searchTerm: string) => {
       if (!accessToken) return;
-      requestSearchData(accessToken, searchTerm, searchSettings);
+      requestQueryData(accessToken, searchTerm, searchSettings);
     }, 600),
     [userAccessToken, appAccessToken, ...Object.values(searchSettings)],
   );
 
+  // Input change handler
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Visual input
+    // Create visual input
     const input = e.target.value;
     setSearchInput(input);
 
-    // Debounced search (or cancel if empty)
+    // Debounce the search (or cancel if empty)
     if (input) debouncedRequestSearchData(e.target.value);
     else {
       debouncedRequestSearchData.cancel();
-      resetSearchData();
+      resetQueryData();
     }
   };
 
+  // Reset the search input and query data
   const resetSearch = () => {
     setSearchInput("");
-    resetSearchData();
+    resetQueryData();
   };
 
   return {
-    handleSearchSubmit,
     searchInput,
     handleInputChange,
+    handleSearchSubmit,
     resetSearch,
   };
 };
 
-export default useSearchFunctions;
+export default useSearchInput;

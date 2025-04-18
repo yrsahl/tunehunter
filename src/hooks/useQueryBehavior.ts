@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import useRouterWithHelpers from "./useRouterWithHelpers";
 
-const useSearchBar = () => {
-  const [showResults, setShowResults] = useState(false);
+const useQueryBehavior = () => {
+  const [showQueries, setShowQueries] = useState(false);
   const searchBarRef = useRef<HTMLDivElement>(null);
   const searchSettingsRef = useRef<HTMLDivElement>(null);
-  const searchResultsRef = useRef<HTMLTableElement>(null);
+  const searchQueriesRef = useRef<HTMLTableElement>(null);
   const { getParams } = useRouterWithHelpers();
   const id = getParams("id");
 
+  // Show queries depending on click inside or outside of search bar
   const handleClickSearchBar = (event: MouseEvent) => {
     if (!searchBarRef.current || !searchSettingsRef.current) return; // No refs
 
@@ -19,13 +20,14 @@ const useSearchBar = () => {
 
     // If click is placed within search bar, show results
     if (searchBarRef.current.contains(event.target as Node)) {
-      setShowResults(true);
+      setShowQueries(true);
     }
     if (!searchBarRef.current.contains(event.target as Node)) {
-      setShowResults(false);
+      setShowQueries(false);
     }
   };
 
+  // Add and remove event listeners
   useEffect(() => {
     document.addEventListener("mousedown", handleClickSearchBar);
     return () => {
@@ -35,15 +37,15 @@ const useSearchBar = () => {
 
   // Hide results on new id (new search)
   useEffect(() => {
-    setShowResults(false);
+    setShowQueries(false);
   }, [id]);
 
   return {
-    showResults,
+    showQueries,
     searchBarRef,
     searchSettingsRef,
-    searchResultsRef,
+    searchQueriesRef,
   };
 };
 
-export default useSearchBar;
+export default useQueryBehavior;

@@ -1,11 +1,11 @@
 import { fadeInAndOut } from "@/helpers/animations";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import HistoryTable from "../SearchTabContent/HistoryTable";
+import SpotifyTable from "../SearchTabContent/SpotifyTable";
+import TrendingTable from "../SearchTabContent/TrendingTable";
+import WishlistTable from "../SearchTabContent/WishlistTable";
 import { SearchTab } from "./SearchTabBar";
-import HistoryTable from "./SearchTabContent/HistoryTable";
-import SpotifyTable from "./SearchTabContent/SpotifyTable";
-import TrendingTable from "./SearchTabContent/TrendingTable";
-import WishlistTable from "./SearchTabContent/WishlistTable";
 
 interface SearchTabContentProps {
   activeSearchTab: SearchTab;
@@ -18,7 +18,7 @@ const SearchTabContent = ({ activeSearchTab }: SearchTabContentProps) => {
       animate={{ height: "16rem" }}
       exit={{ height: "0rem" }}
       transition={{ duration: 0.5, ease: "easeInOut" }}
-      className="relative mt-4 h-full w-full resize-y overflow-hidden rounded-3xl border-[1px] border-foreground/30 bg-primary/10 md:w-4/5 "
+      className="relative h-full w-full resize-y overflow-hidden rounded-3xl border-[1px] border-foreground/30 bg-primary/10 md:w-4/5 "
     >
       {/* Fade content on tab change */}
       <motion.div
