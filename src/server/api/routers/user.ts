@@ -46,6 +46,7 @@ export const userRouter = createTRPCRouter({
         id: user.id,
         language: user.language,
         theme: user.theme,
+        themeParticles: user.themeParticles,
         region: user.region,
       };
     }),
@@ -152,6 +153,7 @@ export const userRouter = createTRPCRouter({
         id: z.string(),
         language: z.string().optional(),
         theme: z.string().optional(),
+        themeParticles: z.boolean().optional(),
         region: z.string().optional(),
       }),
     )
@@ -161,6 +163,7 @@ export const userRouter = createTRPCRouter({
         .set({
           language: input.language ?? ctx.session.user.language,
           theme: input.theme ?? ctx.session.user.theme,
+          themeParticles: input.themeParticles ?? ctx.session.user.themeParticles,
           region: input.region ?? ctx.session.user.region,
         })
         .where(eq(users.id, input.id));

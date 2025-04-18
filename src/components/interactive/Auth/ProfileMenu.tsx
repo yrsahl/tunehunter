@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
 import { growIn } from "@/helpers/animations";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
@@ -32,7 +33,12 @@ const ProfileMenu = () => {
     useProfileFunctions();
   const { region, changeRegion, createRegionName, setRegionByLocation, sortedRegions } =
     useRegionSettings();
-  const { preferredTheme, changeAutoThemePreference } = useThemeSettings();
+  const {
+    particlePreference,
+    preferredTheme,
+    changeAutoThemePreference,
+    changeParticlePreference,
+  } = useThemeSettings();
   const autoThemePreference = preferredTheme === "auto" ? "auto" : "manual";
   const { spotifyUserData } = useSpotifyUserDataContext();
   const linkError = useAuthError("link");
@@ -218,6 +224,37 @@ const ProfileMenu = () => {
             </SelectContent>
           </Select>
         </div>
+
+        {/* Disable particles */}
+        <p className="col-span-2 flex items-center justify-end gap-1 font-thin">
+          <span>Particles</span>
+        </p>
+        <div className="col-span-3">
+          <Switch
+            id="minimumlength"
+            checked={particlePreference || false}
+            onCheckedChange={changeParticlePreference}
+          />
+        </div>
+        {/* <div className="col-span-3">
+          <Select value={autoThemePreference} onValueChange={changeAutoThemePreference}>
+            <SelectTrigger
+              id="region"
+              className="h-9 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 text-base font-thin text-foreground focus:ring-0 focus:ring-offset-0"
+            >
+              <motion.div {...growIn()} className="inline-block overflow-hidden text-ellipsis">
+                <SelectValue />
+              </motion.div>
+            </SelectTrigger>
+            <SelectContent>
+              {["enable", "disable"].map((autoThemePreference) => (
+                <SelectItem key={autoThemePreference} value={autoThemePreference} className="py-2">
+                  {autoThemePreference === "auto" ? "Determine by sunset" : "Choose manually"}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div> */}
 
         {/* Delete account */}
         <p className="col-span-2 flex items-center justify-end font-thin">Account</p>

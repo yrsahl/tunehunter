@@ -8,6 +8,9 @@ import useUserSettings from "./useUserSettings";
 export const AutoThemePreferences = ["auto", "manual"] as const;
 export type AutoThemePreference = (typeof AutoThemePreferences)[number];
 
+export const ParticlePreference = ["enable", "disable"] as const;
+export type ParticlePreferenceType = (typeof ParticlePreference)[number];
+
 // Uses DB for storage as it's a user-only setting
 
 const useThemeSettings = () => {
@@ -16,8 +19,9 @@ const useThemeSettings = () => {
   const loggedIn = status === "authenticated";
   const {
     userSettings,
-    userSettingsUpdaters: { updatePreferredTheme },
+    userSettingsUpdaters: { updatePreferredTheme, updateParticlePreference },
   } = useUserSettings(userData?.user.id);
+  const particlePreference = userSettings?.themeParticles;
   const preferredTheme = userSettings?.theme;
 
   // Set theme from DB
@@ -66,10 +70,16 @@ const useThemeSettings = () => {
     }
   };
 
+  const changeParticlePreference = (particlePreference: boolean) => {
+    updateParticlePreference(particlePreference);
+  };
+
   return {
     preferredTheme,
     changeTheme,
     changeAutoThemePreference,
+    particlePreference,
+    changeParticlePreference,
   };
 };
 

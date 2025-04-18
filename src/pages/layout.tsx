@@ -1,5 +1,7 @@
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
+import useThemeSettings from "@/hooks/settings/useThemeSettings";
+import { useSession } from "next-auth/react";
 const Particles = dynamic(() => import("@/components/layout/Particles"), {
   ssr: false,
 });
@@ -17,12 +19,16 @@ export const quicksand = Quicksand({
 
 const Layout = ({ children }: PropsWithChildren) => {
   const { resolvedTheme } = useTheme();
+  const { particlePreference } = useThemeSettings();
+  const { status } = useSession();
+  const loggedIn = status === "authenticated";
+  const wantsParticles = loggedIn ? particlePreference : true;
 
   return (
     <div
       className={`${quicksand.variable} relative flex h-screen rotate-0 flex-col items-center justify-between overflow-hidden bg-background text-foreground`}
     >
-      {resolvedTheme === "dark" && (
+      {resolvedTheme === "dark" && wantsParticles && (
         <Particles className="animate-fade-in absolute inset-0 -z-10" quantity={100} />
       )}
       {/* Footer's 80px high */}

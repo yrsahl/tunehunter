@@ -1,5 +1,6 @@
 import { gte, relations, sql } from "drizzle-orm";
 import {
+  boolean,
   index,
   integer,
   pgEnum,
@@ -23,6 +24,7 @@ export const users = pgTable("user", {
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
   theme: varchar("theme", { length: 255 }),
+  themeParticles: boolean().default(true),
   language: varchar("language", { length: 255 }),
   region: varchar("region", { length: 255 }),
 });

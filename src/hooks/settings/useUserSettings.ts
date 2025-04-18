@@ -27,6 +27,22 @@ const useUserSettings = (userId: string | undefined) => {
       );
     },
 
+    updateParticlePreference: (particlePreference: boolean) => {
+      if (!userId) return { error: "Tried to save particle preference without user ID" };
+      mutateSettings.mutate(
+        { id: userId, themeParticles: particlePreference },
+        {
+          onError: () => {
+            return 0;
+          },
+          onSuccess: () => {
+            utils.user.getUserSettings.invalidate({ userId });
+            return 1;
+          },
+        },
+      );
+    },
+
     updatePreferredLanguage: (language: Locale) => {
       if (!userId) return { error: "Tried to save language without userId" };
       mutateSettings.mutate(
