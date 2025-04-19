@@ -12,7 +12,7 @@ const getOrdinalSuffix = (day: number) => {
   }
 };
 
-export const formatDate = (date: Date) => {
+export const formatDate = (date: Date, dayOnly = true, shortForm = false) => {
   const day = date.getDate();
   const month = date.toLocaleString("default", { month: "long" });
   const year = date.getFullYear();
@@ -20,5 +20,11 @@ export const formatDate = (date: Date) => {
   const minutes = date.getMinutes().toString().padStart(2, "0");
   const ordinalSuffix = getOrdinalSuffix(day);
 
-  return `${day}${ordinalSuffix} of ${month} ${year} at ${hours}:${minutes}`;
+  const formattedDate = shortForm
+    ? `${month} ${day}${ordinalSuffix}, ${year}`
+    : `${day}${ordinalSuffix} of ${month}, ${year}`;
+  const formattedTime = `${hours}:${minutes}`;
+  const formattedDateTime = `${formattedDate} at ${formattedTime}`;
+
+  return dayOnly ? formattedDate : formattedDateTime;
 };

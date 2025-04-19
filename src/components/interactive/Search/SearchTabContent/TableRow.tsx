@@ -1,5 +1,6 @@
 import IconButton from "@/components/IconButton";
-import useSearch from "@/hooks/useSearch";
+import useRegionSettings from "@/hooks/settings/useRegionSettings";
+import useSearchInput from "@/hooks/useSearchInput";
 import { Track } from "@/types/song";
 import clsx from "clsx";
 import { ReactNode } from "react";
@@ -11,8 +12,11 @@ interface TableRowProps {
 }
 
 const TableRow = ({ track, showDuration = false, extraElement }: TableRowProps) => {
-  const { startSearch } = useSearch();
+  const { submitSearch } = useSearchInput();
   const { song, artists } = track;
+  const { region } = useRegionSettings();
+
+  const primaryArtist = artists[0]?.name || "";
 
   return (
     <tr className="max-h-16" key={song.id}>
@@ -36,7 +40,7 @@ const TableRow = ({ track, showDuration = false, extraElement }: TableRowProps) 
       </td>
       {/* Artist(s) */}
       <td className="pr-4">
-        <p>{artists[0]?.name}</p>
+        <p>{primaryArtist}</p>
         {artists[1] && (
           <p className="overflow-ellipsis whitespace-nowrap text-muted-foreground">
             {artists[1].name}
@@ -49,7 +53,7 @@ const TableRow = ({ track, showDuration = false, extraElement }: TableRowProps) 
       </td>
       {/* Duration */}
       {showDuration && (
-        <td className="pr-4 text-foreground/50">
+        <td className="pr-4 text-sm text-foreground/50">
           <span>{new Date(song.duration).toISOString().substr(14, 5)}</span>
         </td>
       )}
@@ -59,7 +63,8 @@ const TableRow = ({ track, showDuration = false, extraElement }: TableRowProps) 
           variant="primary"
           text="Search"
           size="sm"
-          onClick={() => startSearch(song.id)}
+          textStyle="uppercase text-xs"
+          onClick={() => submitSearch(song.id, region, song.title, primaryArtist)}
         />
       </td>
     </tr>

@@ -1,6 +1,7 @@
 import { useQueryDataContext } from "@/contexts/QueryDataContext";
 import { fadeInAndOut } from "@/helpers/animations";
-import useSearch from "@/hooks/useSearch";
+import useRegionSettings from "@/hooks/settings/useRegionSettings";
+import useSearchInput from "@/hooks/useSearchInput";
 import { motion } from "framer-motion";
 
 interface SearchTableProps {
@@ -9,8 +10,8 @@ interface SearchTableProps {
 
 const SearchQueries = ({ searchQueriesRef }: SearchTableProps) => {
   const { queryData } = useQueryDataContext();
-
-  const { startSearch } = useSearch();
+  const { region } = useRegionSettings();
+  const { submitSearch } = useSearchInput();
 
   if (!queryData) {
     return <></>;
@@ -27,38 +28,42 @@ const SearchQueries = ({ searchQueriesRef }: SearchTableProps) => {
         </p> */}
         <table ref={searchQueriesRef}>
           <motion.tbody {...fadeInAndOut(0.5)} key={queryData.tracks?.href}>
-            {queryData.tracks?.items.map((track) => (
-              <motion.tr
-                whileHover={{ scale: 1.03 }}
-                className="cursor-pointer"
-                onClick={() => startSearch(track.id)}
-                key={track.id}
-              >
-                <td className="py-3 pr-8">
-                  <div className="flex items-center gap-4">
-                    <div className="avatar">
-                      <div className="mask mask-squircle h-11 w-11">
-                        <img src={track.album.images[0]?.url} />
+            {queryData.tracks?.items.map((track) => {
+              const primaryArtist = track.artists[0]?.name || "";
+
+              return (
+                <motion.tr
+                  whileHover={{ scale: 1.03 }}
+                  className="cursor-pointer"
+                  onClick={() => submitSearch(track.id, region, track.name, primaryArtist)}
+                  key={track.id}
+                >
+                  <td className="py-3 pr-8">
+                    <div className="flex items-center gap-4">
+                      <div className="avatar">
+                        <div className="mask mask-squircle h-11 w-11">
+                          <img src={track.album.images[0]?.url} />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </td>
-                <td className="overflow-hidden pr-4 align-middle">
-                  <p>{track.artists[0]?.name}</p>
-                  {track.artists[1] && (
-                    <p className="overflow-ellipsis whitespace-nowrap text-muted-foreground">
-                      {track.artists[1]?.name}
-                    </p>
-                  )}
-                </td>
-                <td className=" pr-4 align-middle">
-                  <span>{track.name}</span>
-                </td>
-                <td className="text-right align-middle text-base opacity-50">
-                  {new Date(track.duration_ms).toISOString().substr(14, 5)}
-                </td>
-              </motion.tr>
-            ))}
+                  </td>
+                  <td className="overflow-hidden pr-4 align-middle">
+                    <p>{primaryArtist}</p>
+                    {track.artists[1] && (
+                      <p className="overflow-ellipsis whitespace-nowrap text-muted-foreground">
+                        {track.artists[1]?.name}
+                      </p>
+                    )}
+                  </td>
+                  <td className=" pr-4 align-middle">
+                    <span>{track.name}</span>
+                  </td>
+                  <td className="text-right align-middle text-base opacity-50">
+                    {new Date(track.duration_ms).toISOString().substr(14, 5)}
+                  </td>
+                </motion.tr>
+              );
+            })}
           </motion.tbody>
         </table>
       </div>

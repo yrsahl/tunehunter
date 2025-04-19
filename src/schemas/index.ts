@@ -1,5 +1,30 @@
+import { RegisterErrorCode } from "@/components/interactive/Auth/RegisterForm";
 import { z } from "zod";
 
+// Output
+interface RegisterErrorResponse {
+  error: RegisterErrorCode;
+  success?: undefined;
+}
+interface RegisterSuccessResponse {
+  success: string;
+  error?: undefined;
+}
+export type RegisterResponse = RegisterErrorResponse | RegisterSuccessResponse;
+
+export interface VendorDataResponse {
+  id: string;
+  store: string;
+  region?: string;
+  fileFormat: string;
+  quality: string;
+  price: number;
+  currency: string;
+  artistsShare: number;
+  url: string;
+}
+
+// Inputs
 export const RegisterSchema = z.object({
   email: z.string().email({ message: "E-Mail is required" }),
   name: z.string().min(3, "Minimum 3 characters required"),
@@ -32,6 +57,7 @@ export const GetUserActivitySchema = z.object({
 
 export const VendorDataSchema = z.object({
   id: z.string(),
+  region: z.string(),
 });
 
 export const AddSongSchema = z.object({

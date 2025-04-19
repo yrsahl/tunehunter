@@ -41,7 +41,7 @@ const InfoButton = () => {
       <SheetTrigger asChild>
         <Button size="lg" className="w-20 border-[1px] border-foreground/30">
           <CustomIcon
-            icon="questionMark"
+            icon="hamburger"
             variant="foreground"
             height="24px"
             width="24px"

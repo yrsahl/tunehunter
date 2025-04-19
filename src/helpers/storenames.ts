@@ -6,17 +6,17 @@ const capitalizeSecondLetter = (str: string) => {
 export const createStoreName = (store: string) => {
   let storeName = store;
 
-  // Remove _ and replace with space
-  storeName = storeName.replaceAll("_", " ");
+  // Remove everything after _
+  const underscoreIndex = storeName.indexOf("_");
+  if (underscoreIndex !== -1) {
+    storeName = storeName.substring(0, underscoreIndex);
+  }
 
   // Capitalize first letter except for itunes
   if (storeName === "itunes") {
     storeName = capitalizeSecondLetter(storeName);
   } else {
-    storeName = storeName
-      .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+    storeName = storeName.charAt(0).toUpperCase() + storeName.slice(1);
   }
 
   return storeName;

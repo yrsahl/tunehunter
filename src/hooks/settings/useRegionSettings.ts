@@ -39,9 +39,11 @@ const useRegionSettings = () => {
   }, [userSettings]);
 
   const changeRegion = (country: CountryCode) => {
+    // If logged in, update DB
     if (loggedIn) {
       updatePreferredRegion?.(country);
     }
+    // Update local storage
     setRegion(country);
   };
 

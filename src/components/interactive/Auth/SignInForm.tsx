@@ -90,7 +90,7 @@ const SignInForm: FC<IProps> = ({ email, setEmail, setMenuState }) => {
         <Input
           type="email"
           placeholder="xyz@gmail.com"
-          className="border-bac placeholder:text-foreground/50"
+          className="border-2 border-background placeholder:text-foreground/50"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />

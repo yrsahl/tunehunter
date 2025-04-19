@@ -29,6 +29,28 @@ export const songRouter = createTRPCRouter({
     });
   }),
 
+  getSongAndArtistsBySongId: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const song = await ctx.db.query.songs.findFirst({
+        where: (songs, { eq }) => eq(songs.id, input.id),
+      });
+      if (!song) return null;
+
+      // Wait 2 seconds
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      const artistsList = await ctx.db
+        .select({
+          name: artists.name,
+        })
+        .from(songArtists)
+        .innerJoin(artists, eq(songArtists.artistId, artists.id))
+        .where(eq(songArtists.songId, song.id));
+
+      return { ...song, artists: artistsList };
+    }),
+
   getTrendingSongs: publicProcedure.query<TrendingTracks>(async ({ ctx }) => {
     await ctx.db.refreshMaterializedView(trendingViewToday);
 
