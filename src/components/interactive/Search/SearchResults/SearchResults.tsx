@@ -1,5 +1,5 @@
 import { slideInAndOutFromBottom } from "@/helpers/animations";
-import useSearchInput from "@/hooks/useSearchInput";
+import useSearch from "@/hooks/useSearch";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef } from "react";
 import SearchResultsFrame from "./SearchResultsFrame";
@@ -7,7 +7,7 @@ import SearchResultsFrame from "./SearchResultsFrame";
 interface SearchResultsProps {}
 
 const SearchResults = ({}: SearchResultsProps) => {
-  const { searchId, searchRegion } = useSearchInput();
+  const { searchId, searchRegion } = useSearch();
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   // Scroll into view

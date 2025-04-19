@@ -1,6 +1,6 @@
 import IconButton from "@/components/IconButton";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
-import useSearchInput from "@/hooks/useSearchInput";
+import useSearch from "@/hooks/useSearch";
 import { Track } from "@/types/song";
 import clsx from "clsx";
 import { ReactNode } from "react";
@@ -12,7 +12,7 @@ interface TableRowProps {
 }
 
 const TableRow = ({ track, showDuration = false, extraElement }: TableRowProps) => {
-  const { submitSearch } = useSearchInput();
+  const { submitSearch } = useSearch();
   const { song, artists } = track;
   const { region } = useRegionSettings();
 

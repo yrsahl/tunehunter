@@ -1,7 +1,7 @@
 import { useQueryDataContext } from "@/contexts/QueryDataContext";
 import { fadeInAndOut } from "@/helpers/animations";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
-import useSearchInput from "@/hooks/useSearchInput";
+import useSearch from "@/hooks/useSearch";
 import { motion } from "framer-motion";
 
 interface SearchTableProps {
@@ -11,7 +11,7 @@ interface SearchTableProps {
 const SearchQueries = ({ searchQueriesRef }: SearchTableProps) => {
   const { queryData } = useQueryDataContext();
   const { region } = useRegionSettings();
-  const { submitSearch } = useSearchInput();
+  const { submitSearch } = useSearch();
 
   if (!queryData) {
     return <></>;
