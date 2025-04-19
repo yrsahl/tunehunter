@@ -1,4 +1,4 @@
-import { useSearchTabData } from "@/contexts/SearchTabDataContext";
+import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { fadeInAndOut } from "@/helpers/animations";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
@@ -18,7 +18,7 @@ export type TrendingSubTab = (typeof trendingSubTabs)[number];
 const TrendingTable = () => {
   const {
     trending: { data, isLoading },
-  } = useSearchTabData();
+  } = useSearchTabDataContext();
   const [activeSubTab, setActiveSubTab] = useState<TrendingSubTab>(trendingSubTabs[0]);
 
   const trendingDataTodayExists = data?.today && data.today.length > 0;

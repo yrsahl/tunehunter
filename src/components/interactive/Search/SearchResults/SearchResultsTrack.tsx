@@ -36,11 +36,11 @@ export default function SearchResultsTrack({ songData, isLoading }: ISearchResul
             {artists.length > 0 && <p className="text-md">By {artists[0]?.name}</p>}
 
             {/* Play & Wishlist */}
-            <div className="flex gap-2 ">
-              <div className="mt-3 flex h-10 w-10 items-center justify-center rounded-full bg-primary">
+            <div className="mt-3 flex gap-2">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
                 <Play className="h-6 w-6 text-foreground" />
               </div>
-              <div className="mt-3 flex h-10 w-10 items-center justify-center rounded-full ">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full ">
                 <Heart className="h-6 w-6 text-foreground" />
               </div>
             </div>

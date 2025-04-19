@@ -59,7 +59,7 @@ const SearchTabDataContext = createContext<ISearchTabDataContext>({
   },
 });
 
-export const useSearchTabData = () => useContext(SearchTabDataContext);
+export const useSearchTabDataContext = () => useContext(SearchTabDataContext);
 
 export const SearchTabDataProvider = ({ children }: { children: ReactNode }) => {
   const { status } = useSession();

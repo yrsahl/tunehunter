@@ -41,6 +41,7 @@ const SearchResultsFrame = ({ songId, region }: ISearchResultsProps) => {
       <div className="my-auto hidden w-1/2 md:block">
         <SearchResultsTrack songData={songData} isLoading={isSongDataLoading} />
       </div>
+
       <table className="my-auto table h-[80%] w-full border-separate border-spacing-y-6 md:w-1/2">
         <thead>
           <tr>

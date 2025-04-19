@@ -1,6 +1,6 @@
 import IconButton from "@/components/IconButton";
 import { MusicPlayingIndicator } from "@/components/Indicators";
-import { useSearchTabData } from "@/contexts/SearchTabDataContext";
+import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { fadeInAndOut } from "@/helpers/animations";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
@@ -16,7 +16,7 @@ export type SpotifySubTab = (typeof spotifySubTabs)[number];
 const SpotifyTable = () => {
   const {
     spotify: { data, refetchData, isLoading },
-  } = useSearchTabData();
+  } = useSearchTabDataContext();
 
   const [activeSubTab, setActiveSubTab] = useState<SpotifySubTab>(spotifySubTabs[0]);
   const [rotateAngleIcon, setRotateAngleIcon] = useState(0);

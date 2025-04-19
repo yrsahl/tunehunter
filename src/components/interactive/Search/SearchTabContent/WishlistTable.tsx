@@ -1,6 +1,6 @@
 import CustomIcon from "@/components/CustomIcon";
 import { Button } from "@/components/ui/button";
-import { useSearchTabData } from "@/contexts/SearchTabDataContext";
+import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { fadeInAndOut } from "@/helpers/animations";
 import { Track } from "@/types/song";
 import { api } from "@/utils/api";
@@ -14,7 +14,7 @@ import TableRow from "./TableRow";
 const WishlistTable = () => {
   const {
     wishlist: { data, refetchData, isLoading },
-  } = useSearchTabData();
+  } = useSearchTabDataContext();
   const wishlistDataExists = !!data && data.length > 0;
   const removeUserActivity = api.userActivities.removeUserActivityByType.useMutation();
 

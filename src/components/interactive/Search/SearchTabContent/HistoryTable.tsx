@@ -1,5 +1,5 @@
 import InfoWithToolTip from "@/components/InfoWithTooltip";
-import { useSearchTabData } from "@/contexts/SearchTabDataContext";
+import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { fadeInAndOut } from "@/helpers/animations";
 import { formatDate } from "@/helpers/format-date";
 import { AnimatePresence, motion } from "framer-motion";
@@ -16,7 +16,7 @@ export type HistorySubTab = (typeof historySubTabs)[number];
 const HistoryTable = () => {
   const {
     history: { data, refetchData, isLoading },
-  } = useSearchTabData();
+  } = useSearchTabDataContext();
   const [activeSubTab, setActiveSubTab] = useState<HistorySubTab>(historySubTabs[0]);
 
   const purchaseHistoryExists = data?.purchaseHistory && data?.purchaseHistory.length > 0;

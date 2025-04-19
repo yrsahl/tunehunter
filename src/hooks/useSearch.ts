@@ -1,22 +1,28 @@
 import { useQueryDataContext } from "@/contexts/QueryDataContext";
-import { useSearchTabData } from "@/contexts/SearchTabDataContext";
+import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { CountryCode, isCountryCode } from "@/helpers/region";
 import { api } from "@/utils/api";
 import { debounce } from "lodash";
 import { useSession } from "next-auth/react";
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect } from "react";
 import { useSearchSettingsStore } from "./stores/useSearchSettingsStore";
+import useSearchStore from "./stores/useSearchStore";
 import useRouterWithHelpers from "./useRouterWithHelpers";
 
 const useSearch = () => {
-  const [searchInput, setSearchInput] = useState("");
+  const {
+    searchState,
+    setSearchInput,
+    setSearchId,
+    setSearchRegion,
+    setSearchSongArtist,
+    setSearchSongTitle,
+  } = useSearchStore();
   const { requestQueryData, resetQueryData } = useQueryDataContext();
+  const { history } = useSearchTabDataContext();
   const { data: userData, status } = useSession();
   const loggedIn = status === "authenticated";
-  const { history } = useSearchTabData();
   const router = useRouterWithHelpers();
-  const [searchId, setSearchId] = useState<string | null>(null);
-  const [searchRegion, setSearchRegion] = useState<CountryCode | null>(null);
   const addSearchActivity = api.userActivities.addSearchActivity.useMutation();
   const { data: spotifyAccountData } = api.account.getSpotifyAccountById.useQuery(
     { userId: userData?.user.id! },
@@ -48,14 +54,34 @@ const useSearch = () => {
     const searchIdParam = router.getParams("id");
     const searchRegionParam = router.getParams("region");
     const searchArtist = router.getParams("artist");
-    const searchTitle = router.getParams("track");
+    const searchTitle = router.getParams("title");
+
     if (!router.isReady) return;
-    if (!!searchIdParam && !!searchRegionParam && isCountryCode(searchRegionParam.toUpperCase())) {
+
+    // ID
+    if (
+      !!searchIdParam &&
+      !!searchRegionParam &&
+      isCountryCode(searchRegionParam.toUpperCase()) &&
+      !!searchArtist &&
+      !!searchTitle
+    ) {
+      const newSearchInput = `${searchArtist} - ${searchTitle}`;
       setSearchId(searchIdParam);
       setSearchRegion(searchRegionParam);
+      setSearchSongArtist(searchArtist);
+      setSearchSongTitle(searchTitle);
+      if (searchState.input !== newSearchInput) {
+        setSearchInput(newSearchInput);
+        debouncedRequestSearchData(newSearchInput);
+      }
     } else {
       setSearchId(null);
       setSearchRegion(null);
+      setSearchSongArtist(null);
+      setSearchSongTitle(null);
+      setSearchInput("");
+      resetQueryData();
     }
   }, [router.isReady, router.query]);
 
@@ -63,7 +89,7 @@ const useSearch = () => {
   const handleSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!accessToken) return;
-    requestQueryData(accessToken, searchInput, searchSettings);
+    requestQueryData(accessToken, searchState.input, searchSettings);
   };
 
   // On input change, debounce the request
@@ -91,40 +117,41 @@ const useSearch = () => {
 
   // Reset the search input and query data
   const resetSearch = () => {
-    // setSearchInput("");
+    setSearchInput("");
     resetQueryData();
   };
 
-  // Submit search manually
+  // Submit search
   const submitSearch = (id: string, region: CountryCode, title: string, artist: string) => {
-    const newSearchInput = `${artist} - ${title}`;
-    setSearchInput(newSearchInput);
-    startVendorDataSearch(id, region);
-  };
-
-  // Start the search for vendor data
-  const startVendorDataSearch = async (songId: string, userRegion: CountryCode) => {
-    // 1. Store activity
-    addSearchActivity.mutateAsync({ songId, region: userRegion });
-
-    // 2. Refresh history data to show new search
+    // Store activity and refresh history data for user
+    addSearchActivity.mutateAsync({ songId: id, region });
     history.refetchData();
 
-    // 3. Set the current state ID in both State + URL
-    setSearchId(songId);
-    setSearchRegion(userRegion);
+    // Trigger SearchResults re-render (which starts the vendor data search)
+    setSearchId(id);
+    setSearchRegion(region);
+
+    // Save other search params
+    setSearchSongArtist(artist);
+    setSearchSongTitle(title);
+    setSearchInput(`${artist} - ${title}`);
+    debouncedRequestSearchData(`${artist} - ${title}`);
+
+    // Push to router
     const trackSearchHref = {
       pathname: router.pathname,
-      query: { ...router.query, id: songId, region: userRegion },
+      query: {
+        ...router.query,
+        id,
+        region,
+        title,
+        artist,
+      },
     };
     router.push(trackSearchHref);
   };
 
   return {
-    searchId,
-    searchRegion,
-    startVendorDataSearch,
-    searchInput,
     handleInputChange,
     handleSearchSubmit,
     resetSearch,

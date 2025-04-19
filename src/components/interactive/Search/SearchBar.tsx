@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { useQueryDataContext } from "@/contexts/QueryDataContext";
 import { fadeInAndOut } from "@/helpers/animations";
 import { useSearchSettingsStore } from "@/hooks/stores/useSearchSettingsStore";
+import useSearchStore from "@/hooks/stores/useSearchStore";
 import useSearch from "@/hooks/useSearch";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
@@ -45,15 +46,14 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = (
   ref,
 ) => {
   const [currentPlaceholder, setCurrentPlaceholder] = useState("");
-  const { handleSearchSubmit, searchInput, handleInputChange, resetSearch } = useSearch();
+  const { handleSearchSubmit, handleInputChange, resetSearch } = useSearch();
+  const { searchState } = useSearchStore();
   const { queryData, isQueryDataLoading } = useQueryDataContext();
   const formRef = createRef<HTMLFormElement>();
 
-  console.log("searchInput in SearchBar:", searchInput);
-
   // Puts a random placeholder song value into the search bar
   useEffect(() => {
-    if (searchInput) return;
+    if (searchState.input) return;
     const rndPlaceholderIndex = Math.floor(Math.random() * placeholderValues.length);
     const rndPlaceholder = placeholderValues[rndPlaceholderIndex];
     setCurrentPlaceholder(rndPlaceholder!);
@@ -81,7 +81,7 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = (
             "overflow-ellipsis border-2 border-primary px-14 text-lg ring-0 transition-all duration-300 placeholder:text-muted-foreground focus-visible:ring-0",
             queryData && showResults && "rounded-b-none border-b-0",
           )}
-          value={searchInput}
+          value={searchState.input}
           onChange={handleInputChange}
         />
         <span className="absolute left-4 top-1/2 -translate-y-1/2">

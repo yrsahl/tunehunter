@@ -1,7 +1,7 @@
 import SearchSettings from "@/components/interactive/Search/SearchSettings";
 import { fetchSpotifySearchData } from "@/helpers/spotify/fetch-spotify-data";
-import { SpotifySearchData, SpotifyTrack } from "@/types/spotify";
-import { api } from "@/utils/api";
+import useDb from "@/hooks/useDb";
+import { SpotifySearchData } from "@/types/spotify";
 import { createContext, ReactNode, useContext, useState } from "react";
 
 interface IQueryDataContext {
@@ -23,33 +23,7 @@ export const useQueryDataContext = () => useContext(QueryDataContext);
 export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
   const [queryData, setQueryData] = useState<SpotifySearchData | null>(null);
   const [isQueryDataLoading, setIsQueryDataLoading] = useState(false);
-  const storeQueryResults = api.song.storeQueryResults.useMutation();
-
-  const storeTracksInDb = (tracks: SpotifyTrack[]) => {
-    const results = tracks.map((track) => {
-      return {
-        song: {
-          id: track.id,
-          title: track.name,
-          duration: track.duration_ms,
-          album: track.album.name || null,
-          albumArtUrl: track.album.images[0]?.url || null,
-          year: track.album.release_date,
-          genre: track.album.album_type,
-          spotifyUrl: track.external_urls.spotify,
-        },
-        artists: track.artists.map((artist) => {
-          return {
-            id: artist.id,
-            name: artist.name,
-            popularity: null,
-            followers: null,
-          };
-        }),
-      };
-    });
-    storeQueryResults.mutate(results);
-  };
+  const { storeTracksInDb } = useDb();
 
   // Search spotify catalog
   const requestQueryData = (
@@ -97,6 +71,7 @@ export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Reset query data
   const resetQueryData = () => {
     setQueryData(null);
   };
