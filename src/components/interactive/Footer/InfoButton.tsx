@@ -135,16 +135,16 @@ const InfoButton = () => {
                     <AnimatePresence mode="wait">
                       {supportFrameOpen && (
                         <motion.div
-                          className="absolute -left-4 top-20 h-96 w-[270px] rounded-md bg-white sm:w-[319px]"
+                          className="absolute -left-4 top-20 h-96 w-[125%] overflow-scroll rounded-md bg-white sm:w-[319px]"
                           {...slideInAndOutFromAbove(0.5, 24)}
                         >
                           <iframe
                             id="kofiframe"
                             src="https://ko-fi.com/alvarny/?hidefeed=true&widget=true&embed=true&preview=true"
-                            className="h-full w-full scale-[.8] rounded-md border-none sm:scale-100"
+                            className="h-full w-[319px] scale-[1] rounded-md border-none sm:scale-100"
                             title="alvarny"
                           />
-                          <div className="h-6"></div>
+                          <div className="h-6" />
                         </motion.div>
                       )}
                     </AnimatePresence>

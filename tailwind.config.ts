@@ -9,7 +9,7 @@ const config = {
     "./src/**/*.{ts,tsx}",
   ],
   prefix: "",
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/line-clamp")],
   theme: {
     container: {
       center: true,

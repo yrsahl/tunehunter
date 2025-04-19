@@ -20,7 +20,7 @@ const TableRow = ({ track, showDuration = false, extraElement }: TableRowProps) 
 
   return (
     <tr className="max-h-16" key={song.id}>
-      <td className="py-2 pr-8">
+      <td className="py-2 pr-4 sm:pr-8">
         <div className="flex items-center gap-4">
           <div className="avatar">
             <div className="mask mask-squircle h-12 w-12">
@@ -35,11 +35,11 @@ const TableRow = ({ track, showDuration = false, extraElement }: TableRowProps) 
         </div>
       </td>
       {/* Extra Element */}
-      <td className={clsx("align-middle", extraElement ? "pr-6" : "pr-0")}>
+      <td className={clsx("align-middle", extraElement ? "pr-1 sm:pr-6" : "pr-0")}>
         <div className="flex">{extraElement}</div>
       </td>
       {/* Artist(s) */}
-      <td className="pr-4">
+      <td className="pr-1 sm:pr-4">
         <p>{primaryArtist}</p>
         {artists[1] && (
           <p className="overflow-ellipsis whitespace-nowrap text-muted-foreground">
@@ -49,7 +49,9 @@ const TableRow = ({ track, showDuration = false, extraElement }: TableRowProps) 
       </td>
       {/* Title */}
       <td className="pr-4">
-        <span>{song.title}</span>
+        <span className="block max-w-32 overflow-hidden text-ellipsis whitespace-nowrap">
+          {song.title}
+        </span>
       </td>
       {/* Duration */}
       {showDuration && (
