@@ -1,3 +1,4 @@
+import useDeviceSize from "@/hooks/useDeviceSize";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { useEffect } from "react";
 import SearchTabButton from "./SearchTabButton";
@@ -15,6 +16,7 @@ interface SearchTabBarProps {
 
 const SearchTabBar = ({ activeSearchTab, setActiveSearchTab }: SearchTabBarProps) => {
   const router = useRouterWithHelpers();
+  const { isMobileDevice } = useDeviceSize();
 
   // Restore active tab if param is present
   useEffect(() => {
@@ -25,6 +27,21 @@ const SearchTabBar = ({ activeSearchTab, setActiveSearchTab }: SearchTabBarProps
       setActiveSearchTab("");
     }
   }, [router.isReady, router.query]);
+
+  if (isMobileDevice) {
+    return (
+      <div className="hide-scrollbars flex w-full min-w-0 flex-nowrap items-start gap-4 overflow-scroll">
+        {searchTabs.map((searchTab) => (
+          <SearchTabButton
+            searchTab={searchTab}
+            activeSearchTab={activeSearchTab}
+            setActiveSearchTab={setActiveSearchTab}
+            key={searchTab}
+          />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-w-0 flex-wrap justify-center gap-4 overflow-hidden sm:self-auto">

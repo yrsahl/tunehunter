@@ -1,4 +1,5 @@
 import IconButton from "@/components/IconButton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
 import useSearch from "@/hooks/useSearch";
 import { Track } from "@/types/song";
@@ -35,32 +36,39 @@ const TableRow = ({ track, showDuration = false, extraElement }: TableRowProps) 
         </div>
       </td>
       {/* Extra Element */}
-      <td className={clsx("align-middle", extraElement ? "pr-1 sm:pr-6" : "pr-0")}>
+      <td className={clsx("align-middle", extraElement ? "pr-2 sm:pr-4" : "pr-0")}>
         <div className="flex">{extraElement}</div>
       </td>
       {/* Artist(s) */}
-      <td className="pr-1 sm:pr-4">
-        <p>{primaryArtist}</p>
+      <td className="pr-3 sm:pr-4">
+        <p className="max-w-32 overflow-hidden text-ellipsis whitespace-nowrap">{primaryArtist}</p>
         {artists[1] && (
-          <p className="overflow-ellipsis whitespace-nowrap text-muted-foreground">
+          <p className="max-w-28 overflow-hidden text-ellipsis whitespace-nowrap text-muted-foreground">
             {artists[1].name}
           </p>
         )}
       </td>
       {/* Title */}
-      <td className="pr-4">
-        <span className="block max-w-32 overflow-hidden text-ellipsis whitespace-nowrap">
-          {song.title}
-        </span>
+      <td className="pr-2 sm:pr-4">
+        <Tooltip>
+          <TooltipTrigger>
+            <span className="block max-w-48 overflow-hidden text-ellipsis whitespace-nowrap">
+              {song.title}
+            </span>
+            <TooltipContent className="border-foreground/30 bg-background text-foreground">
+              {song.title}
+            </TooltipContent>
+          </TooltipTrigger>
+        </Tooltip>
       </td>
       {/* Duration */}
       {showDuration && (
-        <td className="pr-4 text-sm text-foreground/50">
+        <td className="pr-2 text-sm text-foreground/50 sm:pr-4">
           <span>{new Date(song.duration).toISOString().substr(14, 5)}</span>
         </td>
       )}
       {/* Search */}
-      <td className="pl-4 text-right">
+      <td className="pl-2 text-right sm:pl-4">
         <IconButton
           variant="primary"
           text="Search"
