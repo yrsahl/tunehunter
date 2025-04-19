@@ -5,6 +5,7 @@ import { api } from "@/utils/api";
 import { debounce } from "lodash";
 import { useSession } from "next-auth/react";
 import { FormEvent, useCallback, useEffect } from "react";
+import { useActiveSearchTabStore } from "./stores/useActiveSearchTab";
 import { useSearchSettingsStore } from "./stores/useSearchSettingsStore";
 import useSearchStore from "./stores/useSearchStore";
 import useRouterWithHelpers from "./useRouterWithHelpers";
@@ -21,6 +22,7 @@ const useSearch = () => {
   const { requestQueryData, resetQueryData } = useQueryDataContext();
   const { history } = useSearchTabDataContext();
   const { data: userData, status } = useSession();
+  const { activeSearchTab, setActiveSearchTab } = useActiveSearchTabStore();
   const loggedIn = status === "authenticated";
   const router = useRouterWithHelpers();
   const addSearchActivity = api.userActivities.addSearchActivity.useMutation();
@@ -122,7 +124,13 @@ const useSearch = () => {
   };
 
   // Submit search
-  const submitSearch = (id: string, region: CountryCode, title: string, artist: string) => {
+  const submitSearch = async (
+    id: string,
+    region: CountryCode,
+    title: string,
+    artist: string,
+    hideTabs = false,
+  ) => {
     // Store activity and refresh history data for user
     addSearchActivity.mutateAsync({ songId: id, region });
     history.refetchData();
@@ -136,6 +144,7 @@ const useSearch = () => {
     setSearchSongTitle(title);
     setSearchInput(`${artist} - ${title}`);
     debouncedRequestSearchData(`${artist} - ${title}`);
+    if (hideTabs) setActiveSearchTab("");
 
     // Push to router
     const trackSearchHref = {
@@ -146,9 +155,10 @@ const useSearch = () => {
         region,
         title,
         artist,
+        search: hideTabs ? "" : activeSearchTab,
       },
     };
-    router.push(trackSearchHref);
+    await router.push(trackSearchHref);
   };
 
   return {

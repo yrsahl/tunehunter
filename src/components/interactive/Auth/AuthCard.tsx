@@ -12,7 +12,7 @@ const AuthCard = ({ title, description, children, size = "default" }: AuthCardPr
   return (
     <div
       className={cn(
-        "flex flex-col items-center gap-6 overflow-y-auto rounded-[2rem] border border-foreground bg-background px-6 py-6 md:px-8 md:py-6 lg:px-10 lg:py-8",
+        "hide-scrollbars flex flex-col  items-center gap-3 overflow-y-auto rounded-[2rem] border border-foreground bg-background px-4 py-3 sm:gap-6 sm:px-6 sm:py-6 md:px-8 md:py-6 lg:px-10 lg:py-8",
         size === "small" && "min-w-80 max-w-sm",
         size === "default" && "max-w-xl",
         size === "big" && "max-w-4xl",

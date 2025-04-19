@@ -42,14 +42,14 @@ const SearchResultsFrame = ({ songId, region }: ISearchResultsProps) => {
         <SearchResultsTrack songData={songData} isLoading={isSongDataLoading} />
       </div>
 
-      <table className="my-auto table h-[80%] w-full border-separate border-spacing-y-6 md:w-1/2">
+      <table className="my-auto table h-[80%] w-full border-separate border-spacing-y-4 sm:border-spacing-y-6 md:w-1/2">
         <thead>
           <tr>
-            <td className="w-[70px] text-base font-bold normal-case opacity-0">Logo</td>
-            <td className="w-24 text-base font-bold">Quality</td>
+            <td className="w-20 text-base font-bold normal-case opacity-0 sm:w-[70px]">Logo</td>
+            <td className="w-28 text-base font-bold sm:w-24">Quality</td>
             <td className="w-20 text-base font-bold">Price</td>
             <td className="w-36 text-base font-bold">Artist's share</td>
-            <td className="w-10 text-base font-bold">Link</td>
+            <td className="w-8 text-base font-bold sm:w-10">Link</td>
           </tr>
         </thead>
         <tbody>

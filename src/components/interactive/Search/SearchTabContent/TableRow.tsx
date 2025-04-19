@@ -1,6 +1,9 @@
 import IconButton from "@/components/IconButton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
+import { useActiveSearchTabStore } from "@/hooks/stores/useActiveSearchTab";
+import useDeviceSize from "@/hooks/useDeviceSize";
+import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import useSearch from "@/hooks/useSearch";
 import { Track } from "@/types/song";
 import clsx from "clsx";
@@ -14,10 +17,18 @@ interface TableRowProps {
 
 const TableRow = ({ track, showDuration = false, extraElement }: TableRowProps) => {
   const { submitSearch } = useSearch();
+  const router = useRouterWithHelpers();
   const { song, artists } = track;
   const { region } = useRegionSettings();
+  const { isMobileDevice } = useDeviceSize();
+  const { setActiveSearchTab } = useActiveSearchTabStore();
 
   const primaryArtist = artists[0]?.name || "";
+
+  const handleSearchClick = async () => {
+    // Start search
+    submitSearch(song.id, region, song.title, primaryArtist, true);
+  };
 
   return (
     <tr className="max-h-16" key={song.id}>
@@ -74,7 +85,7 @@ const TableRow = ({ track, showDuration = false, extraElement }: TableRowProps) 
           text="Search"
           size="sm"
           textStyle="uppercase text-xs"
-          onClick={() => submitSearch(song.id, region, song.title, primaryArtist)}
+          onClick={handleSearchClick}
         />
       </td>
     </tr>

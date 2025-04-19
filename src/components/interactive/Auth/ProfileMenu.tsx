@@ -100,7 +100,7 @@ const ProfileMenu = () => {
         {userName && <p>{userName}</p>}
       </div>
 
-      <div className="grid w-full grid-cols-[repeat(5,max-content)] gap-x-12 gap-y-6">
+      <div className="grid w-full grid-cols-[repeat(5,max-content)] gap-x-4 gap-y-6 sm:gap-x-12">
         {/* Mail */}
         <p className="col-span-2 flex items-center justify-end font-thin">Mail</p>
         <p className="col-span-2 flex items-center overflow-x-clip text-ellipsis font-thin">
