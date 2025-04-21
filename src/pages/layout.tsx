@@ -44,7 +44,7 @@ const Layout = ({ children }: PropsWithChildren) => {
           <div className="flex-grow-[3.3]" /> {/* Empty space */}
         </div>
       </main>
-      <div className="h-20 w-full">
+      <div className="h-16 w-full sm:h-20">
         <Footer />
       </div>
     </div>

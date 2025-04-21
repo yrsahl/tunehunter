@@ -2,6 +2,7 @@ import { useMediaQuery } from "@uidotdev/usehooks";
 
 const useDeviceSize = () => {
   const isMobileDevice = useMediaQuery("only screen and (max-width : 480px)");
+  const isExtraSmallDevice = useMediaQuery("only screen and (max-width : 640px)");
   const isSmallDevice = useMediaQuery("only screen and (max-width : 768px)");
   const isMediumDevice = useMediaQuery(
     "only screen and (min-width : 769px) and (max-width : 992px)",
@@ -13,6 +14,7 @@ const useDeviceSize = () => {
 
   return {
     isMobileDevice,
+    isExtraSmallDevice,
     isSmallDevice,
     isMediumDevice,
     isLargeDevice,

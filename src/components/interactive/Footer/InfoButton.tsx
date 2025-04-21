@@ -1,5 +1,4 @@
 import CustomIcon from "@/components/CustomIcon";
-import IconButton from "@/components/IconButton";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -10,6 +9,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { slideInAndOutFromAbove } from "@/helpers/animations";
+import useDeviceSize from "@/hooks/useDeviceSize";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { cn } from "@/lib/utils";
 import { quicksand } from "@/pages/layout";
@@ -23,6 +23,8 @@ const InfoButton = () => {
   const router = useRouterWithHelpers();
   const { status } = useSession();
   const loggedIn = status === "authenticated";
+  const { isExtraSmallDevice } = useDeviceSize();
+  const buttonSize = isExtraSmallDevice ? "default" : "lg";
 
   const toggleSupportFrame = () => {
     setSupportFrameOpen(!supportFrameOpen);
@@ -39,12 +41,12 @@ const InfoButton = () => {
   return (
     <Sheet open={infoFrameOpen} onOpenChange={setInfoFrameOpen}>
       <SheetTrigger asChild>
-        <Button size="lg" className="w-20 border-[1px] border-foreground/30">
+        <Button size={buttonSize} className="w-[72px] border-[1px] border-foreground/30 sm:w-20">
           <CustomIcon
             icon="hamburger"
             variant="foreground"
-            height="24px"
-            width="24px"
+            height={isExtraSmallDevice ? "20px" : "24px"}
+            width={isExtraSmallDevice ? "20px" : "24px"}
             className="shrink-0"
           />
         </Button>
@@ -52,7 +54,7 @@ const InfoButton = () => {
       <SheetContent className={`${quicksand.variable}`}>
         <SheetHeader>
           <SheetTitle>
-            <div className="-ml-1 flex font-quicksand text-4xl">
+            <div className="-ml-1 flex font-quicksand text-3xl sm:text-4xl">
               <h2 className="tracking-wider">Tune</h2>
               <h2 className="tracking-wider text-primary">Hunter</h2>
             </div>
@@ -73,7 +75,7 @@ const InfoButton = () => {
           </SheetTitle>
           <SheetDescription asChild className="relative">
             <div className="flex flex-col gap-6 text-pretty pt-3 text-justify text-foreground">
-              <div className="flex flex-col gap-10 text-base text-inherit">
+              <div className="flex flex-col gap-10 text-sm text-inherit sm:text-base">
                 <div className="flex flex-col gap-4 text-foreground/70">
                   <p>
                     ... has one purpose: It finds you the music you want to buy, quicker. TuneHunter
@@ -87,7 +89,7 @@ const InfoButton = () => {
                         <Button
                           variant="link"
                           onClick={handleCreateAccountClick}
-                          className="h-auto p-0 text-base font-normal underline"
+                          className="h-auto p-0 text-sm font-normal underline sm:text-base"
                         >
                           create an account
                         </Button>{" "}
@@ -103,13 +105,33 @@ const InfoButton = () => {
                 </div>
                 <div className="m-auto flex w-[90%] flex-col gap-4">
                   <a href="mailto:contact@tunehunter.app?subject=Feedback">
-                    <IconButton variant="primary" text="Have feedback?" size="lg" icon="mail" />
+                    {/* <IconButton
+                      variant="primary"
+                      text={isExtraSmallDevice ? "For Feedback" : "Have feedback?"}
+                      size={buttonSize}
+                      icon="mail"
+                    /> */}
+                    <Button
+                      variant="primary"
+                      size={buttonSize}
+                      className="menu-transition flex w-full justify-center gap-2 text-xs font-light uppercase text-primary-foreground sm:text-sm"
+                    >
+                      <CustomIcon
+                        icon="mail"
+                        variant="primary-foreground"
+                        height={isExtraSmallDevice ? "16px" : "20px"}
+                        width={isExtraSmallDevice ? "16px" : "20px"}
+                      />
+                      <span className="text-xs font-light uppercase text-primary-foreground sm:text-sm">
+                        Have feedback?
+                      </span>
+                    </Button>
                   </a>
                   <div className="relative">
                     <Button
                       variant="success"
-                      size="lg"
-                      className="menu-transition flex w-full justify-center font-light uppercase text-primary-foreground"
+                      size={buttonSize}
+                      className="menu-transition flex w-full justify-center text-xs font-light uppercase text-primary-foreground sm:text-sm"
                       onClick={toggleSupportFrame}
                     >
                       <div
@@ -118,17 +140,27 @@ const InfoButton = () => {
                           supportFrameOpen ? "scale-100 opacity-100" : "scale-75 opacity-0",
                         )}
                       >
-                        <CustomIcon icon="x" variant="success" />
+                        <CustomIcon
+                          icon="x"
+                          variant="success"
+                          height={isExtraSmallDevice ? "16px" : "20px"}
+                          width={isExtraSmallDevice ? "16px" : "20px"}
+                        />
                         <span>Close</span>
                       </div>
 
                       <div
                         className={cn(
-                          "absolute-center menu-transition flex gap-2",
+                          "absolute-center menu-transition flex items-center gap-2",
                           supportFrameOpen ? "scale-75 opacity-0" : "scale-100 opacity-100",
                         )}
                       >
-                        <CustomIcon icon="coffee" variant="success" />
+                        <CustomIcon
+                          icon="coffee"
+                          variant="success"
+                          height={isExtraSmallDevice ? "16px" : "20px"}
+                          width={isExtraSmallDevice ? "16px" : "20px"}
+                        />
                         <span>Buy me a coffee</span>
                       </div>
                     </Button>

@@ -124,6 +124,7 @@ const useSearch = () => {
   };
 
   // Submit search
+  // TODO: this function is shit, way too much going on
   const submitSearch = async (
     id: string,
     region: CountryCode,

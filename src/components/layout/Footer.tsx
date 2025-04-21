@@ -1,14 +1,15 @@
-import InfoButton from "../interactive/Footer/InfoButton";
-import ProfileButton from "../interactive/Footer/ProfileButton";
-import { ThemeToggle } from "../interactive/Footer/ThemeToggle";
+import dynamic from "next/dynamic";
+const InfoButton = dynamic(() => import("../interactive/Footer/InfoButton"), { ssr: false });
+const ProfileButton = dynamic(() => import("../interactive/Footer/ProfileButton"), { ssr: false });
+const ThemeToggle = dynamic(() => import("../interactive/Footer/ThemeToggle"), { ssr: false });
 
 const Footer = () => {
   return (
-    <div className="flex h-20 w-full items-center bg-muted">
+    <div className="flex h-16 w-full items-center bg-muted sm:h-20">
       <div className="flex flex-1 justify-center">
         <ThemeToggle />
       </div>
-      <div className="flex flex-1 justify-center">
+      <div className="flex flex-1 items-center justify-center">
         <ProfileButton />
       </div>
       <div className="flex flex-1 justify-center">

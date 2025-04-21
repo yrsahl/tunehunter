@@ -1,4 +1,5 @@
 import { useDisabledTabStore } from "@/hooks/stores/useDisabledTabStore";
+import useDeviceSize from "@/hooks/useDeviceSize";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -15,6 +16,8 @@ const ProfileButton = () => {
   const router = useRouterWithHelpers();
   const { status } = useSession();
   const { disabledTabButtonHovered } = useDisabledTabStore();
+  const { isExtraSmallDevice } = useDeviceSize();
+  const buttonSize = isExtraSmallDevice ? "default" : "lg";
 
   const openProfileModal = () => {
     setEnableModalAnimation(true);
@@ -59,12 +62,13 @@ const ProfileButton = () => {
       <motion.div
         animate={disabledTabButtonHovered ? { scale: [1, 1.1, 1] } : { scale: 1 }}
         transition={disabledTabButtonHovered ? { duration: 1, repeat: Infinity } : { duration: 1 }}
+        className="flex justify-center"
       >
         <Button
           variant="primary"
-          size="lg"
+          size={buttonSize}
           className={cn(
-            "menu-transition shine-effect relative z-40 w-20 border-[1px] border-background",
+            "menu-transition shine-effect relative z-40 w-20 border-[1px] border-background sm:w-20",
             disabledTabButtonHovered && "shine-effect-active",
             profileModalOpen && "bg-background text-foreground hover:bg-background/80",
           )}
@@ -72,13 +76,13 @@ const ProfileButton = () => {
         >
           <User
             className={cn(
-              "menu-transition absolute left-1/2 top-1/2 h-[1.6rem] w-[1.6rem] -translate-x-1/2 -translate-y-1/2 transform",
+              "menu-transition absolute left-1/2 top-1/2 h-[1.3rem] w-[1.3rem] -translate-x-1/2 -translate-y-1/2 transform sm:h-[1.6rem] sm:w-[1.6rem]",
               profileModalOpen ? "-rotate-90 scale-0" : "rotate-0 scale-100",
             )}
           />
           <X
             className={cn(
-              "menu-transition absolute left-1/2 top-1/2 h-[1.6rem] w-[1.6rem] -translate-x-1/2 -translate-y-1/2 transform",
+              "menu-transition absolute left-1/2 top-1/2 h-[1.3rem] w-[1.3rem] -translate-x-1/2 -translate-y-1/2 transform sm:h-[1.6rem] sm:w-[1.6rem]",
               profileModalOpen ? "rotate-0 scale-100" : "rotate-90 scale-0",
             )}
             strokeWidth="1px"
