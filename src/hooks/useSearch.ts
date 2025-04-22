@@ -125,13 +125,7 @@ const useSearch = () => {
 
   // Submit search
   // TODO: this function is shit, way too much going on
-  const submitSearch = async (
-    id: string,
-    region: CountryCode,
-    title: string,
-    artist: string,
-    hideTabs = false,
-  ) => {
+  const submitSearch = async (id: string, region: CountryCode, title: string, artist: string) => {
     // Store activity and refresh history data for user
     addSearchActivity.mutateAsync({ songId: id, region });
     history.refetchData();
@@ -145,7 +139,6 @@ const useSearch = () => {
     setSearchSongTitle(title);
     setSearchInput(`${artist} - ${title}`);
     debouncedRequestSearchData(`${artist} - ${title}`);
-    if (hideTabs) setActiveSearchTab("");
 
     // Push to router
     const trackSearchHref = {
@@ -156,7 +149,6 @@ const useSearch = () => {
         region,
         title,
         artist,
-        search: hideTabs ? "" : activeSearchTab,
       },
     };
     await router.push(trackSearchHref);

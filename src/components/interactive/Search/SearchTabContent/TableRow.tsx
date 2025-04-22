@@ -27,7 +27,20 @@ const TableRow = ({ track, showDuration = false, extraElement }: TableRowProps) 
 
   const handleSearchClick = async () => {
     // Start search
-    submitSearch(song.id, region, song.title, primaryArtist, true);
+    submitSearch(song.id, region, song.title, primaryArtist);
+
+    // Hide tabs
+    if (isMobileDevice) {
+      setActiveSearchTab("");
+      const trackSearchHref = {
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          search: "",
+        },
+      };
+      await router.push(trackSearchHref);
+    }
   };
 
   return (
