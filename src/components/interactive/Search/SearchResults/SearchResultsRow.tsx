@@ -1,6 +1,7 @@
 import IconButton from "@/components/IconButton";
 import { CountryCode, countryNamesEnglish } from "@/helpers/region";
 import { VendorDataResponse } from "@/schemas";
+import { motion } from "framer-motion";
 import SearchResultsRowSkeleton from "./SearchResultsRowSkeleton";
 
 interface ISearchResultsRowProps {
@@ -20,7 +21,13 @@ export default function SearchResultsRow({
   if (isLoading) return <SearchResultsRowSkeleton store={store} region={region} />;
 
   return (
-    <tr>
+    <motion.tr
+      whileHover={{ scale: 1.03 }}
+      className="cursor-pointer"
+      onClick={() => {
+        window.open(data?.url, "_blank");
+      }}
+    >
       {/* Store */}
       <td>
         <div className="flex items-center space-x-5">
@@ -93,6 +100,6 @@ export default function SearchResultsRow({
           Not available in this store.
         </td>
       )}
-    </tr>
+    </motion.tr>
   );
 }

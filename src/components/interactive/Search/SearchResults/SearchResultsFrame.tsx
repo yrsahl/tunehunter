@@ -37,7 +37,7 @@ const SearchResultsFrame = ({ songId, region }: ISearchResultsProps) => {
     );
 
   return (
-    <div className="flex h-96 flex-row gap-8 overflow-hidden overflow-x-auto">
+    <div className="hide-scrollbars flex h-96 flex-row gap-8 overflow-hidden overflow-x-auto">
       <div className="my-auto hidden w-1/2 md:block">
         <SearchResultsTrack songData={songData} isLoading={isSongDataLoading} />
       </div>
@@ -49,7 +49,7 @@ const SearchResultsFrame = ({ songId, region }: ISearchResultsProps) => {
             <td className="w-28 text-base font-bold sm:w-24">Quality</td>
             <td className="w-20 text-base font-bold">Price</td>
             <td className="w-36 text-base font-bold">Artist's share</td>
-            <td className="w-8 text-base font-bold sm:w-10">Link</td>
+            <td className="w-8 text-base font-bold opacity-0 sm:w-10">Link</td>
           </tr>
         </thead>
         <tbody>
