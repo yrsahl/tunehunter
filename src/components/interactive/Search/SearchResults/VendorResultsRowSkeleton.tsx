@@ -6,7 +6,7 @@ interface SearchResultsRowSkeletonProps {
   region: CountryCode;
 }
 
-const SearchResultsRowSkeleton = ({ store, region }: SearchResultsRowSkeletonProps) => {
+const VendorResultsRowSkeleton = ({ store, region }: SearchResultsRowSkeletonProps) => {
   return (
     <tr>
       {/* Store */}
@@ -46,4 +46,4 @@ const SearchResultsRowSkeleton = ({ store, region }: SearchResultsRowSkeletonPro
   );
 };
 
-export default SearchResultsRowSkeleton;
+export default VendorResultsRowSkeleton;

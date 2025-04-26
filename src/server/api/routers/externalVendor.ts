@@ -1,109 +1,199 @@
+import { findBestSongMatch, transformCurrencyStringToIcon } from "@/helpers/format-vendor-data";
 import { VendorDataResponse, VendorDataSchema } from "@/schemas";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { ITunesData } from "@/types/itunes";
+import { VendorData, VendorFileFormat, VendorTrackData } from "@/types/vendor";
+import axios from "axios";
+
+const fetchItunesData = async (
+  id: string,
+  region: string,
+  duration: number,
+  title: string,
+  artist: string,
+) => {
+  const dataUrl = new URL(
+    `https://itunes.apple.com/search?country=${region}&media=music&entity=song&limit=5&term=${title}+${artist}`,
+  ).href;
+  const response = await axios.get<ITunesData>(dataUrl);
+
+  // File data is same for all tracks
+  const iTunesFileData: VendorFileFormat = {
+    format: "AAC",
+    quality: "256kbps",
+  };
+
+  // Go through results and find the best match for this file type (only one on iTunes)
+  const itunesTrackOptions: VendorTrackData[] = response.data.results.map((song) => ({
+    duration: song.trackTimeMillis,
+    currency: transformCurrencyStringToIcon(song.currency),
+    price: song.trackPrice || 0,
+    url: song.trackViewUrl,
+  }));
+  const iTunesTrack = findBestSongMatch(itunesTrackOptions, duration);
+
+  // Return data if match was found
+  if (iTunesTrack) {
+    const iTunesData: VendorData = {
+      id: id,
+      vendor: { store: "itunes", region: region, artistsShare: 0.7 },
+      tracks: [
+        {
+          fileData: iTunesFileData,
+          trackData: iTunesTrack,
+        },
+      ],
+    };
+
+    return {
+      data: iTunesData,
+    };
+  }
+
+  // Return empty object if no match found
+  return {
+    error: "NO_MATCH_FOUND",
+  };
+};
 
 export const externalVendorRouter = createTRPCRouter({
+  // Usually 256kbps AAC, sometimes 320kbps
   getItunesData: publicProcedure
     .input(VendorDataSchema)
     .query<VendorDataResponse>(async ({ ctx, input }) => {
-      return {
-        store: "itunes",
-        region: input.region,
-        id: input.id,
-        fileFormat: "AAC",
-        quality: "256kbps",
-        price: 0.99,
-        currency: "$",
-        artistsShare: 0.7,
-        url: "https://itunes.apple.com",
-      };
+      // Validate input
+      if (!input || !input.id || !input.region) {
+        return {
+          error: "INVALID_FIELDS",
+        };
+      }
 
       // 1. Try DB first
-      // 2. If no DB, hit external API or scrape
-      // 2a. Store data in DB
-    }),
 
-  getBeatportData: publicProcedure
-    .input(VendorDataSchema)
-    .query<VendorDataResponse>(async ({ ctx, input }) => {
+      // 2. If no DB, hit external API
+      const iTunesVendorData = await fetchItunesData(
+        input.id,
+        input.region,
+        input.duration,
+        input.title,
+        input.artist,
+      );
+      if (iTunesVendorData.data) {
+        // Store in DB
+
+        // Return
+        return {
+          data: iTunesVendorData.data,
+        };
+      }
+
       return {
-        store: "beatport",
-        id: input.id,
-        fileFormat: "MP3",
-        quality: "320kbps",
-        price: 1.29,
-        currency: "$",
-        artistsShare: 0.6,
-        url: "https://beatport.com",
+        error: iTunesVendorData.error,
       };
-      // 1. Try DB first
-      // 2. If no DB, hit external API or scrape
-      // 2a. Store data in DB
     }),
 
-  getAmazonData: publicProcedure
-    .input(VendorDataSchema)
-    .query<VendorDataResponse>(async ({ ctx, input }) => {
-      return {
-        store: "amazon_music",
-        region: input.region,
-        fileFormat: "MP3",
-        quality: "256kbps",
-        id: input.id,
-        price: 0.99,
-        currency: "$",
-        artistsShare: 0.5,
-        url: "https://amazon.com",
-      };
+  // getBandcampData: publicProcedure
+  //   .input(VendorDataSchema)
+  //   .query<VendorDataResponse>(async ({ ctx, input }) => {
+  //     // Validate input
+  //     if (!input || !input.id || !input.region) {
+  //       return {
+  //         error: "INVALID_FIELDS",
+  //       };
+  //     }
 
-      // 1. Try DB first
-      // 2. If no DB, hit external API or scrape
-      // 2a. Store data in DB
-    }),
+  //     return {
+  //       data: {
+  //         store: "bandcamp",
+  //         region: input.region,
+  //         artistsShare: 0.85,
+  //         id: input.id,
+  //         tracks: [
+  //           {
+  //             fileFormat: "FLAC",
+  //             duration: 180,
+  //             quality: "lossless",
+  //             price: 1.29,
+  //             currency: "$",
+  //             url: "https://bandcamp.com",
+  //           },
+  //         ],
+  //       },
+  //     };
 
-  getBandcampData: publicProcedure
-    .input(VendorDataSchema)
-    .query<VendorDataResponse>(async ({ ctx, input }) => {
-      return {
-        store: "bandcamp",
-        region: input.region,
-        id: input.id,
-        fileFormat: "FLAC",
-        quality: "lossless",
-        price: 1.29,
-        currency: "$",
-        artistsShare: 0.85,
-        url: "https://bandcamp.com",
-      };
+  //     // 1. Try DB first
+  //     // 2. If no DB, hit external API or scrape
+  //     // 2a. Store data in DB
+  //   }),
 
-      // 1. Try DB first
-      // 2. If no DB, hit external API or scrape
-      // 2a. Store data in DB
-    }),
+  // 320 kbps or WAV
+  // getBeatportData: publicProcedure
+  //   .input(VendorDataSchema)
+  //   .query<VendorDataResponse>(async ({ ctx, input }) => {
+  //     // Validate input
+  //     if (!input || !input.id || !input.region) {
+  //       return {
+  //         error: "INVALID_FIELDS",
+  //       };
+  //     }
+
+  //     return {
+  //       data: {
+  //         store: "beatport",
+  //         region: "global",
+  //         id: "5",
+  //         artistsShare: 0.6,
+  //         tracks: [
+  //           {
+  //             duration: 180,
+  //             fileFormat: "MP3",
+  //             quality: "320kbps",
+  //             price: 1.29,
+  //             currency: "$",
+  //             url: "https://beatport.com",
+  //           },
+  //         ],
+  //       },
+  //     };
+  //     // 1. Try DB first
+  //     // 2. If no DB, hit external API or scrape
+  //     // 2a. Store data in DB
+  //   }),
+
+  // Usually 256 kbps MP3, sometimes 320kbps
+  // getAmazonData: publicProcedure
+  //   .input(VendorDataSchema)
+  //   .query<VendorDataResponse>(async ({ ctx, input }) => {
+  //     // Validate input
+  //     if (!input || !input.id || !input.region) {
+  //       return {
+  //         error: "INVALID_FIELDS",
+  //       };
+  //     }
+
+  //     return {
+  //       data: {
+  //         store: "amazon_music",
+  //         region: input.region,
+  //         id: input.id,
+  //         artistsShare: 0.7,
+  //         tracks: [
+  //           {
+  //             duration: 180,
+  //             fileFormat: "MP3",
+  //             quality: "256kbps",
+  //             price: 0.99,
+  //             currency: "$",
+  //             url: "https://amazon.com",
+  //           },
+  //         ],
+  //       },
+  //     };
+
+  //     // 1. Try DB first
+  //     // 2. If no DB, hit external API or scrape
+  //     // 2a. Store data in DB
+  //   }),
+
+  // Choose your file type!
 });
-
-// export const fetchPreviewData = async ({ country, title, artist, duration, album }: DataRequestQuery): Promise<TrackData[]> => {
-//   let dataUrl = new URL(`https://itunes.apple.com/search?country=${country}&media=music&entity=song&limit=5&term=${title}+${artist}`).href;
-//   if (album) dataUrl += `+${album}`;
-//   const response = await axios.get<ITunesData>(dataUrl);
-//   const data = response.data;
-
-//   // Grab what we need from the response
-//   const previewData: TrackData[] = data.results.map((song) => {
-//     return {
-//       title: song.trackName,
-//       artist: song.artistName,
-//       album: song.collectionName,
-//       duration: song.trackTimeMillis,
-//       qualityFormat: 'AAC', // todo: figure out format from song.previewUrl
-//       qualityKbps: 256, // todo: figure out kbps from song.previewUrl
-//       price: song.trackPrice,
-//       songLink: song.trackViewUrl,
-//       artLink: song.artworkUrl100.replace('100x100', '400x400'),
-//     };
-//   });
-
-//   if (duration) {
-//     previewData.sort(sortByMatchingDuration(duration));
-//   }
-//   return previewData;
-// };

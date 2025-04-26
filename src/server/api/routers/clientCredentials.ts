@@ -12,7 +12,6 @@ export const clientCredentialsRouter = createTRPCRouter({
 
     // Return valid ones
     if (clientCredentialsData && !isTokenExpired) {
-      console.log("returning valid one");
       return { token: clientCredentialsData.token };
     }
 

@@ -1,4 +1,5 @@
 import SearchSettings from "@/components/interactive/Search/SearchSettings";
+import { filterOutDuplicates } from "@/helpers/filter-queries";
 import { fetchSpotifySearchData } from "@/helpers/spotify/fetch-spotify-data";
 import useDb from "@/hooks/useDb";
 import { SpotifySearchData } from "@/types/spotify";
@@ -42,6 +43,10 @@ export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
     try {
       fetchSpotifySearchData(accessToken, query).then((searchData) => {
         if (!searchData || !searchData.tracks) return;
+
+        // Filter out duplicates (if duration and name are the same)
+        const uniqueTracks = filterOutDuplicates(searchData);
+        searchData.tracks.items = uniqueTracks;
 
         // If club mixes only is set, filter out everything else
         if (searchSettings?.searchForClubMixesOnly) {

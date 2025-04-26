@@ -1,0 +1,38 @@
+import { countryNamesEnglish } from "@/helpers/region";
+import { motion } from "framer-motion";
+
+interface ISearchResultsRowMessageProps {
+  message: string;
+  store: string;
+  region: string;
+}
+
+const VendorResultsRowMessage = ({ message, store, region }: ISearchResultsRowMessageProps) => {
+  return (
+    <motion.tr>
+      {/* Store */}
+      <td>
+        <div className="flex items-center space-x-5">
+          <div className="avatar ">
+            <div className="mask mask-squircle h-12 w-12">
+              <img src={`logos/${store.toLowerCase()}.svg`} alt="Avatar Tailwind CSS Component" />
+            </div>
+          </div>
+          <div className="hidden">
+            <div className="font-bold">{store}</div>
+            <div className="text-sm font-normal opacity-50">
+              {countryNamesEnglish[region.toUpperCase()]}
+            </div>
+          </div>
+        </div>
+      </td>
+
+      {/* Message */}
+      <td colSpan={4} className="text-center text-base text-muted-foreground">
+        {message}
+      </td>
+    </motion.tr>
+  );
+};
+
+export default VendorResultsRowMessage;

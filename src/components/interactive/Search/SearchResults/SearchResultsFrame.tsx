@@ -1,7 +1,8 @@
 import { CountryCode } from "@/helpers/region";
 import { api } from "@/utils/api";
-import SearchResultsRow from "./SearchResultsRow";
+import { useMemo } from "react";
 import SearchResultsTrack from "./SearchResultsTrack";
+import VendorResults from "./VendorResults";
 
 interface ISearchResultsProps {
   songId: string;
@@ -14,27 +15,92 @@ const SearchResultsFrame = ({ songId, region }: ISearchResultsProps) => {
     api.song.getSongAndArtistsBySongId.useQuery({
       id: songId,
     });
-  // 2. Fetch vendor data
-  const { data: amazonMusicData, isLoading: isAmazonMusicDataLoading } =
-    api.externalVendor.getAmazonData.useQuery(
-      { id: songId, region },
-      { refetchOnWindowFocus: false },
+  const artists = songData?.artists.map((artist) => artist.name).join(", ") || "";
+
+  // Compute a flag to ensure all required fields are present
+  const isSongDataValid = useMemo(() => {
+    return (
+      songData !== null &&
+      songData &&
+      !!songData.artists &&
+      !!songData.title &&
+      !!songData.album &&
+      !!songData.duration
     );
+  }, [songData]);
+
+  // 2. Fetch vendor data
+  // const { data: amazonMusicData, isLoading: isAmazonMusicDataLoading } =
+  //   api.externalVendor.getAmazonData.useQuery(
+  //     isSongDataValid
+  //       ? {
+  //           id: songId,
+  //           region,
+  //           artist: artists,
+  //           title: songData!.title,
+  //           album: songData!.album,
+  //           duration: songData!.duration,
+  //         }
+  //       : undefined,
+  //     {
+  //       refetchOnWindowFocus: false,
+  //       enabled: isSongDataValid,
+  //     },
+  //   );
+
   const { data: itunesData, isLoading: isItunesDataLoading } =
     api.externalVendor.getItunesData.useQuery(
-      { id: songId, region },
-      { refetchOnWindowFocus: false },
+      isSongDataValid
+        ? {
+            id: songId,
+            region,
+            artist: artists,
+            title: songData!.title,
+            album: songData!.album,
+            duration: songData!.duration,
+          }
+        : undefined,
+      {
+        refetchOnWindowFocus: false,
+        enabled: isSongDataValid,
+      },
     );
-  const { data: bandcampData, isLoading: isBandcampDataLoading } =
-    api.externalVendor.getBandcampData.useQuery(
-      { id: songId, region },
-      { refetchOnWindowFocus: false },
-    );
-  const { data: beatportData, isLoading: isBeatportDataLoading } =
-    api.externalVendor.getBeatportData.useQuery(
-      { id: songId, region },
-      { refetchOnWindowFocus: false },
-    );
+
+  // const { data: bandcampData, isLoading: isBandcampDataLoading } =
+  //   api.externalVendor.getBandcampData.useQuery(
+  //     isSongDataValid
+  //       ? {
+  //           id: songId,
+  //           region,
+  //           artist: artists,
+  //           title: songData!.title,
+  //           album: songData!.album,
+  //           duration: songData!.duration,
+  //         }
+  //       : undefined,
+  //     {
+  //       refetchOnWindowFocus: false,
+  //       enabled: isSongDataValid,
+  //     },
+  //   );
+
+  // const { data: beatportData, isLoading: isBeatportDataLoading } =
+  //   api.externalVendor.getBeatportData.useQuery(
+  //     isSongDataValid
+  //       ? {
+  //           id: songId,
+  //           region,
+  //           artist: artists,
+  //           title: songData!.title,
+  //           album: songData!.album,
+  //           duration: songData!.duration,
+  //         }
+  //       : undefined,
+  //     {
+  //       refetchOnWindowFocus: false,
+  //       enabled: isSongDataValid,
+  //     },
+  //   );
 
   return (
     <div className="hide-scrollbars flex h-96 flex-row gap-8 overflow-hidden overflow-x-auto">
@@ -53,30 +119,31 @@ const SearchResultsFrame = ({ songId, region }: ISearchResultsProps) => {
           </tr>
         </thead>
         <tbody>
-          <SearchResultsRow
-            store="Amazon"
-            region={region}
-            data={amazonMusicData}
-            isLoading={isAmazonMusicDataLoading}
-          />
-          <SearchResultsRow
-            store="iTunes"
-            region={region}
-            data={itunesData}
-            isLoading={isItunesDataLoading}
-          />
-          <SearchResultsRow
+          {/* <SearchResultsRow
             store="Bandcamp"
-            data={bandcampData}
+            vendorData={bandcampData}
             region={region}
             isLoading={isBandcampDataLoading}
           />
           <SearchResultsRow
             store="Beatport"
-            data={beatportData}
+            vendorData={beatportData}
             region={region}
             isLoading={isBeatportDataLoading}
+          /> */}
+
+          <VendorResults
+            store="iTunes"
+            region={region}
+            vendorData={itunesData}
+            isLoading={isItunesDataLoading}
           />
+          {/* <SearchResultsRow
+            store="Amazon"
+            region={region}
+            vendorData={amazonMusicData}
+            isLoading={isAmazonMusicDataLoading}
+          /> */}
         </tbody>
       </table>
     </div>

@@ -1,4 +1,5 @@
 import { RegisterErrorCode } from "@/components/interactive/Auth/RegisterForm";
+import { VendorData } from "@/types/vendor";
 import { z } from "zod";
 
 // Output
@@ -12,17 +13,15 @@ interface RegisterSuccessResponse {
 }
 export type RegisterResponse = RegisterErrorResponse | RegisterSuccessResponse;
 
-export interface VendorDataResponse {
-  id: string;
-  store: string;
-  region?: string;
-  fileFormat: string;
-  quality: string;
-  price: number;
-  currency: string;
-  artistsShare: number;
-  url: string;
+interface VendorDataSuccessResponse {
+  data: VendorData;
+  error?: undefined;
 }
+interface VendorDataErrorResponse {
+  error: string;
+  data?: undefined;
+}
+export type VendorDataResponse = VendorDataSuccessResponse | VendorDataErrorResponse;
 
 // Inputs
 export const RegisterSchema = z.object({
@@ -55,10 +54,17 @@ export const GetUserActivitySchema = z.object({
   type: z.enum(["search", "purchase", "wishlist"]),
 });
 
-export const VendorDataSchema = z.object({
-  id: z.string(),
-  region: z.string(),
-});
+export const VendorDataSchema = z.union([
+  z.object({
+    id: z.string(),
+    region: z.string(),
+    artist: z.string(),
+    title: z.string(),
+    duration: z.number(),
+    album: z.union([z.string(), z.null()]), // Allow album to be a string or null
+  }),
+  z.undefined(), // Allow the entire object to be undefined
+]);
 
 export const AddSongSchema = z.object({
   id: z.string(),

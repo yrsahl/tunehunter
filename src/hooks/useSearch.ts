@@ -97,7 +97,9 @@ const useSearch = () => {
   // On input change, debounce the request
   const debouncedRequestSearchData = useCallback(
     debounce((searchTerm: string) => {
-      if (!accessToken) return;
+      if (!accessToken) {
+        return;
+      }
       requestQueryData(accessToken, searchTerm, searchSettings);
     }, 600),
     [userAccessToken, appAccessToken, ...Object.values(searchSettings)],
