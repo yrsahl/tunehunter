@@ -41,11 +41,30 @@ const SearchResultsFrame = ({ region }: ISearchResultsProps) => {
           /> */}
 
           <VendorResults
+            store="bandcamp"
+            region={region}
+            vendorData={iTunesData}
+            isLoading={isItunesDataLoading}
+          />
+          <VendorResults
+            store="beatport"
+            region={region}
+            vendorData={iTunesData}
+            isLoading={isItunesDataLoading}
+          />
+          <VendorResults
             store="iTunes"
             region={region}
             vendorData={iTunesData}
             isLoading={isItunesDataLoading}
           />
+          <VendorResults
+            store="amazon"
+            region={region}
+            vendorData={iTunesData}
+            isLoading={isItunesDataLoading}
+          />
+
           {/* <SearchResultsRow
             store="Amazon"
             region={region}

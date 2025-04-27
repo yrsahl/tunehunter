@@ -6,11 +6,15 @@ import { motion } from "framer-motion";
 interface ISearchResultsRowProps {
   track: VendorTrack;
   vendor: Vendor;
+  region: string;
+  store: string;
 }
 
-const VendorResultsRow = ({ track, vendor }: ISearchResultsRowProps) => {
-  const { artistsShare, region, store } = vendor;
+const VendorResultsRow = ({ track, vendor, region, store }: ISearchResultsRowProps) => {
+  const { artistsShare, store: vendorStore } = vendor; // TODO: Get region and store from here later when all stores are implemented
   const { fileData, trackData } = track;
+
+  console.log(store, vendorStore);
 
   return (
     <motion.tr

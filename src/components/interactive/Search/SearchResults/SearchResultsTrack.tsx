@@ -36,17 +36,17 @@ export default function SearchResultsTrack({ songData, isLoading }: ISearchResul
     .filter((genre, index, self) => genre && self.indexOf(genre) === index);
 
   return (
-    <div className="lg flex w-full flex-col gap-8 rounded-3xl border-2 px-3 py-2">
+    <div className=" lg flex w-full flex-col gap-8 pl-2 ">
       {/* Top Row */}
-      <div className="flex gap-8">
+      <div className="flex gap-8 rounded-3xl px-3 py-4 pl-4 shadow-sm shadow-foreground drop-shadow-sm dark:shadow-none">
         {/* Art */}
-        <figure className="h-48 w-48 flex-shrink-0 content-center overflow-hidden rounded-3xl drop-shadow-lg">
+        <figure className="h-48 w-48 flex-shrink-0 content-center overflow-hidden rounded-2xl drop-shadow-lg">
           {albumArtUrl && <img src={albumArtUrl} alt="Album cover art" className="h-48 w-48" />}
         </figure>
         <div className="flex flex-grow flex-col justify-evenly">
           <div className="flex flex-col gap-2 overflow-scroll p-0">
             {/* Artist & Title */}
-            <h2 className="text-lg font-bold tracking-normal drop-shadow-md">{title}</h2>
+            <h2 className="text-lg font-bold tracking-normal drop-shadow-sm">{title}</h2>
             {artists.length > 0 && <p className="text-md">By {artistNames}</p>}
 
             {/* Play & Wishlist */}
@@ -63,7 +63,7 @@ export default function SearchResultsTrack({ songData, isLoading }: ISearchResul
       </div>
 
       {/* Details */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4 px-4">
         <div className="flex items-center gap-2">
           <Music className="h-4 w-4 text-primary" />
           <p className="max-w-36 overflow-hidden text-ellipsis whitespace-nowrap text-sm">

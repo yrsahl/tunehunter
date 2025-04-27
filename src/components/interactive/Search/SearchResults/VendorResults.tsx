@@ -39,6 +39,8 @@ const VendorResults = ({ store, region, vendorData, isLoading }: SearchResultsVe
             key={track.trackData.url}
             track={track}
             vendor={vendorData.data.vendor}
+            region={region}
+            store={store}
           />
         ))}
       </>
