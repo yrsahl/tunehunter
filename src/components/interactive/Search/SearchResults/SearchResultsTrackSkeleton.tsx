@@ -2,11 +2,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const SearchResultsTrackSkeleton = () => {
   return (
-    <div className="lg flex w-full flex-col gap-8 px-3">
+    <div className="lg flex w-full flex-col gap-8 pl-2">
       {/* Top Row */}
-      <div className="flex gap-8">
+      <div className="flex gap-8 px-3 py-4 pl-4">
         {/* Art */}
-        <Skeleton className="h-48 w-48 rounded-3xl" />
+        <Skeleton className="h-48 w-48 rounded-3xl drop-shadow-lg" />
 
         <div className="flex flex-grow flex-col justify-evenly">
           <div className="flex flex-col gap-2 overflow-scroll p-0">
@@ -24,7 +24,7 @@ const SearchResultsTrackSkeleton = () => {
       </div>
 
       {/* Details */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4 px-4">
         <div className="flex h-5 items-center gap-2">
           <Skeleton className="h-4 w-4 bg-primary" />
           <Skeleton className="h-2 w-32" />
