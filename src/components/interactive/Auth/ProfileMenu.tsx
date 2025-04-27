@@ -16,6 +16,7 @@ import useThemeSettings, { AutoThemePreferences } from "@/hooks/settings/useThem
 import useAuthError from "@/hooks/useAuthErrors";
 import useProfileFunctions from "@/hooks/useProfileFunctions";
 import { api } from "@/utils/api";
+import clsx from "clsx";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -102,7 +103,7 @@ const ProfileMenu = () => {
 
       <div className="grid w-full grid-cols-[repeat(5,max-content)] gap-x-4 gap-y-6 sm:gap-x-12">
         {/* Mail */}
-        <p className="col-span-2 flex items-center justify-end font-thin">Mail</p>
+        <p className="col-span-2 flex items-center justify-end ">Mail</p>
         <p className="col-span-2 flex items-center overflow-x-clip text-ellipsis font-thin">
           {userMail}
         </p>
@@ -121,7 +122,7 @@ const ProfileMenu = () => {
         </div>
 
         {/* Region */}
-        <Label htmlFor="region" className="col-span-2 flex items-center justify-end font-thin">
+        <Label htmlFor="region" className="col-span-2 flex items-center justify-end font-normal">
           Region
         </Label>
         <div className="col-span-2">
@@ -159,7 +160,7 @@ const ProfileMenu = () => {
         </div>
 
         {/* Spotify */}
-        <p className="col-span-2 flex items-center justify-end font-thin">Spotify</p>
+        <p className="col-span-2 flex items-center justify-end">Spotify</p>
         {spotifyAccount?.data && (
           <>
             <a
@@ -202,7 +203,7 @@ const ProfileMenu = () => {
         )}
 
         {/* Theme */}
-        <p className="col-span-2 flex items-center justify-end gap-1 font-thin">
+        <p className="gap-1font-normal col-span-2 flex items-center justify-end font-normal">
           <span>Theme</span>
         </p>
         <div className="col-span-3">
@@ -226,15 +227,31 @@ const ProfileMenu = () => {
         </div>
 
         {/* Disable particles */}
-        <p className="col-span-2 flex items-center justify-end gap-1 font-thin">
+        <p className="col-span-2 flex items-center justify-end gap-1 ">
           <span>Particles</span>
         </p>
-        <div className="col-span-3">
+        <div className="col-span-3 flex items-center gap-2 font-thin">
+          <span
+            className={clsx(
+              "transition-colors",
+              particlePreference ? "text-foreground/20" : "text-foreground",
+            )}
+          >
+            Off
+          </span>
           <Switch
             id="minimumlength"
             checked={particlePreference || false}
             onCheckedChange={changeParticlePreference}
           />
+          <span
+            className={clsx(
+              "transition-colors",
+              particlePreference ? "text-foreground" : "text-foreground/20",
+            )}
+          >
+            On
+          </span>
         </div>
         {/* <div className="col-span-3">
           <Select value={autoThemePreference} onValueChange={changeAutoThemePreference}>
@@ -257,7 +274,7 @@ const ProfileMenu = () => {
         </div> */}
 
         {/* Delete account */}
-        <p className="col-span-2 flex items-center justify-end font-thin">Account</p>
+        <p className="col-span-2 flex items-center justify-end font-normal">Account</p>
         <div className="col-span-2">
           <ConfirmationModal
             dialogAction={() => handleDeleteAccount(userData.user.id)}
@@ -265,7 +282,7 @@ const ProfileMenu = () => {
             dialogTitle="Are you absolutely sure?"
           >
             <div>
-              <IconButton text="Delete Account" variant="outlineDestructive" size="sm" icon="x" />
+              <IconButton text="Delete Account" variant="ghostDestructive" size="sm" icon="x" />
             </div>
           </ConfirmationModal>
         </div>
