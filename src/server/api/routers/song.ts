@@ -1,7 +1,10 @@
+import { amendArtistData } from "@/helpers/spotify/amend-artist-data";
 import { AddSearchQueriesSchema, AddSongSchema } from "@/schemas";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import {
+  artistGenres,
   artists,
+  genres,
   songArtists,
   songs,
   trendingViewLast30Days,
@@ -30,25 +33,94 @@ export const songRouter = createTRPCRouter({
   }),
 
   getSongAndArtistsBySongId: publicProcedure
-    .input(z.object({ id: z.string() }))
+    .input(z.object({ id: z.string(), accessToken: z.string() }))
     .query(async ({ ctx, input }) => {
+      // Get song from DB
       const song = await ctx.db.query.songs.findFirst({
         where: (songs, { eq }) => eq(songs.id, input.id),
       });
       if (!song) return null;
 
-      // Wait 2 seconds
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      const artistsList = await ctx.db
+      // Get artists IDs to song from DB
+      const artistsDb = await ctx.db
         .select({
+          id: artists.id,
           name: artists.name,
+          popularity: artists.popularity,
+          followers: artists.followers,
+          genres: sql<string[]>`array_agg(${genres.name})`.as("genres"),
         })
         .from(songArtists)
         .innerJoin(artists, eq(songArtists.artistId, artists.id))
-        .where(eq(songArtists.songId, song.id));
+        .leftJoin(artistGenres, eq(artistGenres.artistId, artists.id))
+        .leftJoin(genres, eq(artistGenres.genreId, genres.id))
+        .where(eq(songArtists.songId, song.id))
+        .groupBy(artists.id);
 
-      return { ...song, artists: artistsList };
+      // Amend artistsDb data
+      const artistsWithExistingData = artistsDb.filter(
+        (artist) =>
+          artist.popularity && artist.followers && !artist.genres.every((genre) => genre === null),
+      );
+      const artistsWithMissingData = artistsDb.filter(
+        (artist) =>
+          !artist.popularity || !artist.followers || artist.genres.every((genre) => genre === null),
+      );
+      const artistsWithMissingData_Ids = artistsWithMissingData.map((artist) => artist.id);
+      const amendedArtistsData = await amendArtistData(
+        input.accessToken,
+        artistsWithMissingData_Ids,
+      );
+
+      // Combine data
+      const artistsData = [...artistsWithExistingData, ...amendedArtistsData];
+      let artistsGenres = artistsData
+        .flatMap((artist) => artist.genres)
+        .filter((genre) => genre !== null && genre !== undefined)
+        .filter((genre, index, self) => self.indexOf(genre) === index);
+      if (artistsGenres.length === 0) artistsGenres = ["unknown"];
+
+      // Maybe insert genres
+      const existingGenres = await ctx.db.query.genres.findMany({
+        where: (genres, { inArray }) => inArray(genres.name, artistsGenres),
+      });
+      const existingGenresNames = existingGenres.map((genre) => genre.name);
+      const genresToBeAdded = artistsGenres.filter((genre) => !existingGenresNames.includes(genre));
+      const genreValues = genresToBeAdded.map((genre) => ({
+        name: genre,
+      }));
+      if (genreValues.length > 0) await ctx.db.insert(genres).values(genreValues);
+
+      // Update artists
+      artistsWithMissingData.forEach(async (artist) => {
+        const amendedArtist = amendedArtistsData.find((a) => a.id === artist.id);
+
+        // Artist table
+        if (amendedArtist) {
+          await ctx.db
+            .update(artists)
+            .set({
+              popularity: amendedArtist.popularity,
+              followers: amendedArtist.followers,
+            })
+            .where(eq(artists.id, artist.id));
+        }
+
+        // Genre artist relation
+        if (artistsGenres.length > 0) {
+          const genreIds = await ctx.db.query.genres.findMany({
+            where: (genres, { inArray }) => inArray(genres.name, artistsGenres),
+          });
+          const genreIdValues = genreIds.map((genre) => ({
+            artistId: artist.id,
+            genreId: genre.id,
+          }));
+          await ctx.db.insert(artistGenres).values(genreIdValues).onConflictDoNothing();
+        }
+      });
+
+      // Return
+      return { ...song, artists: artistsData };
     }),
 
   getTrendingSongs: publicProcedure.query<TrendingTracks>(async ({ ctx }) => {
@@ -76,7 +148,6 @@ export const songRouter = createTRPCRouter({
           album: songs.album,
           albumArtUrl: songs.albumArtUrl,
           year: songs.year,
-          genre: songs.genre,
           spotifyUrl: songs.spotifyUrl,
         },
         artists: sql<{ id: string; name: string; popularity: number; followers: number }[]>`
@@ -105,7 +176,6 @@ export const songRouter = createTRPCRouter({
           album: songs.album,
           albumArtUrl: songs.albumArtUrl,
           year: songs.year,
-          genre: songs.genre,
           spotifyUrl: songs.spotifyUrl,
         },
         artists: sql<{ id: string; name: string; popularity: number; followers: number }[]>`
@@ -134,7 +204,6 @@ export const songRouter = createTRPCRouter({
           album: songs.album,
           albumArtUrl: songs.albumArtUrl,
           year: songs.year,
-          genre: songs.genre,
           spotifyUrl: songs.spotifyUrl,
         },
         artists: sql<{ id: string; name: string; popularity: number; followers: number }[]>`
@@ -181,7 +250,6 @@ export const songRouter = createTRPCRouter({
       album: input.album,
       albumArtUrl: input.albumArtUrl,
       year: input.year,
-      genre: input.genre,
       spotifyUrl: input.spotifyUrl,
     });
 
@@ -205,22 +273,19 @@ export const songRouter = createTRPCRouter({
             album: song.album,
             albumArtUrl: song.albumArtUrl,
             year: song.year,
-            genre: song.genre,
             spotifyUrl: song.spotifyUrl,
           })),
         )
         .onConflictDoNothing();
 
       // Add artists
-      const artistValues = input.flatMap(({ artists }) =>
+      const simpleArtistValues = input.flatMap(({ artists }) =>
         artists.map((artist) => ({
           id: artist.id,
           name: artist.name,
-          popularity: artist.popularity,
-          followers: artist.followers,
         })),
       );
-      await ctx.db.insert(artists).values(artistValues).onConflictDoNothing();
+      await ctx.db.insert(artists).values(simpleArtistValues).onConflictDoNothing();
 
       // Add relations
       const relationValues = input.flatMap(({ song, artists }) =>

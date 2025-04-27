@@ -1,4 +1,5 @@
 import {
+  SpotifyArtist,
   SpotifyArtists,
   SpotifySearchData,
   type SpotifyCurrentlyPlaying,
@@ -58,6 +59,7 @@ export const fetchTopTracks = (token: string) => {
 
 // Search data (client credentials)
 const SEARCH_ENDPOINT = "https://api.spotify.com/v1/search";
+const ARTIST_ENDPOINT = "https://api.spotify.com/v1/artists";
 
 export const fetchSpotifySearchData = async (appToken: string, query: string) => {
   // Build searchUrl
@@ -70,6 +72,12 @@ export const fetchSpotifySearchData = async (appToken: string, query: string) =>
 
   // Fetch
   return fetchSpotifyData<SpotifySearchData>(appToken, searchUrl);
+};
+
+export const fetchSpotifyArtistData = async (appToken: string, artistId: string) => {
+  const artistUrl = `${ARTIST_ENDPOINT}/${artistId}`;
+  // Fetch
+  return fetchSpotifyData<SpotifyArtist>(appToken, artistUrl);
 };
 
 // Helper

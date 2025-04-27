@@ -26,7 +26,6 @@ const useSpotifySongData = () => {
       album: currentlyPlaying?.item.album.name,
       albumArtUrl: currentlyPlaying?.item.album.images[0]?.url || null,
       year: currentlyPlaying?.item.album.release_date,
-      genre: currentlyPlaying?.item.album.album_type,
       spotifyUrl: currentlyPlaying?.item.external_urls.spotify,
     },
     artists: currentlyPlaying?.item.artists.map((artist) => ({
@@ -45,7 +44,6 @@ const useSpotifySongData = () => {
       album: queuedSong.album.name,
       albumArtUrl: queuedSong.album.images[0]?.url || null,
       year: queuedSong.album.release_date,
-      genre: queuedSong.album.album_type,
       spotifyUrl: queuedSong.external_urls.spotify,
     },
     artists: queuedSong.artists.map((artist) => ({
@@ -64,7 +62,6 @@ const useSpotifySongData = () => {
       album: track.album.name,
       albumArtUrl: track.album.images[0]?.url || null,
       year: track.album.release_date,
-      genre: track.album.album_type,
       spotifyUrl: track.external_urls.spotify,
     },
     artists: track.artists.map((artist) => ({
@@ -83,7 +80,6 @@ const useSpotifySongData = () => {
       album: track.track.album.name,
       albumArtUrl: track.track.album.images[0]?.url || null,
       year: track.track.album.release_date,
-      genre: track.track.album.album_type,
       spotifyUrl: track.track.external_urls.spotify,
     },
     artists: track.track.artists.map((artist) => ({

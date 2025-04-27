@@ -73,21 +73,26 @@ export const AddSongSchema = z.object({
   album: z.union([z.string(), z.null()]),
   albumArtUrl: z.union([z.string(), z.null()]),
   year: z.string(),
-  genre: z.string(),
   spotifyUrl: z.string(),
+});
+
+export const AddSimpleArtistSchema = z.object({
+  id: z.string(),
+  name: z.string(),
 });
 
 export const AddArtistSchema = z.object({
   id: z.string(),
   name: z.string(),
-  popularity: z.union([z.number(), z.null()]),
-  followers: z.union([z.number(), z.null()]),
+  popularity: z.number(),
+  followers: z.number(),
+  genres: z.array(z.string()),
 });
 
 export const AddSearchQueriesSchema = z.array(
   z.object({
     song: AddSongSchema,
-    artists: z.array(AddArtistSchema),
+    artists: z.array(AddSimpleArtistSchema),
   }),
 );
 

@@ -148,7 +148,6 @@ export const songs = pgTable("song", {
   album: varchar("album", { length: 255 }),
   albumArtUrl: varchar("album_art_url", { length: 255 }),
   year: varchar("year", { length: 255 }).notNull(),
-  genre: varchar("genre", { length: 255 }).notNull(),
   spotifyUrl: varchar("spotify_url", { length: 255 }).notNull(),
 });
 

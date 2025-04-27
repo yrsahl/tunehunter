@@ -3,12 +3,11 @@ import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { CountryCode, isCountryCode } from "@/helpers/region";
 import { api } from "@/utils/api";
 import { debounce } from "lodash";
-import { useSession } from "next-auth/react";
 import { FormEvent, useCallback, useEffect } from "react";
-import { useActiveSearchTabStore } from "./stores/useActiveSearchTab";
 import { useSearchSettingsStore } from "./stores/useSearchSettingsStore";
 import useSearchStore from "./stores/useSearchStore";
 import useRouterWithHelpers from "./useRouterWithHelpers";
+import useSpotifyTokens from "./useSpotifyTokens";
 
 const useSearch = () => {
   const {
@@ -21,26 +20,9 @@ const useSearch = () => {
   } = useSearchStore();
   const { requestQueryData, resetQueryData } = useQueryDataContext();
   const { history } = useSearchTabDataContext();
-  const { data: userData, status } = useSession();
-  const { activeSearchTab, setActiveSearchTab } = useActiveSearchTabStore();
-  const loggedIn = status === "authenticated";
   const router = useRouterWithHelpers();
+  const { accessToken, appAccessToken, userAccessToken } = useSpotifyTokens();
   const addSearchActivity = api.userActivities.addSearchActivity.useMutation();
-  const { data: spotifyAccountData } = api.account.getSpotifyAccountById.useQuery(
-    { userId: userData?.user.id! },
-    {
-      enabled: loggedIn,
-      refetchInterval: 30 * 60 * 1000, // Refetch every 30 minutes to refresh the access token
-      refetchIntervalInBackground: true,
-      refetchOnWindowFocus: false,
-    },
-  );
-  const { data: clientCredentialsData } = api.clientCredentials.getToken.useQuery(undefined, {
-    refetchInterval: 30 * 60 * 1000, // Refetch every 30 minutes to refresh the access token
-  });
-  const userAccessToken = spotifyAccountData?.data?.access_token;
-  const appAccessToken = clientCredentialsData?.token;
-  const accessToken = userAccessToken || appAccessToken;
 
   // Are there any settings set?
   const { searchForClubMixesOnly, minimumLengthOption, minimumLengthSeconds } =

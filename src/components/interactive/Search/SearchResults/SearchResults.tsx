@@ -1,3 +1,4 @@
+import { SearchDataContextProvider } from "@/contexts/SearchDataContext";
 import { slideInAndOutFromBottom } from "@/helpers/animations";
 import useSearchStore from "@/hooks/stores/useSearchStore";
 import { AnimatePresence, motion } from "framer-motion";
@@ -21,13 +22,15 @@ const SearchResults = ({}: SearchResultsProps) => {
   return (
     <AnimatePresence mode="wait">
       {searchState.id && searchState.region && (
-        <motion.div
-          {...slideInAndOutFromBottom(0.5)}
-          className="-mt-4 w-full rounded-3xl"
-          ref={containerRef}
-        >
-          <SearchResultsFrame songId={searchState.id} region={searchState.region} />
-        </motion.div>
+        <SearchDataContextProvider region={searchState.region} songId={searchState.id}>
+          <motion.div
+            {...slideInAndOutFromBottom(0.5)}
+            className="-mt-4 w-full rounded-3xl"
+            ref={containerRef}
+          >
+            <SearchResultsFrame songId={searchState.id} region={searchState.region} />
+          </motion.div>
+        </SearchDataContextProvider>
       )}
     </AnimatePresence>
   );

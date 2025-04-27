@@ -30,7 +30,11 @@ const VendorResults = ({ store, region, vendorData, isLoading }: SearchResultsVe
     return (
       <>
         {vendorData.data.tracks.map((track) => (
-          <VendorResultsRow track={track} vendor={vendorData.data.vendor} />
+          <VendorResultsRow
+            key={track.trackData.url}
+            track={track}
+            vendor={vendorData.data.vendor}
+          />
         ))}
       </>
     );
