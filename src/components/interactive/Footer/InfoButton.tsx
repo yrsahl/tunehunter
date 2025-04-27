@@ -23,8 +23,8 @@ const InfoButton = () => {
   const router = useRouterWithHelpers();
   const { status } = useSession();
   const loggedIn = status === "authenticated";
-  const { isExtraSmallDevice } = useDeviceSize();
-  const buttonSize = isExtraSmallDevice ? "default" : "lg";
+  const { isSmallDevice } = useDeviceSize();
+  const buttonSize = isSmallDevice ? "default" : "lg";
 
   const toggleSupportFrame = () => {
     setSupportFrameOpen(!supportFrameOpen);
@@ -45,8 +45,8 @@ const InfoButton = () => {
           <CustomIcon
             icon="hamburger"
             variant="foreground"
-            height={isExtraSmallDevice ? "20px" : "24px"}
-            width={isExtraSmallDevice ? "20px" : "24px"}
+            height={isSmallDevice ? "20px" : "24px"}
+            width={isSmallDevice ? "20px" : "24px"}
             className="shrink-0"
           />
         </Button>
@@ -54,7 +54,7 @@ const InfoButton = () => {
       <SheetContent className={`${quicksand.variable}`}>
         <SheetHeader>
           <SheetTitle>
-            <div className="-ml-1 flex font-quicksand text-3xl sm:text-4xl">
+            <div className="-ml-1 flex font-quicksand text-3xl md:text-4xl">
               <h2 className="tracking-wider">Tune</h2>
               <h2 className="tracking-wider text-primary">Hunter</h2>
             </div>
@@ -75,7 +75,7 @@ const InfoButton = () => {
           </SheetTitle>
           <SheetDescription asChild className="relative">
             <div className="flex flex-col gap-6 text-pretty pt-3 text-justify text-foreground">
-              <div className="flex flex-col gap-10 text-sm text-inherit sm:text-base">
+              <div className="flex flex-col gap-10 text-sm text-inherit md:text-base">
                 <div className="flex flex-col gap-4 text-foreground/70">
                   <p>
                     ... has one purpose: It finds you the music you want to buy, quicker. TuneHunter
@@ -119,8 +119,8 @@ const InfoButton = () => {
                       <CustomIcon
                         icon="mail"
                         variant="primary-foreground"
-                        height={isExtraSmallDevice ? "16px" : "20px"}
-                        width={isExtraSmallDevice ? "16px" : "20px"}
+                        height={isSmallDevice ? "16px" : "20px"}
+                        width={isSmallDevice ? "16px" : "20px"}
                       />
                       <span className="text-xs font-light uppercase text-primary-foreground sm:text-sm">
                         Have feedback?
@@ -143,8 +143,8 @@ const InfoButton = () => {
                         <CustomIcon
                           icon="x"
                           variant="success"
-                          height={isExtraSmallDevice ? "16px" : "20px"}
-                          width={isExtraSmallDevice ? "16px" : "20px"}
+                          height={isSmallDevice ? "16px" : "20px"}
+                          width={isSmallDevice ? "16px" : "20px"}
                         />
                         <span>Close</span>
                       </div>
@@ -158,8 +158,8 @@ const InfoButton = () => {
                         <CustomIcon
                           icon="coffee"
                           variant="success"
-                          height={isExtraSmallDevice ? "16px" : "20px"}
-                          width={isExtraSmallDevice ? "16px" : "20px"}
+                          height={isSmallDevice ? "16px" : "20px"}
+                          width={isSmallDevice ? "16px" : "20px"}
                         />
                         <span>Buy me a coffee</span>
                       </div>

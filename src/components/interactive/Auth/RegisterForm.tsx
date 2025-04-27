@@ -96,8 +96,8 @@ const RegisterForm: FC<IProps> = ({ email, menuState, setMenuState }) => {
   return (
     <AuthCard title="Registration" size="small">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full flex-col space-y-12">
-          <div className="flex flex-col space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full flex-col space-y-8">
+          <div className="flex flex-col space-y-4">
             {/* TODO: Add avatar */}
             <FormField
               control={form.control}
@@ -110,7 +110,7 @@ const RegisterForm: FC<IProps> = ({ email, menuState, setMenuState }) => {
                       {...field}
                       placeholder="john.doe@example.com"
                       type="email"
-                      className="border-2 border-primary text-base placeholder:text-muted-foreground focus-visible:ring-primary"
+                      className="border-2 border-primary text-sm placeholder:text-muted-foreground focus-visible:ring-primary md:text-base"
                     />
                   </FormControl>
                   <FormMessage />
@@ -129,7 +129,7 @@ const RegisterForm: FC<IProps> = ({ email, menuState, setMenuState }) => {
                       placeholder="TrebleMaker"
                       type="text"
                       disabled={isPending}
-                      className="border-2 border-primary text-base placeholder:text-muted-foreground focus-visible:ring-primary"
+                      className="border-2 border-primary text-sm placeholder:text-muted-foreground focus-visible:ring-primary md:text-base"
                     />
                   </FormControl>
                   <FormMessage />
@@ -148,7 +148,7 @@ const RegisterForm: FC<IProps> = ({ email, menuState, setMenuState }) => {
                         <motion.div
                           key={field.value}
                           {...growIn()}
-                          className="inline-block overflow-hidden text-ellipsis whitespace-nowrap text-base"
+                          className="inline-block overflow-hidden text-ellipsis whitespace-nowrap text-sm md:text-base"
                         >
                           <SelectValue />
                         </motion.div>
@@ -178,11 +178,11 @@ const RegisterForm: FC<IProps> = ({ email, menuState, setMenuState }) => {
                   text="Register"
                   disabled={isPending}
                   icon="signUp"
-                  size="default"
+                  size="lg"
                   variant="primary"
                 />
                 <Button variant="link" onClick={() => setMenuState(MenuState.SignIn)}>
-                  Go back
+                  Go Back
                 </Button>
               </div>
             )}

@@ -28,7 +28,7 @@ const ConfirmationModal = ({
 }: ConfirmationPromptProps) => {
   return (
     <AlertDialog>
-      <AlertDialogTrigger className="w-full" asChild>
+      <AlertDialogTrigger className="md:w-full" asChild>
         {children}
       </AlertDialogTrigger>
       <AlertDialogContent>

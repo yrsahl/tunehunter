@@ -122,19 +122,22 @@ const ProfileMenu = () => {
         </div>
 
         {/* Region */}
-        <Label htmlFor="region" className="col-span-2 flex items-center justify-end font-normal">
+        <Label
+          htmlFor="region"
+          className="col-span-2 flex items-center justify-end text-sm font-normal md:text-base"
+        >
           Region
         </Label>
         <div className="col-span-2">
           <Select onValueChange={changeRegion} value={region}>
             <SelectTrigger
               id="region"
-              className="h-9 max-w-44 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 text-base font-thin text-foreground focus:ring-0 focus:ring-offset-0"
+              className="h-9 max-w-36 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 font-thin text-foreground focus:ring-0 focus:ring-offset-0 md:max-w-44 md:text-base"
             >
               <motion.div
                 key={region}
                 {...growIn()}
-                className="inline-block w-36 overflow-hidden text-ellipsis text-start"
+                className="inline-block w-32 overflow-hidden text-ellipsis text-start"
               >
                 <SelectValue />
               </motion.div>
@@ -210,7 +213,7 @@ const ProfileMenu = () => {
           <Select value={autoThemePreference} onValueChange={changeAutoThemePreference}>
             <SelectTrigger
               id="region"
-              className="h-9 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 text-base font-thin text-foreground focus:ring-0 focus:ring-offset-0"
+              className="h-9 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 font-thin text-foreground focus:ring-0 focus:ring-offset-0 md:text-base"
             >
               <motion.div {...growIn()} className="inline-block overflow-hidden text-ellipsis">
                 <SelectValue />
@@ -230,7 +233,7 @@ const ProfileMenu = () => {
         <p className="col-span-2 flex items-center justify-end gap-1 ">
           <span>Particles</span>
         </p>
-        <div className="col-span-3 flex items-center gap-2 font-thin">
+        <div className="col-span-3 flex items-center gap-4 font-thin">
           <span
             className={clsx(
               "transition-colors",
@@ -275,14 +278,20 @@ const ProfileMenu = () => {
 
         {/* Delete account */}
         <p className="col-span-2 flex items-center justify-end font-normal">Account</p>
-        <div className="col-span-2">
+        <div className="col-span-3">
           <ConfirmationModal
             dialogAction={() => handleDeleteAccount(userData.user.id)}
             dialogText="This action cannot be undone. This will permanently delete your account and all related data."
             dialogTitle="Are you absolutely sure?"
           >
             <div>
-              <IconButton text="Delete Account" variant="ghostDestructive" size="sm" icon="x" />
+              <IconButton
+                text="Delete Account"
+                variant="ghostDestructive"
+                size="sm"
+                icon="x"
+                className="flex justify-start px-0"
+              />
             </div>
           </ConfirmationModal>
         </div>

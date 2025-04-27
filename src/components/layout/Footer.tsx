@@ -5,7 +5,7 @@ const ThemeToggle = dynamic(() => import("../interactive/Footer/ThemeToggle"), {
 
 const Footer = () => {
   return (
-    <div className="flex h-16 w-full items-center bg-muted sm:h-20">
+    <div className="flex h-16 w-full items-center bg-muted md:h-20">
       <div className="flex flex-1 justify-center">
         <ThemeToggle />
       </div>

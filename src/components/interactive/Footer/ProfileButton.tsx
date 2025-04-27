@@ -16,8 +16,8 @@ const ProfileButton = () => {
   const router = useRouterWithHelpers();
   const { status } = useSession();
   const { disabledTabButtonHovered } = useDisabledTabStore();
-  const { isExtraSmallDevice } = useDeviceSize();
-  const buttonSize = isExtraSmallDevice ? "default" : "lg";
+  const { isSmallDevice } = useDeviceSize();
+  const buttonSize = isSmallDevice ? "default" : "lg";
 
   const openProfileModal = () => {
     setEnableModalAnimation(true);
@@ -76,13 +76,13 @@ const ProfileButton = () => {
         >
           <User
             className={cn(
-              "menu-transition absolute left-1/2 top-1/2 h-[1.3rem] w-[1.3rem] -translate-x-1/2 -translate-y-1/2 transform sm:h-[1.6rem] sm:w-[1.6rem]",
+              "menu-transition absolute left-1/2 top-1/2 h-[1.3rem] w-[1.3rem] -translate-x-1/2 -translate-y-1/2 transform md:h-[1.6rem] md:w-[1.6rem]",
               profileModalOpen ? "-rotate-90 scale-0" : "rotate-0 scale-100",
             )}
           />
           <X
             className={cn(
-              "menu-transition absolute left-1/2 top-1/2 h-[1.3rem] w-[1.3rem] -translate-x-1/2 -translate-y-1/2 transform sm:h-[1.6rem] sm:w-[1.6rem]",
+              "menu-transition absolute left-1/2 top-1/2 h-[1.3rem] w-[1.3rem] -translate-x-1/2 -translate-y-1/2 transform md:h-[1.6rem] md:w-[1.6rem]",
               profileModalOpen ? "rotate-0 scale-100" : "rotate-90 scale-0",
             )}
             strokeWidth="1px"
