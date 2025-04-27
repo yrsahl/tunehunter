@@ -28,9 +28,9 @@ const TableHeader = <T,>({
 
   if (isMobileDevice) {
     return (
-      <div className="absolute left-1/2 top-0 z-10  w-1/2 -translate-x-1/2 rounded-b-sm border-b-[1px] border-primary bg-background px-6">
+      <div className="absolute left-1/2 top-0 z-10 flex h-8 w-40 -translate-x-1/2 items-center justify-center overflow-hidden rounded-b-md border-[1px] border-t-0 border-primary bg-background">
         <Select onValueChange={(value) => {}} value={activeSubTabName}>
-          <SelectTrigger className="text-md border-none capitalize ring-0 focus:ring-0">
+          <SelectTrigger className="border-none text-sm capitalize outline-none ring-0 focus:ring-0">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

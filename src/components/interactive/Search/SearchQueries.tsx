@@ -22,7 +22,7 @@ const SearchQueries = ({ searchQueriesRef }: SearchTableProps) => {
   return (
     <motion.div
       {...fadeInAndOut()}
-      className="absolute z-50 h-60 w-full overflow-scroll rounded-b-lg border border-t-[1px] border-primary bg-background/30 text-base backdrop-blur-md"
+      className="absolute z-50 h-60 w-full overflow-scroll rounded-b-lg border border-t-[1px] border-primary bg-background/30 text-sm backdrop-blur-md md:text-base"
     >
       <div className="px-3 py-3 sm:px-5 md:px-7">
         {/* <p className="text-center text-foreground/50">
@@ -40,7 +40,7 @@ const SearchQueries = ({ searchQueriesRef }: SearchTableProps) => {
                   onClick={() => submitSearch(track.id, region, track.name, primaryArtist)}
                   key={track.id}
                 >
-                  <td className="py-3 pr-8">
+                  <td className="py-2 pr-6 md:py-3 md:pr-8">
                     <div className="flex items-center gap-4">
                       <div className="avatar">
                         <div className="mask mask-squircle h-11 w-11">
@@ -49,7 +49,7 @@ const SearchQueries = ({ searchQueriesRef }: SearchTableProps) => {
                       </div>
                     </div>
                   </td>
-                  <td className="overflow-hidden pr-4 align-middle">
+                  <td className="overflow-hidden pr-2 align-middle md:pr-4">
                     <p>{primaryArtist}</p>
                     {track.artists[1] && (
                       <p className="overflow-ellipsis whitespace-nowrap text-muted-foreground">
@@ -57,10 +57,10 @@ const SearchQueries = ({ searchQueriesRef }: SearchTableProps) => {
                       </p>
                     )}
                   </td>
-                  <td className=" pr-4 align-middle">
-                    <span>{track.name}</span>
+                  <td className="pr-4 align-middle">
+                    <span className="text-sm md:text-base">{track.name}</span>
                   </td>
-                  <td className="text-right align-middle text-base opacity-50">
+                  <td className="text-right align-middle text-xs opacity-50 md:text-sm">
                     {new Date(track.duration_ms).toISOString().substr(14, 5)}
                   </td>
                 </motion.tr>

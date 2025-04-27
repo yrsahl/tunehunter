@@ -19,11 +19,13 @@ const SearchResultsFrame = ({ region }: ISearchResultsProps) => {
       <table className="my-auto table h-[80%] w-full border-separate border-spacing-y-4 sm:border-spacing-y-6 md:w-1/2">
         <thead>
           <tr>
-            <td className="w-20 text-base font-bold normal-case opacity-0 sm:w-[70px]">Logo</td>
-            <td className="w-28 text-base font-bold sm:w-24">Quality</td>
-            <td className="w-20 text-base font-bold">Price</td>
-            <td className="w-36 text-base font-bold">Artist's share</td>
-            <td className="w-8 text-base font-bold opacity-0 sm:w-10">Link</td>
+            <td className="w-20 text-sm font-bold normal-case opacity-0 sm:w-[70px] md:text-base">
+              Logo
+            </td>
+            <td className="w-28 text-sm font-bold sm:w-24 md:text-base">Quality</td>
+            <td className="w-20 text-sm font-bold md:text-base">Price</td>
+            <td className="w-36 text-sm font-bold md:text-base">Artist's share</td>
+            <td className="w-8 text-sm font-bold opacity-0 sm:w-10 md:text-base">Link</td>
           </tr>
         </thead>
         <tbody>

@@ -12,10 +12,13 @@ const fetchItunesData = async (
   title: string,
   artist: string,
 ) => {
+  console.log("--------");
   const dataUrl = new URL(
     `https://itunes.apple.com/search?country=${region}&media=music&entity=song&limit=5&term=${title}+${artist}`,
   ).href;
   const response = await axios.get<ITunesData>(dataUrl);
+
+  console.log("response", response.data);
 
   // File data is same for all tracks
   const iTunesFileData: VendorFileFormat = {

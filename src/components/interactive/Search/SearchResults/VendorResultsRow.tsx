@@ -1,5 +1,6 @@
 import IconButton from "@/components/IconButton";
 import { countryNamesEnglish } from "@/helpers/region";
+import useDeviceSize from "@/hooks/useDeviceSize";
 import { Vendor, VendorTrack } from "@/types/vendor";
 import { motion } from "framer-motion";
 
@@ -11,10 +12,9 @@ interface ISearchResultsRowProps {
 }
 
 const VendorResultsRow = ({ track, vendor, region, store }: ISearchResultsRowProps) => {
-  const { artistsShare, store: vendorStore } = vendor; // TODO: Get region and store from here later when all stores are implemented
+  const { artistsShare } = vendor; // TODO: Get region and store from here later when all stores are implemented
   const { fileData, trackData } = track;
-
-  console.log(store, vendorStore);
+  const { isSmallDevice } = useDeviceSize();
 
   return (
     <motion.tr
@@ -43,25 +43,18 @@ const VendorResultsRow = ({ track, vendor, region, store }: ISearchResultsRowPro
 
       {/* Quality */}
       <td>
-        <div className="flex flex-col justify-center">
+        <div className="flex flex-col justify-center text-sm md:text-base">
           <span>{fileData.format}</span>
-          <span className="text-sm opacity-50">{fileData.quality}</span>
+          <span className="text-xs opacity-50 md:text-sm">{fileData.quality}</span>
         </div>
       </td>
 
       {/* Price */}
       <td>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 text-sm md:text-base">
           <div className="inline-block">
             {trackData.price}
             {trackData.currency}
-          </div>
-          <div className="flex flex-1 justify-center">
-            <a href="{vendorData.song.songLink}" target="_blank">
-              <button className="btn btn-secondary btn-ghost text-base normal-case">
-                {/* <FaExternalLinkSquareAlt size={32} className="text-secondary" /> */}
-              </button>
-            </a>
           </div>
         </div>
       </td>
@@ -69,10 +62,10 @@ const VendorResultsRow = ({ track, vendor, region, store }: ISearchResultsRowPro
       {/* Artist's share */}
       <td>
         <div className="flex flex-col gap-1">
-          <div className="h-2 w-[80%] rounded-full bg-primary/20">
+          <div className="h-1 w-[80%] rounded-full bg-primary/20 md:h-2">
             {artistsShare && (
               <div
-                className="h-2 rounded-full bg-success"
+                className="h-1 rounded-full bg-success md:h-2"
                 style={{ width: `${artistsShare * 100}%` }}
               />
             )}
@@ -86,7 +79,7 @@ const VendorResultsRow = ({ track, vendor, region, store }: ISearchResultsRowPro
           size="icon"
           variant="ghost"
           icon="externalArrow"
-          iconSize="24px"
+          iconSize={isSmallDevice ? "20px" : "24px"}
           className="border-none"
         />
       </td>

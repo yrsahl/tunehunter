@@ -36,7 +36,7 @@ const Layout = ({ children }: PropsWithChildren) => {
         <div className="flex h-full flex-col">
           <div className="flex-grow-[6.6]" /> {/* Empty space */}
           <div className="hide-scrollbars max-h-full w-full overflow-y-auto py-6">
-            <div className="flex w-full flex-col items-center justify-center gap-8">
+            <div className="flex w-full flex-col items-center justify-center gap-6 md:gap-8">
               <Header />
               {children}
             </div>

@@ -2,6 +2,7 @@
 
 Fix queries not loading on refresh
 
+Save vendor data
 Play spotify thing
 Wishlist
 

@@ -20,8 +20,9 @@ const TableRow = ({ track, showDuration = false, extraElement }: TableRowProps) 
   const router = useRouterWithHelpers();
   const { song, artists } = track;
   const { region } = useRegionSettings();
-  const { isMobileDevice } = useDeviceSize();
+  const { isSmallDevice } = useDeviceSize();
   const { setActiveSearchTab } = useActiveSearchTabStore();
+  const buttonSize = isSmallDevice ? "xs" : "sm";
 
   const primaryArtist = artists[0]?.name || "";
 
@@ -30,7 +31,7 @@ const TableRow = ({ track, showDuration = false, extraElement }: TableRowProps) 
     submitSearch(song.id, region, song.title, primaryArtist);
 
     // Hide tabs
-    if (isMobileDevice) {
+    if (isSmallDevice) {
       setActiveSearchTab("");
       const trackSearchHref = {
         pathname: router.pathname,
@@ -48,7 +49,7 @@ const TableRow = ({ track, showDuration = false, extraElement }: TableRowProps) 
       <td className="py-2 pr-4 sm:pr-8">
         <div className="flex items-center gap-4">
           <div className="avatar">
-            <div className="mask mask-squircle h-12 w-12">
+            <div className="mask mask-squircle h-10 w-10 md:h-12 md:w-12">
               {song.albumArtUrl && <img src={song.albumArtUrl} />}
               {!song.albumArtUrl && (
                 <div className="flex h-full w-full items-center justify-center bg-gray-200">
@@ -61,13 +62,15 @@ const TableRow = ({ track, showDuration = false, extraElement }: TableRowProps) 
       </td>
       {/* Extra Element */}
       <td className={clsx("align-middle", extraElement ? "pr-2 sm:pr-4" : "pr-0")}>
-        <div className="flex">{extraElement}</div>
+        <div className="flex text-sm md:text-base">{extraElement}</div>
       </td>
       {/* Artist(s) */}
       <td className="pr-3 sm:pr-4">
-        <p className="max-w-32 overflow-hidden text-ellipsis whitespace-nowrap">{primaryArtist}</p>
+        <p className="max-w-32 overflow-hidden text-ellipsis whitespace-nowrap text-sm md:text-base">
+          {primaryArtist}
+        </p>
         {artists[1] && (
-          <p className="max-w-28 overflow-hidden text-ellipsis whitespace-nowrap text-muted-foreground">
+          <p className="max-w-28 overflow-hidden text-ellipsis whitespace-nowrap text-sm text-muted-foreground md:text-base">
             {artists[1].name}
           </p>
         )}
@@ -76,10 +79,10 @@ const TableRow = ({ track, showDuration = false, extraElement }: TableRowProps) 
       <td className="pr-2 sm:pr-4">
         <Tooltip>
           <TooltipTrigger>
-            <span className="block max-w-48 overflow-hidden text-ellipsis whitespace-nowrap">
+            <span className="block max-w-48 overflow-hidden text-ellipsis whitespace-nowrap text-sm md:text-base">
               {song.title}
             </span>
-            <TooltipContent className="border-foreground/30 bg-background text-foreground">
+            <TooltipContent className="border-foreground/30 bg-background text-sm text-foreground md:text-base">
               {song.title}
             </TooltipContent>
           </TooltipTrigger>
@@ -87,7 +90,7 @@ const TableRow = ({ track, showDuration = false, extraElement }: TableRowProps) 
       </td>
       {/* Duration */}
       {showDuration && (
-        <td className="pr-2 text-sm text-foreground/50 sm:pr-4">
+        <td className="pr-2 text-xs text-foreground/50 sm:pr-4 md:text-sm">
           <span>{new Date(song.duration).toISOString().substr(14, 5)}</span>
         </td>
       )}
@@ -96,7 +99,7 @@ const TableRow = ({ track, showDuration = false, extraElement }: TableRowProps) 
         <IconButton
           variant="primary"
           text="Search"
-          size="sm"
+          size={buttonSize}
           textStyle="uppercase text-xs"
           onClick={handleSearchClick}
         />
