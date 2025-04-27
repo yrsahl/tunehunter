@@ -28,7 +28,7 @@ const SearchResults = ({}: SearchResultsProps) => {
             className="-mt-4 w-full rounded-3xl"
             ref={containerRef}
           >
-            <SearchResultsFrame songId={searchState.id} region={searchState.region} />
+            <SearchResultsFrame region={searchState.region} />
           </motion.div>
         </SearchDataContextProvider>
       )}

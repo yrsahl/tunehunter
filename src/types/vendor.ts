@@ -26,3 +26,5 @@ export type VendorTrackData = {
   price: number;
   url: string;
 };
+
+export type VendorDataError = "INVALID_FIELDS" | "NO_MATCH_FOUND" | "NO_DATA_FOUND";

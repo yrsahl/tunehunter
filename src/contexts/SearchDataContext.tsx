@@ -58,8 +58,7 @@ export const SearchDataContextProvider = ({
       },
     );
 
-  // const artists = songData?.artists.map((artist) => artist?.items.).join(", ") || "";
-  const artists = "";
+  const artists = songData?.artists.map((artist) => artist.name).join(", ") || "";
 
   // Compute a flag to ensure all required fields are present
   const isSongDataValid = useMemo(() => {

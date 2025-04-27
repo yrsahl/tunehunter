@@ -4,11 +4,10 @@ import SearchResultsTrack from "./SearchResultsTrack";
 import VendorResults from "./VendorResults";
 
 interface ISearchResultsProps {
-  songId: string;
   region: CountryCode;
 }
 
-const SearchResultsFrame = ({ songId, region }: ISearchResultsProps) => {
+const SearchResultsFrame = ({ region }: ISearchResultsProps) => {
   const { songData, isSongDataLoading, iTunesData, isItunesDataLoading } = useSearchDataContext();
 
   return (

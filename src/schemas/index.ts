@@ -1,5 +1,5 @@
 import { RegisterErrorCode } from "@/components/interactive/Auth/RegisterForm";
-import { VendorData } from "@/types/vendor";
+import { VendorData, VendorDataError } from "@/types/vendor";
 import { z } from "zod";
 
 // Output
@@ -18,7 +18,7 @@ interface VendorDataSuccessResponse {
   error?: undefined;
 }
 interface VendorDataErrorResponse {
-  error: string;
+  error: VendorDataError;
   data?: undefined;
 }
 export type VendorDataResponse = VendorDataSuccessResponse | VendorDataErrorResponse;

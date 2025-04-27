@@ -88,7 +88,7 @@ export const externalVendorRouter = createTRPCRouter({
       }
 
       return {
-        error: iTunesVendorData.error,
+        error: "NO_DATA_FOUND",
       };
     }),
 

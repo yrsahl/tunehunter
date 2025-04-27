@@ -32,12 +32,8 @@ export default function SearchResultsTrack({ songData, isLoading }: ISearchResul
 
   // Combine genres of artists
   const genres = artists
-    .map((artist) => artist.genres)
-    .reduce((acc, genreArray) => {
-      if (!genreArray) return acc;
-      return [...acc, ...genreArray];
-    }, [])
-    .slice(0, 3);
+    .flatMap((artist) => artist.genres)
+    .filter((genre, index, self) => genre && self.indexOf(genre) === index);
 
   return (
     <div className="lg flex w-full flex-col gap-8 rounded-3xl border-2 px-3 py-2">
@@ -50,15 +46,15 @@ export default function SearchResultsTrack({ songData, isLoading }: ISearchResul
         <div className="flex flex-grow flex-col justify-evenly">
           <div className="flex flex-col gap-2 overflow-scroll p-0">
             {/* Artist & Title */}
-            <h2 className="text-lg font-bold tracking-normal">{title}</h2>
+            <h2 className="text-lg font-bold tracking-normal drop-shadow-md">{title}</h2>
             {artists.length > 0 && <p className="text-md">By {artistNames}</p>}
 
             {/* Play & Wishlist */}
             <div className="mt-3 flex gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
+              <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-primary">
                 <Play className="h-6 w-6 text-foreground" />
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-full ">
+              <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full">
                 <Heart className="h-6 w-6 text-foreground" />
               </div>
             </div>

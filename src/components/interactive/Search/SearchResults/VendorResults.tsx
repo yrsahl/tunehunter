@@ -13,10 +13,15 @@ interface SearchResultsVendorRowsProps {
 
 const VendorResults = ({ store, region, vendorData, isLoading }: SearchResultsVendorRowsProps) => {
   // Skeleton
-  if (isLoading) return <VendorResultsRowSkeleton store={store} region={region} />;
+  if (isLoading || (vendorData && vendorData.error === "INVALID_FIELDS"))
+    return <VendorResultsRowSkeleton store={store} region={region} />;
 
   // No data
-  if (!vendorData || vendorData.error) {
+  if (
+    !vendorData ||
+    vendorData.error === "NO_DATA_FOUND" ||
+    vendorData.error === "NO_MATCH_FOUND"
+  ) {
     return (
       <VendorResultsRowMessage
         message="Not available in this store."
