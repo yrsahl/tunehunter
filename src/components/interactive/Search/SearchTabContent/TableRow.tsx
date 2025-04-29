@@ -78,7 +78,7 @@ const TableRow = ({ track, showDuration = false, extraElement }: TableRowProps) 
       {/* Title */}
       <td className="pr-2 sm:pr-4">
         <Tooltip>
-          <TooltipTrigger>
+          <TooltipTrigger className="h-full pb-1 align-middle">
             <span className="block max-w-48 overflow-hidden text-ellipsis whitespace-nowrap text-sm md:text-base">
               {song.title}
             </span>
@@ -90,12 +90,12 @@ const TableRow = ({ track, showDuration = false, extraElement }: TableRowProps) 
       </td>
       {/* Duration */}
       {showDuration && (
-        <td className="pr-2 text-xs text-foreground/50 sm:pr-4 md:text-sm">
+        <td className="pr-2 align-middle text-xs text-foreground/50 sm:pr-4 md:text-sm">
           <span>{new Date(song.duration).toISOString().substr(14, 5)}</span>
         </td>
       )}
       {/* Search */}
-      <td className="pl-2 text-right sm:pl-4">
+      <td className="pl-2 text-right align-middle sm:pl-4">
         <IconButton
           variant="primary"
           text="Search"
