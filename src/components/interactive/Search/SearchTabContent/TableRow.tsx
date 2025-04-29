@@ -30,18 +30,18 @@ const TableRow = ({ track, showDuration = false, extraElement }: TableRowProps) 
     // Start search
     submitSearch(song.id, region, song.title, primaryArtist);
 
-    // Hide tabs
-    if (isSmallDevice) {
-      setActiveSearchTab("");
-      const trackSearchHref = {
-        pathname: router.pathname,
-        query: {
-          ...router.query,
-          search: "",
-        },
-      };
-      await router.push(trackSearchHref);
-    }
+    // // Hide tabs
+    // if (isSmallDevice) {
+    //   setActiveSearchTab("");
+    //   const trackSearchHref = {
+    //     pathname: router.pathname,
+    //     query: {
+    //       ...router.query,
+    //       search: "",
+    //     },
+    //   };
+    //   await router.push(trackSearchHref);
+    // }
   };
 
   return (

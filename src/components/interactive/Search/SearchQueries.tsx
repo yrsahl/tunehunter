@@ -13,8 +13,6 @@ const SearchQueries = ({ searchQueriesRef }: SearchTableProps) => {
   const { region } = useRegionSettings();
   const { submitSearch } = useSearch();
 
-  console.log("queryData", queryData);
-
   if (!queryData) {
     return <></>;
   }
