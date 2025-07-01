@@ -27,7 +27,7 @@ const WishlistStatusIcon = ({ songId }: WishlistStatusIconProps) => {
     return (
       <Button
         size="icon"
-        className="w-8 border-none bg-transparent transition-all duration-300 hover:bg-transparent"
+        className="w-7 border-none bg-transparent transition-all duration-300 hover:bg-transparent"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={() => removeFromWishlist(songId)}

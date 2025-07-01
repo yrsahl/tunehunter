@@ -1,3 +1,4 @@
+import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
 import { formatDate } from "@/helpers/format-date";
 import { formatDuration } from "@/helpers/format-duration";
 import { AppRouter } from "@/server/api/root";
@@ -15,6 +16,7 @@ interface ISearchResultsTrackProps {
 
 export default function SearchResultsTrack({ songData, isLoading }: ISearchResultsTrackProps) {
   const { status } = useSession();
+  const { spotifyConnected } = useSpotifyUserDataContext();
   const loggedIn = status === "authenticated";
 
   if (isLoading) {
@@ -56,21 +58,20 @@ export default function SearchResultsTrack({ songData, isLoading }: ISearchResul
             {artists.length > 0 && <p className="text-md">By {artistNames}</p>}
 
             {/* Play & Wishlist */}
-            <div className="mt-3 flex gap-3 ">
-              {loggedIn ? (
-                <>
-                  <SpotifyPlayIcon songId={songData.id} />
-                  <WishlistStatusIcon songId={songData.id} />
-                </>
+            <div className="mt-3 flex items-center gap-3">
+              {spotifyConnected ? (
+                <SpotifyPlayIcon songId={songData.id} />
               ) : (
-                <>
-                  <div className="flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-full bg-slate-400">
-                    <Play className="h-6 w-6 text-foreground" />
-                  </div>
-                  <div className="flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-full">
-                    <HeartIcon className="h-6 w-6 text-foreground" />
-                  </div>
-                </>
+                <div className="flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-full bg-slate-400">
+                  <Play className="h-6 w-6 text-foreground" />
+                </div>
+              )}
+              {loggedIn ? (
+                <WishlistStatusIcon songId={songData.id} />
+              ) : (
+                <div className="flex h-8 w-8 cursor-not-allowed items-center justify-center rounded-full">
+                  <HeartIcon className="h-7 w-7 text-foreground" />
+                </div>
               )}
             </div>
           </div>

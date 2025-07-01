@@ -2,17 +2,18 @@
 
 Play spotify thing
 - Put playback state in Url -> another title stop
+Fix queries not loading on refresh or change search icon showing search in refresh
 
-Fix queries not loading on refresh
 Save vendor data
 
-Amazon
-Bandcamp
-Beatport
+Incorporate APIs
+- Amazon
+- Bandcamp
+- Beatport
 
 Apply spotify extended quota
 
-
+Fix double login
 
 
 
