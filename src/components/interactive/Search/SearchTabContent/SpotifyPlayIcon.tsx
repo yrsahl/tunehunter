@@ -14,8 +14,8 @@ const SpotifyPlayIcon = ({ songId }: SpotifyPlayIconProps) => {
   const { userAccessToken } = useSpotifyTokens();
   const { deviceId } = useSpotifyPlayer(userAccessToken);
   const [playingSongId, setPlayingSongId] = useState<string | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const handleClick = async () => {
     if (!deviceId || !userAccessToken) return;
@@ -75,9 +75,10 @@ const SpotifyPlayIcon = ({ songId }: SpotifyPlayIconProps) => {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
           transition={{ duration: 0.2 }}
-          className="flex"
+          className="relative flex"
         >
-          <Pause className="h-6 w-6 fill-foreground text-foreground" />
+          <span className="animate-pulse-shadow absolute inset-0 z-0 rounded-full" />
+          <Pause className="relative z-10 h-6 w-6 fill-foreground text-foreground" />
         </motion.span>
       )}
     </motion.button>
