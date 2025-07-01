@@ -2,6 +2,8 @@
 
 Play spotify thing
 - Put playback state in Url -> another title stop
+- Stop after duration of song
+
 Fix queries not loading on refresh or change search icon showing search in refresh
 
 Save vendor data

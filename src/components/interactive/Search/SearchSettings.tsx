@@ -42,7 +42,11 @@ const SearchSettings = ({}) => {
   return (
     <Popover>
       <PopoverTrigger>
-        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+        <motion.div
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className="flex items-center justify-center"
+        >
           <Cog />
         </motion.div>
       </PopoverTrigger>

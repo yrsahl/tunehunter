@@ -109,8 +109,12 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = (
         >
           <AnimatePresence>
             {queryData && showResults && (
-              <motion.div {...fadeInAndOut()}>
-                <IconButton icon="x" size="icon" variant="ghostDestructive" onClick={resetSearch} />
+              <motion.div
+                {...fadeInAndOut()}
+                whileHover={{ scale: 1.15 }}
+                className="flex items-center justify-center"
+              >
+                <IconButton icon="x" size="icon" variant="default" onClick={resetSearch} />
               </motion.div>
             )}
           </AnimatePresence>

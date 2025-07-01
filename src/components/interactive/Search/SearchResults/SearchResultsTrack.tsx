@@ -44,9 +44,9 @@ export default function SearchResultsTrack({ songData, isLoading }: ISearchResul
     .filter((genre, index, self) => genre && self.indexOf(genre) === index);
 
   return (
-    <div className="flex w-full flex-col gap-8 pl-2">
+    <div className="flex w-full flex-col gap-6 pl-2">
       {/* Top Row */}
-      <div className="flex gap-8 rounded-3xl px-3 py-4 pl-4 shadow-sm shadow-foreground drop-shadow-sm dark:shadow-none">
+      <div className="flex gap-8 rounded-3xl px-3 py-4 pl-4 drop-shadow-sm">
         {/* Art */}
         <figure className="h-48 w-48 flex-shrink-0 content-center overflow-hidden rounded-2xl drop-shadow-lg">
           {albumArtUrl && <img src={albumArtUrl} alt="Album cover art" className="h-48 w-48" />}
