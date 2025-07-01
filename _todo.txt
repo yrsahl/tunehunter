@@ -1,9 +1,9 @@
 ---- CORE
 
+Play spotify thing
+
 Fix queries not loading on refresh
 Save vendor data
-
-Play spotify thing
 
 Amazon
 Bandcamp
