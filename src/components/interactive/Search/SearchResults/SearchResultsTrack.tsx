@@ -2,8 +2,9 @@ import { formatDate } from "@/helpers/format-date";
 import { formatDuration } from "@/helpers/format-duration";
 import { AppRouter } from "@/server/api/root";
 import { inferProcedureOutput } from "@trpc/server";
-import { motion } from "framer-motion";
-import { Album, Calendar, Clock, Music, Play } from "lucide-react";
+import { Album, Calendar, Clock, HeartIcon, Music, Play } from "lucide-react";
+import { useSession } from "next-auth/react";
+import SpotifyPlayIcon from "../SearchTabContent/SpotifyPlayIcon";
 import WishlistStatusIcon from "../SearchTabContent/WishlistStatusIcon";
 import SearchResultsTrackSkeleton from "./SearchResultsTrackSkeleton";
 
@@ -13,6 +14,9 @@ interface ISearchResultsTrackProps {
 }
 
 export default function SearchResultsTrack({ songData, isLoading }: ISearchResultsTrackProps) {
+  const { status } = useSession();
+  const loggedIn = status === "authenticated";
+
   if (isLoading) {
     return <SearchResultsTrackSkeleton />;
   }
@@ -52,15 +56,22 @@ export default function SearchResultsTrack({ songData, isLoading }: ISearchResul
             {artists.length > 0 && <p className="text-md">By {artistNames}</p>}
 
             {/* Play & Wishlist */}
-            <div className="mt-3 flex gap-2">
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 1 }}
-                className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-primary"
-              >
-                <Play className="h-6 w-6 text-foreground" />
-              </motion.div>
-              <WishlistStatusIcon songId={songData.id} />
+            <div className="mt-3 flex gap-3 ">
+              {loggedIn ? (
+                <>
+                  <SpotifyPlayIcon />
+                  <WishlistStatusIcon songId={songData.id} />
+                </>
+              ) : (
+                <>
+                  <div className="flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-full bg-slate-400">
+                    <Play className="h-6 w-6 text-foreground" />
+                  </div>
+                  <div className="flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-full">
+                    <HeartIcon className="h-6 w-6 text-foreground" />
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

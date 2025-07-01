@@ -10,9 +10,6 @@ interface WishlistStatusIconProps {
 const WishlistStatusIcon = ({ songId }: WishlistStatusIconProps) => {
   const { isOnWishlist, addToWishlist, removeFromWishlist } = useWishlist();
 
-  console.log(`WishlistStatusIcon: Checking wishlist status for songId ${songId}`);
-  console.log("isOnWishlist:", isOnWishlist(songId));
-
   const WishlistedSong = () => {
     const heartFullControls = useAnimation();
     const heartBreakControls = useAnimation();
@@ -42,7 +39,7 @@ const WishlistStatusIcon = ({ songId }: WishlistStatusIconProps) => {
             transition={{ duration: 0.3 }}
             className="absolute"
           >
-            <HeartOff className="h-6 w-6 text-foreground" />
+            <HeartOff className="h-7 w-7 text-foreground" />
           </motion.div>
           <motion.div
             initial={{ opacity: 1 }}
@@ -50,7 +47,7 @@ const WishlistStatusIcon = ({ songId }: WishlistStatusIconProps) => {
             transition={{ duration: 0.3 }}
             className="absolute"
           >
-            <HeartIcon className="h-6 w-6 fill-foreground text-foreground" />
+            <HeartIcon className="h-7 w-7 fill-foreground text-foreground" />
           </motion.div>
         </>
       </Button>
@@ -85,7 +82,7 @@ const WishlistStatusIcon = ({ songId }: WishlistStatusIconProps) => {
           transition={{ duration: 0.3 }}
           className="absolute"
         >
-          <HeartIcon className="h-6 w-6 text-foreground" />
+          <HeartIcon className="h-7 w-7 text-foreground" />
         </motion.div>
         <motion.div
           initial={{ opacity: 0 }}
@@ -93,7 +90,7 @@ const WishlistStatusIcon = ({ songId }: WishlistStatusIconProps) => {
           transition={{ duration: 0.3 }}
           className="absolute"
         >
-          <HeartIcon className="h-6 w-6 fill-foreground text-foreground" />
+          <HeartIcon className="h-7 w-7 fill-foreground text-foreground" />
         </motion.div>
       </Button>
     );
