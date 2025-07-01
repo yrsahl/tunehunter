@@ -111,7 +111,7 @@ const useSearch = () => {
   // TODO: this function is shit, way too much going on
   const submitSearch = async (id: string, region: CountryCode, title: string, artist: string) => {
     // Store activity and refresh history data for user
-    addSearchActivity.mutateAsync({ songId: id, region });
+    await addSearchActivity.mutateAsync({ songId: id, region });
     history.refetchData();
 
     // Trigger SearchResults re-render (which starts the vendor data search)

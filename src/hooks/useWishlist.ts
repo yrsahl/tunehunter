@@ -15,9 +15,9 @@ const useWishlist = () => {
     return data.some((item) => item.song.id === songId);
   };
 
-  const addToWishlist = (songId: string) => {
+  const addToWishlist = async (songId: string) => {
     if (isOnWishlist(songId)) return;
-    addUserActivity.mutate({
+    await addUserActivity.mutateAsync({
       region,
       songId,
       type: "wishlist",
@@ -25,8 +25,8 @@ const useWishlist = () => {
     refetchData();
   };
 
-  const removeFromWishlist = (songId: string) => {
-    removeUserActivity.mutate({ songId, type: "wishlist" });
+  const removeFromWishlist = async (songId: string) => {
+    await removeUserActivity.mutateAsync({ songId, type: "wishlist" });
     refetchData();
   };
 

@@ -1,6 +1,8 @@
 ---- CORE
 
 Play spotify thing
+- Animations
+- Put playback state in Url -> another title stop
 
 Fix queries not loading on refresh
 Save vendor data

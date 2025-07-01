@@ -100,7 +100,7 @@ const useProfileFunctions = () => {
           signOut({ redirect: false });
           router.push("/");
           playJingle("reverse");
-          toast.success("Account successfully deleted! All the best 👋", { id: loadingToast });
+          toast.success("Account successfully deleted! Goodbye 👋", { id: loadingToast });
         },
         onError: (opts) => handleServerError(opts, "delete your account", loadingToast),
       },

@@ -19,12 +19,12 @@ const VendorResultsRow = ({ track, vendor, region, store }: ISearchResultsRowPro
   const addUserActivity = api.userActivities.addUserActivity.useMutation();
 
   // Visit Vendor
-  const visitVendor = () => {
+  const visitVendor = async () => {
     // Open site
     window.open(track.trackData.url, "_blank");
 
     // Add activity
-    addUserActivity.mutate({ region, songId: trackData.id, type: "store_visit" });
+    addUserActivity.mutateAsync({ region, songId: trackData.id, type: "store_visit" });
   };
 
   return (

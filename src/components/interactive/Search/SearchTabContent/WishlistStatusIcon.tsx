@@ -34,20 +34,20 @@ const WishlistStatusIcon = ({ songId }: WishlistStatusIconProps) => {
       >
         <>
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={heartBreakControls}
-            transition={{ duration: 0.3 }}
-            className="absolute"
-          >
-            <HeartOff className="h-7 w-7 text-foreground" />
-          </motion.div>
-          <motion.div
             initial={{ opacity: 1 }}
             animate={heartFullControls}
             transition={{ duration: 0.3 }}
             className="absolute"
           >
             <HeartIcon className="h-7 w-7 fill-foreground text-foreground" />
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={heartBreakControls}
+            transition={{ duration: 0.3 }}
+            className="absolute"
+          >
+            <HeartOff className="h-7 w-7 text-foreground" />
           </motion.div>
         </>
       </Button>

@@ -59,7 +59,7 @@ export default function SearchResultsTrack({ songData, isLoading }: ISearchResul
             <div className="mt-3 flex gap-3 ">
               {loggedIn ? (
                 <>
-                  <SpotifyPlayIcon />
+                  <SpotifyPlayIcon songId={songData.id} />
                   <WishlistStatusIcon songId={songData.id} />
                 </>
               ) : (
