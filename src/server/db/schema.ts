@@ -99,7 +99,7 @@ export const verificationTokens = pgTable(
 );
 
 // Needs to be explicitly exported to be picked up by 'db:push' script
-export const userActivityTypes = ["search", "purchase", "wishlist"] as const;
+export const userActivityTypes = ["search", "store_visit", "wishlist"] as const;
 export type UserActivityType = (typeof userActivityTypes)[number];
 export const activityTypeEnum = pgEnum("activity_type", userActivityTypes);
 

@@ -25,6 +25,7 @@ const fetchItunesData = async (
 
   // Go through results and find the best match for this file type (only one on iTunes)
   const itunesTrackOptions: VendorTrackData[] = response.data.results.map((song) => ({
+    id,
     duration: song.trackTimeMillis,
     currency: transformCurrencyStringToIcon(song.currency),
     price: song.trackPrice || 0,

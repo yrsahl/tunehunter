@@ -2,7 +2,9 @@ import { formatDate } from "@/helpers/format-date";
 import { formatDuration } from "@/helpers/format-duration";
 import { AppRouter } from "@/server/api/root";
 import { inferProcedureOutput } from "@trpc/server";
-import { Album, Calendar, Clock, Heart, Music, Play } from "lucide-react";
+import { motion } from "framer-motion";
+import { Album, Calendar, Clock, Music, Play } from "lucide-react";
+import WishlistStatusIcon from "../SearchTabContent/WishlistStatusIcon";
 import SearchResultsTrackSkeleton from "./SearchResultsTrackSkeleton";
 
 interface ISearchResultsTrackProps {
@@ -44,19 +46,21 @@ export default function SearchResultsTrack({ songData, isLoading }: ISearchResul
           {albumArtUrl && <img src={albumArtUrl} alt="Album cover art" className="h-48 w-48" />}
         </figure>
         <div className="flex flex-grow flex-col justify-evenly">
-          <div className="flex flex-col gap-2 overflow-scroll p-0">
+          <div className="flex flex-col gap-2 p-0">
             {/* Artist & Title */}
             <h2 className="text-lg font-bold tracking-normal drop-shadow-sm">{title}</h2>
             {artists.length > 0 && <p className="text-md">By {artistNames}</p>}
 
             {/* Play & Wishlist */}
             <div className="mt-3 flex gap-2">
-              <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-primary">
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 1 }}
+                className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-primary"
+              >
                 <Play className="h-6 w-6 text-foreground" />
-              </div>
-              <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full">
-                <Heart className="h-6 w-6 text-foreground" />
-              </div>
+              </motion.div>
+              <WishlistStatusIcon songId={songData.id} />
             </div>
           </div>
         </div>

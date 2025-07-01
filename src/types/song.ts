@@ -11,7 +11,7 @@ export type TrendingTrack = {
 } & Track;
 
 export type UserActivityTrack = {
-  type: "search" | "purchase" | "wishlist";
+  type: "search" | "store_visit" | "wishlist";
   createdAt: Date;
 } & Track;
 
@@ -24,5 +24,5 @@ export type TrendingTracks = {
 export type UserHistory = {
   userId: string;
   searchHistory: UserActivityTrack[];
-  purchaseHistory: UserActivityTrack[];
+  storeVisitHistory: UserActivityTrack[];
 };

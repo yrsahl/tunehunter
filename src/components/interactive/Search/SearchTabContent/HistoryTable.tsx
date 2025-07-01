@@ -7,10 +7,9 @@ import { useState } from "react";
 import NoDataMessage from "./NoDataMessage";
 import SkeletonTable from "./SkeletonTable";
 import TableBody from "./TableBody";
-import TableHeader from "./TableHeader";
 import TableRow from "./TableRow";
 
-const historySubTabs = ["searches", "purchases"] as const;
+const historySubTabs = ["searches", "visits"] as const;
 export type HistorySubTab = (typeof historySubTabs)[number];
 
 const HistoryTable = () => {
@@ -19,25 +18,27 @@ const HistoryTable = () => {
   } = useSearchTabDataContext();
   const [activeSubTab, setActiveSubTab] = useState<HistorySubTab>(historySubTabs[0]);
 
-  const purchaseHistoryExists = data?.purchaseHistory && data?.purchaseHistory.length > 0;
+  const storeVisitHistoryExists = data?.storeVisitHistory && data?.storeVisitHistory.length > 0;
   const searchHistoryExists = data?.searchHistory && data?.searchHistory.length > 0;
+
+  console.log("storevisithistory", data?.storeVisitHistory);
 
   return (
     <>
-      <TableHeader<HistorySubTab>
+      {/* <TableHeader<HistorySubTab>
         activeSubTab={activeSubTab}
         subTabs={historySubTabs}
         setActiveSubTab={setActiveSubTab}
         className="w-28"
-      />
-      {isLoading && <SkeletonTable hasHeader={true} tab="history" />}
+      /> */}
+      {isLoading && <SkeletonTable hasHeader={false} tab="history" />}
       {!isLoading && (
         <AnimatePresence mode="wait">
           <motion.div key={activeSubTab} {...fadeInAndOut(0.2)} className="h-full w-full">
             {activeSubTab === "searches" && (
               <>
                 {searchHistoryExists ? (
-                  <TableBody hasHeader={true}>
+                  <TableBody hasHeader={false}>
                     <>
                       {data?.searchHistory.map((searchedTrack, index) => (
                         <TableRow
@@ -58,27 +59,31 @@ const HistoryTable = () => {
                 )}
               </>
             )}
-            {activeSubTab === "purchases" && (
+            {activeSubTab === "visits" && (
               <>
-                {purchaseHistoryExists ? (
+                {storeVisitHistoryExists ? (
                   <TableBody hasHeader={true}>
                     <>
-                      {data?.purchaseHistory.map((purchasedTrack, index) => (
+                      {data?.storeVisitHistory.map((visitedStoreTrack, index) => (
                         <TableRow
-                          key={`${index}-${purchasedTrack.song.id}`}
-                          track={purchasedTrack}
+                          key={`${index}-${visitedStoreTrack.song.id}`}
+                          track={visitedStoreTrack}
                           showDuration={true}
+                          showSearch={false}
                           extraElement={
-                            <InfoWithToolTip
-                              tooltip={`Purchased on ${formatDate(purchasedTrack.createdAt)}`}
-                            />
+                            <>
+                              <InfoWithToolTip
+                                tooltip={`Visited on ${formatDate(visitedStoreTrack.createdAt)}`}
+                              />
+                              {/* <VendorLogo region={visitedStoreTrack.} store={"apple"} /> */}
+                            </>
                           }
                         />
                       ))}
                     </>
                   </TableBody>
                 ) : (
-                  <NoDataMessage message="Your recent purchases will appear here!" />
+                  <NoDataMessage message="Your recent visits will appear here!" />
                 )}
               </>
             )}

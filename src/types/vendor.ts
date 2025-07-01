@@ -21,6 +21,7 @@ export type VendorFileFormat = {
 };
 
 export type VendorTrackData = {
+  id: string;
   duration: number;
   currency: string;
   price: number;

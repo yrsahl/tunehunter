@@ -1,8 +1,9 @@
 import IconButton from "@/components/IconButton";
-import { countryNamesEnglish } from "@/helpers/region";
 import useDeviceSize from "@/hooks/useDeviceSize";
 import { Vendor, VendorTrack } from "@/types/vendor";
+import { api } from "@/utils/api";
 import { motion } from "framer-motion";
+import VendorLogo from "./VendorLogo";
 
 interface ISearchResultsRowProps {
   track: VendorTrack;
@@ -15,30 +16,22 @@ const VendorResultsRow = ({ track, vendor, region, store }: ISearchResultsRowPro
   const { artistsShare } = vendor; // TODO: Get region and store from here later when all stores are implemented
   const { fileData, trackData } = track;
   const { isSmallDevice } = useDeviceSize();
+  const addUserActivity = api.userActivities.addUserActivity.useMutation();
+
+  // Visit Vendor
+  const visitVendor = () => {
+    // Open site
+    window.open(track.trackData.url, "_blank");
+
+    // Add activity
+    addUserActivity.mutate({ region, songId: trackData.id, type: "store_visit" });
+  };
 
   return (
-    <motion.tr
-      whileHover={{ scale: 1.03 }}
-      className="cursor-pointer"
-      onClick={() => {
-        window.open(track.trackData.url, "_blank");
-      }}
-    >
+    <motion.tr whileHover={{ scale: 1.03 }} className="cursor-pointer" onClick={visitVendor}>
       {/* Store */}
       <td>
-        <div className="flex items-center space-x-5">
-          <div className="avatar ">
-            <div className="mask mask-squircle h-12 w-12">
-              <img src={`logos/${store.toLowerCase()}.svg`} alt="Avatar Tailwind CSS Component" />
-            </div>
-          </div>
-          <div className="hidden">
-            <div className="font-bold">{store}</div>
-            <div className="text-sm font-normal opacity-50">
-              {countryNamesEnglish[region.toUpperCase()]}
-            </div>
-          </div>
-        </div>
+        <VendorLogo store={store} region={region} />
       </td>
 
       {/* Quality */}

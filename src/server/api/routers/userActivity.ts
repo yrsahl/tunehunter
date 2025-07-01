@@ -16,12 +16,12 @@ export const userActivitiesRouter = createTRPCRouter({
     });
 
     const searchActivities = activities.filter((activity) => activity.type === "search");
-    const purchaseActivities = activities.filter((activity) => activity.type === "purchase");
+    const storeVisitActivities = activities.filter((activity) => activity.type === "store_visit");
     const wishlistActivities = activities.filter((activity) => activity.type === "wishlist");
 
     return {
       search: searchActivities,
-      purchase: purchaseActivities,
+      storeVisit: storeVisitActivities,
       wishlist: wishlistActivities,
     };
   }),
@@ -34,12 +34,12 @@ export const userActivitiesRouter = createTRPCRouter({
   getHistory: protectedProcedure.query<UserHistory>(async ({ ctx }) => {
     const userId = ctx.session.user.id;
     const searchHistory = await getUserActivityByType(userId, "search");
-    const purchaseHistory = await getUserActivityByType(userId, "purchase");
+    const storeVisitHistory = await getUserActivityByType(userId, "store_visit");
 
     return {
       userId,
       searchHistory,
-      purchaseHistory,
+      storeVisitHistory,
     };
   }),
 
