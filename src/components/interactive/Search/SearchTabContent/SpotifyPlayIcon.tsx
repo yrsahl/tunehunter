@@ -1,8 +1,6 @@
-import { RedirectIndicator } from "@/components/Indicators";
-import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
-import { pausePlayback, playTrack } from "@/helpers/spotify/play-spotify-song";
+import { LoadingIndicatorTwo } from "@/components/Indicators";
+import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
 import useSpotifyPlayer from "@/hooks/useSpotifyPlayer";
-import useSpotifyTokens from "@/hooks/useSpotifyTokens";
 import { motion } from "framer-motion";
 import { Pause, Play } from "lucide-react";
 import { useState } from "react";
@@ -12,46 +10,40 @@ interface SpotifyPlayIconProps {
 }
 
 const SpotifyPlayIcon = ({ songId }: SpotifyPlayIconProps) => {
-  const { userAccessToken } = useSpotifyTokens();
-  const { deviceId } = useSpotifyPlayer(userAccessToken);
+  const { spotifyConnected } = useSpotifyUserDataContext();
+  const { startPlayback, pausePlayback, resumePlayback } = useSpotifyPlayer();
   const [playingSongId, setPlayingSongId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const {
-    spotify: { refetchData: refetchSpotifyData },
-  } = useSearchTabDataContext();
 
   const handleClick = async () => {
-    if (!deviceId || !userAccessToken) return;
     setIsLoading(true);
 
     // Pause if playing
     if (isPlaying) {
-      pausePlayback(deviceId, userAccessToken);
+      pausePlayback();
       setIsLoading(false);
       setIsPlaying(false);
-      refetchSpotifyData();
       return;
     }
 
     // Resume
     if (playingSongId === songId) {
-      await playTrack(deviceId, userAccessToken);
+      await resumePlayback();
     }
     // Play from the start
     else {
-      await playTrack(deviceId, userAccessToken, songId);
+      await startPlayback(songId);
     }
     setPlayingSongId(songId);
     setIsPlaying(true);
     setIsLoading(false);
-    refetchSpotifyData();
   };
 
   if (isLoading) {
     return (
       <motion.div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
-        <RedirectIndicator size={12} />
+        <LoadingIndicatorTwo size={28} />
       </motion.div>
     );
   }
@@ -61,7 +53,7 @@ const SpotifyPlayIcon = ({ songId }: SpotifyPlayIconProps) => {
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 1 }}
       className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-primary"
-      disabled={!deviceId || !songId}
+      disabled={!spotifyConnected || !songId}
       onClick={handleClick}
     >
       {!isPlaying && (

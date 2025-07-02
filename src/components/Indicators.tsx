@@ -1,4 +1,4 @@
-import { MoonLoader, ScaleLoader } from "react-spinners";
+import { MoonLoader, PuffLoader, ScaleLoader } from "react-spinners";
 
 export const MusicPlayingIndicator = ({ size }: { size: number }) => {
   return (
@@ -13,8 +13,24 @@ export const MusicPlayingIndicator = ({ size }: { size: number }) => {
   );
 };
 
-export const LoadingIndicator = ({ size }: { size: number }) => {
-  return <MoonLoader color={"hsl(var(--primary))"} size={size} className="m-auto" />;
+export const LoadingIndicator = ({
+  size,
+  color = "foreground",
+}: {
+  size: number;
+  color?: string;
+}) => {
+  return <MoonLoader color={`hsl(var(--${color}))`} size={size} className="m-auto" />;
+};
+
+export const LoadingIndicatorTwo = ({
+  size,
+  color = "foreground",
+}: {
+  size: number;
+  color?: string;
+}) => {
+  return <PuffLoader color={`hsl(var(--${color}))`} size={size} className="m-auto" />;
 };
 
 export const RedirectIndicator = ({ size }: { size: number }) => {

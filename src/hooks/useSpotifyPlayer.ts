@@ -1,13 +1,13 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
+import { useEventEmitter } from "./useEventEmitter";
+import useSpotifyTokens from "./useSpotifyTokens";
 
-type UseSpotifyPlayerResult = {
-  player: Spotify.Player | null;
-  deviceId: string | null;
-};
-
-export default function useSpotifyPlayer(token?: string | null): UseSpotifyPlayerResult {
+export default function useSpotifyPlayer() {
+  const { userAccessToken: token } = useSpotifyTokens();
   const [player, setPlayer] = useState<Spotify.Player | null>(null);
   const [deviceId, setDeviceId] = useState<string | null>(null);
+  const { publishEvent } = useEventEmitter("spotify-player-state-changed");
 
   useEffect(() => {
     if (!token) return;
@@ -57,5 +57,75 @@ export default function useSpotifyPlayer(token?: string | null): UseSpotifyPlaye
     };
   }, [token]);
 
-  return { player, deviceId };
+  async function startPlayback(trackId: string) {
+    try {
+      await axios.put(
+        `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
+        {
+          uris: [`spotify:track:${trackId}`],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      publishEvent({ data: "playback-started" });
+      return {
+        success: "Playback started.",
+      };
+    } catch (error) {
+      return {
+        error: "Failed to start playback. Error: " + error,
+      };
+    }
+  }
+
+  async function resumePlayback() {
+    try {
+      await axios.put(
+        `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      publishEvent({ data: "playback-resumed" });
+      return {
+        success: "Playback resumed.",
+      };
+    } catch (error) {
+      return {
+        error: "Failed to resume playback. Error: " + error,
+      };
+    }
+  }
+
+  async function pausePlayback() {
+    try {
+      await axios.put(
+        `https://api.spotify.com/v1/me/player/pause?device_id=${deviceId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+          validateStatus: () => true,
+        },
+      );
+      publishEvent({ data: "playback-paused" });
+      return {
+        success: "Playback paused.",
+      };
+    } catch (error) {
+      return {
+        error: "Failed to pause playback. Error: " + error,
+      };
+    }
+  }
+
+  return { startPlayback, pausePlayback, resumePlayback };
 }
