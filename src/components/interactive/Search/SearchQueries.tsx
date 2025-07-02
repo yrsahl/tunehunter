@@ -22,51 +22,52 @@ const SearchQueries = ({ searchQueriesRef }: SearchTableProps) => {
       {...fadeInAndOut()}
       className="absolute z-50 h-60 w-full overflow-scroll rounded-b-lg border border-t-[1px] border-primary bg-background/30 text-sm backdrop-blur-md md:text-base"
     >
-      <div className="px-3 py-3 sm:px-5 md:px-7">
-        {/* <p className="text-center text-foreground/50">
+      {/* <p className="text-center text-foreground/50">
           {queryData.tracks?.total} results found for 'love'.
         </p> */}
-        <table ref={searchQueriesRef}>
-          <motion.tbody {...fadeInAndOut(0.5)} key={queryData.tracks?.href}>
-            {queryData.tracks?.items.map((track) => {
-              const primaryArtist = track.artists[0]?.name || "";
+      <table ref={searchQueriesRef}>
+        <motion.tbody {...fadeInAndOut(0.5)} key={queryData.tracks?.href}>
+          {queryData.tracks?.items.map((track) => {
+            const primaryArtist = track.artists[0]?.name || "";
 
-              return (
-                <motion.tr
-                  whileHover={{ scale: 1.03 }}
-                  className="cursor-pointer"
-                  onClick={() => submitSearch(track.id, region, track.name, primaryArtist)}
-                  key={track.id}
-                >
-                  <td className="py-2 pr-6 md:py-3 md:pr-8">
-                    <div className="flex items-center gap-4">
-                      <div className="avatar">
-                        <div className="mask mask-squircle h-11 w-11">
-                          <img src={track.album.images[0]?.url} />
-                        </div>
+            return (
+              <motion.tr
+                whileHover={{
+                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                  transition: { duration: 0.1 },
+                }}
+                className="cursor-pointer"
+                onClick={() => submitSearch(track.id, region, track.name, primaryArtist)}
+                key={track.id}
+              >
+                <td className="py-2 pl-3 pr-6 md:py-3 md:pl-5 md:pr-8">
+                  <div className="flex items-center gap-4">
+                    <div className="avatar">
+                      <div className="mask mask-squircle h-11 w-11">
+                        <img src={track.album.images[0]?.url} />
                       </div>
                     </div>
-                  </td>
-                  <td className="overflow-hidden pr-2 align-middle md:pr-4">
-                    <p>{primaryArtist}</p>
-                    {track.artists[1] && (
-                      <p className="overflow-ellipsis whitespace-nowrap text-muted-foreground">
-                        {track.artists[1]?.name}
-                      </p>
-                    )}
-                  </td>
-                  <td className="pr-4 align-middle">
-                    <span className="text-sm md:text-base">{track.name}</span>
-                  </td>
-                  <td className="text-right align-middle text-xs opacity-50 md:text-sm">
-                    {new Date(track.duration_ms).toISOString().substr(14, 5)}
-                  </td>
-                </motion.tr>
-              );
-            })}
-          </motion.tbody>
-        </table>
-      </div>
+                  </div>
+                </td>
+                <td className="overflow-hidden pr-2 align-middle md:pr-4">
+                  <p>{primaryArtist}</p>
+                  {track.artists[1] && (
+                    <p className="overflow-ellipsis whitespace-nowrap text-muted-foreground">
+                      {track.artists[1]?.name}
+                    </p>
+                  )}
+                </td>
+                <td className="pr-4 align-middle">
+                  <span className="text-sm md:text-base">{track.name}</span>
+                </td>
+                <td className="pr-3 text-right align-middle text-xs opacity-50 md:pr-5 md:text-sm">
+                  {new Date(track.duration_ms).toISOString().substr(14, 5)}
+                </td>
+              </motion.tr>
+            );
+          })}
+        </motion.tbody>
+      </table>
     </motion.div>
   );
 };
