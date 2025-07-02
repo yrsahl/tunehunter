@@ -21,8 +21,6 @@ const HistoryTable = () => {
   const storeVisitHistoryExists = data?.storeVisitHistory && data?.storeVisitHistory.length > 0;
   const searchHistoryExists = data?.searchHistory && data?.searchHistory.length > 0;
 
-  console.log("storevisithistory", data?.storeVisitHistory);
-
   return (
     <>
       {/* <TableHeader<HistorySubTab>

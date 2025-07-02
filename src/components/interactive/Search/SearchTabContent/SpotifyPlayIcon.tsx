@@ -1,21 +1,28 @@
 import { LoadingIndicatorTwo } from "@/components/Indicators";
 import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
+import { useEventEmitter } from "@/hooks/useEventEmitter";
 import useSpotifyPlayer from "@/hooks/useSpotifyPlayer";
+import { SpotifyPlaybackStateShort } from "@/types/spotify-playback";
 import { motion } from "framer-motion";
 import { Pause, Play } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface SpotifyPlayIconProps {
   songId: string;
+  duration: number;
 }
 
-const SpotifyPlayIcon = ({ songId }: SpotifyPlayIconProps) => {
+const SpotifyPlayIcon = ({ songId, duration }: SpotifyPlayIconProps) => {
   const { spotifyConnected } = useSpotifyUserDataContext();
   const { startPlayback, pausePlayback, resumePlayback } = useSpotifyPlayer();
   const [playingSongId, setPlayingSongId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const { eventData } = useEventEmitter<{ data: SpotifyPlaybackStateShort }>(
+    "spotify-player-state-changed",
+  );
 
+  // Handle Button click
   const handleClick = async () => {
     setIsLoading(true);
 
@@ -39,6 +46,30 @@ const SpotifyPlayIcon = ({ songId }: SpotifyPlayIconProps) => {
     setIsPlaying(true);
     setIsLoading(false);
   };
+
+  // Update UI with Spotify Player State
+  useEffect(() => {
+    if (!eventData) return;
+    const { data } = eventData;
+
+    setIsLoading(data.isLoading);
+    setIsPlaying(data.isPlaying);
+
+    // When the song ends, stop playback
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    if (data.isPlaying) {
+      const timeLeft = data.duration - data.position;
+      timeoutId = setTimeout(() => {
+        setIsLoading(false);
+        setIsPlaying(false);
+      }, timeLeft);
+    }
+
+    // Cleanup
+    return () => {
+      if (timeoutId !== null) clearTimeout(timeoutId);
+    };
+  }, [eventData]);
 
   if (isLoading) {
     return (

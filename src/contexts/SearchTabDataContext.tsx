@@ -2,6 +2,7 @@ import { SearchTab } from "@/components/interactive/Search/SearchTabs/SearchTabB
 import { useEventEmitter } from "@/hooks/useEventEmitter";
 import useSpotifySongData, { SpotifyTabData } from "@/hooks/useSpotifySongData";
 import { AppRouter } from "@/server/api/root";
+import { SpotifyPlaybackStateShort } from "@/types/spotify-playback";
 import { api } from "@/utils/api";
 import { inferProcedureOutput } from "@trpc/server";
 import { useSession } from "next-auth/react";
@@ -67,7 +68,9 @@ export const SearchTabDataProvider = ({ children }: { children: ReactNode }) => 
   const loggedIn = status === "authenticated";
   const utils = api.useUtils();
   const { spotifyConnected } = useSpotifyUserDataContext();
-  const { eventData } = useEventEmitter<{ data: string }>("spotify-player-state-changed");
+  const { eventData } = useEventEmitter<{ data: SpotifyPlaybackStateShort }>(
+    "spotify-player-state-changed",
+  );
 
   // Fetch data
   const { data: trendingData, isLoading: isTrendingDataLoading } =
@@ -126,11 +129,10 @@ export const SearchTabDataProvider = ({ children }: { children: ReactNode }) => 
   // On spotify player state change, refresh spotify data
   useEffect(() => {
     if (!eventData || !spotifyConnected) return;
+    const { data } = eventData;
 
-    console.log("Spotify player state changed:", eventData.data);
-
-    // If playback started, refresh the spotify data
-    if (eventData.data === "playback-started") refreshSpotifyData();
+    // Refresh spotify data on new track
+    if (data.position === 0) refreshSpotifyData();
   }, [eventData]);
 
   // On login or spotify connect, get all the data

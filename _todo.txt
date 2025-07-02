@@ -2,8 +2,6 @@
 
 Play spotify thing
 - Put playback state in Url -> another title stop
-- Stop after duration of song
-- Fix multiple registrations
 
 Shorten error messages
 
