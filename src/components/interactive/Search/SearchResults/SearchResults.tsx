@@ -9,7 +9,6 @@ interface SearchResultsProps {}
 
 const SearchResults = ({}: SearchResultsProps) => {
   const { searchState } = useSearchStore();
-
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   // Scroll into view

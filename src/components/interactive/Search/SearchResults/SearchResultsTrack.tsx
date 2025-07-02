@@ -60,7 +60,7 @@ export default function SearchResultsTrack({ songData, isLoading }: ISearchResul
             {/* Play & Wishlist */}
             <div className="mt-3 flex items-center gap-3">
               {spotifyConnected ? (
-                <SpotifyPlayIcon songId={songData.id} duration={songData.duration} />
+                <SpotifyPlayIcon songId={songData.id} />
               ) : (
                 <div className="flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-full bg-slate-400">
                   <Play className="h-6 w-6 text-foreground" />

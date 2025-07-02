@@ -133,6 +133,7 @@ const useSearch = () => {
         region,
         title,
         artist,
+        isPlaying: false,
       },
     };
     await router.push(trackSearchHref);

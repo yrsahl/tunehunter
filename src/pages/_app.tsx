@@ -13,6 +13,7 @@ import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryDataProvider } from "@/contexts/QueryDataContext";
 import { SearchTabDataProvider } from "@/contexts/SearchTabDataContext";
+import { SpotifyPlayerProvider } from "@/contexts/SpotifyPlayerContext";
 import { SpotifyUserDataProvider } from "@/contexts/SpotifyUserDataContext";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -41,17 +42,19 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <Analytics />
       <SessionProvider session={session}>
         <SpotifyUserDataProvider>
-          <TooltipProvider delayDuration={150}>
-            <ThemeProvider attribute="class" defaultTheme="auto" enableSystem={false}>
-              <Layout>
-                <QueryDataProvider>
-                  <SearchTabDataProvider>
-                    <Component {...pageProps} />
-                  </SearchTabDataProvider>
-                </QueryDataProvider>
-              </Layout>
-            </ThemeProvider>
-          </TooltipProvider>
+          <SpotifyPlayerProvider>
+            <TooltipProvider delayDuration={150}>
+              <ThemeProvider attribute="class" defaultTheme="auto" enableSystem={false}>
+                <Layout>
+                  <QueryDataProvider>
+                    <SearchTabDataProvider>
+                      <Component {...pageProps} />
+                    </SearchTabDataProvider>
+                  </QueryDataProvider>
+                </Layout>
+              </ThemeProvider>
+            </TooltipProvider>
+          </SpotifyPlayerProvider>
         </SpotifyUserDataProvider>
       </SessionProvider>
     </>

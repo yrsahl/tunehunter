@@ -10,7 +10,7 @@ import useSpotifyTokens from "./useSpotifyTokens";
 export default function useSpotifyPlayer() {
   const { userAccessToken: token } = useSpotifyTokens();
   const playerRef = useRef<Spotify.Player | null>(null);
-  const [_, setPlayer] = useState<Spotify.Player | null>(null);
+  const [_player, setPlayer] = useState<Spotify.Player | null>(null);
   const [deviceId, setDeviceId] = useState<string | null>(null);
   const { publishEvent } = useEventEmitter<{ data: SpotifyPlaybackStateShort }>(
     "spotify-player-state-changed",
@@ -39,7 +39,14 @@ export default function useSpotifyPlayer() {
       playerRef.current = newPlayer;
 
       // Listener functions
-      const onReady = ({ device_id }: { device_id: string }) => setDeviceId(device_id);
+      const onReady = ({ device_id }: { device_id: string }) => {
+        console.log("Spotify Player ready:", device_id);
+        setDeviceId(device_id);
+      };
+      const onNotReady = ({ device_id }: { device_id: string }) => {
+        console.warn("Spotify Player not ready:", device_id);
+        setDeviceId(null);
+      };
       const onInitError = ({ message }: { message: string }) => console.error(message);
       const onAuthError = ({ message }: { message: string }) => console.error(message);
       const onAccountError = ({ message }: { message: string }) => console.error(message);
@@ -58,6 +65,7 @@ export default function useSpotifyPlayer() {
 
       // Add listener functions
       newPlayer.addListener("ready", onReady);
+      newPlayer.addListener("not_ready", onNotReady);
       newPlayer.addListener("initialization_error", onInitError);
       newPlayer.addListener("authentication_error", onAuthError);
       newPlayer.addListener("account_error", onAccountError);
@@ -75,6 +83,7 @@ export default function useSpotifyPlayer() {
       // Cleanup listener function
       cleanupListeners = () => {
         newPlayer.removeListener("ready", onReady);
+        newPlayer.removeListener("not_ready", onNotReady);
         newPlayer.removeListener("initialization_error", onInitError);
         newPlayer.removeListener("authentication_error", onAuthError);
         newPlayer.removeListener("account_error", onAccountError);
@@ -98,8 +107,6 @@ export default function useSpotifyPlayer() {
       delete (window as any).onSpotifyWebPlaybackSDKReady;
     };
   }, [token]);
-
-  // On certain event changes, check player state and calculate time left
 
   async function startPlayback(trackId: string) {
     try {
@@ -193,35 +200,3 @@ export default function useSpotifyPlayer() {
 
   return { startPlayback, pausePlayback, resumePlayback, getPlaybackState };
 }
-
-// useEffect(() => {
-//     // If no event data, return
-//     // if (!eventData) return;
-//     // if (eventData.data !== "playback-started" && eventData.data !== "playback-resumed") return;
-
-//     let timeoutId: ReturnType<typeof setTimeout> | null = null;
-//     let unsub: () => void = () => {};
-
-//     console.log("hi");
-
-//     // Add new listener to player_state_changed event to calculate timeLeft
-//     if (player) {
-//       const onStateChanged = (state: Spotify.PlaybackState | null) => {
-//         if (!state) return;
-//         const timeLeft = state.duration - state.position;
-//         timeoutId = setTimeout(() => {
-//           publishEvent({ data: "playback-stopped" });
-//         }, timeLeft);
-//         unsub(); // Unsubscribe after first valid state
-//       };
-//       console.log("Adding player state changed listener");
-//       player.addListener("player_state_changed", onStateChanged);
-//       unsub = () => player.removeListener("player_state_changed", onStateChanged);
-//     }
-
-//     return () => {
-//       console.log("Cleaning up Spotify player state listener");
-//       if (timeoutId !== null) clearTimeout(timeoutId);
-//       if (unsub) unsub();
-//     };
-//   }, [player]);

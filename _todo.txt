@@ -1,7 +1,5 @@
 ---- CORE
 
-Play spotify thing
-- Put playback state in Url -> another title stop
 
 Shorten error messages
 

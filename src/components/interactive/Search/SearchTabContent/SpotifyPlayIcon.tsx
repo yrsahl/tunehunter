@@ -1,7 +1,8 @@
 import { LoadingIndicatorTwo } from "@/components/Indicators";
+import { useSpotifyPlayerContext } from "@/contexts/SpotifyPlayerContext";
 import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
 import { useEventEmitter } from "@/hooks/useEventEmitter";
-import useSpotifyPlayer from "@/hooks/useSpotifyPlayer";
+import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { SpotifyPlaybackStateShort } from "@/types/spotify-playback";
 import { motion } from "framer-motion";
 import { Pause, Play } from "lucide-react";
@@ -9,16 +10,16 @@ import { useEffect, useState } from "react";
 
 interface SpotifyPlayIconProps {
   songId: string;
-  duration: number;
 }
 
-const SpotifyPlayIcon = ({ songId, duration }: SpotifyPlayIconProps) => {
+const SpotifyPlayIcon = ({ songId }: SpotifyPlayIconProps) => {
   const { spotifyConnected } = useSpotifyUserDataContext();
-  const { startPlayback, pausePlayback, resumePlayback } = useSpotifyPlayer();
+  const { startPlayback, pausePlayback, resumePlayback } = useSpotifyPlayerContext();
   const [playingSongId, setPlayingSongId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const { eventData } = useEventEmitter<{ data: SpotifyPlaybackStateShort }>(
+  const router = useRouterWithHelpers();
+  const { eventData: spotifyPlaybackState } = useEventEmitter<{ data: SpotifyPlaybackStateShort }>(
     "spotify-player-state-changed",
   );
 
@@ -47,13 +48,29 @@ const SpotifyPlayIcon = ({ songId, duration }: SpotifyPlayIconProps) => {
     setIsLoading(false);
   };
 
+  // Synchronize with URL params
+  useEffect(() => {
+    if (!router.isReady) return;
+    const isPlaying = router.getParams("isPlaying");
+
+    // Page refresh -> isPlaying was set -> Resume
+    if (!!isPlaying && isPlaying === "true") {
+      if (!isPlaying) resumePlayback();
+      return;
+    }
+
+    // New page -> isPlaying was not set -> Nothing/Stop
+    pausePlayback();
+  }, [router.isReady, router.query]);
+
   // Update UI with Spotify Player State
   useEffect(() => {
-    if (!eventData) return;
-    const { data } = eventData;
+    if (!spotifyPlaybackState) return;
+    const { data } = spotifyPlaybackState;
 
     setIsLoading(data.isLoading);
     setIsPlaying(data.isPlaying);
+    if (data.isPlaying) router.setParams({ isPlaying: "true" });
 
     // When the song ends, stop playback
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -69,7 +86,7 @@ const SpotifyPlayIcon = ({ songId, duration }: SpotifyPlayIconProps) => {
     return () => {
       if (timeoutId !== null) clearTimeout(timeoutId);
     };
-  }, [eventData]);
+  }, [spotifyPlaybackState]);
 
   if (isLoading) {
     return (
