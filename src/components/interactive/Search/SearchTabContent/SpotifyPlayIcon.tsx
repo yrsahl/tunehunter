@@ -1,4 +1,5 @@
 import { RedirectIndicator } from "@/components/Indicators";
+import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { pausePlayback, playTrack } from "@/helpers/spotify/play-spotify-song";
 import useSpotifyPlayer from "@/hooks/useSpotifyPlayer";
 import useSpotifyTokens from "@/hooks/useSpotifyTokens";
@@ -16,6 +17,9 @@ const SpotifyPlayIcon = ({ songId }: SpotifyPlayIconProps) => {
   const [playingSongId, setPlayingSongId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const {
+    spotify: { refetchData: refetchSpotifyData },
+  } = useSearchTabDataContext();
 
   const handleClick = async () => {
     if (!deviceId || !userAccessToken) return;
@@ -26,6 +30,7 @@ const SpotifyPlayIcon = ({ songId }: SpotifyPlayIconProps) => {
       pausePlayback(deviceId, userAccessToken);
       setIsLoading(false);
       setIsPlaying(false);
+      refetchSpotifyData();
       return;
     }
 
@@ -40,6 +45,7 @@ const SpotifyPlayIcon = ({ songId }: SpotifyPlayIconProps) => {
     setPlayingSongId(songId);
     setIsPlaying(true);
     setIsLoading(false);
+    refetchSpotifyData();
   };
 
   if (isLoading) {

@@ -69,12 +69,12 @@ const useRegionSettings = () => {
 
       if (countryCode) {
         changeRegion(countryCode);
-        toast.success(`Set your region to ${createRegionName(countryCode.toUpperCase())}!`);
+        toast.success(`Set your region to ${createRegionName(countryCode.toUpperCase())}.`);
       } else {
-        toast.error(
-          "We could not determine your location. Please choose it manually or try again later!",
-          { dismissible: true, duration: Infinity },
-        );
+        toast.error("Could not determine your location. Please choose it manually.", {
+          dismissible: true,
+          duration: Infinity,
+        });
       }
     });
   };

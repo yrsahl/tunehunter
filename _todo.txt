@@ -1,8 +1,12 @@
 ---- CORE
 
 Play spotify thing
+- Update spotify data play click (queue, recently player, etc.)
 - Put playback state in Url -> another title stop
 - Stop after duration of song
+- Fix multiple registrations
+
+Shorten error messages
 
 Fix queries not loading on refresh or change search icon showing search in refresh
 
