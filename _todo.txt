@@ -1,8 +1,5 @@
 ---- CORE
 
-
-Shorten error messages
-
 Fix queries not loading on refresh or change search icon showing search in refresh
 
 Save vendor data

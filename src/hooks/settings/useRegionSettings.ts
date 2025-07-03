@@ -71,7 +71,7 @@ const useRegionSettings = () => {
         changeRegion(countryCode);
         toast.success(`Set your region to ${createRegionName(countryCode.toUpperCase())}.`);
       } else {
-        toast.error("Could not determine your location. Please choose it manually.", {
+        toast.error("Could not determine your location.", {
           dismissible: true,
           duration: Infinity,
         });

@@ -78,9 +78,9 @@ const SignInForm: FC<IProps> = ({ email, setEmail, setMenuState }) => {
       loading: "Trying to send you an e-mail...",
       success: () => {
         setMenuState(MenuState.MagicLinkSent);
-        return "An e-mail with a login link has been sent to you!";
+        return "An e-mail with a login link has been sent.";
       },
-      error: "We could not send you an e-mail. Please check the mail address try again later.",
+      error: "Failed to send the email. Check the email address or try again later.",
     });
   };
 

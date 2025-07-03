@@ -9,7 +9,7 @@ const AuthErrorLoginMap: Record<NextAuthError, string> = {
   EmailCreateAccount: "",
   Callback: "",
   OAuthAccountNotLinked:
-    "We could not log you in with the Spotify account because an account with the same mail exists on our platform. Please instead log in to your account using your mail and connect your Spotify account thereafter!",
+    "An account with the same email address already exists. Please login via email instead.",
   EmailSignin: "",
   CredentialsSignin: "",
   SessionRequired: "",
@@ -21,8 +21,7 @@ const AuthErrorLinkMap: Record<NextAuthError, string> = {
   OAuthCreateAccount: "",
   EmailCreateAccount: "",
   Callback: "",
-  OAuthAccountNotLinked:
-    "The Spotify Account you're currently logged in on Spotify's Web Platform is already linked to another account on our platform. Please unlink it first or try another one!",
+  OAuthAccountNotLinked: "The Spotify account is already linked to another account.",
   EmailSignin: "",
   CredentialsSignin: "",
   SessionRequired: "",

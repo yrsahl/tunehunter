@@ -57,7 +57,7 @@ const AuthCallbackPage: NextPage = ({}) => {
         { duration: 1800 },
       );
     } else {
-      toast.success("Successfully logged in!", { duration: 1800 });
+      toast.success("Successfully logged in.", { duration: 1800 });
     }
 
     // Redirect

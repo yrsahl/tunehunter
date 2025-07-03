@@ -45,7 +45,7 @@ const useProfileFunctions = () => {
       throw new Error("User must be logged in to request mail change.");
     }
     if (!newEmail) {
-      toast.error("Please enter a valid email address!");
+      toast.error("Please enter a valid email address.");
       return;
     }
 
@@ -57,7 +57,7 @@ const useProfileFunctions = () => {
         onSuccess: () => {
           update();
           toast.dismiss();
-          toast.success("Mail successfully updated!");
+          toast.success("Mail successfully updated.");
         },
         onError: (opts) => handleServerError(opts, "update your mail", loadingToast),
       },
@@ -78,10 +78,9 @@ const useProfileFunctions = () => {
       {
         loading: "Logging you out...",
         success: () => {
-          return "Successfully logged out!";
+          return "Successfully logged out.";
         },
-        error:
-          "Something went wrong and we could not log you out! You're now bound to us forever! Joke, please try again later :)",
+        error: "Something went wrong and we could not log you out.)",
       },
     );
     toast.dismiss();
@@ -108,7 +107,7 @@ const useProfileFunctions = () => {
   };
 
   const handleUnlinkSpotify = async (userId: string) => {
-    const loadingToast = toast.loading("Remove Spotify account link...");
+    const loadingToast = toast.loading("Removing Spotify account link...");
     unlinkSpotifyAccount.mutate(
       { userId },
       {
@@ -119,7 +118,7 @@ const useProfileFunctions = () => {
               if (router.getParams("search") == "spotify") router.setParams({ search: "" });
             })
             .then(() =>
-              toast.success("Spotify account successfully unlinked!", { id: loadingToast }),
+              toast.success("Spotify account successfully unlinked.", { id: loadingToast }),
             );
         },
         onError: (opts) => handleServerError(opts, "unlink your Spotify account", loadingToast),
