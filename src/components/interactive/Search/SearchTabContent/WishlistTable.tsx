@@ -22,18 +22,16 @@ const WishlistTable = () => {
         )}
         {wishlistDataExists && (
           <TableBody hasHeader={false}>
-            <>
-              {wishlistData.map((wishlistedTrack, index) => {
-                return (
-                  <TableRow
-                    key={`${index}-${wishlistedTrack.song.id}`}
-                    track={wishlistedTrack}
-                    showDuration={true}
-                    extraElement={<WishlistStatusIcon songId={wishlistedTrack.song.id} />}
-                  />
-                );
-              })}
-            </>
+            <AnimatePresence>
+              {wishlistData.map((wishlistedTrack) => (
+                <TableRow
+                  track={wishlistedTrack}
+                  key={wishlistedTrack.song.id}
+                  showDuration={true}
+                  extraElement={<WishlistStatusIcon songId={wishlistedTrack.song.id} />}
+                />
+              ))}
+            </AnimatePresence>
           </TableBody>
         )}
       </motion.div>

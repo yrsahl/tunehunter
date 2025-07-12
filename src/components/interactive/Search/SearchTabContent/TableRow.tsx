@@ -1,9 +1,11 @@
 import IconButton from "@/components/IconButton";
+import { fadeInAndOut } from "@/helpers/animations";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
 import useDeviceSize from "@/hooks/useDeviceSize";
 import useSearch from "@/hooks/useSearch";
 import { Track } from "@/types/song";
 import clsx from "clsx";
+import { motion } from "framer-motion";
 import { ReactNode } from "react";
 
 interface TableRowProps {
@@ -33,7 +35,7 @@ const TableRow = ({
   };
 
   return (
-    <tr className="max-h-16" key={song.id}>
+    <motion.tr {...fadeInAndOut(0.2)} className="max-h-16" layout>
       <td className="py-2 pr-4 sm:pr-8">
         <div className="flex items-center gap-4">
           <div className="avatar">
@@ -87,7 +89,7 @@ const TableRow = ({
           />
         </td>
       )}
-    </tr>
+    </motion.tr>
   );
 };
 

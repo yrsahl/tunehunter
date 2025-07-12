@@ -1,7 +1,5 @@
 ---- CORE
 
-Fix queries not loading on refresh or change search icon showing search in refresh
-
 Save vendor data
 
 Incorporate APIs
@@ -9,21 +7,15 @@ Incorporate APIs
 - Bandcamp
 - Beatport
 
-Apply spotify extended quota
 
+
+Apply spotify extended quota
 Fix double login
 
 
 
 
 
-
-
-
-Clicking the searchbar sets ShowQueries
--> <Search> re-renders
--> <SearchQueries> re-renders
--> Through useSearch() the router.query hook is invoked again but router.query is now undefined because of the re-render, causing a re-render on every searchbar click
 
 
 
