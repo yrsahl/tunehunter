@@ -4,16 +4,14 @@ import useRegionSettings from "@/hooks/settings/useRegionSettings";
 import useSearch from "@/hooks/useSearch";
 import { motion } from "framer-motion";
 
-interface SearchTableProps {
-  searchQueriesRef: React.RefObject<HTMLTableElement>;
-}
+interface SearchTableProps {}
 
-const SearchQueries = ({ searchQueriesRef }: SearchTableProps) => {
-  const { queryData } = useQueryDataContext();
+const SearchQueries = () => {
+  const { showQueries, queryData } = useQueryDataContext();
   const { region } = useRegionSettings();
   const { submitSearch } = useSearch();
 
-  if (!queryData) {
+  if (!showQueries || !queryData) {
     return <></>;
   }
 
@@ -22,10 +20,7 @@ const SearchQueries = ({ searchQueriesRef }: SearchTableProps) => {
       {...fadeInAndOut()}
       className="absolute z-50 h-60 w-full overflow-scroll rounded-b-lg border border-t-[1px] border-primary bg-background/30 text-sm backdrop-blur-md md:text-base"
     >
-      {/* <p className="text-center text-foreground/50">
-          {queryData.tracks?.total} results found for 'love'.
-        </p> */}
-      <table ref={searchQueriesRef}>
+      <table>
         <motion.tbody {...fadeInAndOut(0.5)} key={queryData.tracks?.href}>
           {queryData.tracks?.items.map((track) => {
             const primaryArtist = track.artists[0]?.name || "";

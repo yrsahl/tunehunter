@@ -7,13 +7,22 @@ import { createContext, ReactNode, useContext, useState } from "react";
 
 interface IQueryDataContext {
   queryData: SpotifySearchData | null;
-  requestQueryData: (query: string, accessToken: string, searchSettings?: SearchSettings) => void;
+  showQueries: boolean;
+  setShowQueries: (show: boolean) => void;
+  requestQueryData: (
+    query: string,
+    accessToken: string,
+    searchSettings?: SearchSettings,
+    displayLoadingIndicator?: boolean,
+  ) => void;
   isQueryDataLoading: boolean;
   resetQueryData: () => void;
 }
 
 const QueryDataContext = createContext<IQueryDataContext>({
   queryData: null,
+  showQueries: false,
+  setShowQueries: () => {},
   requestQueryData: () => {},
   isQueryDataLoading: false,
   resetQueryData: () => {},
@@ -22,6 +31,7 @@ const QueryDataContext = createContext<IQueryDataContext>({
 export const useQueryDataContext = () => useContext(QueryDataContext);
 
 export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
+  const [showQueries, setShowQueries] = useState(false);
   const [queryData, setQueryData] = useState<SpotifySearchData | null>(null);
   const [isQueryDataLoading, setIsQueryDataLoading] = useState(false);
   const { storeTracksInDb } = useDb();
@@ -31,6 +41,7 @@ export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
     accessToken: string,
     query: string,
     searchSettings?: SearchSettings,
+    displayLoadingIndicator: boolean = true,
   ) => {
     // No search query
     if (!query) {
@@ -38,8 +49,10 @@ export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
+    // Display loading indicator
+    if (displayLoadingIndicator) setIsQueryDataLoading(true);
+
     // Query api
-    setIsQueryDataLoading(true);
     try {
       fetchSpotifySearchData(accessToken, query).then((searchData) => {
         if (!searchData || !searchData.tracks) return;
@@ -67,12 +80,12 @@ export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
 
         // Query data until we have limit of songs
         setQueryData(searchData);
-        setIsQueryDataLoading(false);
+        if (displayLoadingIndicator) setIsQueryDataLoading(false);
         storeTracksInDb(searchData.tracks.items);
       });
     } catch (error) {
       console.error(error);
-      setIsQueryDataLoading(false);
+      if (displayLoadingIndicator) setIsQueryDataLoading(false);
     }
   };
 
@@ -84,6 +97,8 @@ export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
   return (
     <QueryDataContext.Provider
       value={{
+        showQueries,
+        setShowQueries,
         queryData,
         isQueryDataLoading,
         requestQueryData,

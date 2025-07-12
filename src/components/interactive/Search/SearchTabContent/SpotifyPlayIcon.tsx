@@ -123,7 +123,7 @@ const SpotifyPlayIcon = ({ songId }: SpotifyPlayIconProps) => {
           transition={{ duration: 0.2 }}
           className="relative flex"
         >
-          <span className="animate-pulse-shadow absolute inset-0 z-0 rounded-full" />
+          <span className="absolute inset-0 z-0 animate-pulse-shadow rounded-full" />
           <Pause className="relative z-10 h-6 w-6 fill-foreground text-foreground" />
         </motion.span>
       )}

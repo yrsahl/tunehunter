@@ -20,6 +20,7 @@ const SearchTabBar = ({ activeSearchTab, setActiveSearchTab }: SearchTabBarProps
 
   // Restore active tab if param is present
   useEffect(() => {
+    if (!router.isReady) return;
     const searchParam = router.getParams("search");
     if (router.isReady && searchParam && isSearchTab(searchParam)) {
       setActiveSearchTab(searchParam);

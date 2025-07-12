@@ -20,7 +20,10 @@ Fix double login
 
 
 
-
+Clicking the searchbar sets ShowQueries
+-> <Search> re-renders
+-> <SearchQueries> re-renders
+-> Through useSearch() the router.query hook is invoked again but router.query is now undefined because of the re-render, causing a re-render on every searchbar click
 
 
 

@@ -3,7 +3,7 @@ import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { CountryCode, isCountryCode } from "@/helpers/region";
 import { api } from "@/utils/api";
 import { debounce } from "lodash";
-import { FormEvent, useCallback, useEffect } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { useSearchSettingsStore } from "./stores/useSearchSettingsStore";
 import useSearchStore from "./stores/useSearchStore";
 import useRouterWithHelpers from "./useRouterWithHelpers";
@@ -18,11 +18,14 @@ const useSearch = () => {
     setSearchSongArtist,
     setSearchSongTitle,
   } = useSearchStore();
-  const { requestQueryData, resetQueryData } = useQueryDataContext();
+  const { setShowQueries, requestQueryData, resetQueryData } = useQueryDataContext();
   const { history } = useSearchTabDataContext();
   const router = useRouterWithHelpers();
-  const { accessToken, appAccessToken, userAccessToken } = useSpotifyTokens();
+  const { accessToken } = useSpotifyTokens();
   const addSearchActivity = api.userActivities.addSearchActivity.useMutation();
+
+  // Track pending search that needs to happen when accessToken becomes available
+  const [pendingSearch, setPendingSearch] = useState<string | null>(null);
 
   // Are there any settings set?
   const { searchForClubMixesOnly, minimumLengthOption, minimumLengthSeconds } =
@@ -35,39 +38,52 @@ const useSearch = () => {
 
   // Synchronize Search params from URL
   useEffect(() => {
-    const searchIdParam = router.getParams("id");
-    const searchRegionParam = router.getParams("region");
-    const searchArtist = router.getParams("artist");
-    const searchTitle = router.getParams("title");
-
     if (!router.isReady) return;
 
-    // ID
+    const searchIdParam = router.getParams("id");
+    const searchRegionParam = router.getParams("region");
+    const searchArtistParam = router.getParams("artist");
+    const searchTitleParam = router.getParams("title");
+
+    // If params are present
     if (
       !!searchIdParam &&
       !!searchRegionParam &&
       isCountryCode(searchRegionParam.toUpperCase()) &&
-      !!searchArtist &&
-      !!searchTitle
+      !!searchArtistParam &&
+      !!searchTitleParam
     ) {
-      const newSearchInput = `${searchArtist} - ${searchTitle}`;
+      // Set params
+      const newSearchInput = `${searchArtistParam} - ${searchTitleParam}`;
       setSearchId(searchIdParam);
       setSearchRegion(searchRegionParam);
-      setSearchSongArtist(searchArtist);
-      setSearchSongTitle(searchTitle);
+      setSearchSongArtist(searchArtistParam);
+      setSearchSongTitle(searchTitleParam);
+
+      // If it's a new query, i.e. a page refresh, start a new search
       if (searchState.input !== newSearchInput) {
         setSearchInput(newSearchInput);
-        debouncedRequestSearchData(newSearchInput);
+        setPendingSearch(newSearchInput); // Set pending search because accessToken is not yet available (TODO: Look for a better way)
       }
-    } else {
-      setSearchId(null);
-      setSearchRegion(null);
-      setSearchSongArtist(null);
-      setSearchSongTitle(null);
-      setSearchInput("");
-      resetQueryData();
+      return;
     }
-  }, [router.isReady, router.query]);
+
+    // If no params are present, reset
+    setSearchId(null);
+    setSearchRegion(null);
+    setSearchSongArtist(null);
+    setSearchSongTitle(null);
+    setSearchInput("");
+    resetQueryData();
+  }, [accessToken, router.query]);
+
+  // Execute pending search when accessToken becomes available
+  useEffect(() => {
+    if (accessToken && pendingSearch) {
+      requestQueryData(accessToken, pendingSearch, searchSettings, false);
+      setPendingSearch(null); // Clear the pending search
+    }
+  }, [accessToken, pendingSearch]);
 
   // On enter, request query data immediately
   const handleSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -84,7 +100,7 @@ const useSearch = () => {
       }
       requestQueryData(accessToken, searchTerm, searchSettings);
     }, 600),
-    [userAccessToken, appAccessToken, ...Object.values(searchSettings)],
+    [accessToken, ...Object.values(searchSettings)],
   );
 
   // Input change handler
@@ -108,11 +124,9 @@ const useSearch = () => {
   };
 
   // Submit search
-  // TODO: this function is shit, way too much going on
   const submitSearch = async (id: string, region: CountryCode, title: string, artist: string) => {
-    // Store activity and refresh history data for user
-    await addSearchActivity.mutateAsync({ songId: id, region });
-    history.refetchData();
+    // Hide queries
+    setShowQueries(false);
 
     // Trigger SearchResults re-render (which starts the vendor data search)
     setSearchId(id);
@@ -122,7 +136,13 @@ const useSearch = () => {
     setSearchSongArtist(artist);
     setSearchSongTitle(title);
     setSearchInput(`${artist} - ${title}`);
-    debouncedRequestSearchData(`${artist} - ${title}`);
+
+    // Refresh
+    if (accessToken) requestQueryData(accessToken, `${artist} - ${title}`, searchSettings, false);
+
+    // Store activity and refresh history data for user
+    await addSearchActivity.mutateAsync({ songId: id, region });
+    history.refetchData();
 
     // Push to router
     const trackSearchHref = {
