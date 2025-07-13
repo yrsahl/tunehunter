@@ -1,5 +1,5 @@
 import { env } from "@/env";
-import { SpotifyClientCredentialsTokenData, SpotifyRefreshTokenData } from "@/types/spotify";
+import { SpotifyClientCredentialsTokenData, SpotifyRefreshTokenData } from "@/types/spotify-types";
 
 const TOKEN_URL = "https://accounts.spotify.com/api/token";
 

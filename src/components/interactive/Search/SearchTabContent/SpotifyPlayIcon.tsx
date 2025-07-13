@@ -3,7 +3,7 @@ import { useSpotifyPlayerContext } from "@/contexts/SpotifyPlayerContext";
 import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
 import { useEventEmitter } from "@/hooks/useEventEmitter";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
-import { SpotifyPlaybackStateShort } from "@/types/spotify-playback";
+import { SpotifyPlaybackStateShort } from "@/types/spotify-playback-types";
 import { motion } from "framer-motion";
 import { Pause, Play } from "lucide-react";
 import { useEffect, useState } from "react";

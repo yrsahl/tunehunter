@@ -1,4 +1,4 @@
-import { SpotifyTrack } from "@/types/spotify";
+import { SpotifyTrack } from "@/types/spotify-types";
 import { api } from "@/utils/api";
 
 const useDb = () => {

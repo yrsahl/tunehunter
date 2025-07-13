@@ -3,7 +3,7 @@ import { slideInAndOutFromBottom } from "@/helpers/animations";
 import useSearchStore from "@/hooks/stores/useSearchStore";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef } from "react";
-import SearchResultsFrame from "./SearchResultsFrame";
+import SearchResultsContainer from "./SearchResultsContainer";
 
 interface SearchResultsProps {}
 
@@ -27,7 +27,7 @@ const SearchResults = ({}: SearchResultsProps) => {
             className="-mt-4 w-full rounded-3xl"
             ref={containerRef}
           >
-            <SearchResultsFrame region={searchState.region} />
+            <SearchResultsContainer region={searchState.region} />
           </motion.div>
         </SearchDataContextProvider>
       )}

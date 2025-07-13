@@ -1,4 +1,4 @@
-import { SpotifyPlaybackState, SpotifyPlaybackStateShort } from "@/types/spotify-playback";
+import { SpotifyPlaybackState, SpotifyPlaybackStateShort } from "@/types/spotify-playback-types";
 import axios from "axios";
 import { createContext, ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { useEventEmitter } from "../hooks/useEventEmitter";

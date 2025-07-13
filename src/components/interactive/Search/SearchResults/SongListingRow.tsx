@@ -1,30 +1,46 @@
 import IconButton from "@/components/IconButton";
+import { CountryCode } from "@/helpers/region";
 import useDeviceSize from "@/hooks/useDeviceSize";
-import { Vendor, VendorTrack } from "@/types/vendor";
+import { SongListingResponse } from "@/server/api/schemas/song-listings-schemas";
 import { api } from "@/utils/api";
 import { motion } from "framer-motion";
+import SongListingRowMessage from "./SongListingRowMessage";
+import SongListingRowSkeleton from "./SongListingRowSkeleton";
 import VendorLogo from "./VendorLogo";
 
-interface ISearchResultsRowProps {
-  track: VendorTrack;
-  vendor: Vendor;
-  region: string;
+interface SongListingRowProps {
   store: string;
+  region: CountryCode;
+  songListingData: SongListingResponse;
+  isDataLoading: boolean;
 }
 
-const VendorResultsRow = ({ track, vendor, region, store }: ISearchResultsRowProps) => {
-  const { artistsShare } = vendor; // TODO: Get region and store from here later when all stores are implemented
-  const { fileData, trackData } = track;
+const SongListingRow = ({ store, region, songListingData, isDataLoading }: SongListingRowProps) => {
   const { isSmallDevice } = useDeviceSize();
   const addUserActivity = api.userActivities.addUserActivity.useMutation();
+
+  // Skeleton
+  if (isDataLoading || (songListingData && songListingData.error === "INVALID_FIELDS"))
+    return <SongListingRowSkeleton store={store} region={region} />;
+
+  // No data
+  if (!songListingData.data || songListingData.error === "NO_DATA_FOUND") {
+    return (
+      <SongListingRowMessage message="Not available in this store." store={store} region={region} />
+    );
+  }
+
+  // Extract data
+  const { format, songId, url, quality, price, currency } = songListingData.data;
+  const artistsShare = 0.7;
 
   // Visit Vendor
   const visitVendor = async () => {
     // Open site
-    window.open(track.trackData.url, "_blank");
+    window.open(url, "_blank");
 
     // Add activity
-    addUserActivity.mutateAsync({ region, songId: trackData.id, type: "store_visit" });
+    addUserActivity.mutateAsync({ region, songId, type: "store_visit" });
   };
 
   return (
@@ -37,8 +53,8 @@ const VendorResultsRow = ({ track, vendor, region, store }: ISearchResultsRowPro
       {/* Quality */}
       <td>
         <div className="flex flex-col justify-center text-sm md:text-base">
-          <span>{fileData.format}</span>
-          <span className="text-xs opacity-50 md:text-sm">{fileData.quality}</span>
+          <span>{format}</span>
+          <span className="text-xs opacity-50 md:text-sm">{quality}</span>
         </div>
       </td>
 
@@ -46,8 +62,8 @@ const VendorResultsRow = ({ track, vendor, region, store }: ISearchResultsRowPro
       <td>
         <div className="flex items-center gap-4 text-sm md:text-base">
           <div className="inline-block">
-            {trackData.price}
-            {trackData.currency}
+            {price}
+            {currency}
           </div>
         </div>
       </td>
@@ -80,4 +96,4 @@ const VendorResultsRow = ({ track, vendor, region, store }: ISearchResultsRowPro
   );
 };
 
-export default VendorResultsRow;
+export default SongListingRow;

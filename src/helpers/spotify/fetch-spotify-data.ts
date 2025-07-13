@@ -7,7 +7,7 @@ import {
   type SpotifyQueue,
   type SpotifyRecentlyPlayed,
   type SpotifyTracks,
-} from "@/types/spotify";
+} from "@/types/spotify-types";
 
 const SONG_LIMIT = 30;
 

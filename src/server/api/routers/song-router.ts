@@ -1,5 +1,4 @@
 import { amendArtistData } from "@/helpers/spotify/amend-artist-data";
-import { AddSearchQueriesSchema, AddSongSchema } from "@/schemas";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import {
   artistGenres,
@@ -11,9 +10,10 @@ import {
   trendingViewLast7Days,
   trendingViewToday,
 } from "@/server/db/schema";
-import { TrendingTrack, TrendingTracks } from "@/types/song";
+import { TrendingTrack, TrendingTracks } from "@/types/song-types";
 import { desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
+import { AddSearchQueriesSchema, AddSongSchema } from "../schemas/song-schemas";
 
 // Cache for trending songs, eventually replace this with Neon Cron Job
 let cachedTrendingSongs: {

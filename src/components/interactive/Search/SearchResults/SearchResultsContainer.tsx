@@ -1,14 +1,28 @@
 import { useSearchDataContext } from "@/contexts/SearchDataContext";
 import { CountryCode } from "@/helpers/region";
+import dynamic from "next/dynamic";
 import SearchResultsTrack from "./SearchResultsTrack";
-import VendorResults from "./VendorResults";
+const SongListingRow = dynamic(() => import("./SongListingRow"), {
+  ssr: false,
+});
 
 interface ISearchResultsProps {
   region: CountryCode;
 }
 
-const SearchResultsFrame = ({ region }: ISearchResultsProps) => {
-  const { songData, isSongDataLoading, iTunesData, isItunesDataLoading } = useSearchDataContext();
+const SearchResultsContainer = ({ region }: ISearchResultsProps) => {
+  const {
+    songData,
+    isSongDataLoading,
+    iTunesData,
+    isItunesDataLoading,
+    beatportData,
+    isBeatportDataLoading,
+    bandcampData,
+    isBandcampDataLoading,
+    amazonMusicData,
+    isAmazonMusicDataLoading,
+  } = useSearchDataContext();
 
   return (
     <div className="hide-scrollbars flex h-96 flex-row gap-12 overflow-hidden overflow-x-auto">
@@ -29,54 +43,34 @@ const SearchResultsFrame = ({ region }: ISearchResultsProps) => {
           </tr>
         </thead>
         <tbody>
-          {/* <SearchResultsRow
-            store="Bandcamp"
-            vendorData={bandcampData}
-            region={region}
-            isLoading={isBandcampDataLoading}
-          />
-          <SearchResultsRow
-            store="Beatport"
-            vendorData={beatportData}
-            region={region}
-            isLoading={isBeatportDataLoading}
-          /> */}
-
-          <VendorResults
+          <SongListingRow
             store="bandcamp"
             region={region}
-            vendorData={iTunesData}
-            isLoading={isItunesDataLoading}
+            songListingData={bandcampData}
+            isDataLoading={isBandcampDataLoading}
           />
-          <VendorResults
+          <SongListingRow
             store="beatport"
             region={region}
-            vendorData={iTunesData}
-            isLoading={isItunesDataLoading}
+            songListingData={beatportData}
+            isDataLoading={isBeatportDataLoading}
           />
-          <VendorResults
+          <SongListingRow
             store="iTunes"
             region={region}
-            vendorData={iTunesData}
-            isLoading={isItunesDataLoading}
+            songListingData={iTunesData}
+            isDataLoading={isItunesDataLoading}
           />
-          <VendorResults
+          <SongListingRow
             store="amazon"
             region={region}
-            vendorData={iTunesData}
-            isLoading={isItunesDataLoading}
+            songListingData={amazonMusicData}
+            isDataLoading={isAmazonMusicDataLoading}
           />
-
-          {/* <SearchResultsRow
-            store="Amazon"
-            region={region}
-            vendorData={amazonMusicData}
-            isLoading={isAmazonMusicDataLoading}
-          /> */}
         </tbody>
       </table>
     </div>
   );
 };
 
-export default SearchResultsFrame;
+export default SearchResultsContainer;

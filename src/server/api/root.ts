@@ -1,12 +1,12 @@
 import { createTRPCRouter } from "@/server/api/trpc";
-import { accountRouter } from "./routers/account";
-import { artistRouter } from "./routers/artist";
-import { clientCredentialsRouter } from "./routers/clientCredentials";
-import { externalVendorRouter } from "./routers/externalVendor";
-import { songRouter } from "./routers/song";
-import { songArtistRouter } from "./routers/songArtist";
-import { userRouter } from "./routers/user";
-import { userActivitiesRouter } from "./routers/userActivity";
+import { accountRouter } from "./routers/account-router";
+import { artistRouter } from "./routers/artist-router";
+import { clientCredentialsRouter } from "./routers/client-credentials-router";
+import { songArtistRouter } from "./routers/song-artist-router";
+import { songListingsRouter } from "./routers/song-listings-router";
+import { songRouter } from "./routers/song-router";
+import { userActivitiesRouter } from "./routers/user-activity-router";
+import { userRouter } from "./routers/user-router";
 
 /**
  * This is the primary router for your server.
@@ -19,7 +19,7 @@ export const appRouter = createTRPCRouter({
   artist: artistRouter,
   song: songRouter,
   songArtists: songArtistRouter,
-  externalVendor: externalVendorRouter,
+  songListings: songListingsRouter,
   clientCredentials: clientCredentialsRouter,
   userActivities: userActivitiesRouter,
 });

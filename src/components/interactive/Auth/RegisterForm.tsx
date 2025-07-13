@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { growIn } from "@/helpers/animations";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
-import { RegisterSchema } from "@/schemas";
+import { RegisterSchema } from "@/server/api/schemas/account-schemas";
 import { api } from "@/utils/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";

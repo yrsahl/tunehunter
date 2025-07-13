@@ -1,4 +1,4 @@
-import { ConfirmMailSchema, VerificationCodeSchema } from "@/schemas";
+import { ConfirmMailSchema, VerificationCodeSchema } from "@/server/api/schemas/account-schemas";
 import { api } from "@/utils/api";
 import { z } from "zod";
 import { generateRandomNumbers } from "./random-generators";

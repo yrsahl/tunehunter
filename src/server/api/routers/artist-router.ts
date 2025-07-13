@@ -1,8 +1,8 @@
-import { AddArtistSchema, AddSimpleArtistSchema } from "@/schemas";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { artistGenres, artists, genres } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
+import { AddArtistSchema, AddSimpleArtistSchema } from "../schemas/artist-schemas";
 
 export const artistRouter = createTRPCRouter({
   // ********* Queries *********

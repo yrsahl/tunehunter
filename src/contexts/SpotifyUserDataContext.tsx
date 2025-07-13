@@ -1,5 +1,5 @@
 import { fetchSpotifyUserData } from "@/helpers/spotify/fetch-spotify-data";
-import { SpotifyUserData } from "@/types/spotify";
+import { SpotifyUserData } from "@/types/spotify-types";
 import { api } from "@/utils/api";
 import { useSession } from "next-auth/react";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";

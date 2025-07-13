@@ -188,11 +188,15 @@ export const artistGenres = pgTable(
   }),
 );
 
+export const songVendorTypes = ["itunes", "bandcamp", "beatport", "amazon"] as const;
+export type SongVendorType = (typeof songVendorTypes)[number];
+export const songVendorTypeEnum = pgEnum("song_vendor_type", songVendorTypes);
+
 // A song vendor, i.e. BandCamp
 export const songVendors = pgTable("songVendor", {
   id: serial("id").primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
-  region: varchar("region", { length: 255 }).notNull(),
+  name: songVendorTypeEnum().notNull(),
+  artistsShare: integer("artists_share").notNull(),
 });
 
 export const songVendorsRelations = relations(songVendors, ({ many }) => ({
@@ -209,10 +213,16 @@ export const songListings = pgTable(
     vendorId: integer("vendor_id")
       .notNull()
       .references(() => songVendors.id),
-    link: varchar("link", { length: 255 }).notNull(),
+    url: varchar("url", { length: 255 }).notNull(),
     quality: varchar("quality", { length: 255 }).notNull(),
-    price: varchar("price", { length: 255 }).notNull(),
+    duration: integer("duration").notNull(),
+    price: varchar("price", { length: 255 }),
     currency: varchar("currency", { length: 255 }).notNull(),
+    region: varchar("region", { length: 255 }).notNull(),
+    format: varchar("format", { length: 255 }).notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
   },
   (table) => ({
     compoundKey: primaryKey({ columns: [table.songId, table.vendorId] }),

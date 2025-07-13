@@ -1,7 +1,5 @@
 ---- CORE
 
-Save vendor data
-
 Incorporate APIs
 - Amazon
 - Bandcamp
@@ -11,6 +9,7 @@ Incorporate APIs
 
 Apply spotify extended quota
 Fix double login
+Fix mobile table headers
 
 
 

@@ -1,9 +1,13 @@
-import { AddUserActivitySchema, GetUserActivitySchema, RemoveUserActivitySchema } from "@/schemas";
 import { db } from "@/server/db";
 import { artists, songArtists, songs, userActivities, UserActivityType } from "@/server/db/schema";
-import { UserHistory } from "@/types/song";
+import { UserHistory } from "@/types/song-types";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
+import {
+  AddUserActivitySchema,
+  GetUserActivitySchema,
+  RemoveUserActivitySchema,
+} from "../schemas/user-activity-schemas";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const userActivitiesRouter = createTRPCRouter({

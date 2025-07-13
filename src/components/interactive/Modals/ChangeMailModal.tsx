@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/input-otp";
 import useVerificationToken from "@/helpers/verification-token";
 import useProfileFunctions from "@/hooks/useProfileFunctions";
-import { ConfirmMailSchema, VerificationCodeSchema } from "@/schemas";
+import { ConfirmMailSchema, VerificationCodeSchema } from "@/server/api/schemas/account-schemas";
 import { api } from "@/utils/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ReactNode, useState, useTransition } from "react";

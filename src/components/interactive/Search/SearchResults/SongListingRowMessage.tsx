@@ -1,13 +1,13 @@
 import { countryNamesEnglish } from "@/helpers/region";
 import { motion } from "framer-motion";
 
-interface ISearchResultsRowMessageProps {
+interface ISongListingRowMessageProps {
   message: string;
   store: string;
   region: string;
 }
 
-const VendorResultsRowMessage = ({ message, store, region }: ISearchResultsRowMessageProps) => {
+const SongListingRowMessage = ({ message, store, region }: ISongListingRowMessageProps) => {
   return (
     <motion.tr>
       {/* Store */}
@@ -35,4 +35,4 @@ const VendorResultsRowMessage = ({ message, store, region }: ISearchResultsRowMe
   );
 };
 
-export default VendorResultsRowMessage;
+export default SongListingRowMessage;

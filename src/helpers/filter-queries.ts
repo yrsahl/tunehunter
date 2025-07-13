@@ -1,4 +1,4 @@
-import { SpotifySearchData } from "@/types/spotify";
+import { SpotifySearchData } from "@/types/spotify-types";
 
 export const filterOutDuplicates = (searchData: SpotifySearchData) => {
   const uniqueTracks = new Map();

@@ -1,5 +1,5 @@
 import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
-import { Track } from "@/types/song";
+import { Track } from "@/types/song-types";
 import { api } from "@/utils/api";
 import { useEffect, useState } from "react";
 

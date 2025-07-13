@@ -1,12 +1,12 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { CountryCode } from "@/helpers/region";
 
-interface SearchResultsRowSkeletonProps {
+interface SongListingRowSkeletonProps {
   store: string;
   region: CountryCode;
 }
 
-const VendorResultsRowSkeleton = ({ store, region }: SearchResultsRowSkeletonProps) => {
+const SongListingRowSkeleton = ({ store, region }: SongListingRowSkeletonProps) => {
   return (
     <tr>
       {/* Store */}
@@ -46,4 +46,4 @@ const VendorResultsRowSkeleton = ({ store, region }: SearchResultsRowSkeletonPro
   );
 };
 
-export default VendorResultsRowSkeleton;
+export default SongListingRowSkeleton;

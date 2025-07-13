@@ -1,4 +1,4 @@
-import { SpotifyUserData } from "@/types/spotify";
+import { SpotifyUserData } from "@/types/spotify-types";
 
 export const spotifyMockData: SpotifyUserData = {
   profileData: {

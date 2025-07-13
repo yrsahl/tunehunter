@@ -2,11 +2,11 @@ import bcrypt from "bcrypt";
 import { z } from "zod";
 
 import { sendVerificationCodeEmail } from "@/helpers/mail";
-import { RegisterResponse, RegisterSchema } from "@/schemas";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
 import { accounts, users, verificationTokens } from "@/server/db/schema";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
+import { RegisterResponse, RegisterSchema } from "../schemas/account-schemas";
 
 export const userRouter = createTRPCRouter({
   // ********* Queries *********
