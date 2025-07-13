@@ -188,9 +188,9 @@ export const artistGenres = pgTable(
   }),
 );
 
-export const songVendorTypes = ["itunes", "bandcamp", "beatport", "amazon"] as const;
-export type SongVendorType = (typeof songVendorTypes)[number];
-export const songVendorTypeEnum = pgEnum("song_vendor_type", songVendorTypes);
+export const songVendorArray = ["itunes", "bandcamp", "beatport", "amazon"] as const;
+export type SongVendorType = (typeof songVendorArray)[number];
+export const songVendorTypeEnum = pgEnum("song_vendor_type", songVendorArray);
 
 // A song vendor, i.e. BandCamp
 export const songVendors = pgTable("songVendor", {

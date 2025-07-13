@@ -5,12 +5,9 @@ import { AnimatePresence } from "framer-motion";
 import type { NextPage } from "next";
 import dynamic from "next/dynamic";
 
-const SearchResults = dynamic(
-  () => import("@/components/interactive/Search/SearchResults/SearchResults"),
-  {
-    ssr: false,
-  },
-);
+const SongListings = dynamic(() => import("@/components/interactive/SongListings/SongListings"), {
+  ssr: false,
+});
 
 export const Home: NextPage = () => {
   const { activeSearchTab } = useActiveSearchTabStore();
@@ -25,7 +22,7 @@ export const Home: NextPage = () => {
       </AnimatePresence>
 
       {/* Results */}
-      <SearchResults />
+      <SongListings />
     </div>
   );
 };

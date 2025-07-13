@@ -40,7 +40,6 @@ export default function useSpotifyPlayer() {
 
       // Listener functions
       const onReady = ({ device_id }: { device_id: string }) => {
-        console.log("Spotify Player ready:", device_id);
         setDeviceId(device_id);
       };
       const onNotReady = ({ device_id }: { device_id: string }) => {

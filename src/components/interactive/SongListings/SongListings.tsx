@@ -1,13 +1,11 @@
-import { SearchDataContextProvider } from "@/contexts/SearchDataContext";
+import { SongListingContextProvider } from "@/contexts/SongListingContext";
 import { slideInAndOutFromBottom } from "@/helpers/animations";
 import useSearchStore from "@/hooks/stores/useSearchStore";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef } from "react";
-import SearchResultsContainer from "./SearchResultsContainer";
+import SongListingsContainer from "./SongListingsContainer";
 
-interface SearchResultsProps {}
-
-const SearchResults = ({}: SearchResultsProps) => {
+const SongListings = () => {
   const { searchState } = useSearchStore();
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -21,18 +19,18 @@ const SearchResults = ({}: SearchResultsProps) => {
   return (
     <AnimatePresence mode="wait">
       {searchState.id && searchState.region && (
-        <SearchDataContextProvider region={searchState.region} songId={searchState.id}>
+        <SongListingContextProvider region={searchState.region} songId={searchState.id}>
           <motion.div
             {...slideInAndOutFromBottom(0.5)}
             className="-mt-4 w-full rounded-3xl"
             ref={containerRef}
           >
-            <SearchResultsContainer region={searchState.region} />
+            <SongListingsContainer region={searchState.region} />
           </motion.div>
-        </SearchDataContextProvider>
+        </SongListingContextProvider>
       )}
     </AnimatePresence>
   );
 };
 
-export default SearchResults;
+export default SongListings;

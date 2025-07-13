@@ -1,7 +1,9 @@
 import IconButton from "@/components/IconButton";
+import { useSongListingContext } from "@/contexts/SongListingContext";
 import { CountryCode } from "@/helpers/region";
+import { transformCurrencyStringToIcon } from "@/helpers/vendor-data/format-vendor-data";
 import useDeviceSize from "@/hooks/useDeviceSize";
-import { SongListingResponse } from "@/server/api/schemas/song-listings-schemas";
+import { SongVendorType } from "@/server/db/schema";
 import { api } from "@/utils/api";
 import { motion } from "framer-motion";
 import SongListingRowMessage from "./SongListingRowMessage";
@@ -9,30 +11,44 @@ import SongListingRowSkeleton from "./SongListingRowSkeleton";
 import VendorLogo from "./VendorLogo";
 
 interface SongListingRowProps {
-  store: string;
+  vendor: SongVendorType;
   region: CountryCode;
-  songListingData: SongListingResponse;
-  isDataLoading: boolean;
 }
 
-const SongListingRow = ({ store, region, songListingData, isDataLoading }: SongListingRowProps) => {
+const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
+  const { getVendorResponse, getVendorResponseLoadingState } = useSongListingContext();
+  const vendorResponse = getVendorResponse(vendor);
+  const isVendorResponseLoading = getVendorResponseLoadingState(vendor);
+
   const { isSmallDevice } = useDeviceSize();
   const addUserActivity = api.userActivities.addUserActivity.useMutation();
 
   // Skeleton
-  if (isDataLoading || (songListingData && songListingData.error === "INVALID_FIELDS"))
-    return <SongListingRowSkeleton store={store} region={region} />;
+  if (isVendorResponseLoading || (vendorResponse && vendorResponse.error === "INVALID_FIELDS"))
+    return <SongListingRowSkeleton store={vendor} region={region} />;
 
   // No data
-  if (!songListingData.data || songListingData.error === "NO_DATA_FOUND") {
+  if (!vendorResponse || !vendorResponse?.data || vendorResponse.error === "NO_DATA_FOUND") {
     return (
-      <SongListingRowMessage message="Not available in this store." store={store} region={region} />
+      <SongListingRowMessage
+        message="Not available in this store."
+        store={vendor}
+        region={region}
+      />
     );
   }
 
   // Extract data
-  const { format, songId, url, quality, price, currency } = songListingData.data;
-  const artistsShare = 0.7;
+  const { data } = vendorResponse;
+  const {
+    currency,
+    format,
+    price,
+    quality,
+    url,
+    songId,
+    songVendor: { artistsShare },
+  } = data;
 
   // Visit Vendor
   const visitVendor = async () => {
@@ -47,7 +63,7 @@ const SongListingRow = ({ store, region, songListingData, isDataLoading }: SongL
     <motion.tr whileHover={{ scale: 1.03 }} className="cursor-pointer" onClick={visitVendor}>
       {/* Store */}
       <td>
-        <VendorLogo store={store} region={region} />
+        <VendorLogo store={vendor} region={region} />
       </td>
 
       {/* Quality */}
@@ -63,7 +79,7 @@ const SongListingRow = ({ store, region, songListingData, isDataLoading }: SongL
         <div className="flex items-center gap-4 text-sm md:text-base">
           <div className="inline-block">
             {price}
-            {currency}
+            {transformCurrencyStringToIcon(currency)}
           </div>
         </div>
       </td>
@@ -75,7 +91,7 @@ const SongListingRow = ({ store, region, songListingData, isDataLoading }: SongL
             {artistsShare && (
               <div
                 className="h-1 rounded-full bg-success md:h-2"
-                style={{ width: `${artistsShare * 100}%` }}
+                style={{ width: `${artistsShare}%` }}
               />
             )}
           </div>

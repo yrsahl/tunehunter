@@ -5,22 +5,22 @@ import { AppRouter } from "@/server/api/root";
 import { inferProcedureOutput } from "@trpc/server";
 import { Album, Calendar, Clock, HeartIcon, Music, Play } from "lucide-react";
 import { useSession } from "next-auth/react";
-import SpotifyPlayIcon from "../SearchTabContent/SpotifyPlayIcon";
-import WishlistStatusIcon from "../SearchTabContent/WishlistStatusIcon";
-import SearchResultsTrackSkeleton from "./SearchResultsTrackSkeleton";
+import SpotifyPlayIcon from "../Search/SearchTabContent/SpotifyPlayIcon";
+import WishlistStatusIcon from "../Search/SearchTabContent/WishlistStatusIcon";
+import SongPreviewSkeleton from "./SongPreviewSkeleton";
 
-interface ISearchResultsTrackProps {
+interface ISongPreviewProps {
   songData: inferProcedureOutput<AppRouter["song"]["getSongAndArtistsBySongId"]> | undefined;
   isLoading: boolean;
 }
 
-export default function SearchResultsTrack({ songData, isLoading }: ISearchResultsTrackProps) {
+export default function SongPreview({ songData, isLoading }: ISongPreviewProps) {
   const { status } = useSession();
   const { spotifyConnected } = useSpotifyUserDataContext();
   const loggedIn = status === "authenticated";
 
   if (isLoading) {
-    return <SearchResultsTrackSkeleton />;
+    return <SongPreviewSkeleton />;
   }
 
   if (!songData) {

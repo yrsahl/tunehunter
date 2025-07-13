@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-const SearchResultsTrackSkeleton = () => {
+const SongPreviewSkeleton = () => {
   return (
     <div className="lg flex w-full flex-col gap-8 pl-2">
       {/* Top Row */}
@@ -46,4 +46,4 @@ const SearchResultsTrackSkeleton = () => {
   );
 };
 
-export default SearchResultsTrackSkeleton;
+export default SongPreviewSkeleton;
