@@ -5,6 +5,8 @@ Incorporate APIs
 - Bandcamp
 - Beatport
 
+Search again within 30 days
+Also save when we didn't find any listings to not serach again within 30 days
 
 
 Apply spotify extended quota

@@ -7,7 +7,7 @@ This guide explains how to implement music store search functionality for differ
 | Vendor       | Status          | Implementation   | API Available |
 | ------------ | --------------- | ---------------- | ------------- |
 | iTunes       | ✅ **Working**  | Official API     | Yes           |
-| Bandcamp     | ⚠️ **Basic**    | Web scraping     | Limited       |
+| Bandcamp     | ✅ **Enhanced** | Deep scraping    | Limited       |
 | Beatport     | 🔧 **Template** | Needs Puppeteer  | No            |
 | Amazon Music | 🔧 **Template** | Complex scraping | Closed beta   |
 
@@ -24,15 +24,45 @@ const result = await fetchVendorData({
 });
 ```
 
-### Bandcamp (Basic Implementation)
+### Bandcamp (Enhanced Implementation)
 
 ```typescript
-// Basic web scraping - works but limited data quality
+// Enhanced web scraping with individual track page visits for accurate duration matching
 const result = await fetchVendorData({
   vendorData: { vendorId: 2, store: "bandcamp" },
   region: "US",
   songData: { songId: "123", title: "Song", artist: "Artist", duration: 180000 },
 });
+
+// Features:
+// - Visits up to 3 top search results
+// - Extracts precise duration from individual track pages
+// - Matches within 2-second tolerance
+// - Gets accurate pricing information
+// - Includes rate limiting (500ms between requests)
+```
+
+#### How the Enhanced Bandcamp Implementation Works:
+
+1. **Search Phase**: Searches Bandcamp for tracks matching artist and title
+2. **Candidate Selection**: Selects up to 3 most relevant results based on string similarity
+3. **Detail Extraction**: Visits each candidate's individual track page to extract:
+   - Precise duration from JavaScript player data or HTML elements
+   - Accurate pricing information
+   - Track metadata
+4. **Duration Matching**: Returns the first track within 2 seconds of target duration
+5. **Rate Limiting**: Includes 500ms delays between requests to be respectful
+
+#### Testing the Enhanced Implementation:
+
+```typescript
+import { testCustomBandcampTrack, testAllBandcampCases } from "./bandcamp-test";
+
+// Test a specific track
+await testCustomBandcampTrack("Strobe", "deadmau5", 636); // 10:36
+
+// Run all predefined test cases
+await testAllBandcampCases();
 ```
 
 ## Advanced Setup (For Beatport & Amazon)

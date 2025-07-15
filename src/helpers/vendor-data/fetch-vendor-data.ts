@@ -234,6 +234,101 @@ const fetchBeatportData = async ({
   }
 };
 
+// Helper function to parse duration from Bandcamp track pages
+const parseBandcampDuration = (durationText: string): number => {
+  if (!durationText) return 0;
+
+  // Remove any non-numeric characters except colon
+  const cleanDuration = durationText.replace(/[^\d:]/g, "");
+  const parts = cleanDuration.split(":");
+
+  if (parts.length === 2 && parts[0] && parts[1]) {
+    const minutes = parseInt(parts[0], 10) || 0;
+    const seconds = parseInt(parts[1], 10) || 0;
+    return (minutes * 60 + seconds) * 1000; // Convert to milliseconds
+  }
+
+  return 0;
+};
+
+// Helper function to fetch and parse individual Bandcamp track page
+const fetchBandcampTrackDetails = async (trackUrl: string) => {
+  try {
+    const fullUrl = trackUrl.startsWith("http") ? trackUrl : `https://bandcamp.com${trackUrl}`;
+
+    const response = await axios.get(fullUrl, {
+      headers: getSearchHeaders(),
+      timeout: 10000,
+    });
+
+    const $ = cheerio.load(response.data);
+
+    // Extract duration from the track page
+    // Bandcamp stores duration in various places, try multiple selectors
+    let duration = 0;
+
+    // Try to find duration in the player data
+    const playerDataScript = $("script")
+      .filter((i, el) => {
+        const scriptContent = $(el).html();
+        return scriptContent
+          ? scriptContent.includes("TralbumData") || scriptContent.includes("duration")
+          : false;
+      })
+      .first()
+      .html();
+
+    if (playerDataScript) {
+      // Look for duration in the JavaScript data
+      const durationMatch = playerDataScript.match(/"duration":\s*(\d+(?:\.\d+)?)/);
+      if (durationMatch && durationMatch[1]) {
+        duration = parseFloat(durationMatch[1]) * 1000; // Convert seconds to milliseconds
+      }
+    }
+
+    // Fallback: try to find duration in HTML elements
+    if (duration === 0) {
+      const durationElements = [
+        $(".time_total"),
+        $(".track_info .time"),
+        $('[class*="duration"]'),
+        $('[class*="time"]'),
+      ];
+
+      for (const $elem of durationElements) {
+        const durationText = $elem.text().trim();
+        if (durationText && durationText.match(/\d+:\d+/)) {
+          duration = parseBandcampDuration(durationText);
+          if (duration > 0) break;
+        }
+      }
+    }
+
+    // Extract more accurate price information from track page
+    let price = null;
+    let currency = "USD";
+
+    const buyButton = $(".buyItem");
+    if (buyButton.length > 0) {
+      const priceText = buyButton.find(".price").text().trim();
+      if (priceText && priceText !== "Free" && priceText !== "name your price") {
+        const priceMatch = priceText.match(/([A-Z$€£¥]+)\s*(\d+(?:\.\d+)?)/);
+        if (priceMatch && priceMatch[1] && priceMatch[2]) {
+          currency = priceMatch[1];
+          price = priceMatch[2];
+        }
+      } else if (priceText === "Free") {
+        price = "0";
+      }
+    }
+
+    return { duration, price, currency };
+  } catch (error) {
+    console.error(`Error fetching Bandcamp track details from ${trackUrl}:`, error);
+    return { duration: 0, price: null, currency: "USD" };
+  }
+};
+
 // Bandcamp - One price (base price or more) for many different formats (MP3 V0, MP3 320, FLAC, AAC, Ogg Vorbis, ALAC, WAV, AIFF)
 const fetchBandcampData = async ({
   region,
@@ -254,10 +349,20 @@ const fetchBandcampData = async ({
     });
 
     const $ = cheerio.load(response.data);
-    const bandcampListings: NewSongListing[] = [];
+    const candidateResults: Array<{
+      title: string;
+      artist: string;
+      url: string;
+      searchPrice: string | null;
+      searchCurrency: string;
+      titleSimilarity: number;
+      artistSimilarity: number;
+    }> = [];
 
-    // Parse search results from Bandcamp's search page
+    // Parse search results from Bandcamp's search page and collect candidates
     $(".searchresult").each((index, element) => {
+      if (index >= 3) return false; // Only process first 3 results
+
       const $result = $(element);
 
       // Extract track information
@@ -265,17 +370,19 @@ const fetchBandcampData = async ({
       const artistName = $result.find(".subhead").text().replace("by ", "").trim();
       const trackUrl = $result.find(".heading a").attr("href");
 
-      // Get price information if available
+      // Get price information if available from search results
       const priceText = $result.find(".price").text().trim();
-      let price = null;
-      let currency = "USD";
+      let searchPrice = null;
+      let searchCurrency = "USD";
 
       if (priceText && priceText !== "Free" && priceText !== "name your price") {
         const priceMatch = priceText.match(/([A-Z$€£¥]+)\s*(\d+(?:\.\d+)?)/);
         if (priceMatch && priceMatch[1] && priceMatch[2]) {
-          currency = priceMatch[1];
-          price = priceMatch[2];
+          searchCurrency = priceMatch[1];
+          searchPrice = priceMatch[2];
         }
+      } else if (priceText === "Free") {
+        searchPrice = "0";
       }
 
       // Only include if we have basic track info
@@ -285,33 +392,76 @@ const fetchBandcampData = async ({
         const artistSimilarity = calculateSimilarity(artistName, artist);
 
         // Require both title and artist to have reasonable similarity
-        if (titleSimilarity >= 0.6 && artistSimilarity >= 0.6) {
-          bandcampListings.push({
-            songId: songId,
-            vendorId: vendorId,
-            url: trackUrl.startsWith("http") ? trackUrl : `https://bandcamp.com${trackUrl}`,
-            duration: duration, // Bandcamp doesn't show duration in search results
-            quality: "Multiple formats", // Bandcamp offers various formats
-            price: price || (priceText === "Free" ? "0" : null),
-            currency: currency,
-            region,
-            format: "MP3/FLAC/etc", // Multiple formats available
+        if (titleSimilarity >= 0.5 && artistSimilarity >= 0.5) {
+          candidateResults.push({
+            title: trackTitle,
+            artist: artistName,
+            url: trackUrl,
+            searchPrice,
+            searchCurrency,
+            titleSimilarity,
+            artistSimilarity,
           });
         }
       }
     });
 
-    // Find the best match by duration (though duration matching is limited on Bandcamp)
-    if (bandcampListings.length > 0) {
-      // If we have multiple matches, return the first one
-      // In a real implementation, you might want to fetch individual track pages
-      // to get more accurate duration and pricing information
-      const firstListing = bandcampListings[0];
-      if (firstListing) {
-        return { data: firstListing };
+    console.log(`Found ${candidateResults.length} candidate tracks on Bandcamp`);
+
+    // Now visit each candidate's individual track page to get duration
+    for (const candidate of candidateResults) {
+      try {
+        console.log(`Checking track details for: ${candidate.title} by ${candidate.artist}`);
+
+        const {
+          duration: trackDuration,
+          price: pagePrice,
+          currency: pageCurrency,
+        } = await fetchBandcampTrackDetails(candidate.url);
+
+        if (trackDuration > 0) {
+          const durationDiff = Math.abs(trackDuration - duration);
+          console.log(
+            `Duration difference: ${durationDiff}ms (target: ${duration}ms, found: ${trackDuration}ms)`,
+          );
+
+          // Check if duration is within 2 seconds (2000ms)
+          if (durationDiff <= 2000) {
+            console.log(`Found matching track: ${candidate.title} by ${candidate.artist}`);
+
+            // Use more accurate price from individual page if available, otherwise fall back to search result
+            const finalPrice = pagePrice !== null ? pagePrice : candidate.searchPrice;
+            const finalCurrency = pagePrice !== null ? pageCurrency : candidate.searchCurrency;
+
+            const bandcampListing: NewSongListing = {
+              songId: songId,
+              vendorId: vendorId,
+              url: candidate.url.startsWith("http")
+                ? candidate.url
+                : `https://bandcamp.com${candidate.url}`,
+              duration: trackDuration,
+              format: "Multiple", // Multiple formats available
+              quality: "Multiple", // Bandcamp offers various formats
+              price: finalPrice,
+              currency: finalCurrency,
+              region,
+            };
+
+            return { data: bandcampListing };
+          }
+        } else {
+          console.log(`Could not extract duration for: ${candidate.title} by ${candidate.artist}`);
+        }
+
+        // Add a small delay between requests to be respectful
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      } catch (error) {
+        console.error(`Error processing candidate ${candidate.url}:`, error);
+        continue; // Continue with next candidate
       }
     }
 
+    console.log("No Bandcamp tracks found within 2 seconds duration tolerance");
     return {
       error: "NO_MATCH_FOUND",
     };

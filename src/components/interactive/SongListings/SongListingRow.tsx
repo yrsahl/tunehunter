@@ -70,7 +70,9 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
       <td>
         <div className="flex flex-col justify-center text-sm md:text-base">
           <span>{format}</span>
-          <span className="text-xs opacity-50 md:text-sm">{quality}</span>
+          {quality !== "Multiple" && (
+            <span className="text-xs opacity-50 md:text-sm">{quality}</span>
+          )}
         </div>
       </td>
 
