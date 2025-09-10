@@ -26,6 +26,8 @@ const SignInForm: FC<IProps> = ({ email, setEmail, setMenuState }) => {
   const utils = api.useUtils();
   const loginError = useAuthError("login");
 
+  const isValidEmail = email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+
   // Get OAuth providers
   useEffect(() => {
     const fetchProviders = async () => {
@@ -99,7 +101,7 @@ const SignInForm: FC<IProps> = ({ email, setEmail, setMenuState }) => {
           data-testid="signin-email-button"
           type="submit"
           text="Sign In with E-Mail"
-          disabled={!email}
+          disabled={!isValidEmail}
           icon="mail"
           size="lg"
         />
