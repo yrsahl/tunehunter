@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { z } from "zod";
 
-import { sendVerificationCodeEmail } from "@/helpers/mail";
+import { sendVerificationCodeEmail } from "@/services/email";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
 import { accounts, users, verificationTokens } from "@/server/db/schema";
 import { TRPCError } from "@trpc/server";

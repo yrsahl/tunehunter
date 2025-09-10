@@ -1,6 +1,6 @@
 import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
 import { Track } from "@/types/song-types";
-import { api } from "@/utils/api";
+import { api } from "@/lib/api";
 import { useEffect, useState } from "react";
 
 export type SpotifyTabData = {

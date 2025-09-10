@@ -2,7 +2,7 @@ import IconButton from "@/components/IconButton";
 import { LoadingIndicator } from "@/components/Indicators";
 import { Input } from "@/components/ui/input";
 import { useQueryDataContext } from "@/contexts/QueryDataContext";
-import { fadeInAndOut } from "@/helpers/animations";
+import { fadeInAndOut } from "@/styles/animations";
 import { useSearchSettingsStore } from "@/hooks/stores/useSearchSettingsStore";
 import useSearchStore from "@/hooks/stores/useSearchStore";
 import useSearch from "@/hooks/useSearch";

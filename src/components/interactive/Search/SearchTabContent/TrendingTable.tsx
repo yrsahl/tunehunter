@@ -1,5 +1,5 @@
 import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
-import { fadeInAndOut } from "@/helpers/animations";
+import { fadeInAndOut } from "@/styles/animations";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import NoDataMessage from "./NoDataMessage";

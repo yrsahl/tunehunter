@@ -1,4 +1,4 @@
-import { growIn, slideInAndOutFromAbove } from "@/helpers/animations";
+import { growIn, slideInAndOutFromAbove } from "@/styles/animations";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
 import { useSearchSettingsStore } from "@/hooks/stores/useSearchSettingsStore";
 import { AnimatePresence, motion } from "framer-motion";

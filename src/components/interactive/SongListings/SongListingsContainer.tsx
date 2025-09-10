@@ -1,5 +1,5 @@
 import { useSongListingContext } from "@/contexts/SongListingContext";
-import { CountryCode } from "@/helpers/region";
+import { CountryCode } from "@/lib/validators";
 import { songVendorArray } from "@/server/db/schema";
 import dynamic from "next/dynamic";
 import SongPreview from "./SongPreview";

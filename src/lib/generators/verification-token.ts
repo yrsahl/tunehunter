@@ -1,7 +1,7 @@
 import { ConfirmMailSchema, VerificationCodeSchema } from "@/server/api/schemas/account-schemas";
-import { api } from "@/utils/api";
+import { api } from "@/lib/api";
 import { z } from "zod";
-import { generateRandomNumbers } from "./random-generators";
+import { generateRandomNumbers } from ".";
 
 const useVerificationToken = () => {
   const utils = api.useUtils();

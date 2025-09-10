@@ -1,4 +1,4 @@
-import { requestNewAccessToken } from "@/helpers/spotify/fetch-spotify-tokens";
+import { requestNewAccessToken } from "@/services/spotify";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { db } from "@/server/db";
 import { accounts } from "@/server/db/schema";

@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { CountryCode } from "@/helpers/region";
+import { CountryCode } from "@/lib/validators";
 
 interface SongListingRowSkeletonProps {
   store: string;

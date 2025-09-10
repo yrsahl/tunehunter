@@ -1,4 +1,4 @@
-import { isLocale, Locale } from "@/helpers/lang";
+import { isLocale, Locale } from "@/lib/validators";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect } from "react";

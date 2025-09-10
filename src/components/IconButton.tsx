@@ -1,4 +1,4 @@
-import { type CustomIconType, type CustomIconVariant } from "@/helpers/custom-icons";
+import { type CustomIconType, type CustomIconVariant } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { type ButtonHTMLAttributes, type FC } from "react";
 import CustomIcon from "./CustomIcon";

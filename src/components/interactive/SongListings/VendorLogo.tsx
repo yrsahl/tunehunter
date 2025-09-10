@@ -1,4 +1,4 @@
-import { countryNamesEnglish } from "@/helpers/region";
+import { countryNamesEnglish } from "@/lib/validators";
 
 interface VendorLogoProps {
   store: string;

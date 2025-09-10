@@ -1,4 +1,4 @@
-import { isNextAuthError, NextAuthError } from "@/helpers/nextauth-errors";
+import { isNextAuthError, NextAuthError } from "@/lib/constants/auth-errors";
 import { useEffect, useState } from "react";
 import useRouterWithHelpers from "./useRouterWithHelpers";
 

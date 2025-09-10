@@ -3,7 +3,7 @@ import { useEventEmitter } from "@/hooks/useEventEmitter";
 import useSpotifySongData, { SpotifyTabData } from "@/hooks/useSpotifySongData";
 import { AppRouter } from "@/server/api/root";
 import { SpotifyPlaybackStateShort } from "@/types/spotify-playback-types";
-import { api } from "@/utils/api";
+import { api } from "@/lib/api";
 import { inferProcedureOutput } from "@trpc/server";
 import { useSession } from "next-auth/react";
 import { createContext, ReactNode, useContext, useEffect } from "react";

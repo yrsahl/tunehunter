@@ -1,8 +1,8 @@
-import { playJingle } from "@/helpers/play-jingle";
-import { signInWithProvider } from "@/helpers/sign-in";
-import { ErrorFormat } from "@/helpers/trpc-errors";
-import { wait } from "@/helpers/wait";
-import { api } from "@/utils/api";
+import { playJingle } from "@/lib/browser";
+import { signInWithProvider } from "@/lib/auth";
+import { ErrorFormat } from "@/lib/constants/trpc-errors";
+import { wait } from "@/lib/async";
+import { api } from "@/lib/api";
 import { signOut, useSession } from "next-auth/react";
 import { toast } from "sonner";
 import useRouterWithHelpers from "./useRouterWithHelpers";

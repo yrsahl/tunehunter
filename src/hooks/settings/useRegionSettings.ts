@@ -4,8 +4,8 @@ import {
   countryNamesEnglish,
   isCountryCode,
   sortRegions,
-} from "@/helpers/region";
-import { getUserLocation } from "@/helpers/user-location";
+} from "@/lib/validators";
+import { getUserLocation } from "@/lib/browser";
 import { iso1A2Code } from "@rapideditor/country-coder"; // ESM import named
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { useSession } from "next-auth/react";

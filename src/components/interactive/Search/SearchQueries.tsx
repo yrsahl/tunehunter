@@ -1,5 +1,5 @@
 import { useQueryDataContext } from "@/contexts/QueryDataContext";
-import { fadeInAndOut } from "@/helpers/animations";
+import { fadeInAndOut } from "@/styles/animations";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
 import useSearch from "@/hooks/useSearch";
 import { motion } from "framer-motion";

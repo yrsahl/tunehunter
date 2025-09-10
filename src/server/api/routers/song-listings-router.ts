@@ -1,4 +1,4 @@
-import { fetchVendorData } from "@/helpers/vendor-data/fetch-vendor-data";
+import { fetchVendorData } from "@/services/vendors";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { songListings } from "@/server/db/schema";
 import { SongListingSchema } from "../schemas/song-listings-schemas";

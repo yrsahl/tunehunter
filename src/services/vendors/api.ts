@@ -1,7 +1,7 @@
 import { NewSongListing } from "@/server/api/schemas/song-listings-schemas";
 import { ITunesData } from "@/types/itunes-types";
 import axios from "axios";
-import { filterListings } from "./format-vendor-data";
+import { filterListings } from ".";
 
 // Interfaces
 interface VendorDataSuccessResponse {

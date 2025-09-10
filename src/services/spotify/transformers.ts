@@ -1,4 +1,4 @@
-import { fetchSpotifyArtistData } from "./fetch-spotify-data";
+import { fetchSpotifyArtistData } from ".";
 
 export const amendArtistData = async (accessToken: string, artistIds: string[]) => {
   // 1. Get data from Spotify API

@@ -1,4 +1,4 @@
-import { CountryCode } from "@/helpers/region";
+import { CountryCode } from "@/lib/validators";
 import { create } from "zustand";
 
 interface SearchState {

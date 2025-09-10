@@ -1,5 +1,5 @@
 import IconButton from "@/components/IconButton";
-import { fadeInAndOut } from "@/helpers/animations";
+import { fadeInAndOut } from "@/styles/animations";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
 import useDeviceSize from "@/hooks/useDeviceSize";
 import useSearch from "@/hooks/useSearch";

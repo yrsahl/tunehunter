@@ -3,7 +3,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { useDisabledTabStore } from "@/hooks/stores/useDisabledTabStore";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { cn } from "@/lib/utils";
-import { api } from "@/utils/api";
+import { api } from "@/lib/api";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import type { SearchTab } from "./SearchTabBar";

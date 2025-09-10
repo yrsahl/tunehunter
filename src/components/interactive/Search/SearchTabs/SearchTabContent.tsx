@@ -1,4 +1,4 @@
-import { fadeInAndOut } from "@/helpers/animations";
+import { fadeInAndOut } from "@/styles/animations";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import HistoryTable from "../SearchTabContent/HistoryTable";

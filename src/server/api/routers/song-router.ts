@@ -1,4 +1,4 @@
-import { amendArtistData } from "@/helpers/spotify/amend-artist-data";
+import { amendArtistData } from "@/services/spotify";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import {
   artistGenres,

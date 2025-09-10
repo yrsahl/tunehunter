@@ -10,12 +10,12 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
-import { growIn } from "@/helpers/animations";
+import { growIn } from "@/styles/animations";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
 import useThemeSettings, { AutoThemePreferences } from "@/hooks/settings/useThemeSettings";
 import useAuthError from "@/hooks/useAuthErrors";
 import useProfileFunctions from "@/hooks/useProfileFunctions";
-import { api } from "@/utils/api";
+import { api } from "@/lib/api";
 import clsx from "clsx";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";

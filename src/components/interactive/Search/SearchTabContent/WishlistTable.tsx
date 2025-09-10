@@ -1,4 +1,4 @@
-import { fadeInAndOut } from "@/helpers/animations";
+import { fadeInAndOut } from "@/styles/animations";
 import useWishlist from "@/hooks/useWishlist";
 import { AnimatePresence, motion } from "framer-motion";
 import NoDataMessage from "./NoDataMessage";

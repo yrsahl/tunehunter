@@ -1,5 +1,5 @@
 import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
-import { api } from "@/utils/api";
+import { api } from "@/lib/api";
 import useRegionSettings from "./settings/useRegionSettings";
 
 const useWishlist = () => {

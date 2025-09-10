@@ -1,4 +1,4 @@
-import { api } from "@/utils/api";
+import { api } from "@/lib/api";
 import { render, RenderOptions } from "@testing-library/react";
 import { SessionProvider } from "next-auth/react";
 import { ReactElement } from "react";

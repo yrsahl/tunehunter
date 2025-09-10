@@ -1,4 +1,4 @@
-import { UserLocation } from "./user-location";
+import { UserLocation } from "@/lib";
 
 export const fetchDayTimeStatus = async ({ latitude, longitude }: UserLocation) => {
   const response = await fetch(

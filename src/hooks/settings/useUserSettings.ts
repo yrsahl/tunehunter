@@ -1,5 +1,5 @@
-import { Locale } from "@/helpers/lang";
-import { api } from "@/utils/api";
+import { Locale } from "@/lib/validators";
+import { api } from "@/lib/api";
 
 const useUserSettings = (userId: string | undefined) => {
   const mutateSettings = api.user.setUserSettings.useMutation();

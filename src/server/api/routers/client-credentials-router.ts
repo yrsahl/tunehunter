@@ -1,4 +1,4 @@
-import { requestClientCredentialsToken } from "@/helpers/spotify/fetch-spotify-tokens";
+import { requestClientCredentialsToken } from "@/services/spotify";
 import { db } from "@/server/db";
 import { clientCredentialsToken } from "@/server/db/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";

@@ -1,4 +1,4 @@
-import customIcons, { type CustomIconType, type CustomIconVariant } from "@/helpers/custom-icons";
+import customIcons, { type CustomIconType, type CustomIconVariant } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { type FC } from "react";
 

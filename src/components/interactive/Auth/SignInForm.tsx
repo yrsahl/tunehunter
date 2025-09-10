@@ -1,11 +1,11 @@
 import { Separator } from "@/components/my-ui/separator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { isCustomIcon } from "@/helpers/custom-icons";
-import { signInWithProvider } from "@/helpers/sign-in";
+import { isCustomIcon } from "@/components/icons";
+import { signInWithProvider } from "@/lib/auth";
 import useAuthError from "@/hooks/useAuthErrors";
 import { type Providers } from "@/interfaces/providers";
-import { api } from "@/utils/api";
+import { api } from "@/lib/api";
 import { getProviders, signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState, type FC, type FormEvent } from "react";

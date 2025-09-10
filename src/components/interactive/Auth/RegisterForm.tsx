@@ -15,10 +15,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { growIn } from "@/helpers/animations";
+import { growIn } from "@/styles/animations";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
 import { RegisterSchema } from "@/server/api/schemas/account-schemas";
-import { api } from "@/utils/api";
+import { api } from "@/lib/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import { signIn } from "next-auth/react";

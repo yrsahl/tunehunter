@@ -1,6 +1,5 @@
 import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
-import { formatDate } from "@/helpers/format-date";
-import { formatDuration } from "@/helpers/format-duration";
+import { formatDate, formatDuration } from "@/lib/formatters";
 import { AppRouter } from "@/server/api/root";
 import { inferProcedureOutput } from "@trpc/server";
 import { Album, Calendar, Clock, HeartIcon, Music, Play } from "lucide-react";

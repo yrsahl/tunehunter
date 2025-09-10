@@ -1,5 +1,5 @@
 import { SpotifyTrack } from "@/types/spotify-types";
-import { api } from "@/utils/api";
+import { api } from "@/lib/api";
 
 const useDb = () => {
   const storeQueryResults = api.song.storeQueryResults.useMutation();
