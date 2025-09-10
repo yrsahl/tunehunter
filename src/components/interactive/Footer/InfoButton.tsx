@@ -80,7 +80,7 @@ const InfoButton = () => {
                   <p>
                     ... has one purpose: It finds you the music you want to buy, quicker. TuneHunter
                     seraches across different online stores like Beatport, Bandcamp or Apple Music
-                    to show you where it is available, in what quality and to what price.
+                    to show you where a track is available, in what quality, and at what price.
                   </p>
                   {!loggedIn && (
                     <p className="flex flex-col gap-[10px]">
