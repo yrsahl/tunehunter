@@ -9,7 +9,7 @@ const SongPreviewSkeleton = () => {
         <Skeleton className="h-48 w-48 rounded-3xl drop-shadow-lg" />
 
         <div className="flex flex-grow flex-col justify-evenly">
-          <div className="flex flex-col gap-2 overflow-scroll p-0">
+          <div className="flex flex-col gap-2 p-0">
             {/* Artist & Title */}
             <Skeleton className="my-1 h-5 w-36" />
             <Skeleton className="my-1 h-4 w-32" />
