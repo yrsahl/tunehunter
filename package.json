@@ -53,7 +53,7 @@
     "input-otp": "^1.2.4",
     "lodash": "^4.17.21",
     "lucide-react": "^0.359.0",
-    "next": "^14.1.0",
+    "next": "^14.2.0",
     "next-auth": "^4.24.6",
     "next-axiom": "^0.*",
     "next-seo": "^6.5.0",
@@ -74,7 +74,7 @@
   "devDependencies": {
     "@types/eslint": "^8.56.2",
     "@types/lodash": "^4.17.4",
-    "@types/node": "^20.11.20",
+    "@types/node": "^22.0.0",
     "@types/pg": "^8.11.2",
     "@types/react": "^18.2.57",
     "@types/react-dom": "^18.2.19",
@@ -91,7 +91,7 @@
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.12",
     "tailwindcss": "^3.4.1",
-    "typescript": "~5.3.0"
+    "typescript": "^5.5.0"
   },
   "ct3aMetadata": {
     "initVersion": "7.27.0"
