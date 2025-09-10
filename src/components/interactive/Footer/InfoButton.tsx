@@ -78,8 +78,8 @@ const InfoButton = () => {
               <div className="flex flex-col gap-10 text-sm text-inherit md:text-base">
                 <div className="flex flex-col gap-4 text-foreground/70">
                   <p>
-                    ... has one purpose: It finds you the music you want to buy, quicker. TuneHunter
-                    seraches across different online stores like Beatport, Bandcamp or Apple Music
+                    ... has one purpose: It finds you the music you want to buy, faster. TuneHunter
+                    searches across different online stores like Beatport, Bandcamp, or Apple Music
                     to show you where a track is available, in what quality, and at what price.
                   </p>
                   {!loggedIn && (
@@ -161,7 +161,7 @@ const InfoButton = () => {
                           height={isSmallDevice ? "16px" : "20px"}
                           width={isSmallDevice ? "16px" : "20px"}
                         />
-                        <span>Buy me a coffee</span>
+                        <span>Support me</span>
                       </div>
                     </Button>
                     <AnimatePresence mode="wait">
