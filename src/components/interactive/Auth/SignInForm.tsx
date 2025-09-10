@@ -88,6 +88,7 @@ const SignInForm: FC<IProps> = ({ email, setEmail, setMenuState }) => {
     <div className="flex flex-col gap-4">
       <form className="flex flex-col gap-4" onSubmit={handleSignInWithEmail}>
         <Input
+          data-testid="auth-email-input"
           type="email"
           placeholder="xyz@gmail.com"
           className="border-2 border-background placeholder:text-foreground/50"
@@ -95,6 +96,7 @@ const SignInForm: FC<IProps> = ({ email, setEmail, setMenuState }) => {
           onChange={(e) => setEmail(e.target.value)}
         />
         <IconButton
+          data-testid="signin-email-button"
           type="submit"
           text="Sign In with E-Mail"
           disabled={!email}
@@ -109,6 +111,7 @@ const SignInForm: FC<IProps> = ({ email, setEmail, setMenuState }) => {
         Object.values(OAuthProviders).map((provider, index) => (
           <div key={provider?.id ?? index}>
             <IconButton
+              data-testid={`signin-${provider.id}-button`}
               icon={isCustomIcon(provider.id) ? provider.id : "fallback"}
               text={`Sign In with ${provider.name}`}
               size="lg"

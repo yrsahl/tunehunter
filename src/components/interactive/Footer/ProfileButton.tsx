@@ -65,6 +65,7 @@ const ProfileButton = () => {
         className="flex justify-center"
       >
         <Button
+          data-testid={status === "authenticated" ? "user-menu" : "login-button"}
           variant="primary"
           size={buttonSize}
           className={cn(

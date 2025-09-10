@@ -98,6 +98,7 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = () 
         ref={formRef}
       >
         <Input
+          data-testid="search-input"
           type="text"
           placeholder={currentPlaceholder}
           sizeVariant="lg"

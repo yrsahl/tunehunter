@@ -83,7 +83,7 @@ const ProfileMenu = () => {
       {/* Picture & name */}
       <div className="relative flex flex-row items-center gap-4 pb-2 pt-2">
         <ChangeAvatarModal>
-          <div className="relative">
+          <div data-testid="change-avatar-button" className="relative">
             <motion.div
               className="absolute inset-0 z-20 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-foreground bg-black bg-opacity-50"
               initial={{ opacity: 0 }}
@@ -111,6 +111,7 @@ const ProfileMenu = () => {
           <ChangeMailModal open={changeMailDialogOpen} setOpen={setChangeMailDialogOpen}>
             <div>
               <IconButton
+                data-testid="change-email-button"
                 icon="edit"
                 variant="ghostPrimary"
                 size="icon"
@@ -129,7 +130,7 @@ const ProfileMenu = () => {
           Region
         </Label>
         <div className="col-span-2">
-          <Select onValueChange={changeRegion} value={region}>
+          <Select data-testid="region-select" onValueChange={changeRegion} value={region}>
             <SelectTrigger
               id="region"
               className="h-9 max-w-36 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 font-thin text-foreground focus:ring-0 focus:ring-offset-0 md:max-w-44 md:text-base"
@@ -144,7 +145,11 @@ const ProfileMenu = () => {
             </SelectTrigger>
             <SelectContent>
               {sortedRegions.map((region) => (
-                <SelectItem key={region} value={region.toLowerCase()}>
+                <SelectItem
+                  data-testid={`region-option-${region.toLowerCase()}`}
+                  key={region}
+                  value={region.toLowerCase()}
+                >
                   {createRegionName(region)}
                 </SelectItem>
               ))}
@@ -153,6 +158,7 @@ const ProfileMenu = () => {
         </div>
         <div className="col-span-1 flex h-9 items-center justify-center">
           <IconButton
+            data-testid="auto-detect-region-button"
             variant="ghostPrimary"
             size="icon"
             icon="mapPin"
@@ -210,7 +216,11 @@ const ProfileMenu = () => {
           <span>Theme</span>
         </p>
         <div className="col-span-3">
-          <Select value={autoThemePreference} onValueChange={changeAutoThemePreference}>
+          <Select
+            data-testid="theme-select"
+            value={autoThemePreference}
+            onValueChange={changeAutoThemePreference}
+          >
             <SelectTrigger
               id="region"
               className="h-9 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 font-thin text-foreground focus:ring-0 focus:ring-offset-0 md:text-base"
@@ -221,7 +231,12 @@ const ProfileMenu = () => {
             </SelectTrigger>
             <SelectContent>
               {AutoThemePreferences.map((autoThemePreference) => (
-                <SelectItem key={autoThemePreference} value={autoThemePreference} className="py-2">
+                <SelectItem
+                  data-testid={`theme-option-${autoThemePreference}`}
+                  key={autoThemePreference}
+                  value={autoThemePreference}
+                  className="py-2"
+                >
                   {autoThemePreference === "auto" ? "Determine by sunset" : "Choose manually"}
                 </SelectItem>
               ))}
@@ -243,6 +258,7 @@ const ProfileMenu = () => {
             Off
           </span>
           <Switch
+            data-testid="particles-toggle"
             id="minimumlength"
             checked={particlePreference || false}
             onCheckedChange={changeParticlePreference}
@@ -300,6 +316,7 @@ const ProfileMenu = () => {
       {/* Log out */}
       <div className="mb-2 mt-6 w-fit">
         <IconButton
+          data-testid="logout-button"
           onClick={handleSignOut}
           text="Log out"
           variant="primary"

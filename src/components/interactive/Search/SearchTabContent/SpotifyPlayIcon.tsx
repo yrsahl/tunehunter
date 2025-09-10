@@ -98,6 +98,7 @@ const SpotifyPlayIcon = ({ songId }: SpotifyPlayIconProps) => {
 
   return (
     <motion.button
+      data-testid={`spotify-play-button-${songId}`}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 1 }}
       className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-primary"

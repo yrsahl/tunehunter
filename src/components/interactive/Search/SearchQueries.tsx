@@ -17,6 +17,7 @@ const SearchQueries = () => {
 
   return (
     <motion.div
+      data-testid="search-results"
       {...fadeInAndOut()}
       className="hide-scrollbars absolute z-50 h-60 w-full overflow-scroll rounded-b-lg border border-t-[1px] border-primary bg-background/30 text-sm backdrop-blur-md md:text-base"
     >
