@@ -1,5 +1,5 @@
-import { fadeInAndOut } from "@/styles/animations";
 import { cn } from "@/lib/utils";
+import { fadeInAndOut } from "@/styles/animations";
 import { motion } from "framer-motion";
 import HistoryTable from "../SearchTabContent/HistoryTable";
 import SpotifyTable from "../SearchTabContent/SpotifyTable";

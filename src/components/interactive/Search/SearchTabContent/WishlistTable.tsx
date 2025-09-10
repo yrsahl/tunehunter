@@ -1,5 +1,5 @@
-import { fadeInAndOut } from "@/styles/animations";
 import useWishlist from "@/hooks/useWishlist";
+import { fadeInAndOut } from "@/styles/animations";
 import { AnimatePresence, motion } from "framer-motion";
 import NoDataMessage from "./NoDataMessage";
 import SkeletonTable from "./SkeletonTable";

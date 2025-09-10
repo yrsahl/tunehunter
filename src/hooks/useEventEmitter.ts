@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
 import globalEventEmitter from "@/hooks/shared";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export const useEventEmitter = <T>(eventName: string) => {
   const [eventData, setEventData] = useState<T>();

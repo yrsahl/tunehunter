@@ -1,2 +1,2 @@
 // Email service integration
-export * from './resend'
+export * from "./resend";

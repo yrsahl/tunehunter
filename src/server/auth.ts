@@ -6,8 +6,8 @@ import { type Adapter } from "next-auth/adapters";
 import { env } from "@/env";
 import { eq } from "drizzle-orm";
 
-import { requestNewAccessToken } from "@/services/spotify";
 import { db } from "@/server/db";
+import { requestNewAccessToken } from "@/services/spotify";
 import { pgTable } from "drizzle-orm/pg-core";
 import EmailProvider from "next-auth/providers/email";
 import SpotifyProvider from "next-auth/providers/spotify";

@@ -1,4 +1,3 @@
-import { amendArtistData } from "@/services/spotify";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import {
   artistGenres,
@@ -10,6 +9,7 @@ import {
   trendingViewLast7Days,
   trendingViewToday,
 } from "@/server/db/schema";
+import { amendArtistData } from "@/services/spotify";
 import { TrendingTrack, TrendingTracks } from "@/types/song-types";
 import { desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";

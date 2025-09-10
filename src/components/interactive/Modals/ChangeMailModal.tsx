@@ -24,10 +24,10 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import useVerificationToken from "@/lib/generators/verification-token";
 import useProfileFunctions from "@/hooks/useProfileFunctions";
-import { ConfirmMailSchema, VerificationCodeSchema } from "@/server/api/schemas/account-schemas";
 import { api } from "@/lib/api";
+import useVerificationToken from "@/lib/generators/verification-token";
+import { ConfirmMailSchema, VerificationCodeSchema } from "@/server/api/schemas/account-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ReactNode, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";

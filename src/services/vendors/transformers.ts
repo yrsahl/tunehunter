@@ -1,5 +1,5 @@
-import { NewSongListing } from "@/server/api/schemas/song-listings-schemas";
 import { currencySymbolMap } from "@/lib/formatters/currency";
+import { NewSongListing } from "@/server/api/schemas/song-listings-schemas";
 
 /**
  * This function checks an array of VendorTracks and returns the closest matching song by duration.

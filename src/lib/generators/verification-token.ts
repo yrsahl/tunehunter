@@ -1,5 +1,5 @@
-import { ConfirmMailSchema, VerificationCodeSchema } from "@/server/api/schemas/account-schemas";
 import { api } from "@/lib/api";
+import { ConfirmMailSchema, VerificationCodeSchema } from "@/server/api/schemas/account-schemas";
 import { z } from "zod";
 import { generateRandomNumbers } from ".";
 

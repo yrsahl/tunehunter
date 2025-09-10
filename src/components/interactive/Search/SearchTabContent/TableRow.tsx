@@ -1,8 +1,8 @@
 import IconButton from "@/components/IconButton";
-import { fadeInAndOut } from "@/styles/animations";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
 import useDeviceSize from "@/hooks/useDeviceSize";
 import useSearch from "@/hooks/useSearch";
+import { fadeInAndOut } from "@/styles/animations";
 import { Track } from "@/types/song-types";
 import clsx from "clsx";
 import { motion } from "framer-motion";

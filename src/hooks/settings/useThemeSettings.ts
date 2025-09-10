@@ -1,5 +1,5 @@
-import { fetchDayTimeStatus } from "@/lib/time";
 import { getUserLocation, UserLocation } from "@/lib/browser";
+import { fetchDayTimeStatus } from "@/lib/time";
 import { useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 import { useEffect } from "react";

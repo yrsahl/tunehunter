@@ -1,7 +1,7 @@
 import { useQueryDataContext } from "@/contexts/QueryDataContext";
-import { fadeInAndOut } from "@/styles/animations";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
 import useSearch from "@/hooks/useSearch";
+import { fadeInAndOut } from "@/styles/animations";
 import { motion } from "framer-motion";
 
 interface SearchTableProps {}

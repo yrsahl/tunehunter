@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
 import { z } from "zod";
 
-import { sendVerificationCodeEmail } from "@/services/email";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
 import { accounts, users, verificationTokens } from "@/server/db/schema";
+import { sendVerificationCodeEmail } from "@/services/email";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import { RegisterResponse, RegisterSchema } from "../schemas/account-schemas";

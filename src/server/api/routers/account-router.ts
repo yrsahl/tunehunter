@@ -1,7 +1,7 @@
-import { requestNewAccessToken } from "@/services/spotify";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { db } from "@/server/db";
 import { accounts } from "@/server/db/schema";
+import { requestNewAccessToken } from "@/services/spotify";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 

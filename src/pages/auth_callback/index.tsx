@@ -1,8 +1,8 @@
 import { RedirectIndicator } from "@/components/Indicators";
 import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
-import { playJingle } from "@/lib/browser";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { api } from "@/lib/api";
+import { playJingle } from "@/lib/browser";
 import type { NextPage } from "next";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";

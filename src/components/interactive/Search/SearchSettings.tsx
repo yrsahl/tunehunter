@@ -1,6 +1,6 @@
-import { growIn, slideInAndOutFromAbove } from "@/styles/animations";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
 import { useSearchSettingsStore } from "@/hooks/stores/useSearchSettingsStore";
+import { growIn, slideInAndOutFromAbove } from "@/styles/animations";
 import { AnimatePresence, motion } from "framer-motion";
 import { Cog } from "lucide-react";
 import { useSession } from "next-auth/react";

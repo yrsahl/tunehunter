@@ -1,6 +1,6 @@
-import { requestClientCredentialsToken } from "@/services/spotify";
 import { db } from "@/server/db";
 import { clientCredentialsToken } from "@/server/db/schema";
+import { requestClientCredentialsToken } from "@/services/spotify";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const clientCredentialsRouter = createTRPCRouter({

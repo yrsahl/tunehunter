@@ -1,6 +1,6 @@
 import { SongListingContextProvider } from "@/contexts/SongListingContext";
-import { slideInAndOutFromBottom } from "@/styles/animations";
 import useSearchStore from "@/hooks/stores/useSearchStore";
+import { slideInAndOutFromBottom } from "@/styles/animations";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef } from "react";
 import SongListingsContainer from "./SongListingsContainer";

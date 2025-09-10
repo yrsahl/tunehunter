@@ -8,11 +8,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { slideInAndOutFromAbove } from "@/styles/animations";
 import useDeviceSize from "@/hooks/useDeviceSize";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { cn } from "@/lib/utils";
 import { quicksand } from "@/pages/layout";
+import { slideInAndOutFromAbove } from "@/styles/animations";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { useState } from "react";

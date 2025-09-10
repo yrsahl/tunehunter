@@ -1,7 +1,7 @@
 import SearchSettings from "@/components/interactive/Search/SearchSettings";
+import useDb from "@/hooks/useDb";
 import { filterOutDuplicates } from "@/lib/filters";
 import { fetchSpotifySearchData } from "@/services/spotify";
-import useDb from "@/hooks/useDb";
 import { SpotifySearchData } from "@/types/spotify-types";
 import { createContext, ReactNode, useContext, useState } from "react";
 
