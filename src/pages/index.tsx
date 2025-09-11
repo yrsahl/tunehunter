@@ -5,7 +5,7 @@ import { AnimatePresence } from "framer-motion";
 import type { NextPage } from "next";
 import dynamic from "next/dynamic";
 
-const SongListings = dynamic(() => import("@/components/interactive/SongListings/SongListings"), {
+const SongListings = dynamic(() => import("@/components/interactive/Results/SongListings"), {
   ssr: false,
 });
 

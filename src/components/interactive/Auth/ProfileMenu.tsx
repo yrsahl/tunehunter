@@ -215,7 +215,7 @@ const ProfileMenu = () => {
         <p className="gap-1font-normal col-span-2 flex items-center justify-end font-normal">
           <span>Theme</span>
         </p>
-        <div className="col-span-3">
+        <div className="col-span-2">
           <Select
             data-testid="theme-select"
             value={autoThemePreference}
