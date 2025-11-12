@@ -79,8 +79,8 @@ const InfoButton = () => {
                 <div className="flex flex-col gap-4 text-foreground/70">
                   <p>
                     ... has one purpose: It finds you the music you want to buy, faster. TuneHunter
-                    searches across different online stores like Beatport, Bandcamp, or Apple Music
-                    to show you where a track is available, in what quality, and at what price.
+                    searches across Beatport, Bandcamp, Apple Music and Amazon Music to show you
+                    where it's available, in what quality, and at what price.
                   </p>
                   {!loggedIn && (
                     <p className="flex flex-col gap-[10px]">
@@ -93,12 +93,12 @@ const InfoButton = () => {
                         >
                           create an account
                         </Button>{" "}
-                        to unlock more features to help you with your search:
+                        to unlock more features:
                       </span>
                       <ul className="list-inside list-disc space-y-1 pl-2">
-                        <li>Viewing your search history</li>
-                        <li>Adding songs to your wish list</li>
-                        <li>Accessing your Spotify data</li>
+                        <li>View your search history</li>
+                        <li>Add songs to your wishlist</li>
+                        <li>Access your Spotify songs</li>
                       </ul>
                     </p>
                   )}

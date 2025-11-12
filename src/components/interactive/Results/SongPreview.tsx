@@ -61,7 +61,7 @@ export default function SongPreview({ songData, isLoading }: ISongPreviewProps) 
               {spotifyConnected ? (
                 <SpotifyPlayIcon songId={songData.id} />
               ) : (
-                <div className="flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-full border-2 border-foreground bg-slate-400">
+                <div className="flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-full bg-slate-400">
                   <Play className="h-6 w-6 text-foreground" />
                 </div>
               )}
