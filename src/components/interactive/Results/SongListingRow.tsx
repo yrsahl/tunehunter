@@ -2,6 +2,7 @@ import IconButton from "@/components/IconButton";
 import { useSongListingContext } from "@/contexts/SongListingContext";
 import useDeviceSize from "@/hooks/useDeviceSize";
 import { api } from "@/lib/api";
+import { cn } from "@/lib/utils";
 import { CountryCode } from "@/lib/validators";
 import { SongVendorType } from "@/server/db/schema";
 import { transformCurrencyStringToIcon } from "@/services/vendors";
@@ -19,6 +20,7 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
   const { getVendorResponse, getVendorResponseLoadingState } = useSongListingContext();
   const vendorResponse = getVendorResponse(vendor);
   const isVendorResponseLoading = getVendorResponseLoadingState(vendor);
+  const { isMobileDevice } = useDeviceSize();
 
   const { isSmallDevice } = useDeviceSize();
   const addUserActivity = api.userActivities.addUserActivity.useMutation();
@@ -62,13 +64,13 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
   return (
     <motion.tr whileHover={{ scale: 1.03 }} className="cursor-pointer" onClick={visitVendor}>
       {/* Store */}
-      <td>
+      <td className={cn(isSmallDevice && "pr-6")}>
         <VendorLogo store={vendor} region={region} />
       </td>
 
       {/* Quality */}
       <td>
-        <div className="flex flex-col justify-center text-sm md:text-base">
+        <div className="flex flex-col justify-center text-sm md:justify-normal md:text-base">
           <span>{format}</span>
           {quality !== "Multiple" && (
             <span className="text-xs opacity-50 md:text-sm">{quality}</span>
@@ -78,7 +80,7 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
 
       {/* Price */}
       <td>
-        <div className="flex items-center gap-4 text-sm md:text-base">
+        <div className="flex justify-center gap-4 text-sm sm:justify-normal md:text-base">
           <div className="inline-block">
             {price}
             {transformCurrencyStringToIcon(currency)}
@@ -87,18 +89,20 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
       </td>
 
       {/* Artist's share */}
-      <td>
-        <div className="flex flex-col gap-1">
-          <div className="h-1 w-[80%] rounded-full bg-primary/20 md:h-2">
-            {artistsShare && (
-              <div
-                className="h-1 rounded-full bg-success md:h-2"
-                style={{ width: `${artistsShare}%` }}
-              />
-            )}
+      {!isMobileDevice && (
+        <td>
+          <div className="flex flex-col gap-1">
+            <div className="h-1 w-[80%] rounded-full bg-primary/20 md:h-2">
+              {artistsShare && (
+                <div
+                  className="h-1 rounded-full bg-success md:h-2"
+                  style={{ width: `${artistsShare}%` }}
+                />
+              )}
+            </div>
           </div>
-        </div>
-      </td>
+        </td>
+      )}
 
       {/* Link */}
       <td>
@@ -107,7 +111,7 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
           variant="ghost"
           icon="externalArrow"
           iconSize={isSmallDevice ? "20px" : "24px"}
-          className="border-none"
+          className="mx-auto border-none md:mx-0"
         />
       </td>
     </motion.tr>
