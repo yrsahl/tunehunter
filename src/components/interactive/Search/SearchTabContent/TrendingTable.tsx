@@ -10,6 +10,9 @@ import TableRow from "./TableRow";
 
 const trendingSubTabs = ["today", "last_7_days", "last_30_days"] as const;
 export type TrendingSubTab = (typeof trendingSubTabs)[number];
+export const isTrendingSubTab = (value: string): value is TrendingSubTab => {
+  return trendingSubTabs.includes(value as TrendingSubTab);
+};
 
 // Today, Week, Month
 // Local, global

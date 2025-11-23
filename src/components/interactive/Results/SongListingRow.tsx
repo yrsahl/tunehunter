@@ -64,13 +64,13 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
   return (
     <motion.tr whileHover={{ scale: 1.03 }} className="cursor-pointer" onClick={visitVendor}>
       {/* Store */}
-      <td className={cn(isSmallDevice && "pr-6")}>
+      <td className={cn(isSmallDevice && "pr-2")}>
         <VendorLogo store={vendor} region={region} />
       </td>
 
       {/* Quality */}
       <td>
-        <div className="flex flex-col justify-center text-sm md:justify-normal md:text-base">
+        <div className="flex flex-col justify-center pl-4 text-sm sm:pl-0 md:justify-normal md:text-base">
           <span>{format}</span>
           {quality !== "Multiple" && (
             <span className="text-xs opacity-50 md:text-sm">{quality}</span>

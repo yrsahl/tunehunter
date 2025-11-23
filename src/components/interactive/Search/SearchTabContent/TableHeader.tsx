@@ -1,6 +1,7 @@
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -9,14 +10,14 @@ import useDeviceSize from "@/hooks/useDeviceSize";
 import { cn } from "@/lib/utils";
 import { Dispatch, SetStateAction } from "react";
 
-interface TableHeaderProps<T> {
+interface TableHeaderProps<T extends string> {
   subTabs: readonly T[];
   activeSubTab: T;
   setActiveSubTab: Dispatch<SetStateAction<T>>;
   className?: string;
 }
 
-const TableHeader = <T,>({
+const TableHeader = <T extends string>({
   subTabs,
   activeSubTab,
   setActiveSubTab,
@@ -25,24 +26,36 @@ const TableHeader = <T,>({
   const { isMobileDevice } = useDeviceSize();
 
   const activeSubTabName = String(activeSubTab).replaceAll("_", " ");
+  console.log("activeSubTabname", activeSubTabName);
+  const humanize = (s: string) => s.replaceAll("_", " ");
+  const isTypeT = (value: string): value is T => {
+    return subTabs.includes(value as T);
+  };
 
   if (isMobileDevice) {
     return (
-      <div className="absolute left-1/2 top-0 z-10 flex h-8 w-40 -translate-x-1/2 items-center justify-center overflow-hidden rounded-b-md border-[1px] border-t-0 border-primary bg-background">
-        <Select onValueChange={(value) => {}} value={activeSubTabName}>
+      <div className="absolute left-1/2 top-0 z-10 flex h-8 w-56 -translate-x-1/2 items-center justify-center overflow-hidden rounded-b-md border-[1px] border-t-0 border-primary bg-background">
+        <Select
+          onValueChange={(value) => {
+            if (!isTypeT(value)) return;
+            setActiveSubTab(value);
+          }}
+          value={activeSubTab}
+        >
           <SelectTrigger className="border-none text-sm capitalize outline-none ring-0 focus:ring-0">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
-            {subTabs.map((subTab) => (
-              <SelectItem
-                key={String(subTab)}
-                value={String(subTab)}
-                className="ring-none whitespace-nowrap border-none text-base capitalize transition-colors"
-              >
-                {String(subTab).replaceAll("_", " ")}
-              </SelectItem>
-            ))}
+          <SelectContent className="border-none">
+            <SelectGroup>
+              {subTabs.map((subTab) => (
+                <SelectItem
+                  value={String(subTab)}
+                  className="ring-none whitespace-nowrap border-none text-base capitalize transition-colors"
+                >
+                  {humanize(subTab)}
+                </SelectItem>
+              ))}
+            </SelectGroup>
           </SelectContent>
         </Select>
       </div>

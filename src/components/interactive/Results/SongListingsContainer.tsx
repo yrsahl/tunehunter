@@ -14,7 +14,7 @@ interface ISongListingsProps {
 
 const SongListingsContainer = ({ region }: ISongListingsProps) => {
   const { songData, isSongDataLoading } = useSongListingContext();
-  const { isExtraSmallDevice } = useDeviceSize();
+  const { isMobileDevice } = useDeviceSize();
 
   return (
     <div className="hide-scrollbars flex flex-row gap-12 overflow-hidden overflow-x-auto sm:h-96">
@@ -23,7 +23,7 @@ const SongListingsContainer = ({ region }: ISongListingsProps) => {
       </div>
 
       <table className="my-auto table w-full border-separate border-spacing-y-5 sm:h-[80%] sm:border-spacing-y-6 md:w-1/2">
-        {!isExtraSmallDevice && (
+        {!isMobileDevice && (
           <thead>
             <tr>
               <td className="w-20 text-sm font-bold normal-case opacity-0 sm:w-[70px] md:text-base">

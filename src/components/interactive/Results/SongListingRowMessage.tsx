@@ -28,7 +28,7 @@ const SongListingRowMessage = ({ message, store, region }: ISongListingRowMessag
       </td>
 
       {/* Message */}
-      <td colSpan={4} className="text-center text-base text-muted-foreground">
+      <td colSpan={4} className="text-center text-sm text-muted-foreground sm:text-base">
         {message}
       </td>
     </motion.tr>
