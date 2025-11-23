@@ -103,7 +103,7 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = () 
           placeholder={currentPlaceholder}
           sizeVariant="lg"
           className={cn(
-            "overflow-ellipsis border-2 border-primary px-14 text-base ring-0 transition-all duration-300 placeholder:text-muted-foreground focus-visible:ring-0 md:text-lg",
+            "overflow-ellipsis border-2 border-primary px-14 text-base ring-0 transition-all duration-300 placeholder:text-muted-foreground focus-visible:ring-0 sm:text-lg",
             queryData && showQueries && "rounded-b-none border-b-0",
           )}
           value={searchState.input}

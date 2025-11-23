@@ -2,8 +2,8 @@ import CustomIcon from "@/components/CustomIcon";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useDisabledTabStore } from "@/hooks/stores/useDisabledTabStore";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
-import { cn } from "@/lib/utils";
 import { api } from "@/lib/api";
+import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import type { SearchTab } from "./SearchTabBar";
@@ -77,7 +77,7 @@ const SearchTabButton = ({
             onClick={() => handleTabClick(searchTab)}
             disabled={!isTabEnabled}
             className={cn(
-              "whitespace-nowrap border-b-2 text-foreground transition-all enabled:hover:border-primary/50",
+              "whitespace-nowrap border-b-2 text-sm text-foreground transition-all enabled:hover:border-primary/50 sm:text-base",
               isTabActive ? "!border-primary" : "border-transparent",
               !isTabEnabled && "cursor-not-allowed text-muted-foreground/30",
             )}

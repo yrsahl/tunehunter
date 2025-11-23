@@ -1,3 +1,4 @@
+import useDeviceSize from "@/hooks/useDeviceSize";
 import { cn } from "@/lib/utils";
 import { fadeInAndOut } from "@/styles/animations";
 import { motion } from "framer-motion";
@@ -12,10 +13,14 @@ interface SearchTabContentProps {
 }
 
 const SearchTabContent = ({ activeSearchTab }: SearchTabContentProps) => {
+  const { isMobileDevice } = useDeviceSize();
+
+  const contentHeight = isMobileDevice ? "18rem" : "16rem";
+
   return (
     <motion.div
       initial={{ height: "0rem" }}
-      animate={{ height: "16rem" }}
+      animate={{ height: contentHeight }}
       exit={{ height: "0rem" }}
       transition={{ duration: 0.5, ease: "easeInOut" }}
       className="relative h-full w-full resize-y overflow-hidden rounded-3xl border-[1px] border-foreground/30 bg-primary/10 sm:pt-0 md:w-4/5 "

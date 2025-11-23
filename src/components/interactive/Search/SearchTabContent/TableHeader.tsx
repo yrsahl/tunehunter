@@ -58,7 +58,7 @@ const TableHeader = <T,>({
             key={String(subTab)}
             className={cn(
               // Hardcoded width of 32 to make all buttons the same size as the largest one (min-w-0 flex-1 doesn't work here)
-              "flex justify-center whitespace-nowrap text-base capitalize transition-colors hover:text-foreground sm:w-32",
+              "flex justify-center whitespace-nowrap text-sm capitalize transition-colors hover:text-foreground sm:text-base md:w-32",
               className,
               subTab === activeSubTab ? "text-foreground" : "text-muted-foreground",
             )}

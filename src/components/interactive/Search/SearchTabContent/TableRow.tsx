@@ -2,6 +2,7 @@ import IconButton from "@/components/IconButton";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
 import useDeviceSize from "@/hooks/useDeviceSize";
 import useSearch from "@/hooks/useSearch";
+import { cn } from "@/lib/utils";
 import { fadeInAndOut } from "@/styles/animations";
 import { Track } from "@/types/song-types";
 import clsx from "clsx";
@@ -35,7 +36,12 @@ const TableRow = ({
   };
 
   return (
-    <motion.tr {...fadeInAndOut(0.3)} className="max-h-16" layout>
+    <motion.tr
+      {...fadeInAndOut(0.3)}
+      className={cn("max-h-16", isSmallDevice && "cursor-pointer")}
+      layout
+      onClick={isSmallDevice ? handleSearchClick : () => {}}
+    >
       <td className="py-2 pr-4 sm:pr-8">
         <div className="flex items-center gap-4">
           <div className="avatar">
@@ -52,42 +58,46 @@ const TableRow = ({
       </td>
       {/* Extra Element */}
       <td className={clsx("align-middle", extraElement ? "pr-2 sm:pr-4" : "pr-0")}>
-        <div className="flex text-sm md:text-base">{extraElement}</div>
+        <div className="flex text-sm sm:text-base">{extraElement}</div>
       </td>
       {/* Artist(s) */}
       <td className="pr-3 sm:pr-4">
-        <p className="max-w-32 overflow-hidden text-ellipsis whitespace-nowrap text-sm md:text-base">
+        <p className="max-w-32 overflow-hidden text-ellipsis whitespace-nowrap text-sm sm:text-base">
           {primaryArtist}
         </p>
         {artists[1] && (
-          <p className="max-w-28 overflow-hidden text-ellipsis whitespace-nowrap text-sm text-muted-foreground md:text-base">
+          <p className="max-w-28 overflow-hidden text-ellipsis whitespace-nowrap text-sm text-muted-foreground sm:text-base">
             {artists[1].name}
           </p>
         )}
       </td>
       {/* Title */}
       <td className="pr-2 sm:pr-4">
-        <span className="block max-w-48 overflow-hidden text-ellipsis whitespace-nowrap text-sm md:text-base">
+        <span className="block max-w-48 overflow-hidden text-ellipsis whitespace-nowrap text-sm sm:text-base">
           {song.title}
         </span>
       </td>
-      {/* Duration */}
-      {showDuration && (
-        <td className="pr-2 align-middle text-xs text-foreground/50 sm:pr-4 md:text-sm">
-          <span>{new Date(song.duration).toISOString().substr(14, 5)}</span>
-        </td>
-      )}
-      {/* Search */}
-      {showSearch && (
-        <td className="pl-2 text-right align-middle sm:pl-4">
-          <IconButton
-            variant="primary"
-            text="Search"
-            size={buttonSize}
-            textStyle="uppercase text-xs"
-            onClick={handleSearchClick}
-          />
-        </td>
+      {!isSmallDevice && (
+        <>
+          {/* Duration */}
+          {showDuration && (
+            <td className="pr-2 align-middle text-xs text-foreground/50 sm:pr-4 md:text-sm">
+              <span>{new Date(song.duration).toISOString().substr(14, 5)}</span>
+            </td>
+          )}
+          {/* Search */}
+          {showSearch && (
+            <td className="pl-2 text-right align-middle sm:pl-4">
+              <IconButton
+                variant="primary"
+                text="Search"
+                size={buttonSize}
+                textStyle="uppercase text-xs"
+                onClick={handleSearchClick}
+              />
+            </td>
+          )}
+        </>
       )}
     </motion.tr>
   );

@@ -1,13 +1,11 @@
 ---- CORE
 
-Fix double login
+Fix mobile table headers
 
 Incorporate APIs
 - Amazon
 - Bandcamp
 - Beatport
-
-Fix mobile table headers
 
 If data is older than 30 days: refresh
 

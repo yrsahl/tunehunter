@@ -12,7 +12,7 @@ const TableBody = ({ hasHeader, children }: TableProps) => {
       <div
         className={clsx(
           "hide-scrollbars relative h-full w-full overflow-scroll px-3 pb-4 sm:px-5 md:px-7",
-          hasHeader ? "pt-8 md:pt-12" : "pt-4",
+          hasHeader ? "pt-10 sm:pt-12 md:pt-12" : "pt-2 sm:pt-4",
         )}
       >
         <table className="w-full">
