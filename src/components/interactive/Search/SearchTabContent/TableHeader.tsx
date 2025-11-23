@@ -34,7 +34,7 @@ const TableHeader = <T extends string>({
 
   if (isMobileDevice) {
     return (
-      <div className="absolute left-1/2 top-0 z-10 flex h-8 w-56 -translate-x-1/2 items-center justify-center overflow-hidden rounded-b-md border-[1px] border-t-0 border-primary bg-background">
+      <div className="absolute left-1/2 top-0 z-10 flex h-8 w-48 -translate-x-1/2 items-center justify-center overflow-hidden rounded-b-md border-[1px] border-t-0 border-primary bg-background">
         <Select
           onValueChange={(value) => {
             if (!isTypeT(value)) return;
