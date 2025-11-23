@@ -1,7 +1,6 @@
 import { RedirectIndicator } from "@/components/Indicators";
 import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
-import { api } from "@/lib/api";
 import { playJingle } from "@/lib/browser";
 import type { NextPage } from "next";
 import { useSession } from "next-auth/react";
@@ -10,25 +9,13 @@ import { toast } from "sonner";
 
 const AuthCallbackPage: NextPage = ({}) => {
   const router = useRouterWithHelpers();
-  const { data: userData, status } = useSession();
+  const { status } = useSession();
   const [error, setError] = useState<string | null>(null);
   const loggedIn = status === "authenticated";
 
   // Check for spotify user data
   const { spotifyUserData } = useSpotifyUserDataContext();
-
-  // Check if we got an access key
-  const { data: spotifyAccountData, isLoading: isSpotifyAccountDataLoading } =
-    api.account.getSpotifyAccountById.useQuery(
-      { userId: userData?.user.id! },
-      {
-        enabled: loggedIn,
-        refetchInterval: 30 * 60 * 1000, // Refetch every 30 minutes to refresh the access token
-        refetchIntervalInBackground: true,
-        refetchOnWindowFocus: false,
-      },
-    );
-  const accessToken = spotifyAccountData?.data?.access_token;
+  const spotifyAccountName = spotifyUserData?.profileData?.display_name;
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -36,14 +23,8 @@ const AuthCallbackPage: NextPage = ({}) => {
       // setError("You're not logged in!");
       return;
     }
-    if (isSpotifyAccountDataLoading || !spotifyUserData) {
+    if (!spotifyUserData) {
       // setError("We're still loading your Spotify account data.");
-      return;
-    }
-    if (!accessToken) {
-      // setError(
-      //   "We did not receive an API key from Spotify to query your data. Did you allow us to read your data?",
-      // );
       return;
     }
 
@@ -52,11 +33,11 @@ const AuthCallbackPage: NextPage = ({}) => {
 
     // Toast
     if (actionParam === "link") {
-      toast.success(
-        `Spotify account ${spotifyUserData?.profileData?.display_name} successfully linked!`,
-        { duration: 1800 },
-      );
-    } else {
+      toast.success(`Spotify account ${spotifyAccountName} successfully linked!`, {
+        duration: 1800,
+      });
+    }
+    if (actionParam === "login") {
       toast.success("Successfully logged in.", { duration: 1800 });
     }
 
@@ -65,7 +46,7 @@ const AuthCallbackPage: NextPage = ({}) => {
     setTimeout(() => {
       router.push(redirectPath);
     }, 2000);
-  }, [router.isReady, loggedIn, isSpotifyAccountDataLoading, spotifyUserData, accessToken]);
+  }, [router.isReady, loggedIn, spotifyAccountName]);
 
   return (
     // The weird 280px value comes from the min-h-72 from the main page size; however flex calculates the 2rem gap differently in both cases for some reason so I manually adjusted

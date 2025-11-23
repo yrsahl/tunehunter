@@ -306,7 +306,7 @@ const ProfileMenu = () => {
                 variant="ghostDestructive"
                 size="sm"
                 icon="x"
-                className="flex justify-start px-0"
+                className="flex justify-start"
               />
             </div>
           </ConfirmationModal>

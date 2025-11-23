@@ -60,7 +60,7 @@ export const SpotifyUserDataProvider = ({ children }: { children: ReactNode }) =
     }
   };
 
-  // Refresh on any change to the access token (new/renewed -> fetch, stale/logged out -> delete)
+  // Fetch/refetch on any change to the access token (new/renewed -> fetch, stale/logged out -> delete)
   useEffect(() => {
     refetchSpotifyUserData();
   }, [userAccessToken]);

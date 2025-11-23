@@ -12,15 +12,15 @@ interface IProps {
 const MagicLinkForm: FC<IProps> = ({ email, setMenuState }) => {
   return (
     <AuthCard
-      description={`We sent a mail to ${email}! If you can't find it, please also have a look in your spam folder.`}
+      description={`We sent a mail to ${email}! If you can't find it, please have a look in your spam folder.`}
       size="small"
     >
       <div className="mt-3 flex w-full flex-col items-center gap-1">
         <a href="mailto:" className="w-4/5">
           <IconButton text="Open mails" icon="mailOpen" size={"lg"} variant="primary" />
         </a>
-        <Button variant="link" onClick={() => setMenuState(MenuState.SignIn)}>
-          Go Back
+        <Button variant="link" onClick={() => setMenuState(MenuState.SignIn)} className="uppercase">
+          Back
         </Button>
       </div>
     </AuthCard>

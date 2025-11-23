@@ -77,10 +77,10 @@ const SignInForm: FC<IProps> = ({ email, setEmail, setMenuState }) => {
         });
     });
     toast.promise(mailSentPromise, {
-      loading: "Trying to send you an e-mail...",
+      loading: "Sending you an e-mail...",
       success: () => {
         setMenuState(MenuState.MagicLinkSent);
-        return "An e-mail with a login link has been sent.";
+        return "E-mail with login link has been sent.";
       },
       error: "Failed to send the email. Check the email address or try again later.",
     });
