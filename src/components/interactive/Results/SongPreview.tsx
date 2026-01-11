@@ -1,3 +1,4 @@
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
 import { formatDate, formatDuration } from "@/lib/formatters";
 import { AppRouter } from "@/server/api/root";
@@ -58,20 +59,34 @@ export default function SongPreview({ songData, isLoading }: ISongPreviewProps) 
 
             {/* Play & Wishlist */}
             <div className="mt-3 flex items-center gap-3">
-              {spotifyConnected ? (
-                <SpotifyPlayIcon songId={songData.id} />
-              ) : (
-                <div className="flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-full bg-slate-400">
-                  <Play className="h-6 w-6 text-foreground" />
-                </div>
-              )}
-              {loggedIn ? (
-                <WishlistStatusIcon songId={songData.id} />
-              ) : (
-                <div className="flex h-8 w-8 cursor-not-allowed items-center justify-center rounded-full">
-                  <HeartIcon className="h-7 w-7 text-foreground" />
-                </div>
-              )}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  {spotifyConnected ? (
+                    <SpotifyPlayIcon songId={songData.id} />
+                  ) : (
+                    <div className="flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-full bg-slate-400">
+                      <Play className="h-6 w-6 text-foreground" />
+                      <TooltipContent className="border-foreground/30 bg-background text-foreground">
+                        Sign in to play the song!
+                      </TooltipContent>
+                    </div>
+                  )}
+                </TooltipTrigger>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  {loggedIn ? (
+                    <WishlistStatusIcon songId={songData.id} />
+                  ) : (
+                    <div className="flex h-8 w-8 cursor-not-allowed items-center justify-center rounded-full">
+                      <HeartIcon className="h-7 w-7 text-foreground" />
+                      <TooltipContent className="border-foreground/30 bg-background text-foreground">
+                        Sign in to add the song to your wishlist!
+                      </TooltipContent>
+                    </div>
+                  )}
+                </TooltipTrigger>
+              </Tooltip>
             </div>
           </div>
         </div>

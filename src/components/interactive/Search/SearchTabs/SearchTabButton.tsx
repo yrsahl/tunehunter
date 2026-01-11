@@ -17,9 +17,9 @@ const tabAccessMap: Record<SearchTab, AccessScopes> = {
 };
 const tabTooltipRestrictionMap: Record<SearchTab, string> = {
   trending: "", // Always accessible
-  spotify: "Create an account or sign in to view your Spotify songs!",
-  wishlist: "Create an account or sign in to view your Wishlist!",
-  history: "Create an account or sign in to view your History!",
+  spotify: "Sign in to view your Spotify songs!",
+  wishlist: "Sign in to view your wishlist!",
+  history: "Sign in to view your history!",
 };
 
 interface SearchTabButtonProps {

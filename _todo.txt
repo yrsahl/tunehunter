@@ -35,9 +35,14 @@ Apply extended quota Spotify, APIs
 
 
 
-Fix page refresh not loading queries because access token is not yet available
+Fix: 
+- Page refresh not loading queries because access token is not yet available
+- Invalidates not being removed sometimes
 
-Invalidates not being removed sometimes
+
+Add:
+- 
+
 
 
 TrendingSettings: 
@@ -55,10 +60,6 @@ Useract
 Create a logo
 
 Spotify quota reached -> search our own DB -> show “Currently unavailable” and disable input
-
-Tunehunter.app -> Under construction
-dev.tunehunter.app erstellen
-
 
 search
 - keep search results open when settings change -> give ref to results div and change logic
