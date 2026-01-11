@@ -1,11 +1,11 @@
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import ConditionalTooltip from "@/components/ConditonalTooltip";
 import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
+import { useDisabledTabStore } from "@/hooks/stores/useDisabledTabStore";
 import { formatDate, formatDuration } from "@/lib/formatters";
 import { AppRouter } from "@/server/api/root";
 import { inferProcedureOutput } from "@trpc/server";
 import { Album, Calendar, Clock, HeartIcon, Music, Play } from "lucide-react";
 import { useSession } from "next-auth/react";
-import SpotifyPlayIcon from "../Search/SearchTabContent/SpotifyPlayIcon";
 import WishlistStatusIcon from "../Search/SearchTabContent/WishlistStatusIcon";
 import SongPreviewSkeleton from "./SongPreviewSkeleton";
 
@@ -17,6 +17,7 @@ interface ISongPreviewProps {
 export default function SongPreview({ songData, isLoading }: ISongPreviewProps) {
   const { status } = useSession();
   const { spotifyConnected } = useSpotifyUserDataContext();
+  const { setDisabledTabButtonHovered } = useDisabledTabStore();
   const loggedIn = status === "authenticated";
 
   if (isLoading) {
@@ -59,34 +60,36 @@ export default function SongPreview({ songData, isLoading }: ISongPreviewProps) 
 
             {/* Play & Wishlist */}
             <div className="mt-3 flex items-center gap-3">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  {spotifyConnected ? (
-                    <SpotifyPlayIcon songId={songData.id} />
-                  ) : (
-                    <div className="flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-full bg-slate-400">
-                      <Play className="h-6 w-6 text-foreground" />
-                      <TooltipContent className="border-foreground/30 bg-background text-foreground">
-                        Sign in to play the song!
-                      </TooltipContent>
-                    </div>
-                  )}
-                </TooltipTrigger>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  {loggedIn ? (
-                    <WishlistStatusIcon songId={songData.id} />
-                  ) : (
-                    <div className="flex h-8 w-8 cursor-not-allowed items-center justify-center rounded-full">
-                      <HeartIcon className="h-7 w-7 text-foreground" />
-                      <TooltipContent className="border-foreground/30 bg-background text-foreground">
-                        Sign in to add the song to your wishlist!
-                      </TooltipContent>
-                    </div>
-                  )}
-                </TooltipTrigger>
-              </Tooltip>
+              <ConditionalTooltip
+                active={spotifyConnected}
+                content="Sign in to add the song to play the song!"
+                disabledChild={
+                  <div
+                    className="flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-full bg-slate-400"
+                    onMouseEnter={() => setDisabledTabButtonHovered(true)}
+                    onMouseLeave={() => setDisabledTabButtonHovered(false)}
+                  >
+                    <Play className="h-6 w-6 text-foreground" />
+                  </div>
+                }
+              >
+                <WishlistStatusIcon songId={songData.id} />
+              </ConditionalTooltip>
+              <ConditionalTooltip
+                active={loggedIn}
+                content="Sign in to add the song to your wishlist!"
+                disabledChild={
+                  <div
+                    className="flex h-8 w-8 cursor-not-allowed items-center justify-center rounded-full"
+                    onMouseEnter={() => setDisabledTabButtonHovered(true)}
+                    onMouseLeave={() => setDisabledTabButtonHovered(false)}
+                  >
+                    <HeartIcon className="h-7 w-7 text-foreground" />
+                  </div>
+                }
+              >
+                <WishlistStatusIcon songId={songData.id} />
+              </ConditionalTooltip>
             </div>
           </div>
         </div>
