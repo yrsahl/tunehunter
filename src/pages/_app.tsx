@@ -1,6 +1,7 @@
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
+import Head from "next/head";
 
 import { api } from "@/lib/api";
 
@@ -36,6 +37,12 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <>
+      <Head>
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <meta name="apple-mobile-web-app-title" content="TuneHunter" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="theme-color" content="#ffffff" />
+      </Head>
       <DefaultSeo {...SEO} />
       <Toaster position="top-right" toastOptions={toastOptions} closeButton richColors />
       <SpeedInsights />
