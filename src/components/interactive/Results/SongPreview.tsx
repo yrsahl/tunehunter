@@ -6,6 +6,7 @@ import { AppRouter } from "@/server/api/root";
 import { inferProcedureOutput } from "@trpc/server";
 import { Album, Calendar, Clock, HeartIcon, Music, Play } from "lucide-react";
 import { useSession } from "next-auth/react";
+import SpotifyPlayIcon from "../Search/SearchTabContent/SpotifyPlayIcon";
 import WishlistStatusIcon from "../Search/SearchTabContent/WishlistStatusIcon";
 import SongPreviewSkeleton from "./SongPreviewSkeleton";
 
@@ -73,7 +74,7 @@ export default function SongPreview({ songData, isLoading }: ISongPreviewProps) 
                   </div>
                 }
               >
-                <WishlistStatusIcon songId={songData.id} />
+                <SpotifyPlayIcon songId={songData.id} />
               </ConditionalTooltip>
               <ConditionalTooltip
                 active={loggedIn}
