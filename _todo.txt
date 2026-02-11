@@ -1,9 +1,16 @@
+Line-break für Suchtab
+tab hover
+
+
+
 ---- CORE
 
 Incorporate APIs
 - Amazon
 - Bandcamp
 - Beatport
+
+
 
 If data is older than 30 days: refresh
 Apply extended quota Spotify, APIs

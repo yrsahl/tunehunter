@@ -17,12 +17,9 @@ const SongListingsContainer = ({ region }: ISongListingsProps) => {
   const { isMobileDevice } = useDeviceSize();
 
   return (
-    <div className="hide-scrollbars flex flex-row gap-12 overflow-hidden overflow-x-auto sm:h-96">
-      <div className="my-auto hidden w-1/2 md:block">
-        <SongPreview songData={songData} isLoading={isSongDataLoading} />
-      </div>
-
-      <table className="my-auto table w-full border-separate border-spacing-y-5 sm:h-[80%] sm:border-spacing-y-6 md:w-1/2">
+    <div className="hide-scrollbars flex flex-col gap-0 overflow-hidden overflow-x-auto sm:h-96 md:flex-row md:gap-12">
+      <SongPreview songData={songData} isLoading={isSongDataLoading} />
+      <table className="my-auto table w-full border-separate border-spacing-y-4 sm:h-[80%] sm:border-spacing-y-6 md:w-1/2">
         {!isMobileDevice && (
           <thead>
             <tr>
