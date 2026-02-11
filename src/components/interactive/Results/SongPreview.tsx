@@ -47,12 +47,14 @@ export default function SongPreview({ songData, isLoading }: ISongPreviewProps) 
 
   return (
     <>
-      <div className="mx-auto block w-2/3 border-b-[1px] border-foreground/70 pb-2 text-center sm:w-4/5 md:hidden">
+      {/* Mobile */}
+      <div className="mx-auto block w-4/5 pb-1 text-center md:hidden">
         <p>
           <h2 className="text-lg font-bold tracking-normal drop-shadow-sm">{title}</h2>
           {artists.length > 0 && <span className="text-md">By {artistNames}</span>}
         </p>
       </div>
+      {/* Medium and up */}
       <div className="my-auto hidden w-1/2 md:block">
         <div className="flex w-full flex-col gap-6 pl-2">
           {/* Top Row */}
