@@ -11,11 +11,11 @@ const TableBody = ({ hasHeader, children }: TableProps) => {
     <div className="h-full w-full">
       <div
         className={clsx(
-          "hide-scrollbars relative h-full w-full overflow-scroll px-3 pb-4 sm:px-5 md:px-7",
+          "hide-scrollbars relative h-full w-full overflow-scroll overflow-x-hidden px-3 pb-4 sm:px-5 md:px-7",
           hasHeader ? "pt-8 sm:pt-12 md:pt-12" : "pt-2 sm:pt-4",
         )}
       >
-        <table className="w-full">
+        <table className="w-full overflow-hidden">
           <tbody>{children}</tbody>
         </table>
       </div>

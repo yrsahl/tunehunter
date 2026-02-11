@@ -31,14 +31,13 @@ const TableRow = ({
   const primaryArtist = artists[0]?.name || "";
 
   const handleSearchClick = async () => {
-    // Start search
     submitSearch(song.id, region, song.title, primaryArtist);
   };
 
   return (
     <motion.tr
       {...fadeInAndOut(0.3)}
-      className={cn("max-h-16", isSmallDevice && "cursor-pointer")}
+      className={cn("max-h-16 overflow-hidden", isSmallDevice && "cursor-pointer")}
       layout
       onClick={isSmallDevice ? handleSearchClick : () => {}}
     >
@@ -73,7 +72,7 @@ const TableRow = ({
       </td>
       {/* Title */}
       <td className="pr-2 sm:pr-4">
-        <span className="block max-w-48 overflow-hidden text-ellipsis whitespace-nowrap text-sm sm:text-base">
+        <span className="block max-w-48 overflow-hidden text-ellipsis break-words text-sm sm:text-base">
           {song.title}
         </span>
       </td>

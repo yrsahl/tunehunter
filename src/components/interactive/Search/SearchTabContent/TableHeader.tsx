@@ -3,7 +3,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -34,7 +33,7 @@ const TableHeader = <T extends string>({
   if (isMobileDevice) {
     return (
       <div className="absolute left-1/2 top-0 z-10 flex h-8 w-48 -translate-x-1/2 items-center justify-center overflow-hidden rounded-b-md border-[1px] border-t-0 border-foreground/30 bg-background">
-        {/* <Select
+        <Select
           onValueChange={(value) => {
             if (!isTypeT(value)) return;
             setActiveSubTab(value);
@@ -54,21 +53,6 @@ const TableHeader = <T extends string>({
                   {humanize(subTab)}
                 </SelectItem>
               ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select> */}
-        <Select>
-          <SelectTrigger className="w-full max-w-48">
-            <SelectValue placeholder="Select a fruit" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Fruits</SelectLabel>
-              <SelectItem value="apple">Apple</SelectItem>
-              <SelectItem value="banana">Banana</SelectItem>
-              <SelectItem value="blueberry">Blueberry</SelectItem>
-              <SelectItem value="grapes">Grapes</SelectItem>
-              <SelectItem value="pineapple">Pineapple</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
