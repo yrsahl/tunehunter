@@ -13,7 +13,7 @@ export const Home: NextPage = () => {
   const { activeSearchTab } = useActiveSearchTabStore();
 
   return (
-    <div className="-mt-2 flex min-h-72 w-full max-w-4xl flex-col items-center gap-14 sm:gap-9">
+    <div className="-mt-2 flex min-h-72 w-full max-w-4xl flex-col items-center gap-9">
       {/* Search */}
       <Search />
       {/* Tab Content */}

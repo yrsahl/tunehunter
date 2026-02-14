@@ -22,7 +22,7 @@ const SongListings = () => {
         <SongListingContextProvider region={searchState.region} songId={searchState.id}>
           <motion.div
             {...slideInAndOutFromBottom(0.5)}
-            className="-mt-4 w-full rounded-3xl"
+            className="w-full rounded-3xl lg:-mt-2"
             ref={containerRef}
           >
             <SongListingsContainer region={searchState.region} />
