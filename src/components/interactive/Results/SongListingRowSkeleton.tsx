@@ -12,8 +12,8 @@ const SongListingRowSkeleton = ({ store, region }: SongListingRowSkeletonProps) 
       {/* Store */}
       <td>
         <div className="flex items-center space-x-5">
-          <div className="avatar ">
-            <div className="mask mask-squircle h-12 w-12">
+          <div className="avatar">
+            <div className="mask mask-squircle h-10 w-10 sm:h-12 sm:w-12">
               <img src={`logos/${store.toLowerCase()}.svg`} alt="Avatar Tailwind CSS Component" />
             </div>
           </div>
@@ -34,7 +34,7 @@ const SongListingRowSkeleton = ({ store, region }: SongListingRowSkeletonProps) 
       </td>
 
       {/* Artist's share */}
-      <td>
+      <td className="hidden sm:table-cell md:hidden lg:table-cell">
         <Skeleton className="h-2 w-28" />
       </td>
 

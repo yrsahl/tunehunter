@@ -89,7 +89,7 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
       </td>
 
       {/* Artist's share */}
-      <td className="table-cell md:hidden lg:table-cell">
+      <td className="hidden sm:table-cell md:hidden lg:table-cell">
         <div className="flex flex-col gap-1">
           <div className="h-1 w-[80%] rounded-full bg-primary/20 md:h-2">
             {artistsShare && (
