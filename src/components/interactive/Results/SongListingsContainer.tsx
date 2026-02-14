@@ -14,13 +14,13 @@ interface ISongListingsProps {
 
 const SongListingsContainer = ({ region }: ISongListingsProps) => {
   const { songData, isSongDataLoading } = useSongListingContext();
-  const { isMobileDevice } = useDeviceSize();
+  const { isExtraSmallDevice } = useDeviceSize();
 
   return (
     <div className="hide-scrollbars flex flex-col gap-0 overflow-hidden overflow-x-auto sm:h-96 md:flex-row md:gap-12">
       <SongPreview songData={songData} isLoading={isSongDataLoading} />
       <table className="mx-auto my-auto table w-[83%] border-separate border-spacing-y-4 sm:h-[80%] sm:border-spacing-y-6 md:w-1/2">
-        {!isMobileDevice && (
+        {!isExtraSmallDevice && (
           <thead>
             <tr>
               <td className="w-20 text-sm font-bold normal-case opacity-0 sm:w-[70px] md:text-base">
@@ -28,7 +28,7 @@ const SongListingsContainer = ({ region }: ISongListingsProps) => {
               </td>
               <td className="w-28 text-sm font-bold sm:w-24 md:text-base">Quality</td>
               <td className="w-20 text-sm font-bold md:text-base">Price</td>
-              <td className="table-cell w-36 text-sm font-bold md:hidden md:text-base lg:table-cell">
+              <td className="hidden w-36 text-sm font-bold sm:table-cell md:hidden md:text-base lg:table-cell">
                 Artist's share
               </td>
               <td className="w-8 text-sm font-bold opacity-0 sm:w-10 md:text-base">Link</td>

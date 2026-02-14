@@ -80,7 +80,7 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
 
       {/* Price */}
       <td>
-        <div className="flex justify-center gap-4 text-sm sm:justify-normal md:text-base">
+        <div className="flex justify-normal gap-4 text-sm sm:justify-normal md:text-base">
           <div className="inline-block">
             {price}
             {transformCurrencyStringToIcon(currency)}
