@@ -28,7 +28,9 @@ const SongListingsContainer = ({ region }: ISongListingsProps) => {
               </td>
               <td className="w-28 text-sm font-bold sm:w-24 md:text-base">Quality</td>
               <td className="w-20 text-sm font-bold md:text-base">Price</td>
-              <td className="w-36 text-sm font-bold md:text-base">Artist's share</td>
+              <td className="table-cell w-36 text-sm font-bold md:hidden md:text-base lg:table-cell">
+                Artist's share
+              </td>
               <td className="w-8 text-sm font-bold opacity-0 sm:w-10 md:text-base">Link</td>
             </tr>
           </thead>
