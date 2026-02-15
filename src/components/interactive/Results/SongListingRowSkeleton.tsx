@@ -21,7 +21,7 @@ const SongListingRowSkeleton = ({ store, region }: SongListingRowSkeletonProps) 
       </td>
 
       {/* Quality */}
-      <td className="pl-2">
+      <td className="pl-2 sm:pl-0">
         <div className="flex flex-col gap-2">
           <Skeleton className="h-4 w-11" />
           <Skeleton className="h-3 w-16" />

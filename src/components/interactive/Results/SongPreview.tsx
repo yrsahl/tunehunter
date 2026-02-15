@@ -106,7 +106,7 @@ export default function SongPreview({ songData, isLoading }: ISongPreviewProps) 
           </div>
           {/* Details */}
           <div className="grid grid-cols-2 gap-4 px-4">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <Music className="h-4 w-4 text-primary" />
               <p className="max-w-36 overflow-hidden text-ellipsis whitespace-nowrap text-sm">
                 {genres.length > 0 ? (
@@ -121,17 +121,17 @@ export default function SongPreview({ songData, isLoading }: ISongPreviewProps) 
                 )}
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <Clock className="h-4 w-4 text-primary" />
               <span className="text-sm">{formatDuration(duration)}</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <Album className="h-4 w-4 text-primary" />
               <span className="max-w-36 overflow-hidden text-ellipsis whitespace-nowrap text-sm">
                 {album}
               </span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <Calendar className="h-4 w-4 text-primary" />
               <span className="text-sm">{formatDate(new Date(year), true, true)}</span>
             </div>
