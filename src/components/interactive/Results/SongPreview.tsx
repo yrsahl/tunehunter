@@ -48,12 +48,10 @@ export default function SongPreview({ songData, isLoading }: ISongPreviewProps) 
   return (
     <>
       {/* Mobile */}
-      <div className="mx-auto block w-4/5 pb-2 text-center md:hidden">
+      <div className="mx-auto block w-4/5 pb-2 text-center sm:pt-2 md:hidden">
         <p>
           <h2 className="text-lg font-bold tracking-normal drop-shadow-sm sm:text-xl">{title}</h2>
-          {artists.length > 0 && (
-            <span className="text-md sm:leading-relaxed">By {artistNames}</span>
-          )}
+          {artists.length > 0 && <span className="text-md sm:text-lg">By {artistNames}</span>}
         </p>
       </div>
       {/* Medium and up */}

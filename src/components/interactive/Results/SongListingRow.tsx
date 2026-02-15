@@ -69,7 +69,7 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
 
       {/* Quality */}
       <td>
-        <div className="flex flex-col justify-center pl-4 text-sm sm:pl-0 md:justify-normal md:text-base">
+        <div className="flex flex-col justify-center pl-4 text-sm sm:pl-0 sm:text-base md:justify-normal">
           <span>{format}</span>
           {quality !== "Multiple" && (
             <span className="text-xs opacity-50 md:text-sm">{quality}</span>
@@ -79,7 +79,7 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
 
       {/* Price */}
       <td>
-        <div className="flex justify-normal gap-4 text-sm sm:justify-normal md:text-base">
+        <div className="flex justify-normal gap-4 text-sm sm:justify-normal sm:text-base">
           <div className="inline-block">
             {price}
             {transformCurrencyStringToIcon(currency)}
