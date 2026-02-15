@@ -20,13 +20,12 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
   const { getVendorResponse, getVendorResponseLoadingState } = useSongListingContext();
   const vendorResponse = getVendorResponse(vendor);
   const isVendorResponseLoading = getVendorResponseLoadingState(vendor);
-  const { isMobileDevice } = useDeviceSize();
 
   const { isSmallDevice } = useDeviceSize();
   const addUserActivity = api.userActivities.addUserActivity.useMutation();
 
   // Skeleton
-  if (!isVendorResponseLoading || (vendorResponse && vendorResponse.error === "INVALID_FIELDS"))
+  if (isVendorResponseLoading || (vendorResponse && vendorResponse.error === "INVALID_FIELDS"))
     return <SongListingRowSkeleton store={vendor} region={region} />;
 
   // No data
