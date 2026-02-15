@@ -4,9 +4,9 @@ const SongPreviewSkeleton = () => {
   return (
     <>
       {/* Mobile */}
-      <div className="mx-auto flex w-4/5 flex-col items-center pb-2 sm:gap-1 md:hidden">
+      <div className="mx-auto flex w-4/5 flex-col items-center gap-[2px] pb-2 sm:gap-1 sm:pb-0 sm:pt-2 md:hidden">
         <Skeleton className="my-1 h-5 w-36 lg:w-36" />
-        <Skeleton className="my-1 h-4 w-28 lg:w-32" />
+        <Skeleton className="my-1 h-3.5 w-28 sm:h-4 lg:w-32" />
       </div>
       {/* Medium and up */}
 

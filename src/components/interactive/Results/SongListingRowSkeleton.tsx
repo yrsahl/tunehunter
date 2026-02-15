@@ -35,12 +35,12 @@ const SongListingRowSkeleton = ({ store, region }: SongListingRowSkeletonProps) 
 
       {/* Artist's share */}
       <td className="hidden sm:table-cell md:hidden lg:table-cell">
-        <Skeleton className="h-2 w-28 sm:w-32" />
+        <Skeleton className="h-2 w-28 sm:w-32 md:w-28" />
       </td>
 
       {/* Link */}
       <td className="">
-        <Skeleton className="mx-auto h-8 w-8 rounded-full" />
+        <Skeleton className="mx-auto h-8 w-8 rounded-full md:mx-0" />
       </td>
     </tr>
   );
