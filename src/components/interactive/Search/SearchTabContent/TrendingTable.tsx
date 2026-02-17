@@ -1,7 +1,7 @@
+import RankingIndicator from "@/components/icons/RankingIndicator";
 import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { fadeInAndOut } from "@/styles/animations";
 import { AnimatePresence, motion } from "framer-motion";
-import { MedalIcon } from "lucide-react";
 import { useState } from "react";
 import NoDataMessage from "./NoDataMessage";
 import SkeletonTable from "./SkeletonTable";
@@ -29,16 +29,6 @@ const TrendingTable = () => {
   const trendingData7DaysExists = data?.last7Days && data.last7Days.length > 0;
   const trendingData30DaysExists = data?.last30Days && data.last30Days.length > 0;
 
-  const ExtraElement = ({ rank }: { rank: number }) => {
-    if (rank === 1)
-      return <MedalIcon fill="#EFBF04" stroke="#000" size="28px" strokeWidth={".7px"} />;
-    if (rank === 2)
-      return <MedalIcon fill="#C4C4C4" stroke="#000" strokeWidth={".7px"} size="28px" />;
-    if (rank === 3)
-      return <MedalIcon fill="#CE8946" stroke="#000" strokeWidth={".7px"} size="28px" />;
-    return <p className="text-center">{`${rank}.`}</p>;
-  };
-
   return (
     <>
       <TableHeader<TrendingSubTab>
@@ -60,7 +50,7 @@ const TrendingTable = () => {
                           key={`${index}-${trendingDailyTrack.song.id}`}
                           track={trendingDailyTrack}
                           showDuration={true}
-                          extraElement={<ExtraElement rank={index + 1} />}
+                          extraElement={<RankingIndicator rank={index + 1} />}
                         />
                       ))}
                     </>
@@ -80,7 +70,7 @@ const TrendingTable = () => {
                           key={`${index}-${trendingWeeklyTrack.song.id}`}
                           track={trendingWeeklyTrack}
                           showDuration={true}
-                          extraElement={`${index + 1}.`}
+                          extraElement={<RankingIndicator rank={index + 1} />}
                         />
                       ))}
                     </>
@@ -100,7 +90,7 @@ const TrendingTable = () => {
                           key={`${index}-${trendingMonthlyTrack.song.id}`}
                           track={trendingMonthlyTrack}
                           showDuration={true}
-                          extraElement={`${index + 1}.`}
+                          extraElement={<RankingIndicator rank={index + 1} />}
                         />
                       ))}
                     </>

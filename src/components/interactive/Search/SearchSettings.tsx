@@ -60,7 +60,7 @@ const SearchSettings = ({}) => {
           {/* Minimum length */}
           <Label htmlFor="minimumlength" className="flex items-center text-base font-thin">
             <p>
-              Minimum length
+              Set a minimum length
               {minimumLengthOption ? ":" : "?"}
             </p>
           </Label>
@@ -94,7 +94,7 @@ const SearchSettings = ({}) => {
 
           {/* Club Mixes only */}
           <Label htmlFor="clubmixesonly" className="flex items-center font-thin">
-            Club / extended mixes only
+            [Club], [Extended] only
             {!searchForClubMixesOnly && <span>?</span>}
           </Label>
           <div className="flex h-10 items-center justify-end">

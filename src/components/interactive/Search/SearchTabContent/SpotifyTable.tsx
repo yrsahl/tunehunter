@@ -1,4 +1,5 @@
 import IconButton from "@/components/IconButton";
+import RankingIndicator from "@/components/icons/RankingIndicator";
 import { MusicPlayingIndicator } from "@/components/Indicators";
 import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { fadeInAndOut } from "@/styles/animations";
@@ -121,7 +122,7 @@ const SpotifyTable = () => {
                           key={`${index}-${topTrack.song.id}`}
                           track={topTrack}
                           showDuration={true}
-                          extraElement={`${index + 1}.`}
+                          extraElement={<RankingIndicator rank={index + 1} />}
                         />
                       ))}
                     </>

@@ -12,7 +12,7 @@ const SearchQueries = () => {
   const { region } = useRegionSettings();
   const { submitSearch } = useSearch();
 
-  if (!showQueries || !queryData) {
+  if (!queryData) {
     return <></>;
   }
 

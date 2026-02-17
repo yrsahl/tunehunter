@@ -6,7 +6,6 @@ interface VendorLogoProps {
 }
 
 const VendorLogo = ({ store, region }: VendorLogoProps) => {
-  console.log(`hi from ${store.toLowerCase()}`);
   return (
     <div className="flex items-center space-x-5">
       <div className="avatar">
