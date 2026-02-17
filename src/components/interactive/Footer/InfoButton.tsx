@@ -78,9 +78,9 @@ const InfoButton = () => {
               <div className="flex flex-col gap-10 text-sm text-inherit md:text-base">
                 <div className="flex flex-col gap-4 text-foreground/70">
                   <p>
-                    ... has one purpose: It finds you the music you want to buy, faster. TuneHunter
-                    searches across Beatport, Bandcamp, Apple Music and Amazon Music to show you
-                    where it's available, in what quality, and at what price.
+                    ... has one purpose: helping you find the music you want to buy, faster. It
+                    searches Beatport, Bandcamp, Apple Music, and Amazon Music to show you where
+                    it’s available, in what quality, and at what price.
                   </p>
                   {!loggedIn && (
                     <p className="flex flex-col gap-[10px]">
