@@ -28,7 +28,9 @@ const WishlistTable = () => {
                   track={wishlistedTrack}
                   key={wishlistedTrack.song.id}
                   showDuration={true}
-                  extraElement={<WishlistStatusIcon songId={wishlistedTrack.song.id} />}
+                  extraElement={
+                    <WishlistStatusIcon variant="small" songId={wishlistedTrack.song.id} />
+                  }
                 />
               ))}
             </AnimatePresence>

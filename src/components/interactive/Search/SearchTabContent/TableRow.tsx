@@ -56,8 +56,8 @@ const TableRow = ({
         </div>
       </td>
       {/* Extra Element */}
-      <td className={clsx("align-middle", extraElement ? "pr-2 sm:pr-4" : "pr-0")}>
-        <div className="flex text-sm sm:text-base">{extraElement}</div>
+      <td className={clsx("align-middle", extraElement ? "pr-2 sm:pr-5" : "pr-0")}>
+        {!isSmallDevice && <div className="-ml-2 flex text-sm sm:text-base">{extraElement}</div>}
       </td>
       {/* Artist(s) */}
       <td className="pr-3 sm:pr-4">

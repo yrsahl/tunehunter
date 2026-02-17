@@ -5,10 +5,13 @@ import { HeartIcon, HeartOff } from "lucide-react";
 
 interface WishlistStatusIconProps {
   songId: string;
+  variant?: "big" | "small";
 }
 
-const WishlistStatusIcon = ({ songId }: WishlistStatusIconProps) => {
+const WishlistStatusIcon = ({ songId, variant = "big" }: WishlistStatusIconProps) => {
   const { isOnWishlist, addToWishlist, removeFromWishlist } = useWishlist();
+
+  const sizeClasses = variant === "big" ? "h-8 w-8" : "h-7 w-7";
 
   const WishlistedSong = () => {
     const heartFullControls = useAnimation();
@@ -28,7 +31,7 @@ const WishlistStatusIcon = ({ songId }: WishlistStatusIconProps) => {
       <Button
         data-testid="wishlist-remove-button"
         size="icon"
-        className="w-8 border-none bg-transparent transition-all duration-300 hover:bg-transparent"
+        className="border-none bg-transparent transition-all duration-300 hover:bg-transparent"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={() => removeFromWishlist(songId)}
@@ -40,7 +43,7 @@ const WishlistStatusIcon = ({ songId }: WishlistStatusIconProps) => {
             transition={{ duration: 0.3 }}
             className="absolute"
           >
-            <HeartIcon className="h-7 w-7 fill-foreground text-foreground" />
+            <HeartIcon className={`${sizeClasses} h-7 w-7 fill-foreground text-foreground`} />
           </motion.div>
           <motion.div
             initial={{ opacity: 0 }}
@@ -48,7 +51,7 @@ const WishlistStatusIcon = ({ songId }: WishlistStatusIconProps) => {
             transition={{ duration: 0.3 }}
             className="absolute"
           >
-            <HeartOff className="h-7 w-7 text-foreground" />
+            <HeartOff className={`${sizeClasses} h-7 w-7 text-foreground`} />
           </motion.div>
         </>
       </Button>
@@ -73,7 +76,7 @@ const WishlistStatusIcon = ({ songId }: WishlistStatusIconProps) => {
       <Button
         data-testid="wishlist-button"
         size="icon"
-        className="w-8 border-none bg-transparent transition-all duration-300 hover:bg-transparent"
+        className="border-none bg-transparent transition-all duration-300 hover:bg-transparent"
         onClick={() => addToWishlist(songId)}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
