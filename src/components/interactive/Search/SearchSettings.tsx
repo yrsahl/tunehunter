@@ -1,6 +1,6 @@
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
 import { useSearchSettingsStore } from "@/hooks/stores/useSearchSettingsStore";
-import { growIn, slideInAndOutFromAbove } from "@/styles/animations";
+import { fadeInAndOut, growIn, slideInAndOutFromAbove } from "@/styles/animations";
 import { AnimatePresence, motion } from "framer-motion";
 import { Cog } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -34,6 +34,8 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
   const { region, changeRegion, createRegionName, setRegionByLocation, sortedRegions } =
     useRegionSettings();
 
+  const areSettingsSet = searchForClubMixesOnly || minimumLengthOption;
+
   // Prepared strings
   const minimumLengthDisplayMinutes = Math.floor(minimumLengthSeconds / 60)
     .toString()
@@ -46,9 +48,17 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
         <motion.div
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
-          className="flex items-center justify-center"
+          className="relative flex items-center justify-center"
         >
           <Cog />
+          <AnimatePresence>
+            {areSettingsSet && (
+              <motion.div
+                {...fadeInAndOut(0.5)}
+                className="absolute -right-0 top-4 z-10 h-2 w-2 rounded-full bg-accent text-xl"
+              />
+            )}
+          </AnimatePresence>
         </motion.div>
       </PopoverTrigger>
       <PopoverContent className="flex flex-col items-center gap-4 px-6 py-4" ref={windowRef}>
