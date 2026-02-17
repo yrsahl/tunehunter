@@ -78,7 +78,7 @@ export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
           });
         }
 
-        // Query data until we have limit of songs
+        // Set querydata and store the search in DB
         setQueryData(searchData);
         if (displayLoadingIndicator) setIsQueryDataLoading(false);
         storeTracksInDb(searchData.tracks.items);

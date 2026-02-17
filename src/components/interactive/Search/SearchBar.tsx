@@ -47,7 +47,14 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = () 
   const { showQueries, setShowQueries, queryData, isQueryDataLoading } = useQueryDataContext();
   const formRef = createRef<HTMLFormElement>();
   const searchBarRef = useRef<HTMLDivElement>(null);
-  const searchSettingsRef = useRef<HTMLDivElement>(null);
+  const searchSettingsIconRef = useRef<HTMLDivElement>(null);
+  const searchSettingsWindowRef = useRef<HTMLDivElement>(null);
+
+  console.log("searchbarref", searchBarRef);
+  console.log("searchsettingsref", searchSettingsIconRef);
+  console.log("searchsettingswindowref", searchSettingsWindowRef);
+
+  console.log("showQueries", showQueries);
 
   // Puts a random placeholder song value into the search bar
   useEffect(() => {
@@ -66,10 +73,13 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = () 
 
   // Show queries depending on click inside or outside of search bar
   const handleClickSearchBar = (event: MouseEvent) => {
-    if (!searchBarRef.current || !searchSettingsRef.current) return; // No refs
+    if (!searchBarRef.current || !searchSettingsIconRef.current) return; // No refs
 
-    // Do nothing if options are clicked
-    if (searchSettingsRef.current.contains(event.target as Node)) {
+    // Do nothing if click is on options icon or on options window
+    if (
+      searchSettingsIconRef.current.contains(event.target as Node) ||
+      searchSettingsWindowRef?.current?.contains(event.target as Node)
+    ) {
       return;
     }
 
@@ -130,7 +140,7 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = () 
         </span>
         <div
           className="absolute right-4 top-1/2 flex -translate-y-1/2 gap-2"
-          ref={searchSettingsRef}
+          ref={searchSettingsIconRef}
         >
           <AnimatePresence>
             {queryData && showQueries && (
@@ -143,7 +153,7 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = () 
               </motion.div>
             )}
           </AnimatePresence>
-          <SearchSettings />
+          <SearchSettings windowRef={searchSettingsWindowRef} />
         </div>
       </form>
       {showQueries && <SearchQueries />}

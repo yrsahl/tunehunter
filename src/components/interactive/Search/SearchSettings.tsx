@@ -4,6 +4,7 @@ import { growIn, slideInAndOutFromAbove } from "@/styles/animations";
 import { AnimatePresence, motion } from "framer-motion";
 import { Cog } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { RefObject } from "react";
 import IconButton from "../../IconButton";
 import { Label } from "../../ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
@@ -17,7 +18,7 @@ type SearchSettings = {
   minimumLengthSeconds: number;
 };
 
-const SearchSettings = ({}) => {
+const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> }) => {
   const { status } = useSession();
   const loggedIn = status === "authenticated";
 
@@ -50,7 +51,7 @@ const SearchSettings = ({}) => {
           <Cog />
         </motion.div>
       </PopoverTrigger>
-      <PopoverContent className="flex flex-col items-center gap-4 px-6 py-4">
+      <PopoverContent className="flex flex-col items-center gap-4 px-6 py-4" ref={windowRef}>
         {/* <div className="absolute inset-0 -z-10 bg-background opacity-80" /> */}
 
         <p className="border-b-[1px] border-foreground px-2 pb-1 text-lg text-foreground">
