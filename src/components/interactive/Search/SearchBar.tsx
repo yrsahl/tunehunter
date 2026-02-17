@@ -146,7 +146,7 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = () 
           <SearchSettings />
         </div>
       </form>
-      <SearchQueries />
+      {showQueries && <SearchQueries />}
     </div>
   );
 };

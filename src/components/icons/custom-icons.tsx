@@ -154,6 +154,52 @@ const customIcons = {
       <path d="M140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180ZM128,72c-22.06,0-40,16.15-40,36v4a8,8,0,0,0,16,0v-4c0-11,10.77-20,24-20s24,9,24,20-10.77,20-24,20a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-.72c18.24-3.35,32-17.9,32-35.28C168,88.15,150.06,72,128,72Zm104,56A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path>
     </svg>
   ),
+  ranking1: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="23" height="20" viewBox="0 0 23 20">
+      <rect width="2.9" height="3.9" x="0.05" y="16.05" rx="1.45"></rect>
+      <rect width="2.9" height="7.9" opacity="0.2" x="5.05" y="12.05" rx="1.45"></rect>
+      <rect width="2.9" height="11.9" opacity="0.2" x="10.05" y="8.05" rx="1.45"></rect>
+      <rect width="2.9" height="15.9" opacity="0.2" x="15.05" y="4.05" rx="1.45"></rect>
+      <rect width="2.9" height="19.9" opacity="0.2" x="20.05" y="0.05" rx="1.45"></rect>
+    </svg>
+  ),
+  ranking2: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="23" height="20" viewBox="0 0 23 20">
+      <rect width="2.9" height="3.9" x="0.05" y="16.05" rx="1.45"></rect>
+      <rect width="2.9" height="7.9" x="5.05" y="12.05" rx="1.45"></rect>
+      <rect width="2.9" height="11.9" opacity="0.2" x="10.05" y="8.05" rx="1.45"></rect>
+      <rect width="2.9" height="15.9" opacity="0.2" x="15.05" y="4.05" rx="1.45"></rect>
+      <rect width="2.9" height="19.9" opacity="0.2" x="20.05" y="0.05" rx="1.45"></rect>
+    </svg>
+  ),
+  ranking3: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="23" height="20" viewBox="0 0 23 20">
+      <rect width="2.9" height="3.9" x="0.05" y="16.05" rx="1.45"></rect>
+      <rect width="2.9" height="7.9" x="5.05" y="12.05" rx="1.45"></rect>
+      <rect width="2.9" height="11.9" x="10.05" y="8.05" rx="1.45"></rect>
+      <rect width="2.9" height="15.9" opacity="0.2" x="15.05" y="4.05" rx="1.45"></rect>
+      <rect width="2.9" height="19.9" opacity="0.2" x="20.05" y="0.05" rx="1.45"></rect>
+    </svg>
+  ),
+  ranking4: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="23" height="20" viewBox="0 0 23 20">
+      <rect width="2.9" height="3.9" x="0.05" y="16.05" rx="1.45"></rect>
+      <rect width="2.9" height="7.9" x="5.05" y="12.05" rx="1.45"></rect>
+      <rect width="2.9" height="11.9" x="10.05" y="8.05" rx="1.45"></rect>
+      <rect width="2.9" height="15.9" x="15.05" y="4.05" rx="1.45"></rect>
+      <rect width="2.9" height="19.9" opacity="0.2" x="20.05" y="0.05" rx="1.45"></rect>
+    </svg>
+  ),
+  ranking5: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="23" height="20" viewBox="0 0 23 20">
+      <rect width="2.9" height="3.9" x="0.05" y="16.05" rx="1.45"></rect>
+      <rect width="2.9" height="7.9" x="5.05" y="12.05" rx="1.45"></rect>
+      <rect width="2.9" height="11.9" x="10.05" y="8.05" rx="1.45"></rect>
+      <rect width="2.9" height="15.9" x="15.05" y="4.05" rx="1.45"></rect>
+      <rect width="2.9" height="19.9" x="20.05" y="0.05" rx="1.45"></rect>
+    </svg>
+  ),
+
   refresh: (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
       <path d="M240,56v48a8,8,0,0,1-8,8H184a8,8,0,0,1,0-16H211.4L184.81,71.64l-.25-.24a80,80,0,1,0-1.67,114.78,8,8,0,0,1,11,11.63A95.44,95.44,0,0,1,128,224h-1.32A96,96,0,1,1,195.75,60L224,85.8V56a8,8,0,1,1,16,0Z"></path>
