@@ -48,6 +48,7 @@ export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
       setQueryData(null);
       return;
     }
+    setQueryData(null);
 
     // Display loading indicator
     if (displayLoadingIndicator) setIsQueryDataLoading(true);

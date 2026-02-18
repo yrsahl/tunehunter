@@ -51,6 +51,7 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
           className="relative flex items-center justify-center"
         >
           <Cog />
+          {/* Settings indicator */}
           <AnimatePresence>
             {areSettingsSet && (
               <motion.div
@@ -63,10 +64,10 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
       </PopoverTrigger>
       <PopoverContent className="flex flex-col items-center gap-4 px-6 py-4" ref={windowRef}>
         {/* <div className="absolute inset-0 -z-10 bg-background opacity-80" /> */}
-
+        {/* 
         <p className="border-b-[1px] border-foreground px-2 pb-1 text-lg text-foreground">
           <span>Search Settings</span>
-        </p>
+        </p> */}
         <div className="grid grid-cols-[240px_minmax(50px,_max-content)] gap-x-8 gap-y-1 opacity-100">
           {/* Minimum length */}
           <Label htmlFor="minimumlength" className="flex items-center text-base font-thin">

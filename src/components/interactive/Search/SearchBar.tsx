@@ -1,5 +1,4 @@
 import IconButton from "@/components/IconButton";
-import { LoadingIndicator } from "@/components/Indicators";
 import { Input } from "@/components/ui/input";
 import { useQueryDataContext } from "@/contexts/QueryDataContext";
 import { useSearchSettingsStore } from "@/hooks/stores/useSearchSettingsStore";
@@ -50,12 +49,6 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = () 
   const searchSettingsIconRef = useRef<HTMLDivElement>(null);
   const searchSettingsWindowRef = useRef<HTMLDivElement>(null);
 
-  console.log("searchbarref", searchBarRef);
-  console.log("searchsettingsref", searchSettingsIconRef);
-  console.log("searchsettingswindowref", searchSettingsWindowRef);
-
-  console.log("showQueries", showQueries);
-
   // Puts a random placeholder song value into the search bar
   useEffect(() => {
     if (searchState.input) return;
@@ -100,6 +93,8 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = () 
     };
   }, []);
 
+  console.log("input state", searchState.input);
+
   return (
     <div ref={searchBarRef} className="relative w-full max-w-[36rem]">
       <form
@@ -114,29 +109,13 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = () 
           sizeVariant="lg"
           className={cn(
             "overflow-ellipsis border-2 border-primary px-14 text-base ring-0 transition-all duration-300 placeholder:text-muted-foreground focus-visible:ring-0 sm:text-lg",
-            queryData && showQueries && "rounded-b-none border-b-0",
+            showQueries && (queryData || isQueryDataLoading) && "rounded-b-none border-b-0",
           )}
           value={searchState.input}
           onChange={handleInputChange}
         />
         <span className="absolute left-4 top-1/2 -translate-y-1/2">
-          <AnimatePresence>
-            {isQueryDataLoading && (
-              <motion.div
-                className="flex h-8 justify-center"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <LoadingIndicator size={20} />
-              </motion.div>
-            )}
-            {!isQueryDataLoading && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                <Search />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <Search />
         </span>
         <div
           className="absolute right-4 top-1/2 flex -translate-y-1/2 gap-2"

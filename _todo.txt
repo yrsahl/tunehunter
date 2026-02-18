@@ -1,4 +1,3 @@
-Heart Pop Animation
 Record hits to stores, caches
 
 

@@ -6,6 +6,7 @@ import { debounce } from "lodash";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { useSearchSettingsStore } from "./stores/useSearchSettingsStore";
 import useSearchStore from "./stores/useSearchStore";
+import { useEffectDebugger } from "./useEffectDebugger";
 import useRouterWithHelpers from "./useRouterWithHelpers";
 import useSpotifyTokens from "./useSpotifyTokens";
 
@@ -36,8 +37,11 @@ const useSearch = () => {
     minimumLengthSeconds,
   };
 
+  console.log("accessToken", accessToken);
+  console.log("router query", router.query);
+
   // Synchronize Search params from URL
-  useEffect(() => {
+  useEffectDebugger(() => {
     if (!router.isReady) return;
 
     const searchIdParam = router.getParams("id");
@@ -62,6 +66,7 @@ const useSearch = () => {
 
       // If it's a new query, i.e. a page refresh, start a new search
       if (searchState.input !== newSearchInput) {
+        console.log("hi");
         setSearchInput(newSearchInput);
         setPendingSearch(newSearchInput); // Set pending search because accessToken is not yet available (TODO: Look for a better way)
       }
@@ -74,6 +79,7 @@ const useSearch = () => {
     setSearchSongArtist(null);
     setSearchSongTitle(null);
     setSearchInput("");
+    console.log("hi2");
     resetQueryData();
   }, [accessToken, router.query]);
 
