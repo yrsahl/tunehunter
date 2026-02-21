@@ -1,4 +1,49 @@
-Record hits to stores, caches
+Yes, there's a significant issue. When useSearch() is used across 3 components (SearchBar, SearchQueries, TableRow), each component creates its own instance with independent:
+
+pendingSearch state (line 28) - Each instance has its own copy, so pending search logic can behave inconsistently
+Side effects that run 3 times:
+The useEffectDebugger (lines 43-76) runs in all 3 components, potentially calling resetQueryData() or setting search state 3 times
+The useEffect for pending search (lines 79-84) runs in all 3, potentially triggering requestQueryData() multiple times
+Console logs (lines 39-40) fire on every render of every component
+The core problem: This hook is written as if it's a singleton orchestrating search behavior, but React hooks don't work that way - each call creates an isolated instance.
+
+Solutions:
+
+Approach	Description
+Move effects to a single parent	Extract the URL sync and pending search effects to a single component (e.g., a SearchProvider) and have useSearch only return handlers
+Use a context provider	Wrap the search logic in a context so state/effects run once at the provider level
+Move pendingSearch to Zustand	Put pendingSearch in useSearchStore so it's shared globally
+The recommended fix is to move the effects (lines 43-84) into a dedicated <SearchProvider> component that wraps your search UI, and have useSearch only return the handler functions. This ensures effects run exactly once.
+
+------
+
+Here's a summary of React issues found in your codebase:
+
+Critical Issues
+Issue	Location	Problem
+Component inside component	WishlistStatusIcon.tsx:16-58	WishlistedSong is defined inside render, recreating it every render and losing internal state
+Missing animation cleanup	Particles.tsx:31-42	animate() starts a requestAnimationFrame loop but cleanup doesn't cancel it → memory leak
+Missing/Incorrect Dependencies
+
+File	Issue
+useSearch.ts:79-84	requestQueryData, searchSettings missing from deps
+useSearch.ts:102-109	Debounced callback captures stale searchSettings; also uses ...Object.values() spread which creates new array each render
+SearchBar.tsx:62-65	Same spread operator issue + missing queryData
+AuthMenu.tsx:39-54	References router.query but only depends on router.isReady
+useSpotifySongData.ts:100-114	storeSearchResults mutation missing from deps
+Overuse of useEffect (could be derived state)
+SearchTabBar.tsx:22-30 – activeSearchTab could be derived from router.query directly
+AuthMenu.tsx:23-36 – Bidirectional URL↔state sync with two effects (potential infinite loop risk)
+
+Minor Issues
+Index as key: SkeletonTable.tsx:87, SongPreview.tsx:112
+Console.logs in production: SearchBar.tsx:96, useSearch.ts:40-41
+
+Highest priority fixes:
+
+Move WishlistedSong outside of WishlistStatusIcon
+Cancel requestAnimationFrame in Particles cleanup
+Fix dependency arrays with spread operators → use useMemo to stabilize the array
 
 
 ---- CORE
@@ -13,7 +58,7 @@ Incorporate APIs
 If data is older than 30 days: refresh
 Apply extended quota Spotify, APIs
 
-
+Record hits to stores, caches
 
 
 
