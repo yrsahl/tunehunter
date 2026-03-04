@@ -4,6 +4,7 @@ import { MusicPlayingIndicator } from "@/components/Indicators";
 import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { fadeInAndOut } from "@/styles/animations";
 import { AnimatePresence, motion } from "framer-motion";
+import { SkipForward } from "lucide-react";
 import { useState } from "react";
 import NoDataMessage from "./NoDataMessage";
 import SkeletonTable from "./SkeletonTable";
@@ -101,7 +102,9 @@ const SpotifyTable = () => {
                           key={`${index}-${queueTrack.song.id}`}
                           track={queueTrack}
                           showDuration={true}
-                          extraElement={index === 0 ? "⏭︎" : `${index + 1}.`}
+                          extraElement={
+                            index === 0 ? <SkipForward size={"16px"} /> : `${index + 1}.`
+                          }
                         />
                       ))}
                     </>
