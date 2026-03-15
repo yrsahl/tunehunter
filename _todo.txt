@@ -4,7 +4,6 @@ Here's a summary of React issues found in your codebase:
 
 Critical Issues
 Issue	Location	Problem
-Missing animation cleanup	Particles.tsx:31-42	animate() starts a requestAnimationFrame loop but cleanup doesn't cancel it → memory leak
 Missing/Incorrect Dependencies
 
 File	Issue

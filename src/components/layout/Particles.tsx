@@ -1,8 +1,8 @@
-"use client"
+"use client";
 /* Credit: https://github.com/chronark/chronark.com */
 /* eslint-disable */
-import { useRef, useEffect } from "react";
 import { useMousePosition } from "@/hooks/useMousePosition";
+import { useEffect, useRef } from "react";
 
 interface ParticlesProps {
   className?: string;
@@ -26,6 +26,7 @@ export default function Particles({
   const mousePosition = useMousePosition();
   const mouse = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const canvasSize = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
+  const rafId = useRef<number>(0);
   const dpr = typeof window !== "undefined" ? window.devicePixelRatio : 1;
 
   useEffect(() => {
@@ -38,6 +39,7 @@ export default function Particles({
 
     return () => {
       window.removeEventListener("resize", initCanvas);
+      cancelAnimationFrame(rafId.current);
     };
   }, []);
 
@@ -55,16 +57,17 @@ export default function Particles({
   };
 
   const onMouseMove = () => {
-    if (canvasRef.current) {
-      const rect = canvasRef.current.getBoundingClientRect();
-      const { w, h } = canvasSize.current;
-      const x = mousePosition.x - rect.left - w / 2;
-      const y = mousePosition.y - rect.top - h / 2;
-      const inside = x < w / 2 && x > -w / 2 && y < h / 2 && y > -h / 2;
-      if (inside) {
-        mouse.current.x = x;
-        mouse.current.y = y;
-      }
+    if (!canvasRef.current) {
+      return;
+    }
+    const rect = canvasRef.current.getBoundingClientRect();
+    const { w, h } = canvasSize.current;
+    const x = mousePosition.x - rect.left - w / 2;
+    const y = mousePosition.y - rect.top - h / 2;
+    const inside = x < w / 2 && x > -w / 2 && y < h / 2 && y > -h / 2;
+    if (inside) {
+      mouse.current.x = x;
+      mouse.current.y = y;
     }
   };
 
@@ -214,7 +217,7 @@ export default function Particles({
         );
       }
     });
-    window.requestAnimationFrame(animate);
+    rafId.current = window.requestAnimationFrame(animate);
   };
 
   return (

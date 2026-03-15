@@ -14,7 +14,8 @@
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "test:e2e:smoke": "playwright test e2e/smoke.spec.ts",
-    "test:e2e:full": "playwright test --grep @full"
+    "test:e2e:full": "playwright test --grep @full",
+    "prepare": "husky"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^0.7.0",
@@ -98,7 +99,9 @@
     "eslint": "^8.56.0",
     "eslint-config-next": "^14.1.0",
     "eslint-config-prettier": "^9.1.0",
+    "husky": "^9.1.7",
     "jsdom": "^24.1.1",
+    "lint-staged": "^16.4.0",
     "mysql2": "^3.9.1",
     "postcss": "^8.4.34",
     "prettier": "^3.2.5",
@@ -109,5 +112,11 @@
   },
   "ct3aMetadata": {
     "initVersion": "7.27.0"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": [
+      "vitest run --related",
+      "eslint --fix"
+    ]
   }
 }
