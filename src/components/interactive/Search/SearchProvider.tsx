@@ -11,15 +11,8 @@ interface SearchProviderProps {
 }
 
 const SearchProvider = ({ children }: SearchProviderProps) => {
-  const {
-    setSearchInput,
-    setSearchId,
-    setSearchRegion,
-    setSearchSongArtist,
-    setSearchSongTitle,
-    pendingSearch,
-    setPendingSearch,
-  } = useSearchStore();
+  const { pendingSearch, setPendingSearch, syncRouteSearch, clearRouteBackedSearch } =
+    useSearchStore();
   const { requestQueryData, resetQueryData } = useQueryDataContext();
   const router = useRouterWithHelpers();
   const { accessToken } = useSpotifyTokens();
@@ -51,55 +44,29 @@ const SearchProvider = ({ children }: SearchProviderProps) => {
       !!searchArtistParam &&
       !!searchTitleParam
     ) {
-      const newSearchInput = `${searchArtistParam} - ${searchTitleParam}`;
-
-      const currentSearchState = useSearchStore.getState().searchState;
-      const isNewRouteSearch =
-        currentSearchState.id !== searchIdParam ||
-        currentSearchState.region !== searchRegionParam ||
-        currentSearchState.songArtist !== searchArtistParam ||
-        currentSearchState.songTitle !== searchTitleParam;
-
-      if (isNewRouteSearch) {
-        setSearchId(searchIdParam);
-        setSearchRegion(searchRegionParam);
-        setSearchSongArtist(searchArtistParam);
-        setSearchSongTitle(searchTitleParam);
-        setSearchInput(newSearchInput);
-        setPendingSearch(newSearchInput);
-      }
+      syncRouteSearch({
+        id: searchIdParam,
+        region: searchRegionParam,
+        artist: searchArtistParam,
+        title: searchTitleParam,
+      });
 
       return;
     }
 
-    const currentSearchState = useSearchStore.getState().searchState;
-    const hasRouteBackedSearch =
-      !!currentSearchState.id ||
-      !!currentSearchState.region ||
-      !!currentSearchState.songArtist ||
-      !!currentSearchState.songTitle;
-
-    if (!hasRouteBackedSearch) return;
-
-    setSearchId(null);
-    setSearchRegion(null);
-    setSearchSongArtist(null);
-    setSearchSongTitle(null);
-    setSearchInput("");
-    resetQueryData();
+    const wasCleared = clearRouteBackedSearch();
+    if (wasCleared) {
+      resetQueryData();
+    }
   }, [
     router.isReady,
     searchArtistParam,
     searchIdParam,
     searchRegionParam,
     searchTitleParam,
+    clearRouteBackedSearch,
     resetQueryData,
-    setSearchId,
-    setSearchInput,
-    setSearchRegion,
-    setSearchSongArtist,
-    setSearchSongTitle,
-    setPendingSearch,
+    syncRouteSearch,
   ]);
 
   useEffect(() => {

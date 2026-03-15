@@ -10,14 +10,7 @@ import useRouterWithHelpers from "./useRouterWithHelpers";
 import useSpotifyTokens from "./useSpotifyTokens";
 
 const useSearch = () => {
-  const {
-    searchState,
-    setSearchInput,
-    setSearchId,
-    setSearchRegion,
-    setSearchSongArtist,
-    setSearchSongTitle,
-  } = useSearchStore();
+  const { searchState, setSearchInput, setSelectedSearch } = useSearchStore();
   const { setShowQueries, requestQueryData, resetQueryData } = useQueryDataContext();
   const { history } = useSearchTabDataContext();
   const router = useRouterWithHelpers();
@@ -86,13 +79,7 @@ const useSearch = () => {
     setShowQueries(false);
 
     // Trigger SearchResults re-render (which starts the vendor data search)
-    setSearchId(id);
-    setSearchRegion(region);
-
-    // Save other search params
-    setSearchSongArtist(artist);
-    setSearchSongTitle(title);
-    setSearchInput(`${artist} - ${title}`);
+    setSelectedSearch({ id, region, artist, title });
 
     // Refresh
     if (accessToken) requestQueryData(accessToken, `${artist} - ${title}`, searchSettings, false);
