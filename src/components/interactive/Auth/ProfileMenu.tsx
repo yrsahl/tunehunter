@@ -224,13 +224,10 @@ const ProfileMenu = () => {
           <span>Theme</span>
         </p>
         <div className="col-span-2">
-          <Select
-            data-testid="theme-select"
-            value={autoThemePreference}
-            onValueChange={changeAutoThemePreference}
-          >
+          <Select value={autoThemePreference} onValueChange={changeAutoThemePreference}>
             <SelectTrigger
               id="region"
+              data-testid="theme-select"
               className="h-9 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 font-thin text-foreground focus:ring-0 focus:ring-offset-0 md:text-base"
             >
               <motion.div {...growIn()} className="inline-block overflow-hidden text-ellipsis">
