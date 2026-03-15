@@ -93,8 +93,6 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = () 
     };
   }, []);
 
-  console.log("input state", searchState.input);
-
   return (
     <div ref={searchBarRef} className="relative w-full max-w-[36rem]">
       <form

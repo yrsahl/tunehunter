@@ -1,12 +1,11 @@
 import { useQueryDataContext } from "@/contexts/QueryDataContext";
 import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { api } from "@/lib/api";
-import { CountryCode, isCountryCode } from "@/lib/validators";
+import { CountryCode } from "@/lib/validators";
 import { debounce } from "lodash";
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo } from "react";
 import { useSearchSettingsStore } from "./stores/useSearchSettingsStore";
 import useSearchStore from "./stores/useSearchStore";
-import { useEffectDebugger } from "./useEffectDebugger";
 import useRouterWithHelpers from "./useRouterWithHelpers";
 import useSpotifyTokens from "./useSpotifyTokens";
 
@@ -25,71 +24,17 @@ const useSearch = () => {
   const { accessToken } = useSpotifyTokens();
   const addSearchActivity = api.userActivities.addSearchActivity.useMutation();
 
-  // Track pending search that needs to happen when accessToken becomes available
-  const [pendingSearch, setPendingSearch] = useState<string | null>(null);
-
   // Are there any settings set?
   const { searchForClubMixesOnly, minimumLengthOption, minimumLengthSeconds } =
     useSearchSettingsStore();
-  const searchSettings = {
-    searchForClubMixesOnly,
-    minimumLengthOption,
-    minimumLengthSeconds,
-  };
-
-  console.log("accessToken", accessToken);
-  console.log("router query", router.query);
-
-  // Synchronize Search params from URL
-  useEffectDebugger(() => {
-    if (!router.isReady) return;
-
-    const searchIdParam = router.getParams("id");
-    const searchRegionParam = router.getParams("region");
-    const searchArtistParam = router.getParams("artist");
-    const searchTitleParam = router.getParams("title");
-
-    // If params are present
-    if (
-      !!searchIdParam &&
-      !!searchRegionParam &&
-      isCountryCode(searchRegionParam.toUpperCase()) &&
-      !!searchArtistParam &&
-      !!searchTitleParam
-    ) {
-      // Set params
-      const newSearchInput = `${searchArtistParam} - ${searchTitleParam}`;
-      setSearchId(searchIdParam);
-      setSearchRegion(searchRegionParam);
-      setSearchSongArtist(searchArtistParam);
-      setSearchSongTitle(searchTitleParam);
-
-      // If it's a new query, i.e. a page refresh, start a new search
-      if (searchState.input !== newSearchInput) {
-        console.log("hi");
-        setSearchInput(newSearchInput);
-        setPendingSearch(newSearchInput); // Set pending search because accessToken is not yet available (TODO: Look for a better way)
-      }
-      return;
-    }
-
-    // If no params are present, reset
-    setSearchId(null);
-    setSearchRegion(null);
-    setSearchSongArtist(null);
-    setSearchSongTitle(null);
-    setSearchInput("");
-    console.log("hi2");
-    resetQueryData();
-  }, [accessToken, router.query]);
-
-  // Execute pending search when accessToken becomes available
-  useEffect(() => {
-    if (accessToken && pendingSearch) {
-      requestQueryData(accessToken, pendingSearch, searchSettings, false);
-      setPendingSearch(null); // Clear the pending search
-    }
-  }, [accessToken, pendingSearch]);
+  const searchSettings = useMemo(
+    () => ({
+      searchForClubMixesOnly,
+      minimumLengthOption,
+      minimumLengthSeconds,
+    }),
+    [searchForClubMixesOnly, minimumLengthOption, minimumLengthSeconds],
+  );
 
   // On enter, request query data immediately
   const handleSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -106,8 +51,14 @@ const useSearch = () => {
       }
       requestQueryData(accessToken, searchTerm, searchSettings);
     }, 600),
-    [accessToken, ...Object.values(searchSettings)],
+    [accessToken, requestQueryData, searchSettings],
   );
+
+  useEffect(() => {
+    return () => {
+      debouncedRequestSearchData.cancel();
+    };
+  }, [debouncedRequestSearchData]);
 
   // Input change handler
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
