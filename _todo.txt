@@ -2,13 +2,6 @@
 
 Here's a summary of React issues found in your codebase:
 
-Critical Issues
-Issue	Location	Problem
-Missing/Incorrect Dependencies
-
-File	Issue
-useSearch.ts:79-84	requestQueryData, searchSettings missing from deps
-useSearch.ts:102-109	Debounced callback captures stale searchSettings; also uses ...Object.values() spread which creates new array each render
 SearchBar.tsx:62-65	Same spread operator issue + missing queryData
 AuthMenu.tsx:39-54	References router.query but only depends on router.isReady
 useSpotifySongData.ts:100-114	storeSearchResults mutation missing from deps
@@ -17,11 +10,6 @@ SearchTabBar.tsx:22-30 – activeSearchTab could be derived from router.query di
 AuthMenu.tsx:23-36 – Bidirectional URL↔state sync with two effects (potential infinite loop risk)
 
 
-Highest priority fixes:
-
-Move WishlistedSong outside of WishlistStatusIcon
-Cancel requestAnimationFrame in Particles cleanup
-Fix dependency arrays with spread operators → use useMemo to stabilize the array
 
 
 ---- CORE
