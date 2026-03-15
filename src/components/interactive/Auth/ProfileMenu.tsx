@@ -45,15 +45,16 @@ const ProfileMenu = () => {
   const linkError = useAuthError("link");
 
   const { data: userData } = useSession();
+  const userId = userData?.user.id ?? "";
   const userName = userData?.user.name;
   const userMail = userData?.user.email;
   const userImg = userData?.user.image;
   const userImgAlt = `Avatar image of ${userName}`;
 
   const { data: spotifyAccount } = api.account.getSpotifyAccountById.useQuery(
-    { userId: userData?.user.id! },
+    { userId },
     {
-      enabled: !!userData,
+      enabled: Boolean(userId),
       refetchInterval: 30 * 60 * 1000, // Refetch every 30 minutes to refresh the access token
       refetchIntervalInBackground: true,
       refetchOnWindowFocus: false,
@@ -68,7 +69,9 @@ const ProfileMenu = () => {
     return (
       <div className="mt-4 w-fit">
         <IconButton
-          onClick={handleSignOut}
+          onClick={() => {
+            void handleSignOut();
+          }}
           text="Log out"
           variant="primary"
           size="lg"
@@ -130,9 +133,10 @@ const ProfileMenu = () => {
           Region
         </Label>
         <div className="col-span-2">
-          <Select data-testid="region-select" onValueChange={changeRegion} value={region}>
+          <Select onValueChange={changeRegion} value={region}>
             <SelectTrigger
               id="region"
+              data-testid="region-select"
               className="h-9 max-w-36 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 font-thin text-foreground focus:ring-0 focus:ring-offset-0 md:max-w-44 md:text-base"
             >
               <motion.div
@@ -189,7 +193,9 @@ const ProfileMenu = () => {
               </Button>
             </a>
             <ConfirmationModal
-              dialogAction={() => handleUnlinkSpotify(userData.user.id)}
+              dialogAction={() => {
+                void handleUnlinkSpotify(userId);
+              }}
               dialogText={`Please confirm that you want to unlink your Spotify account ${spotifyUserData?.profileData?.display_name}.`}
               dialogTitle="Unlink Spotify account?"
             >
@@ -206,7 +212,9 @@ const ProfileMenu = () => {
               variant="outlinePrimary"
               text="Connect"
               size="sm"
-              onClick={handleLinkSpotify}
+              onClick={() => {
+                void handleLinkSpotify();
+              }}
             />
           </div>
         )}
@@ -260,7 +268,7 @@ const ProfileMenu = () => {
           <Switch
             data-testid="particles-toggle"
             id="minimumlength"
-            checked={particlePreference || false}
+            checked={particlePreference ?? false}
             onCheckedChange={changeParticlePreference}
           />
           <span
@@ -296,7 +304,9 @@ const ProfileMenu = () => {
         <p className="col-span-2 flex items-center justify-end font-normal">Account</p>
         <div className="col-span-3">
           <ConfirmationModal
-            dialogAction={() => handleDeleteAccount(userData.user.id)}
+            dialogAction={() => {
+              void handleDeleteAccount(userId);
+            }}
             dialogText="This action cannot be undone. This will permanently delete your account and all related data."
             dialogTitle="Are you absolutely sure?"
           >
@@ -317,7 +327,9 @@ const ProfileMenu = () => {
       <div className="mb-2 mt-6 w-fit">
         <IconButton
           data-testid="logout-button"
-          onClick={handleSignOut}
+          onClick={() => {
+            void handleSignOut();
+          }}
           text="Log out"
           variant="primary"
           size="lg"
