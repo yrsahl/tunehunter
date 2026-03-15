@@ -4,7 +4,6 @@ Here's a summary of React issues found in your codebase:
 
 Critical Issues
 Issue	Location	Problem
-Component inside component	WishlistStatusIcon.tsx:16-58	WishlistedSong is defined inside render, recreating it every render and losing internal state
 Missing animation cleanup	Particles.tsx:31-42	animate() starts a requestAnimationFrame loop but cleanup doesn't cancel it → memory leak
 Missing/Incorrect Dependencies
 
@@ -18,8 +17,6 @@ Overuse of useEffect (could be derived state)
 SearchTabBar.tsx:22-30 – activeSearchTab could be derived from router.query directly
 AuthMenu.tsx:23-36 – Bidirectional URL↔state sync with two effects (potential infinite loop risk)
 
-Minor Issues
-Index as key: SkeletonTable.tsx:87, SongPreview.tsx:112
 
 Highest priority fixes:
 
