@@ -2,6 +2,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import clsx from "clsx";
 import { SearchTab } from "../SearchTabs/SearchTabBar";
 
+const SKELETON_ROW_IDS = Array.from({ length: 20 }, (_, index) => `skeleton-row-${index + 1}`);
+
 interface SkeletonTableProps {
   tab: SearchTab;
   hasHeader: boolean;
@@ -81,11 +83,9 @@ const SkeletonTable = ({ tab, hasHeader }: SkeletonTableProps) => {
       >
         <table className="w-full">
           <tbody>
-            {Array(20)
-              .fill("")
-              .map((_, index) => (
-                <SkeletonRow key={index} />
-              ))}
+            {SKELETON_ROW_IDS.map((rowId) => (
+              <SkeletonRow key={rowId} />
+            ))}
           </tbody>
         </table>
       </div>

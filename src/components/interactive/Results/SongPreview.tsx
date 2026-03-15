@@ -109,7 +109,7 @@ export default function SongPreview({ songData, isLoading }: ISongPreviewProps) 
               <p className="max-w-36 overflow-hidden text-ellipsis whitespace-nowrap text-sm">
                 {genres.length > 0 ? (
                   genres.map((genre, index) => (
-                    <span key={index} className="capitalize">
+                    <span key={genre} className="capitalize">
                       {genre}
                       {index < genres.length - 1 ? ", " : ""}
                     </span>

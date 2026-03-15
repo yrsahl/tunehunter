@@ -20,7 +20,6 @@ AuthMenu.tsx:23-36 – Bidirectional URL↔state sync with two effects (potentia
 
 Minor Issues
 Index as key: SkeletonTable.tsx:87, SongPreview.tsx:112
-Console.logs in production: SearchBar.tsx:96, useSearch.ts:40-41
 
 Highest priority fixes:
 
