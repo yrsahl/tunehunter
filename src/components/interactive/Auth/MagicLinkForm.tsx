@@ -12,7 +12,7 @@ interface IProps {
 const MagicLinkForm: FC<IProps> = ({ email, setMenuState }) => {
   return (
     <AuthCard
-      description={`We sent a mail to ${email}! If you can't find it, please have a look in your spam folder.`}
+      description={`We sent an email to ${email}! If you can't find it, please have a look in your spam folder.`}
       size="small"
     >
       <div className="mt-3 flex w-full flex-col items-center gap-1">
