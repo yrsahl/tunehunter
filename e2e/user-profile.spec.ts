@@ -6,7 +6,7 @@ import {
   waitForPageLoad,
 } from "./utils/test-helpers";
 
-test.describe("User Profile and Settings", () => {
+test.describe("@full User Profile and Settings", () => {
   test("should display user profile information", async ({ authenticatedPage: page }) => {
     await page.goto("/");
     await waitForPageLoad(page);

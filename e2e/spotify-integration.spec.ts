@@ -10,7 +10,7 @@ import {
   waitForSpotifyPlayer,
 } from "./utils/test-helpers";
 
-test.describe("Spotify Integration", () => {
+test.describe("@full Spotify Integration", () => {
   test.beforeEach(async ({ page }) => {
     await mockSpotifyApi(page);
     await waitForSpotifyPlayer(page);

@@ -39,17 +39,14 @@ This directory contains end-to-end tests for the TuneHunter application using Pl
 # Run all E2E tests
 bun run test:e2e
 
-# Run tests with UI mode (interactive)
-bun run test:e2e:ui
-
-# Run tests in headed mode (see browser)
-bun run test:e2e:headed
+# Run smoke test suite
+bun run test:e2e:smoke
 
 # Debug tests step by step
-bun run test:e2e:debug
+bunx playwright test --debug
 
 # Show test results report
-bun run test:e2e:report
+bunx playwright show-report
 ```
 
 ### Running Specific Tests
@@ -264,7 +261,7 @@ test.beforeEach(async ({ page }) => {
 ### 1. Run in Debug Mode
 
 ```bash
-bun run test:e2e:debug
+bunx playwright test --debug
 ```
 
 This opens the Playwright Inspector for step-by-step debugging.
@@ -274,7 +271,7 @@ This opens the Playwright Inspector for step-by-step debugging.
 Failed tests automatically capture screenshots and videos. Find them in:
 
 - `test-results/` directory
-- HTML report accessible via `bun run test:e2e:report`
+- HTML report accessible via `bunx playwright show-report`
 
 ### 3. Console Logs
 

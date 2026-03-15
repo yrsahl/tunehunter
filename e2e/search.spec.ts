@@ -6,7 +6,7 @@ import {
   waitForSearchToLoad,
 } from "./utils/test-helpers";
 
-test.describe("Search Functionality", () => {
+test.describe("@full Search Functionality", () => {
   test.beforeEach(async ({ page }) => {
     // Mock search API responses
     await page.route("**/api/trpc/song.searchSongs*", async (route) => {

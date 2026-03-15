@@ -32,17 +32,14 @@
 # Run all E2E tests
 bun run test:e2e
 
-# Run tests with interactive UI
-bun run test:e2e:ui
+# Run smoke test suite
+bun run test:e2e:smoke
 
-# Run tests in headed mode (see browser)
-bun run test:e2e:headed
+# Debug a test step by step
+bunx playwright test --debug
 
-# Debug tests step by step
-bun run test:e2e:debug
-
-# Show test results report
-bun run test:e2e:report
+# Show last Playwright HTML report
+bunx playwright show-report
 ```
 
 ## 🎯 Test Coverage

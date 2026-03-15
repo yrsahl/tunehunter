@@ -5,7 +5,7 @@ import {
   waitForPageLoad,
 } from "./utils/test-helpers";
 
-test.describe("Authentication Flow", () => {
+test.describe("@full Authentication Flow", () => {
   test("should show login button for unauthenticated users", async ({ page }) => {
     await page.goto("/");
     await waitForPageLoad(page);

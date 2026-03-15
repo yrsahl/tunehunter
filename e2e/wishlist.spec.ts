@@ -6,7 +6,7 @@ import {
   waitForPageLoad,
 } from "./utils/test-helpers";
 
-test.describe("Wishlist Functionality", () => {
+test.describe("@full Wishlist Functionality", () => {
   test.beforeEach(async ({ page }) => {
     // Mock wishlist API responses
     await page.route("**/api/trpc/wishlist.addToWishlist*", async (route) => {

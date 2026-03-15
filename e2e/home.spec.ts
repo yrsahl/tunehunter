@@ -6,7 +6,7 @@ import {
   waitForSearchToLoad,
 } from "./utils/test-helpers";
 
-test.describe("Home Page", () => {
+test.describe("@full Home Page", () => {
   test("should load the home page correctly", async ({ page }) => {
     await page.goto("/");
     await waitForPageLoad(page);
