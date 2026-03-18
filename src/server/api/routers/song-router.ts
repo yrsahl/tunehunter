@@ -155,6 +155,7 @@ export const songRouter = createTRPCRouter({
           albumArtUrl: songs.albumArtUrl,
           year: songs.year,
           spotifyUrl: songs.spotifyUrl,
+          isrc: songs.isrc,
         },
         artists: sql<{ id: string; name: string; popularity: number; followers: number }[]>`
           array_agg(json_build_object(
@@ -183,6 +184,7 @@ export const songRouter = createTRPCRouter({
           albumArtUrl: songs.albumArtUrl,
           year: songs.year,
           spotifyUrl: songs.spotifyUrl,
+          isrc: songs.isrc,
         },
         artists: sql<{ id: string; name: string; popularity: number; followers: number }[]>`
           array_agg(json_build_object(
@@ -211,6 +213,7 @@ export const songRouter = createTRPCRouter({
           albumArtUrl: songs.albumArtUrl,
           year: songs.year,
           spotifyUrl: songs.spotifyUrl,
+          isrc: songs.isrc,
         },
         artists: sql<{ id: string; name: string; popularity: number; followers: number }[]>`
           array_agg(json_build_object(
@@ -268,11 +271,16 @@ export const songRouter = createTRPCRouter({
   storeQueryResults: publicProcedure
     .input(AddSearchQueriesSchema)
     .mutation(async ({ ctx, input }) => {
+      // Deduplicate by song id (same title+artist hash can appear multiple times in results)
+      const uniqueInput = input.filter(
+        ({ song }, index, self) => self.findIndex((s) => s.song.id === song.id) === index,
+      );
+
       // Add songs
       await ctx.db
         .insert(songs)
         .values(
-          input.map(({ song }) => ({
+          uniqueInput.map(({ song }) => ({
             id: song.id,
             title: song.title,
             duration: song.duration,
@@ -280,12 +288,16 @@ export const songRouter = createTRPCRouter({
             albumArtUrl: song.albumArtUrl,
             year: song.year,
             spotifyUrl: song.spotifyUrl,
+            isrc: song.isrc,
           })),
         )
-        .onConflictDoNothing();
+        .onConflictDoUpdate({
+          target: songs.id,
+          set: { isrc: sql`COALESCE(${songs.isrc}, EXCLUDED.isrc)` },
+        });
 
       // Add artists
-      const simpleArtistValues = input.flatMap(({ artists }) =>
+      const simpleArtistValues = uniqueInput.flatMap(({ artists }) =>
         artists.map((artist) => ({
           id: artist.id,
           name: artist.name,
@@ -294,7 +306,7 @@ export const songRouter = createTRPCRouter({
       await ctx.db.insert(artists).values(simpleArtistValues).onConflictDoNothing();
 
       // Add relations
-      const relationValues = input.flatMap(({ song, artists }) =>
+      const relationValues = uniqueInput.flatMap(({ song, artists }) =>
         artists.map((artist) => ({
           songId: song.id,
           artistId: artist.id,

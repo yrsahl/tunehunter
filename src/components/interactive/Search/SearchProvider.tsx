@@ -2,7 +2,6 @@ import { useQueryDataContext } from "@/contexts/QueryDataContext";
 import { useSearchSettingsStore } from "@/hooks/stores/useSearchSettingsStore";
 import useSearchStore from "@/hooks/stores/useSearchStore";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
-import useSpotifyTokens from "@/hooks/useSpotifyTokens";
 import { isCountryCode } from "@/lib/validators";
 import { ReactNode, useEffect, useMemo } from "react";
 
@@ -15,8 +14,6 @@ const SearchProvider = ({ children }: SearchProviderProps) => {
     useSearchStore();
   const { requestQueryData, resetQueryData } = useQueryDataContext();
   const router = useRouterWithHelpers();
-  const { accessToken } = useSpotifyTokens();
-
   const { searchForClubMixesOnly, minimumLengthOption, minimumLengthSeconds } =
     useSearchSettingsStore();
 
@@ -70,11 +67,11 @@ const SearchProvider = ({ children }: SearchProviderProps) => {
   ]);
 
   useEffect(() => {
-    if (!accessToken || !pendingSearch) return;
+    if (!pendingSearch) return;
 
-    requestQueryData(accessToken, pendingSearch, searchSettings, false);
+    requestQueryData(pendingSearch, searchSettings, false);
     setPendingSearch(null);
-  }, [accessToken, pendingSearch, requestQueryData, searchSettings, setPendingSearch]);
+  }, [pendingSearch, requestQueryData, searchSettings, setPendingSearch]);
 
   return <>{children}</>;
 };

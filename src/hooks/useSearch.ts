@@ -1,20 +1,18 @@
 import { useQueryDataContext } from "@/contexts/QueryDataContext";
 import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { api } from "@/lib/api";
+import { generateSongId } from "@/lib/songId";
 import { CountryCode } from "@/lib/validators";
 import { debounce } from "lodash";
 import { FormEvent, useCallback, useEffect, useMemo } from "react";
 import { useSearchSettingsStore } from "./stores/useSearchSettingsStore";
 import useSearchStore from "./stores/useSearchStore";
 import useRouterWithHelpers from "./useRouterWithHelpers";
-import useSpotifyTokens from "./useSpotifyTokens";
-
 const useSearch = () => {
   const { searchState, setSearchInput, setSelectedSearch } = useSearchStore();
   const { setShowQueries, requestQueryData, resetQueryData } = useQueryDataContext();
   const { history } = useSearchTabDataContext();
   const router = useRouterWithHelpers();
-  const { accessToken } = useSpotifyTokens();
   const addSearchActivity = api.userActivities.addSearchActivity.useMutation();
 
   // Are there any settings set?
@@ -32,19 +30,15 @@ const useSearch = () => {
   // On enter, request query data immediately
   const handleSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!accessToken) return;
-    requestQueryData(accessToken, searchState.input, searchSettings);
+    requestQueryData(searchState.input, searchSettings);
   };
 
   // On input change, debounce the request
   const debouncedRequestSearchData = useCallback(
     debounce((searchTerm: string) => {
-      if (!accessToken) {
-        return;
-      }
-      requestQueryData(accessToken, searchTerm, searchSettings);
+      requestQueryData(searchTerm, searchSettings);
     }, 600),
-    [accessToken, requestQueryData, searchSettings],
+    [requestQueryData, searchSettings],
   );
 
   useEffect(() => {
@@ -74,18 +68,20 @@ const useSearch = () => {
   };
 
   // Submit search
-  const submitSearch = async (id: string, region: CountryCode, title: string, artist: string) => {
+  const submitSearch = async (_id: string, region: CountryCode, title: string, artist: string) => {
+    const songId = generateSongId(title, artist);
+
     // Hide queries
     setShowQueries(false);
 
     // Trigger SearchResults re-render (which starts the vendor data search)
-    setSelectedSearch({ id, region, artist, title });
+    setSelectedSearch({ id: songId, region, artist, title });
 
     // Refresh
-    if (accessToken) requestQueryData(accessToken, `${artist} - ${title}`, searchSettings, false);
+    requestQueryData(`${artist} - ${title}`, searchSettings, false);
 
     // Store activity and refresh history data for user
-    await addSearchActivity.mutateAsync({ songId: id, region });
+    await addSearchActivity.mutateAsync({ songId, region });
     history.refetchData();
 
     // Push to router
@@ -93,7 +89,7 @@ const useSearch = () => {
       pathname: router.pathname,
       query: {
         ...router.query,
-        id,
+        id: songId,
         region,
         title,
         artist,

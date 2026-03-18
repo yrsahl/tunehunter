@@ -103,6 +103,7 @@ const getUserActivityByType = async (userId: string, type: UserActivityType) => 
         albumArtUrl: songs.albumArtUrl,
         year: songs.year,
         spotifyUrl: songs.spotifyUrl,
+        isrc: songs.isrc,
       },
       artists: sql<{ id: string; name: string; popularity: number; followers: number }[]>`
         array_agg(json_build_object(
@@ -127,6 +128,7 @@ const getUserActivityByType = async (userId: string, type: UserActivityType) => 
       songs.albumArtUrl,
       songs.year,
       songs.spotifyUrl,
+      songs.isrc,
     )
     .orderBy(desc(userActivities.createdAt))
     .limit(30);

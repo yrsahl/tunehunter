@@ -27,6 +27,7 @@ const useSpotifySongData = () => {
       albumArtUrl: currentlyPlaying?.item.album.images[0]?.url || null,
       year: currentlyPlaying?.item.album.release_date,
       spotifyUrl: currentlyPlaying?.item.external_urls.spotify,
+      isrc: null,
     },
     artists: currentlyPlaying?.item.artists.map((artist) => ({
       id: artist.id,
@@ -45,6 +46,7 @@ const useSpotifySongData = () => {
       albumArtUrl: queuedSong.album.images[0]?.url || null,
       year: queuedSong.album.release_date,
       spotifyUrl: queuedSong.external_urls.spotify,
+      isrc: null,
     },
     artists: queuedSong.artists.map((artist) => ({
       id: artist.id,
@@ -63,6 +65,7 @@ const useSpotifySongData = () => {
       albumArtUrl: track.album.images[0]?.url || null,
       year: track.album.release_date,
       spotifyUrl: track.external_urls.spotify,
+      isrc: null,
     },
     artists: track.artists.map((artist) => ({
       id: artist.id,
@@ -81,6 +84,7 @@ const useSpotifySongData = () => {
       albumArtUrl: track.track.album.images[0]?.url || null,
       year: track.track.album.release_date,
       spotifyUrl: track.track.external_urls.spotify,
+      isrc: null,
     },
     artists: track.track.artists.map((artist) => ({
       id: artist.id,

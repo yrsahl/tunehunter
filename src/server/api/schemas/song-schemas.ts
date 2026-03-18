@@ -10,6 +10,7 @@ export const AddSongSchema = z.object({
   albumArtUrl: z.union([z.string(), z.null()]),
   year: z.string(),
   spotifyUrl: z.string(),
+  isrc: z.union([z.string(), z.null()]),
 });
 
 export const AddSearchQueriesSchema = z.array(

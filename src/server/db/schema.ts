@@ -140,7 +140,7 @@ export const artists = pgTable("artist", {
   followers: integer("followers"),
 });
 
-// A song identified by its (spotify) id
+// A song identified by a hash of title + primary artist
 export const songs = pgTable("song", {
   id: text("id").primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
@@ -149,6 +149,7 @@ export const songs = pgTable("song", {
   albumArtUrl: varchar("album_art_url", { length: 255 }),
   year: varchar("year", { length: 255 }).notNull(),
   spotifyUrl: varchar("spotify_url", { length: 255 }).notNull(),
+  isrc: varchar("isrc", { length: 12 }),
 });
 
 export const songsRelations = relations(songs, ({ many }) => ({

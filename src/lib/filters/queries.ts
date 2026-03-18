@@ -1,6 +1,6 @@
-import { SpotifySearchData } from "@/types/spotify-types";
+import { SearchData } from "@/types/search-types";
 
-export const filterOutDuplicates = (searchData: SpotifySearchData) => {
+export const filterOutDuplicates = (searchData: SearchData) => {
   const uniqueTracks = new Map();
   searchData.tracks?.items.forEach((track) => {
     const key = `${track.name}-${track.duration_ms}`;
