@@ -90,7 +90,7 @@ const TableRow = ({
           {showSearch && (
             <td className="pl-2 text-right align-middle sm:pl-4">
               <IconButton
-                variant="primary"
+                variant="outlinePrimary"
                 text="Search"
                 size={buttonSize}
                 textStyle="uppercase text-xs"

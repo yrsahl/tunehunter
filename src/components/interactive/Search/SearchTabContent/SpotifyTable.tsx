@@ -55,7 +55,7 @@ const SpotifyTable = () => {
           size="icon"
           iconSize="22px"
           variant="ghostPrimary"
-          className="border-0"
+          className="border-0 bg-primary/10"
         />
       </motion.div>
       {/* Loading */}
