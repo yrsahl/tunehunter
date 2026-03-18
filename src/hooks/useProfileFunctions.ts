@@ -115,7 +115,7 @@ const useProfileFunctions = () => {
           utils.account.getSpotifyAccountById
             .invalidate()
             .then(() => {
-              if (router.getParams("search") == "spotify") router.setParams({ search: "" });
+              if (router.getParams("search") === "spotify") router.setParams({ search: "" });
             })
             .then(() =>
               toast.success("Spotify account successfully unlinked.", { id: loadingToast }),

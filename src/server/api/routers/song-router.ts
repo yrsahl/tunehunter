@@ -92,32 +92,38 @@ export const songRouter = createTRPCRouter({
       if (genreValues.length > 0) await ctx.db.insert(genres).values(genreValues);
 
       // Update artists
-      artistsWithMissingData.forEach(async (artist) => {
-        const amendedArtist = amendedArtistsData.find((a) => a.id === artist.id);
-
-        // Artist table
-        if (amendedArtist) {
-          await ctx.db
-            .update(artists)
-            .set({
-              popularity: amendedArtist.popularity,
-              followers: amendedArtist.followers,
+      const genreIds =
+        artistsGenres.length > 0
+          ? await ctx.db.query.genres.findMany({
+              where: (genres, { inArray }) => inArray(genres.name, artistsGenres),
             })
-            .where(eq(artists.id, artist.id));
-        }
+          : [];
 
-        // Genre artist relation
-        if (artistsGenres.length > 0) {
-          const genreIds = await ctx.db.query.genres.findMany({
-            where: (genres, { inArray }) => inArray(genres.name, artistsGenres),
-          });
-          const genreIdValues = genreIds.map((genre) => ({
-            artistId: artist.id,
-            genreId: genre.id,
-          }));
-          await ctx.db.insert(artistGenres).values(genreIdValues).onConflictDoNothing();
-        }
-      });
+      await Promise.all(
+        artistsWithMissingData.map(async (artist) => {
+          const amendedArtist = amendedArtistsData.find((a) => a.id === artist.id);
+
+          // Artist table
+          if (amendedArtist) {
+            await ctx.db
+              .update(artists)
+              .set({
+                popularity: amendedArtist.popularity,
+                followers: amendedArtist.followers,
+              })
+              .where(eq(artists.id, artist.id));
+          }
+
+          // Genre artist relation
+          if (genreIds.length > 0) {
+            const genreIdValues = genreIds.map((genre) => ({
+              artistId: artist.id,
+              genreId: genre.id,
+            }));
+            await ctx.db.insert(artistGenres).values(genreIdValues).onConflictDoNothing();
+          }
+        }),
+      );
 
       // Return
       return { ...song, artists: artistsData };

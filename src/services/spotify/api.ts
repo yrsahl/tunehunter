@@ -90,5 +90,5 @@ async function fetchSpotifyData<T>(token: string, endpoint: string): Promise<T |
   if (response.status === 204 || response.status >= 400) {
     return null;
   }
-  return (await response.json()) as Promise<T>;
+  return (await response.json()) as T;
 }
