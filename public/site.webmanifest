@@ -1,6 +1,6 @@
 {
-  "name": "TuneHunter",
-  "short_name": "TuneHunter",
+  "name": "TrackScout",
+  "short_name": "TrackScout",
   "start_url": "/",
   "icons": [
     { "src": "/favicons/favicon-16x16.png", "sizes": "16x16", "type": "image/png" },

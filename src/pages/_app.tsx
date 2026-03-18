@@ -39,7 +39,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
     <>
       <Head>
         <link rel="apple-touch-icon" href="/favicons/apple-touch-icon.png" />
-        <meta name="apple-mobile-web-app-title" content="TuneHunter" />
+        <meta name="apple-mobile-web-app-title" content="TrackScout" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#ffffff" />
       </Head>

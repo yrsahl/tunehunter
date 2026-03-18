@@ -31,7 +31,7 @@ export default function useSpotifyPlayer() {
       }
 
       const newPlayer = new window.Spotify.Player({
-        name: "TuneHunter Web Player",
+        name: "TrackScout Web Player",
         getOAuthToken: (cb: (token: string) => void) => cb(token),
         volume: 0.5,
       });

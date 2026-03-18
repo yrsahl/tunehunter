@@ -1,10 +1,10 @@
 import { type DefaultSeoProps } from "next-seo";
 
 const config: DefaultSeoProps = {
-  title: "TuneHunter",
+  title: "TrackScout",
   description:
     "Compare music vendors like Beatport and Amazon Music to find the best deal for your music!",
-  canonical: "https://tunehunter.app/",
+  canonical: "https://trackscout.app/",
   additionalLinkTags: [
     {
       rel: "icon",
@@ -14,8 +14,8 @@ const config: DefaultSeoProps = {
   // openGraph: {
   //   type: "website",
   //   locale: "en_IE",
-  //   url: "https://tunehunter.app/",
-  //   siteName: "TuneHunter",
+  //   url: "https://trackscout.app/",
+  //   siteName: "TrackScout",
   // },
   // twitter: {
   //   handle: "@handle",
