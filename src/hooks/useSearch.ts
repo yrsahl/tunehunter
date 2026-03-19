@@ -2,7 +2,6 @@ import { useQueryDataContext } from "@/contexts/QueryDataContext";
 import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { api } from "@/lib/api";
 import { CountryCode } from "@/lib/validators";
-import { enrichSongData } from "@/services/spotify/enrich";
 import { Track } from "@/types/song-types";
 import { debounce } from "lodash";
 import { FormEvent, useCallback, useEffect, useMemo } from "react";
@@ -13,11 +12,14 @@ import useRouterWithHelpers from "./useRouterWithHelpers";
 import useSpotifyTokens from "./useSpotifyTokens";
 const useSearch = () => {
   const { searchState, setSearchInput, setSelectedSearch } = useSearchStore();
-  const { publishEvent: publishSearchSubmitted } = useEventEmitter<SelectedSearchParams | null>(SEARCH_SUBMITTED);
+  const { publishEvent: publishSearchSubmitted } = useEventEmitter<SelectedSearchParams | null>(
+    SEARCH_SUBMITTED,
+  );
   const { setShowQueries, requestQueryData, resetQueryData } = useQueryDataContext();
   const { history } = useSearchTabDataContext();
   const router = useRouterWithHelpers();
   const addSearchActivity = api.userActivities.addSearchActivity.useMutation();
+  const { mutate: enrichArtists } = api.song.enrichArtists.useMutation();
   const { userAccessToken } = useSpotifyTokens();
 
   // Are there any settings set?
@@ -83,7 +85,7 @@ const useSearch = () => {
 
     // Enrich song data if logged in and necessary (spotifyId & genres to artists)
     if (userAccessToken) {
-      await enrichSongData(userAccessToken, artist, title, duration);
+      enrichArtists({ songId: id, accessToken: userAccessToken });
     }
 
     // Update store (input text + syncRouteSearch change detection) and start the search

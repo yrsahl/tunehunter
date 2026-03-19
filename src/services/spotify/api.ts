@@ -63,7 +63,7 @@ const SEARCH_ENDPOINT = "https://api.spotify.com/v1/search";
 const DURATION_WINDOW_MS = 3000;
 
 export const fetchSpotifyTrack = async (
-  appToken: string,
+  accessToken: string,
   query: string,
   duration: number,
 ): Promise<Track | null> => {
@@ -74,7 +74,7 @@ export const fetchSpotifyTrack = async (
   });
   const searchUrl = `${SEARCH_ENDPOINT}?${searchParams.toString()}`;
 
-  const data = await fetchSpotifyData<SpotifySearchData>(appToken, searchUrl);
+  const data = await fetchSpotifyData<SpotifySearchData>(accessToken, searchUrl);
   if (!data?.tracks?.items) return null;
 
   const candidates = data.tracks.items.filter(
