@@ -79,7 +79,7 @@ const useSearch = () => {
     // Hide queries if currently visible
     if (setShowQueries) setShowQueries(false);
 
-    // Enrich song data if logged in and necessary (spotifyId, genres)
+    // Enrich song data if logged in and necessary (spotifyId & genres to artists)
     if (userAccessToken) {
       // Check if song is already rich
 

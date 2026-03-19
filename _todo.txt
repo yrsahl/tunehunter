@@ -9,6 +9,11 @@
 ---- CORE
 
 Move search to different API
+- Store iTunes price data on search
+- Start new iTunes search on search click in Spotify Table
+- Enrich song data with spotify data on search start
+
+
 Create backend API that FireCrawls Amazon Music, Bandcamp, Beatport
 
 
