@@ -2,7 +2,7 @@ import { useQueryDataContext } from "@/contexts/QueryDataContext";
 import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { api } from "@/lib/api";
 import { CountryCode } from "@/lib/validators";
-import { fetchSpotifyTrack } from "@/services/spotify/api";
+import { enrichSongData } from "@/services/spotify/enrich";
 import { Track } from "@/types/song-types";
 import { debounce } from "lodash";
 import { FormEvent, useCallback, useEffect, useMemo } from "react";
@@ -81,11 +81,7 @@ const useSearch = () => {
 
     // Enrich song data if logged in and necessary (spotifyId & genres to artists)
     if (userAccessToken) {
-      // Check if song is already rich
-
-      // If not, query spotify data and store it
-      const query = `${artist} - ${title}`;
-      const spotifyData = await fetchSpotifyTrack(userAccessToken, query, duration);
+      await enrichSongData(userAccessToken, artist, title, duration);
     }
 
     // Trigger SearchResults re-render (which starts the vendor data search)
