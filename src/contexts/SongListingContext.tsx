@@ -4,10 +4,10 @@ import { CountryCode } from "@/lib/validators";
 import { AppRouter } from "@/server/api/root";
 import { SongVendorType } from "@/server/db/schema";
 import { inferProcedureOutput } from "@trpc/server";
-import { createContext, useContext, useMemo } from "react";
+import { createContext, useContext, useEffect, useMemo } from "react";
 
 interface ISongListingContext {
-  songData: inferProcedureOutput<AppRouter["song"]["getSongAndArtistsBySongId"]> | null | undefined;
+  trackData: inferProcedureOutput<AppRouter["song"]["getTrack"]> | null | undefined;
   isSongDataLoading: boolean;
   getVendorResponse: (
     vendor: SongVendorType,
@@ -16,7 +16,7 @@ interface ISongListingContext {
 }
 
 const SongListingContext = createContext<ISongListingContext>({
-  songData: null,
+  trackData: null,
   isSongDataLoading: true,
   getVendorResponse: () => null,
   getVendorResponseLoadingState: () => true,
@@ -35,34 +35,36 @@ export const SongListingContextProvider = ({
   region,
   children,
 }: ISongListingContextProviderProps) => {
-  const { accessToken } = useSpotifyTokens();
+  const { userAccessToken } = useSpotifyTokens();
 
-  // 1. Get songData
-  const { data: songData, isLoading: isSongDataLoading } =
-    api.song.getSongAndArtistsBySongId.useQuery(
-      {
-        id: songId,
-        accessToken: accessToken || "",
-      },
-      {
-        enabled: !!accessToken,
-      },
-    );
+  // 1. Get trackData
+  const utils = api.useUtils();
+  const { data: trackData, isLoading: isSongDataLoading } = api.song.getTrack.useQuery({
+    id: songId,
+  });
+  // 2. Enrich artist data (popularity, followers, genres) if logged in
+  const { mutate: enrichArtists } = api.song.enrichArtists.useMutation({
+    onSuccess: () => utils.song.getTrack.invalidate({ id: songId }),
+  });
 
-  const artists = songData?.artists.map((artist) => artist.name).join(", ") || "";
+  useEffect(() => {
+    if (userAccessToken && trackData) {
+      enrichArtists({ songId, accessToken: userAccessToken });
+    }
+  }, [songId, userAccessToken, !!trackData]);
 
-  // Compute a flag to ensure all required fields are present
+  const artists = trackData?.artists.map((artist) => artist.name).join(", ") || "";
+
   const isSongDataValid = useMemo(() => {
     return (
       !isSongDataLoading &&
-      !!songData &&
-      !!songData.title &&
-      !!songData.album &&
-      !!songData.duration &&
-      !!songData.artists &&
+      !!trackData &&
+      !!trackData.song.title &&
+      !!trackData.song.album &&
+      !!trackData.song.duration &&
       artists.length > 0
     );
-  }, [isSongDataLoading, songData, artists]);
+  }, [isSongDataLoading, trackData, artists]);
 
   // iTunes
   const { data: itunesResponse, isLoading: isItunesResponseLoading } =
@@ -72,9 +74,9 @@ export const SongListingContextProvider = ({
         region,
         songId,
         artist: artists,
-        album: songData?.album || "",
-        duration: songData?.duration || 0,
-        title: songData?.title || "",
+        album: trackData?.song.album || "",
+        duration: trackData?.song.duration || 0,
+        title: trackData?.song.title || "",
       },
       {
         refetchOnWindowFocus: false,
@@ -90,9 +92,9 @@ export const SongListingContextProvider = ({
         region,
         songId,
         artist: artists,
-        album: songData?.album || "",
-        duration: songData?.duration || 0,
-        title: songData?.title || "",
+        album: trackData?.song.album || "",
+        duration: trackData?.song.duration || 0,
+        title: trackData?.song.title || "",
       },
       {
         refetchOnWindowFocus: false,
@@ -108,9 +110,9 @@ export const SongListingContextProvider = ({
         region,
         songId,
         artist: artists,
-        album: songData?.album || "",
-        duration: songData?.duration || 0,
-        title: songData?.title || "",
+        album: trackData?.song.album || "",
+        duration: trackData?.song.duration || 0,
+        title: trackData?.song.title || "",
       },
       {
         refetchOnWindowFocus: false,
@@ -126,9 +128,9 @@ export const SongListingContextProvider = ({
         region,
         songId,
         artist: artists,
-        album: songData?.album || "",
-        duration: songData?.duration || 0,
-        title: songData?.title || "",
+        album: trackData?.song.album || "",
+        duration: trackData?.song.duration || 0,
+        title: trackData?.song.title || "",
       },
       {
         refetchOnWindowFocus: false,
@@ -169,7 +171,7 @@ export const SongListingContextProvider = ({
   return (
     <SongListingContext.Provider
       value={{
-        songData,
+        trackData,
         isSongDataLoading,
         getVendorResponse,
         getVendorResponseLoadingState,

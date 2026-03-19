@@ -2,34 +2,37 @@ import ConditionalTooltip from "@/components/ConditonalTooltip";
 import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
 import { useDisabledTabStore } from "@/hooks/stores/useDisabledTabStore";
 import { formatDate, formatDuration } from "@/lib/formatters";
-import { AppRouter } from "@/server/api/root";
-import { inferProcedureOutput } from "@trpc/server";
+import { Track } from "@/types/song-types";
 import { Album, Calendar, Clock, HeartIcon, Music, Play } from "lucide-react";
 import { useSession } from "next-auth/react";
 import SpotifyPlayIcon from "../Search/SearchTabContent/SpotifyPlayIcon";
 import WishlistStatusIcon from "../Search/SearchTabContent/WishlistStatusIcon";
+import SongPreviewFallback from "./SongPreviewFallback";
 import SongPreviewSkeleton from "./SongPreviewSkeleton";
 
 interface ISongPreviewProps {
-  songData: inferProcedureOutput<AppRouter["song"]["getSongAndArtistsBySongId"]> | undefined;
+  trackData: Track | undefined;
   isLoading: boolean;
 }
 
-export default function SongPreview({ songData, isLoading }: ISongPreviewProps) {
+export default function SongPreview({ trackData, isLoading }: ISongPreviewProps) {
   const { status } = useSession();
   const { spotifyConnected } = useSpotifyUserDataContext();
   const { setDisabledTabButtonHovered } = useDisabledTabStore();
   const loggedIn = status === "authenticated";
 
+  console.log("songData", trackData);
+
   if (isLoading) {
     return <SongPreviewSkeleton />;
   }
 
-  if (!songData) {
-    return <p>No data</p>;
+  if (!trackData) {
+    return <SongPreviewFallback />;
   }
 
-  const { albumArtUrl, title, duration, artists, album, year } = songData;
+  const { song, artists } = trackData;
+  const { id, albumArtUrl, title, duration, album, year } = song;
 
   // Format artist names
   const artistNames = artists
@@ -81,7 +84,7 @@ export default function SongPreview({ songData, isLoading }: ISongPreviewProps) 
                       </div>
                     }
                   >
-                    <SpotifyPlayIcon songId={songData.id} />
+                    <SpotifyPlayIcon songId={id} />
                   </ConditionalTooltip>
                   <ConditionalTooltip
                     active={loggedIn}
@@ -96,7 +99,7 @@ export default function SongPreview({ songData, isLoading }: ISongPreviewProps) 
                       </div>
                     }
                   >
-                    <WishlistStatusIcon songId={songData.id} />
+                    <WishlistStatusIcon songId={id} />
                   </ConditionalTooltip>
                 </div>
               </div>

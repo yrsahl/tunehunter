@@ -3,10 +3,11 @@ import { InferSelectModel } from "drizzle-orm";
 
 export type Song = InferSelectModel<typeof songs>;
 export type Artist = InferSelectModel<typeof artists>;
+export type TrackArtist = Artist & { genres?: (string | null)[] };
 
 export type Track = {
   song: Song;
-  artists: Artist[];
+  artists: TrackArtist[];
 };
 
 export type TrendingTrack = {

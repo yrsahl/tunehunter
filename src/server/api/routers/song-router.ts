@@ -32,16 +32,33 @@ export const songRouter = createTRPCRouter({
     });
   }),
 
-  getSongAndArtistsBySongId: publicProcedure
-    .input(z.object({ id: z.string(), accessToken: z.string() }))
-    .query(async ({ ctx, input }) => {
-      // Get song from DB
-      const song = await ctx.db.query.songs.findFirst({
-        where: (songs, { eq }) => eq(songs.id, input.id),
-      });
-      if (!song) return null;
+  getTrack: publicProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+    const song = await ctx.db.query.songs.findFirst({
+      where: (songs, { eq }) => eq(songs.id, input.id),
+    });
+    if (!song) return null;
 
-      // Get artists IDs to song from DB
+    const artistsDb = await ctx.db
+      .select({
+        id: artists.id,
+        name: artists.name,
+        popularity: artists.popularity,
+        followers: artists.followers,
+        genres: sql<string[]>`array_agg(${genres.name})`.as("genres"),
+      })
+      .from(songArtists)
+      .innerJoin(artists, eq(songArtists.artistId, artists.id))
+      .leftJoin(artistGenres, eq(artistGenres.artistId, artists.id))
+      .leftJoin(genres, eq(artistGenres.genreId, genres.id))
+      .where(eq(songArtists.songId, song.id))
+      .groupBy(artists.id);
+
+    return { song, artists: artistsDb };
+  }),
+
+  enrichArtists: publicProcedure
+    .input(z.object({ songId: z.string(), accessToken: z.string() }))
+    .mutation(async ({ ctx, input }) => {
       const artistsDb = await ctx.db
         .select({
           id: artists.id,
@@ -54,79 +71,58 @@ export const songRouter = createTRPCRouter({
         .innerJoin(artists, eq(songArtists.artistId, artists.id))
         .leftJoin(artistGenres, eq(artistGenres.artistId, artists.id))
         .leftJoin(genres, eq(artistGenres.genreId, genres.id))
-        .where(eq(songArtists.songId, song.id))
+        .where(eq(songArtists.songId, input.songId))
         .groupBy(artists.id);
 
-      // Amend artistsDb data
-      const artistsWithExistingData = artistsDb.filter(
-        (artist) =>
-          artist.popularity && artist.followers && !artist.genres.every((genre) => genre === null),
-      );
       const artistsWithMissingData = artistsDb.filter(
         (artist) =>
           !artist.popularity || !artist.followers || artist.genres.every((genre) => genre === null),
       );
-      const artistsWithMissingData_Ids = artistsWithMissingData.map((artist) => artist.id);
+      if (artistsWithMissingData.length === 0) return;
+
       const amendedArtistsData = await amendArtistData(
         input.accessToken,
-        artistsWithMissingData_Ids,
+        artistsWithMissingData.map((a) => a.id),
       );
 
-      // Combine data
-      const artistsData = [...artistsWithExistingData, ...amendedArtistsData];
-      let artistsGenres = artistsData
+      let artistsGenres = amendedArtistsData
         .flatMap((artist) => artist.genres)
-        .filter((genre) => genre !== null && genre !== undefined)
+        .filter((genre): genre is string => genre != null)
         .filter((genre, index, self) => self.indexOf(genre) === index);
       if (artistsGenres.length === 0) artistsGenres = ["unknown"];
 
-      // Maybe insert genres
+      // Upsert genres
       const existingGenres = await ctx.db.query.genres.findMany({
         where: (genres, { inArray }) => inArray(genres.name, artistsGenres),
       });
-      const existingGenresNames = existingGenres.map((genre) => genre.name);
-      const genresToBeAdded = artistsGenres.filter((genre) => !existingGenresNames.includes(genre));
-      const genreValues = genresToBeAdded.map((genre) => ({
-        name: genre,
-      }));
-      if (genreValues.length > 0) await ctx.db.insert(genres).values(genreValues);
+      const existingGenreNames = existingGenres.map((g) => g.name);
+      const genresToAdd = artistsGenres
+        .filter((g) => !existingGenreNames.includes(g))
+        .map((name) => ({ name }));
+      if (genresToAdd.length > 0) await ctx.db.insert(genres).values(genresToAdd);
 
-      // Update artists
-      const genreIds =
-        artistsGenres.length > 0
-          ? await ctx.db.query.genres.findMany({
-              where: (genres, { inArray }) => inArray(genres.name, artistsGenres),
-            })
-          : [];
+      const genreIds = await ctx.db.query.genres.findMany({
+        where: (genres, { inArray }) => inArray(genres.name, artistsGenres),
+      });
 
+      // Update artists and relations
       await Promise.all(
         artistsWithMissingData.map(async (artist) => {
-          const amendedArtist = amendedArtistsData.find((a) => a.id === artist.id);
-
-          // Artist table
-          if (amendedArtist) {
+          const amended = amendedArtistsData.find((a) => a.id === artist.id);
+          if (amended) {
             await ctx.db
               .update(artists)
-              .set({
-                popularity: amendedArtist.popularity,
-                followers: amendedArtist.followers,
-              })
+              .set({ popularity: amended.popularity, followers: amended.followers })
               .where(eq(artists.id, artist.id));
           }
-
-          // Genre artist relation
           if (genreIds.length > 0) {
-            const genreIdValues = genreIds.map((genre) => ({
-              artistId: artist.id,
-              genreId: genre.id,
-            }));
-            await ctx.db.insert(artistGenres).values(genreIdValues).onConflictDoNothing();
+            await ctx.db
+              .insert(artistGenres)
+              .values(genreIds.map((genre) => ({ artistId: artist.id, genreId: genre.id })))
+              .onConflictDoNothing();
           }
         }),
       );
-
-      // Return
-      return { ...song, artists: artistsData };
     }),
 
   getTrendingSongs: publicProcedure.query<TrendingTracks>(async ({ ctx }) => {
