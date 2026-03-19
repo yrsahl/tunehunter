@@ -154,7 +154,7 @@ export const songRouter = createTRPCRouter({
           album: songs.album,
           albumArtUrl: songs.albumArtUrl,
           year: songs.year,
-          spotifyUrl: songs.spotifyUrl,
+          spotifyId: songs.spotifyId,
           isrc: songs.isrc,
         },
         artists: sql<{ id: string; name: string; popularity: number; followers: number }[]>`
@@ -183,7 +183,7 @@ export const songRouter = createTRPCRouter({
           album: songs.album,
           albumArtUrl: songs.albumArtUrl,
           year: songs.year,
-          spotifyUrl: songs.spotifyUrl,
+          spotifyId: songs.spotifyId,
           isrc: songs.isrc,
         },
         artists: sql<{ id: string; name: string; popularity: number; followers: number }[]>`
@@ -212,7 +212,7 @@ export const songRouter = createTRPCRouter({
           album: songs.album,
           albumArtUrl: songs.albumArtUrl,
           year: songs.year,
-          spotifyUrl: songs.spotifyUrl,
+          spotifyId: songs.spotifyId,
           isrc: songs.isrc,
         },
         artists: sql<{ id: string; name: string; popularity: number; followers: number }[]>`
@@ -259,7 +259,8 @@ export const songRouter = createTRPCRouter({
       album: input.album,
       albumArtUrl: input.albumArtUrl,
       year: input.year,
-      spotifyUrl: input.spotifyUrl,
+      spotifyId: input.spotifyId,
+      isrc: input.isrc,
     });
 
     return {
@@ -287,7 +288,7 @@ export const songRouter = createTRPCRouter({
             album: song.album,
             albumArtUrl: song.albumArtUrl,
             year: song.year,
-            spotifyUrl: song.spotifyUrl,
+            spotifyId: song.spotifyId,
             isrc: song.isrc,
           })),
         )

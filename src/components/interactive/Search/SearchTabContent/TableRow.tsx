@@ -1,16 +1,19 @@
 import IconButton from "@/components/IconButton";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
+import useDb from "@/hooks/useDb";
 import useDeviceSize from "@/hooks/useDeviceSize";
 import useSearch from "@/hooks/useSearch";
 import { cn } from "@/lib/utils";
+import { fetchItunesTrack } from "@/services/itunes/api";
 import { fadeInAndOut } from "@/styles/animations";
-import { Track } from "@/types/song-types";
+import { SpotifyTrack, Track } from "@/types/song-types";
 import clsx from "clsx";
 import { motion } from "framer-motion";
 import { ReactNode } from "react";
+import { toast } from "sonner";
 
 interface TableRowProps {
-  track: Track;
+  track: Track | SpotifyTrack;
   showDuration?: boolean;
   showSearch?: boolean;
   extraElement?: ReactNode;
@@ -27,11 +30,28 @@ const TableRow = ({
   const { region } = useRegionSettings();
   const { isSmallDevice } = useDeviceSize();
   const buttonSize = isSmallDevice ? "xs" : "sm";
+  const { storeTracksInDb } = useDb();
 
   const primaryArtist = artists[0]?.name || "";
 
   const handleSearchClick = async () => {
-    submitSearch(song.id, region, song.title, primaryArtist);
+    // If it comes from spotify, we have no ID yet
+    let songId = "id" in song ? song.id : null;
+
+    if (!songId) {
+      // Get iTunes song to this exact song
+      const query = `{${song.title} - ${primaryArtist}`;
+      const iTunesTrack = await fetchItunesTrack(query, track.song.duration);
+      if (iTunesTrack) await storeTracksInDb([iTunesTrack]);
+      songId = iTunesTrack?.id ?? null;
+
+      if (!songId) {
+        toast.error("Song not found");
+        return;
+      }
+    }
+
+    submitSearch(songId, region, song.title, primaryArtist);
   };
 
   return (

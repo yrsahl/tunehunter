@@ -1,8 +1,7 @@
 import SearchSettings from "@/components/interactive/Search/SearchSettings";
 import useDb from "@/hooks/useDb";
-import { filterOutDuplicates } from "@/lib/filters";
+import { applyFilters } from "@/lib/filters";
 import { fetchItunesSearchData } from "@/services/itunes/api";
-import { fetchMusicBrainzSearchData } from "@/services/musicbrainz/api";
 import { SearchData } from "@/types/search-types";
 import { createContext, ReactNode, useContext, useState } from "react";
 
@@ -49,43 +48,24 @@ export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
 
     if (displayLoadingIndicator) setIsQueryDataLoading(true);
 
-    const applyFiltersAndStore = (data: SearchData) => {
-      data.tracks.items = filterOutDuplicates(data);
-
-      if (searchSettings?.searchForClubMixesOnly) {
-        data.tracks.items = data.tracks.items.filter((track) => {
-          return (
-            track.name.toLowerCase().includes("club") ||
-            track.name.toLowerCase().includes("extended")
-          );
-        });
-      }
-
-      if (searchSettings?.minimumLengthOption && searchSettings?.minimumLengthSeconds) {
-        data.tracks.items = data.tracks.items.filter((track) => {
-          return track.duration_ms >= searchSettings.minimumLengthSeconds * 1000;
-        });
-      }
-
-      setQueryData(data);
-      if (displayLoadingIndicator) setIsQueryDataLoading(false);
-      storeTracksInDb(data.tracks.items);
-    };
-
     try {
       fetchItunesSearchData(query).then(async (itunesData) => {
         if (itunesData?.tracks?.items.length) {
-          applyFiltersAndStore(itunesData);
+          const filteredData = applyFilters(itunesData, searchSettings);
+
+          setQueryData(filteredData);
+          if (displayLoadingIndicator) setIsQueryDataLoading(false);
+
+          storeTracksInDb(filteredData.tracks.items);
           return;
         }
 
         // iTunes returned nothing — fall back to MusicBrainz
-        const mbData = await fetchMusicBrainzSearchData(query);
-        if (!mbData?.tracks) {
-          if (displayLoadingIndicator) setIsQueryDataLoading(false);
-          return;
-        }
-        applyFiltersAndStore(mbData);
+        // const mbData = await fetchMusicBrainzSearchData(query);
+        // if (!mbData?.tracks) {
+        //   if (displayLoadingIndicator) setIsQueryDataLoading(false);
+        //   return;
+        // }
       });
     } catch (error) {
       console.error(error);

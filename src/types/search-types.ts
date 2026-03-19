@@ -2,8 +2,7 @@ export type SearchTrack = {
   id: string;
   name: string;
   duration_ms: number;
-  popularity: number;
-  storeUrl: string;
+  spotifyId?: string;
   isrc?: string;
   artists: { id: string; name: string }[];
   album: {

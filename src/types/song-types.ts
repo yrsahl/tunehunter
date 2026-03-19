@@ -10,6 +10,10 @@ export type TrendingTrack = {
   searchCount: number;
 } & Track;
 
+export type SpotifyTrack = Omit<Track, "song"> & {
+  song: Omit<Track["song"], "id">;
+};
+
 export type UserActivityTrack = {
   type: "search" | "store_visit" | "wishlist";
   createdAt: Date;

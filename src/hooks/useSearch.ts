@@ -1,7 +1,6 @@
 import { useQueryDataContext } from "@/contexts/QueryDataContext";
 import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { api } from "@/lib/api";
-import { generateSongId } from "@/lib/songId";
 import { CountryCode } from "@/lib/validators";
 import { debounce } from "lodash";
 import { FormEvent, useCallback, useEffect, useMemo } from "react";
@@ -68,9 +67,12 @@ const useSearch = () => {
   };
 
   // Submit search
-  const submitSearch = async (_id: string, region: CountryCode, title: string, artist: string) => {
-    const songId = generateSongId(title, artist);
-
+  const submitSearch = async (
+    songId: string,
+    region: CountryCode,
+    title: string,
+    artist: string,
+  ) => {
     // Hide queries
     setShowQueries(false);
 
@@ -80,9 +82,16 @@ const useSearch = () => {
     // Refresh
     requestQueryData(`${artist} - ${title}`, searchSettings, false);
 
-    // Store activity and refresh history data for user
-    await addSearchActivity.mutateAsync({ songId, region });
-    history.refetchData();
+    // Store search activity and refresh history data for user
+    try {
+      await addSearchActivity.mutateAsync({ songId, region });
+      history.refetchData();
+    } catch (error) {
+      console.error(
+        "User activity could not be stored, probably due to missing song in database",
+        error,
+      );
+    }
 
     // Push to router
     const trackSearchHref = {

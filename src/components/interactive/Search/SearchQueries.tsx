@@ -1,4 +1,3 @@
-import CustomIcon from "@/components/CustomIcon";
 import { LoadingIndicator } from "@/components/Indicators";
 import { useQueryDataContext } from "@/contexts/QueryDataContext";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
@@ -39,10 +38,6 @@ const SearchQueries = () => {
               <motion.tbody {...fadeInAndOut(0.5)} key={queryData.tracks?.href}>
                 {queryData.tracks?.items.map((track) => {
                   const primaryArtist = track.artists[0]?.name || "";
-                  const trackPopularity = Math.max(
-                    1,
-                    Math.min(5, Math.ceil(track.popularity / 20)),
-                  );
 
                   return (
                     <motion.tr
@@ -78,13 +73,13 @@ const SearchQueries = () => {
                       <td className="pr-3 text-right align-middle text-xs opacity-50 md:pr-5 md:text-sm">
                         {new Date(track.duration_ms).toISOString().substr(14, 5)}
                       </td>
-                      <td className="pr-7 align-middle">
+                      {/* <td className="pr-7 align-middle">
                         {trackPopularity === 1 && <CustomIcon icon="ranking1" variant="primary" />}
                         {trackPopularity === 2 && <CustomIcon icon="ranking2" variant="primary" />}
                         {trackPopularity === 3 && <CustomIcon icon="ranking3" variant="primary" />}
                         {trackPopularity === 4 && <CustomIcon icon="ranking4" variant="primary" />}
                         {trackPopularity === 5 && <CustomIcon icon="ranking5" variant="primary" />}
-                      </td>
+                      </td> */}
                     </motion.tr>
                   );
                 })}

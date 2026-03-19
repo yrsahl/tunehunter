@@ -81,7 +81,7 @@ const SpotifyTable = () => {
                       )}
                       {data.recentlyPlayed?.map((recentlyPlayedTrack, index) => (
                         <TableRow
-                          key={`${index}-${recentlyPlayedTrack.song.id}`}
+                          key={`${index}-${recentlyPlayedTrack.song.spotifyId}`}
                           track={recentlyPlayedTrack}
                           showDuration={true}
                         />
@@ -99,7 +99,7 @@ const SpotifyTable = () => {
                     <>
                       {data.queue?.map((queueTrack, index) => (
                         <TableRow
-                          key={`${index}-${queueTrack.song.id}`}
+                          key={`${index}-${queueTrack.song.spotifyId}`}
                           track={queueTrack}
                           showDuration={true}
                           extraElement={
@@ -122,7 +122,7 @@ const SpotifyTable = () => {
                     <>
                       {data.topTracks?.map((topTrack, index) => (
                         <TableRow
-                          key={`${index}-${topTrack.song.id}`}
+                          key={`${index}-${topTrack.song.spotifyId}`}
                           track={topTrack}
                           showDuration={true}
                           extraElement={<RankingIndicator rank={index + 1} />}

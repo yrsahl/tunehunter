@@ -102,7 +102,7 @@ const getUserActivityByType = async (userId: string, type: UserActivityType) => 
         album: songs.album,
         albumArtUrl: songs.albumArtUrl,
         year: songs.year,
-        spotifyUrl: songs.spotifyUrl,
+        spotifyId: songs.spotifyId,
         isrc: songs.isrc,
       },
       artists: sql<{ id: string; name: string; popularity: number; followers: number }[]>`
@@ -127,7 +127,7 @@ const getUserActivityByType = async (userId: string, type: UserActivityType) => 
       songs.album,
       songs.albumArtUrl,
       songs.year,
-      songs.spotifyUrl,
+      songs.spotifyId,
       songs.isrc,
     )
     .orderBy(desc(userActivities.createdAt))
