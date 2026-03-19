@@ -1,3 +1,4 @@
+import { Track } from "@/types/song-types";
 import {
   SpotifyArtist,
   SpotifyArtists,
@@ -59,6 +60,53 @@ export const fetchTopTracks = (token: string) => {
 
 // Search data (client credentials)
 const SEARCH_ENDPOINT = "https://api.spotify.com/v1/search";
+const DURATION_WINDOW_MS = 3000;
+
+export const fetchSpotifyTrack = async (
+  appToken: string,
+  query: string,
+  duration: number,
+): Promise<Track | null> => {
+  const searchParams = new URLSearchParams({
+    q: query,
+    type: "track",
+    limit: SONG_LIMIT.toString(),
+  });
+  const searchUrl = `${SEARCH_ENDPOINT}?${searchParams.toString()}`;
+
+  const data = await fetchSpotifyData<SpotifySearchData>(appToken, searchUrl);
+  if (!data?.tracks?.items) return null;
+
+  const candidates = data.tracks.items.filter(
+    (t) => Math.abs(t.duration_ms - duration) <= DURATION_WINDOW_MS,
+  );
+
+  if (candidates.length === 0) return null;
+
+  const closest = candidates.reduce((best, t) =>
+    Math.abs(t.duration_ms - duration) < Math.abs(best.duration_ms - duration) ? t : best,
+  );
+
+  return {
+    song: {
+      id: closest.id,
+      title: closest.name,
+      duration: closest.duration_ms,
+      album: closest.album.name ?? null,
+      albumArtUrl: closest.album.images[0]?.url ?? "",
+      year: closest.album.release_date,
+      spotifyId: closest.id,
+      isrc: closest.external_ids?.isrc,
+    },
+    artists: closest.artists.map((a) => ({
+      id: a.id,
+      name: a.name,
+      popularity: null,
+      followers: null,
+    })),
+  };
+};
+
 const ARTIST_ENDPOINT = "https://api.spotify.com/v1/artists";
 
 export const fetchSpotifySearchData = async (appToken: string, query: string) => {

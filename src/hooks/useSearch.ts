@@ -2,17 +2,21 @@ import { useQueryDataContext } from "@/contexts/QueryDataContext";
 import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { api } from "@/lib/api";
 import { CountryCode } from "@/lib/validators";
+import { fetchSpotifyTrack } from "@/services/spotify/api";
+import { Track } from "@/types/song-types";
 import { debounce } from "lodash";
 import { FormEvent, useCallback, useEffect, useMemo } from "react";
 import { useSearchSettingsStore } from "./stores/useSearchSettingsStore";
 import useSearchStore from "./stores/useSearchStore";
 import useRouterWithHelpers from "./useRouterWithHelpers";
+import useSpotifyTokens from "./useSpotifyTokens";
 const useSearch = () => {
   const { searchState, setSearchInput, setSelectedSearch } = useSearchStore();
   const { setShowQueries, requestQueryData, resetQueryData } = useQueryDataContext();
   const { history } = useSearchTabDataContext();
   const router = useRouterWithHelpers();
   const addSearchActivity = api.userActivities.addSearchActivity.useMutation();
+  const { userAccessToken } = useSpotifyTokens();
 
   // Are there any settings set?
   const { searchForClubMixesOnly, minimumLengthOption, minimumLengthSeconds } =
@@ -67,24 +71,32 @@ const useSearch = () => {
   };
 
   // Submit search
-  const submitSearch = async (
-    songId: string,
-    region: CountryCode,
-    title: string,
-    artist: string,
-  ) => {
-    // Hide queries
-    setShowQueries(false);
+  const submitSearch = async (track: Track, region: CountryCode) => {
+    const { song, artists } = track;
+    const { id, title, duration } = song;
+    const artist = artists.map((artist) => artist.name).join(", ");
+
+    // Hide queries if currently visible
+    if (setShowQueries) setShowQueries(false);
+
+    // Enrich song data if logged in and necessary (spotifyId, genres)
+    if (userAccessToken) {
+      // Check if song is already rich
+
+      // If not, query spotify data and store it
+      const query = `${artist} - ${title}`;
+      const spotifyData = await fetchSpotifyTrack(userAccessToken, query, duration);
+    }
 
     // Trigger SearchResults re-render (which starts the vendor data search)
-    setSelectedSearch({ id: songId, region, artist, title });
+    setSelectedSearch({ id, region, artist, title });
 
-    // Refresh
+    // Refresh query data to show new queries for selected song
     requestQueryData(`${artist} - ${title}`, searchSettings, false);
 
     // Store search activity and refresh history data for user
     try {
-      await addSearchActivity.mutateAsync({ songId, region });
+      await addSearchActivity.mutateAsync({ songId: id, region });
       history.refetchData();
     } catch (error) {
       console.error(
@@ -98,7 +110,7 @@ const useSearch = () => {
       pathname: router.pathname,
       query: {
         ...router.query,
-        id: songId,
+        id,
         region,
         title,
         artist,

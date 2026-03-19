@@ -1,24 +1,25 @@
 import { api } from "@/lib/api";
-import { SearchTrack } from "@/types/search-types";
+import { Track } from "@/types/song-types";
 
 const useDb = () => {
   const storeQueryResults = api.song.storeQueryResults.useMutation();
 
   // Store tracks in the database
-  const storeTracksInDb = async (tracks: SearchTrack[]) => {
+  const storeTracksInDb = async (tracks: Track[]) => {
     const results = tracks.map((track) => {
+      const { song, artists } = track;
       return {
         song: {
-          id: track.id,
-          title: track.name,
-          duration: track.duration_ms,
-          album: track.album.name || null,
-          albumArtUrl: track.album.images[0]?.url || null,
-          year: track.album.release_date,
+          id: song.id,
+          title: song.title,
+          duration: song.duration,
+          album: song.album || null,
+          albumArtUrl: song.albumArtUrl || null,
+          year: song.year,
           spotifyId: null,
           isrc: null,
         },
-        artists: track.artists.map((artist) => {
+        artists: artists.map((artist) => {
           return {
             id: artist.id,
             name: artist.name,

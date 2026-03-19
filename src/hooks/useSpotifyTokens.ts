@@ -5,10 +5,12 @@ const useSpotifyTokens = () => {
   const { data: userData, status } = useSession();
   const loggedIn = status === "authenticated";
 
+  const userId = userData?.user.id;
+
   const { data: spotifyAccountData } = api.account.getSpotifyAccountById.useQuery(
-    { userId: userData?.user.id! },
+    { userId: userId ?? "" },
     {
-      enabled: loggedIn,
+      enabled: loggedIn && !!userId,
       refetchInterval: 30 * 60 * 1000, // Refetch every 30 minutes to refresh the access token
       refetchIntervalInBackground: true,
       refetchOnWindowFocus: false,

@@ -32,26 +32,26 @@ const TableRow = ({
   const buttonSize = isSmallDevice ? "xs" : "sm";
   const { storeTracksInDb } = useDb();
 
-  const primaryArtist = artists[0]?.name || "";
+  const primaryArtist = track.artists[0]?.name || "";
 
   const handleSearchClick = async () => {
-    // If it comes from spotify, we have no ID yet
-    let songId = "id" in song ? song.id : null;
+    let resolvedTrack: Track;
 
-    if (!songId) {
-      // Get iTunes song to this exact song
-      const query = `{${song.title} - ${primaryArtist}`;
-      const iTunesTrack = await fetchItunesTrack(query, track.song.duration);
-      if (iTunesTrack) await storeTracksInDb([iTunesTrack]);
-      songId = iTunesTrack?.id ?? null;
-
-      if (!songId) {
+    if ("id" in track.song) {
+      resolvedTrack = track as Track;
+    } else {
+      const artist = artists.map((a) => a.name).join(", ");
+      const query = `${artist} - ${song.title}`;
+      const iTunesTrack = await fetchItunesTrack(query, song.duration);
+      if (!iTunesTrack) {
         toast.error("Song not found");
         return;
       }
+      await storeTracksInDb([iTunesTrack]);
+      resolvedTrack = iTunesTrack;
     }
 
-    submitSearch(songId, region, song.title, primaryArtist);
+    submitSearch(resolvedTrack, region);
   };
 
   return (
@@ -59,7 +59,7 @@ const TableRow = ({
       {...fadeInAndOut(0.3)}
       className={cn("max-h-16 overflow-hidden", isSmallDevice && "cursor-pointer")}
       layout
-      onClick={isSmallDevice ? handleSearchClick : () => {}}
+      onClick={isSmallDevice ? () => handleSearchClick() : () => {}}
     >
       <td className="py-2 pr-4 sm:pr-8">
         <div className="flex items-center gap-4">

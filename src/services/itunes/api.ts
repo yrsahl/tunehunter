@@ -1,4 +1,5 @@
-import { SearchData, SearchTrack } from "@/types/search-types";
+import { SearchData } from "@/types/search-types";
+import { Track } from "@/types/song-types";
 
 const ITUNES_SEARCH_ENDPOINT = "https://itunes.apple.com/search";
 const SONG_LIMIT = 30;
@@ -27,10 +28,7 @@ type ItunesApiResponse = {
 
 const DURATION_WINDOW_MS = 3000;
 
-export const fetchItunesTrack = async (
-  query: string,
-  duration: number,
-): Promise<SearchTrack | null> => {
+export const fetchItunesTrack = async (query: string, duration: number): Promise<Track | null> => {
   const params = new URLSearchParams({
     term: query,
     media: "music",
@@ -57,15 +55,24 @@ export const fetchItunesTrack = async (
   );
 
   return {
-    id: closest.trackId.toString(),
-    name: closest.trackName,
-    duration_ms: closest.trackTimeMillis,
-    artists: [{ id: closest.artistId.toString(), name: closest.artistName }],
-    album: {
-      name: closest.collectionName ?? null,
-      images: closest.artworkUrl100 ? [{ url: closest.artworkUrl100 }] : [],
-      release_date: closest.releaseDate?.substring(0, 10) ?? "",
+    song: {
+      id: closest.trackId.toString(),
+      title: closest.trackName,
+      duration: closest.trackTimeMillis,
+      album: closest.collectionName ?? null,
+      albumArtUrl: closest.artworkUrl100 ?? "",
+      year: closest.releaseDate?.substring(0, 10) ?? "",
+      spotifyId: null,
+      isrc: null,
     },
+    artists: [
+      {
+        id: closest.artistId.toString(),
+        name: closest.artistName,
+        popularity: null,
+        followers: null,
+      },
+    ],
   };
 };
 
@@ -88,16 +95,24 @@ export const fetchItunesSearchData = async (query: string): Promise<SearchData |
       items: data.results
         .filter((r) => r.wrapperType === "track" && r.kind === "song")
         .map((track) => ({
-          id: track.trackId.toString(),
-          name: track.trackName,
-          duration_ms: track.trackTimeMillis,
-          storeUrl: track.trackViewUrl ?? "",
-          artists: [{ id: track.artistId.toString(), name: track.artistName }],
-          album: {
-            name: track.collectionName ?? null,
-            images: track.artworkUrl100 ? [{ url: track.artworkUrl100 }] : [],
-            release_date: track.releaseDate?.substring(0, 10) ?? "",
+          song: {
+            id: track.trackId.toString(),
+            title: track.trackName,
+            duration: track.trackTimeMillis,
+            album: track.collectionName ?? null,
+            albumArtUrl: track.artworkUrl100 ?? "",
+            year: track.releaseDate?.substring(0, 10) ?? "",
+            spotifyId: null,
+            isrc: null,
           },
+          artists: [
+            {
+              id: track.artistId.toString(),
+              name: track.artistName,
+              popularity: null,
+              followers: null,
+            },
+          ],
         })),
     },
   };

@@ -4,7 +4,7 @@ import { SearchData } from "@/types/search-types";
 export const filterOutDuplicates = (searchData: SearchData) => {
   const uniqueTracks = new Map();
   searchData.tracks?.items.forEach((track) => {
-    const key = `${track.name}-${track.duration_ms}`;
+    const key = `${track.song.title}-${track.song.duration}`;
     if (!uniqueTracks.has(key)) {
       uniqueTracks.set(key, track);
     }
@@ -18,14 +18,15 @@ export const applyFilters = (data: SearchData, searchSettings?: SearchSettings) 
   if (searchSettings?.searchForClubMixesOnly) {
     data.tracks.items = data.tracks.items.filter((track) => {
       return (
-        track.name.toLowerCase().includes("club") || track.name.toLowerCase().includes("extended")
+        track.song.title.toLowerCase().includes("club") ||
+        track.song.title.toLowerCase().includes("extended")
       );
     });
   }
 
   if (searchSettings?.minimumLengthOption && searchSettings?.minimumLengthSeconds) {
     data.tracks.items = data.tracks.items.filter((track) => {
-      return track.duration_ms >= searchSettings.minimumLengthSeconds * 1000;
+      return track.song.duration >= searchSettings.minimumLengthSeconds;
     });
   }
 

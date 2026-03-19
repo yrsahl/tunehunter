@@ -1,9 +1,12 @@
 import { artists, songs } from "@/server/db/schema";
 import { InferSelectModel } from "drizzle-orm";
 
+export type Song = InferSelectModel<typeof songs>;
+export type Artist = InferSelectModel<typeof artists>;
+
 export type Track = {
-  song: InferSelectModel<typeof songs>;
-  artists: InferSelectModel<typeof artists>[];
+  song: Song;
+  artists: Artist[];
 };
 
 export type TrendingTrack = {

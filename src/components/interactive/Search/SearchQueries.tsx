@@ -37,6 +37,7 @@ const SearchQueries = () => {
             <table className="w-full">
               <motion.tbody {...fadeInAndOut(0.5)} key={queryData.tracks?.href}>
                 {queryData.tracks?.items.map((track) => {
+                  const { song } = track;
                   const primaryArtist = track.artists[0]?.name || "";
 
                   return (
@@ -46,14 +47,14 @@ const SearchQueries = () => {
                         transition: { duration: 0.1 },
                       }}
                       className="cursor-pointer"
-                      onClick={() => submitSearch(track.id, region, track.name, primaryArtist)}
-                      key={track.id}
+                      onClick={() => submitSearch(track, region)}
+                      key={song.id}
                     >
                       <td className="py-2 pl-3 pr-6 md:py-3 md:pl-5 md:pr-6">
                         <div className="flex items-center gap-4">
                           <div className="avatar">
                             <div className="mask mask-squircle h-11 w-11">
-                              <img src={track.album.images[0]?.url} />
+                              <img src={song.albumArtUrl ?? ""} />
                             </div>
                           </div>
                         </div>
@@ -68,10 +69,10 @@ const SearchQueries = () => {
                         )}
                       </td>
                       <td className="pr-4 align-middle">
-                        <span className="text-sm md:text-base">{track.name}</span>
+                        <span className="text-sm md:text-base">{song.title}</span>
                       </td>
                       <td className="pr-3 text-right align-middle text-xs opacity-50 md:pr-5 md:text-sm">
-                        {new Date(track.duration_ms).toISOString().substr(14, 5)}
+                        {new Date(song.duration).toISOString().substr(14, 5)}
                       </td>
                       {/* <td className="pr-7 align-middle">
                         {trackPopularity === 1 && <CustomIcon icon="ranking1" variant="primary" />}

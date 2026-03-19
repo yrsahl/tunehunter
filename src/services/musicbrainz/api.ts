@@ -1,4 +1,5 @@
 import { SearchData } from "@/types/search-types";
+import { Track } from "@/types/song-types";
 
 const MB_SEARCH_ENDPOINT = "https://musicbrainz.org/ws/2/recording";
 const SONG_LIMIT = 30;
@@ -62,22 +63,23 @@ export const fetchMusicBrainzSearchData = async (query: string): Promise<SearchD
           recording["first-release-date"] ?? firstRelease?.date ?? "";
 
         return {
-          id: recording.id,
-          name: recording.title,
-          duration_ms: recording.length ?? 0,
-          popularity: 50,
-          storeUrl: `https://musicbrainz.org/recording/${recording.id}`,
-          isrc: recording.isrcs?.[0],
+          song: {
+            id: recording.id,
+            title: recording.title,
+            duration: recording.length ?? 0,
+            album: firstRelease?.title ?? null,
+            albumArtUrl: artworkUrl ?? "",
+            year: releaseDate,
+            spotifyId: null,
+            isrc: recording.isrcs?.[0] ?? null,
+          },
           artists: recording["artist-credit"].map((ac) => ({
             id: ac.artist.id,
             name: ac.artist.name,
+            popularity: null,
+            followers: null,
           })),
-          album: {
-            name: firstRelease?.title ?? null,
-            images: artworkUrl ? [{ url: artworkUrl }] : [],
-            release_date: releaseDate,
-          },
-        };
+        } satisfies Track;
       }),
     },
   };
