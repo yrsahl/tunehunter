@@ -1,6 +1,7 @@
 import { useQueryDataContext } from "@/contexts/QueryDataContext";
 import { useSearchSettingsStore } from "@/hooks/stores/useSearchSettingsStore";
-import useSearchStore from "@/hooks/stores/useSearchStore";
+import useSearchStore, { SEARCH_SUBMITTED, SelectedSearchParams } from "@/hooks/stores/useSearchStore";
+import { useEventEmitter } from "@/hooks/useEventEmitter";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { isCountryCode } from "@/lib/validators";
 import { ReactNode, useEffect, useMemo } from "react";
@@ -12,6 +13,7 @@ interface SearchProviderProps {
 const SearchProvider = ({ children }: SearchProviderProps) => {
   const { pendingSearch, setPendingSearch, syncRouteSearch, clearRouteBackedSearch } =
     useSearchStore();
+  const { publishEvent: publishSearchSubmitted } = useEventEmitter<SelectedSearchParams | null>(SEARCH_SUBMITTED);
   const { requestQueryData, resetQueryData } = useQueryDataContext();
   const router = useRouterWithHelpers();
   const { searchForClubMixesOnly, minimumLengthOption, minimumLengthSeconds } =
@@ -41,18 +43,26 @@ const SearchProvider = ({ children }: SearchProviderProps) => {
       !!searchArtistParam &&
       !!searchTitleParam
     ) {
-      syncRouteSearch({
+      const hasChanged = syncRouteSearch({
         id: searchIdParam,
         region: searchRegionParam,
         artist: searchArtistParam,
         title: searchTitleParam,
       });
 
+      if (hasChanged) {
+        publishSearchSubmitted(
+          { id: searchIdParam, region: searchRegionParam, artist: searchArtistParam, title: searchTitleParam },
+          false,
+        );
+      }
+
       return;
     }
 
     const wasCleared = clearRouteBackedSearch();
     if (wasCleared) {
+      publishSearchSubmitted(null, false);
       resetQueryData();
     }
   }, [
@@ -62,6 +72,7 @@ const SearchProvider = ({ children }: SearchProviderProps) => {
     searchRegionParam,
     searchTitleParam,
     clearRouteBackedSearch,
+    publishSearchSubmitted,
     resetQueryData,
     syncRouteSearch,
   ]);

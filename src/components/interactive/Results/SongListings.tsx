@@ -1,31 +1,32 @@
 import { SongListingContextProvider } from "@/contexts/SongListingContext";
-import useSearchStore from "@/hooks/stores/useSearchStore";
+import { SEARCH_SUBMITTED, SelectedSearchParams } from "@/hooks/stores/useSearchStore";
+import { useEventEmitter } from "@/hooks/useEventEmitter";
 import { slideInAndOutFromBottom } from "@/styles/animations";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef } from "react";
 import SongListingsContainer from "./SongListingsContainer";
 
 const SongListings = () => {
-  const { searchState } = useSearchStore();
+  const { eventData: search } = useEventEmitter<SelectedSearchParams | null>(SEARCH_SUBMITTED);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  // Scroll into view
+  // Scroll into view when a search is submitted
   useEffect(() => {
-    if (searchState.id && searchState.region && containerRef.current) {
+    if (search && containerRef.current) {
       containerRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [searchState.id, searchState.region]);
+  }, [search]);
 
   return (
     <AnimatePresence mode="wait">
-      {searchState.id && searchState.region && (
-        <SongListingContextProvider region={searchState.region} songId={searchState.id}>
+      {search && (
+        <SongListingContextProvider region={search.region} songId={search.id}>
           <motion.div
             {...slideInAndOutFromBottom(0.5)}
             className="w-full rounded-3xl lg:-mt-2"
             ref={containerRef}
           >
-            <SongListingsContainer region={searchState.region} />
+            <SongListingsContainer region={search.region} />
           </motion.div>
         </SongListingContextProvider>
       )}

@@ -16,12 +16,14 @@ interface RouteSearchParams {
   title: string;
 }
 
-interface SelectedSearchParams {
+export interface SelectedSearchParams {
   id: string;
   region: CountryCode;
   artist: string;
   title: string;
 }
+
+export const SEARCH_SUBMITTED = "searchSubmitted";
 
 // Separate from SearchProvider to give access to components outside of SearchProvider's scope
 interface SearchStoreState {

@@ -7,11 +7,13 @@ import { Track } from "@/types/song-types";
 import { debounce } from "lodash";
 import { FormEvent, useCallback, useEffect, useMemo } from "react";
 import { useSearchSettingsStore } from "./stores/useSearchSettingsStore";
-import useSearchStore from "./stores/useSearchStore";
+import useSearchStore, { SEARCH_SUBMITTED, SelectedSearchParams } from "./stores/useSearchStore";
+import { useEventEmitter } from "./useEventEmitter";
 import useRouterWithHelpers from "./useRouterWithHelpers";
 import useSpotifyTokens from "./useSpotifyTokens";
 const useSearch = () => {
   const { searchState, setSearchInput, setSelectedSearch } = useSearchStore();
+  const { publishEvent: publishSearchSubmitted } = useEventEmitter<SelectedSearchParams | null>(SEARCH_SUBMITTED);
   const { setShowQueries, requestQueryData, resetQueryData } = useQueryDataContext();
   const { history } = useSearchTabDataContext();
   const router = useRouterWithHelpers();
@@ -84,8 +86,9 @@ const useSearch = () => {
       await enrichSongData(userAccessToken, artist, title, duration);
     }
 
-    // Trigger SearchResults re-render (which starts the vendor data search)
+    // Update store (input text + syncRouteSearch change detection) and start the search
     setSelectedSearch({ id, region, artist, title });
+    publishSearchSubmitted({ id, region, artist, title }, false);
 
     // Refresh query data to show new queries for selected song
     requestQueryData(`${artist} - ${title}`, searchSettings, false);
