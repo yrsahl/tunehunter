@@ -62,6 +62,7 @@ export const songRouter = createTRPCRouter({
       const song = await ctx.db.query.songs.findFirst({
         where: (songs, { eq }) => eq(songs.id, input.songId),
       });
+      console.log("-------------- song in DB:", song);
       if (!song) return;
 
       const artistsDb = await ctx.db
@@ -79,54 +80,68 @@ export const songRouter = createTRPCRouter({
         .where(eq(songArtists.songId, input.songId))
         .groupBy(artists.id);
 
-      // Check if already fully enriched
-      const isArtistComplete = (a: (typeof artistsDb)[number]) =>
-        a.popularity != null && a.followers != null && a.genres.every((g) => g !== null);
-      if (song.spotifyId && artistsDb.every(isArtistComplete)) return;
-
-      // Fetch spotify track to get spotifyId
-      const query = `${song.title} ${artistsDb[0]?.name ?? ""}`;
-      const spotifyTrack = await fetchSpotifyTrack(input.accessToken, query, song.duration);
-      if (!spotifyTrack) return;
-
-      // Update song spotifyId
+      // Update song spotifyId if missing
       if (!song.spotifyId) {
-        await ctx.db
-          .update(songs)
-          .set({ spotifyId: spotifyTrack.song.spotifyId })
-          .where(eq(songs.id, song.id));
+        console.log("----- Enriching Spotify ID");
+        const query = `${song.title} ${artistsDb[0]?.name ?? ""}`;
+        const spotifyTrack = await fetchSpotifyTrack(input.accessToken, query, song.duration);
+        if (spotifyTrack) {
+          await ctx.db
+            .update(songs)
+            .set({ spotifyId: spotifyTrack.song.spotifyId })
+            .where(eq(songs.id, song.id));
+          console.log(
+            `-------[enrichArtists] spotifyId: ${spotifyTrack.song.spotifyId} (song: "${song.title}")`,
+          );
+        }
       }
 
-      // Enrich each incomplete artist
-      const artistsToEnrich = artistsDb.filter((a) => !isArtistComplete(a));
+      // Enrich each artist that is missing data
+      const artistsToEnrich = artistsDb.filter(
+        (a) => a.popularity == null || a.followers == null || a.genres.every((g) => g === null),
+      );
+
+      console.log("----- Artists to enrich", artistsToEnrich);
+
       await Promise.all(
         artistsToEnrich.map(async (artist) => {
           const spotifyArtist = await fetchSpotifyArtistData(input.accessToken, artist.id);
           if (!spotifyArtist) return;
 
-          await ctx.db
-            .update(artists)
-            .set({ popularity: spotifyArtist.popularity, followers: spotifyArtist.followers.total })
-            .where(eq(artists.id, artist.id));
+          // Only update popularity/followers if missing
+          if (artist.popularity == null || artist.followers == null) {
+            await ctx.db
+              .update(artists)
+              .set({
+                popularity: spotifyArtist.popularity,
+                followers: spotifyArtist.followers.total,
+              })
+              .where(eq(artists.id, artist.id));
+          }
 
-          if (!spotifyArtist.genres?.length) return;
+          // Only update genres if missing
+          if (artist.genres.every((g) => g === null) && spotifyArtist.genres?.length) {
+            const existingGenres = await ctx.db.query.genres.findMany({
+              where: (genres, { inArray }) => inArray(genres.name, spotifyArtist.genres),
+            });
+            const existingNames = new Set(existingGenres.map((g) => g.name));
+            const toInsert = spotifyArtist.genres
+              .filter((g) => !existingNames.has(g))
+              .map((name) => ({ name }));
+            if (toInsert.length > 0) await ctx.db.insert(genres).values(toInsert);
 
-          const existingGenres = await ctx.db.query.genres.findMany({
-            where: (genres, { inArray }) => inArray(genres.name, spotifyArtist.genres),
-          });
-          const existingNames = new Set(existingGenres.map((g) => g.name));
-          const toInsert = spotifyArtist.genres
-            .filter((g) => !existingNames.has(g))
-            .map((name) => ({ name }));
-          if (toInsert.length > 0) await ctx.db.insert(genres).values(toInsert);
+            const allGenres = await ctx.db.query.genres.findMany({
+              where: (genres, { inArray }) => inArray(genres.name, spotifyArtist.genres),
+            });
+            await ctx.db
+              .insert(artistGenres)
+              .values(allGenres.map((genre) => ({ artistId: artist.id, genreId: genre.id })))
+              .onConflictDoNothing();
+          }
 
-          const allGenres = await ctx.db.query.genres.findMany({
-            where: (genres, { inArray }) => inArray(genres.name, spotifyArtist.genres),
-          });
-          await ctx.db
-            .insert(artistGenres)
-            .values(allGenres.map((genre) => ({ artistId: artist.id, genreId: genre.id })))
-            .onConflictDoNothing();
+          console.log(
+            `-------[enrichArtists] artist "${artist.name}": popularity=${spotifyArtist.popularity}, followers=${spotifyArtist.followers.total}, genres=${spotifyArtist.genres.join(", ")}`,
+          );
         }),
       );
     }),

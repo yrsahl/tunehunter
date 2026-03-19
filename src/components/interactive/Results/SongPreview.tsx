@@ -21,8 +21,6 @@ export default function SongPreview({ trackData, isLoading }: ISongPreviewProps)
   const { setDisabledTabButtonHovered } = useDisabledTabStore();
   const loggedIn = status === "authenticated";
 
-  console.log("songData", trackData);
-
   if (isLoading) {
     return <SongPreviewSkeleton />;
   }

@@ -2,7 +2,7 @@ import { useQueryDataContext } from "@/contexts/QueryDataContext";
 import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { api } from "@/lib/api";
 import { CountryCode } from "@/lib/validators";
-import { Track } from "@/types/song-types";
+import { Track, TrackArtist } from "@/types/song-types";
 import { debounce } from "lodash";
 import { FormEvent, useCallback, useEffect, useMemo } from "react";
 import { useSearchSettingsStore } from "./stores/useSearchSettingsStore";
@@ -77,14 +77,19 @@ const useSearch = () => {
   // Submit search
   const submitSearch = async (track: Track, region: CountryCode) => {
     const { song, artists } = track;
-    const { id, title, duration } = song;
+    const { id, title } = song;
     const artist = artists.map((artist) => artist.name).join(", ");
 
     // Hide queries if currently visible
     if (setShowQueries) setShowQueries(false);
 
-    // Enrich song data if logged in and necessary (spotifyId & genres to artists)
-    if (userAccessToken) {
+    // Enrich song data if logged in and not yet fully rich
+    const isArtistComplete = (a: TrackArtist) =>
+      a.popularity != null && a.followers != null && a.genres != null && a.genres.length > 0;
+    const isTrackRich = !!song.spotifyId && artists.every(isArtistComplete);
+    console.log("isArtistComplete", isArtistComplete, " - isTrackRich", isTrackRich);
+    if (userAccessToken && !isTrackRich) {
+      console.log(`Enriching ${song.id} - ${song.title} by ${artist}`);
       enrichArtists({ songId: id, accessToken: userAccessToken });
     }
 

@@ -109,7 +109,7 @@ export const fetchSpotifyTrack = async (
 
 const ARTIST_ENDPOINT = "https://api.spotify.com/v1/artists";
 
-export const fetchSpotifySearchData = async (appToken: string, query: string) => {
+export const fetchSpotifySearchData = async (token: string, query: string) => {
   // Build searchUrl
   const searchParams = new URLSearchParams({
     q: query,
@@ -119,13 +119,13 @@ export const fetchSpotifySearchData = async (appToken: string, query: string) =>
   const searchUrl = `${SEARCH_ENDPOINT}?${searchParams.toString()}`;
 
   // Fetch
-  return fetchSpotifyData<SpotifySearchData>(appToken, searchUrl);
+  return fetchSpotifyData<SpotifySearchData>(token, searchUrl);
 };
 
-export const fetchSpotifyArtistData = async (appToken: string, artistId: string) => {
+export const fetchSpotifyArtistData = async (token: string, artistId: string) => {
   const artistUrl = `${ARTIST_ENDPOINT}/${artistId}`;
   // Fetch
-  return fetchSpotifyData<SpotifyArtist>(appToken, artistUrl);
+  return fetchSpotifyData<SpotifyArtist>(token, artistUrl);
 };
 
 // Helper
