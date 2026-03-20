@@ -9,10 +9,10 @@ import { Pause, Play } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface SpotifyPlayIconProps {
-  songId: string;
+  spotifyId: string;
 }
 
-const SpotifyPlayIcon = ({ songId }: SpotifyPlayIconProps) => {
+const SpotifyPlayIcon = ({ spotifyId }: SpotifyPlayIconProps) => {
   const { spotifyConnected } = useSpotifyUserDataContext();
   const { startPlayback, pausePlayback, resumePlayback } = useSpotifyPlayerContext();
   const [playingSongId, setPlayingSongId] = useState<string | null>(null);
@@ -36,14 +36,14 @@ const SpotifyPlayIcon = ({ songId }: SpotifyPlayIconProps) => {
     }
 
     // Resume
-    if (playingSongId === songId) {
+    if (playingSongId === spotifyId) {
       await resumePlayback();
     }
     // Play from the start
     else {
-      await startPlayback(songId);
+      await startPlayback(spotifyId);
     }
-    setPlayingSongId(songId);
+    setPlayingSongId(spotifyId);
     setIsPlaying(true);
     setIsLoading(false);
   };
@@ -98,11 +98,11 @@ const SpotifyPlayIcon = ({ songId }: SpotifyPlayIconProps) => {
 
   return (
     <motion.button
-      data-testid={`spotify-play-button-${songId}`}
+      data-testid={`spotify-play-button-${spotifyId}`}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 1 }}
       className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-primary"
-      disabled={!spotifyConnected || !songId}
+      disabled={!spotifyConnected || !spotifyId}
       onClick={handleClick}
     >
       {!isPlaying && (

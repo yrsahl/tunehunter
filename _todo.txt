@@ -4,7 +4,7 @@
 ---- CORE
 
 Move search to different API
-- Start new deezer search on search click in Spotify Table
+- Start new search on search click in Spotify Table
 
 Fix the many refreshes
 Fix top TODO

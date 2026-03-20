@@ -30,7 +30,7 @@ export default function SongPreview({ trackData, isLoading }: ISongPreviewProps)
   }
 
   const { song, artists } = trackData;
-  const { id, albumArtUrl, title, duration, album, year } = song;
+  const { id, albumArtUrl, title, duration, album, spotifyId, year } = song;
 
   // Format artist names
   const artistNames = artists
@@ -60,7 +60,11 @@ export default function SongPreview({ trackData, isLoading }: ISongPreviewProps)
           <div className="flex gap-8 rounded-3xl px-3 py-4 pl-4 drop-shadow-sm">
             {/* Art */}
             <figure className="h-48 w-48 flex-shrink-0 content-center overflow-hidden rounded-2xl drop-shadow-lg">
-              {albumArtUrl && <img src={albumArtUrl} alt="Album cover art" className="h-48 w-48" />}
+              {albumArtUrl ? (
+                <img src={albumArtUrl} alt="Album cover art" className="h-48 w-48" />
+              ) : (
+                <figure className="h-48 w-48 flex-shrink-0 content-center overflow-hidden rounded-2xl bg-muted drop-shadow-lg" />
+              )}
             </figure>
             <div className="flex flex-grow flex-col justify-evenly">
               <div className="flex flex-col gap-2 p-0">
@@ -70,8 +74,12 @@ export default function SongPreview({ trackData, isLoading }: ISongPreviewProps)
                 {/* Play & Wishlist */}
                 <div className="mt-3 flex items-center gap-3">
                   <ConditionalTooltip
-                    active={spotifyConnected}
-                    content="Sign in to add the song to play the song!"
+                    active={spotifyConnected && !!spotifyId}
+                    content={
+                      spotifyConnected
+                        ? "Can't find the song on Spotify."
+                        : "Sign in to add the song to play the song!"
+                    }
                     disabledChild={
                       <div
                         className="flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-full bg-slate-400"
@@ -82,7 +90,7 @@ export default function SongPreview({ trackData, isLoading }: ISongPreviewProps)
                       </div>
                     }
                   >
-                    <SpotifyPlayIcon songId={id} />
+                    <SpotifyPlayIcon spotifyId={spotifyId!!} />
                   </ConditionalTooltip>
                   <ConditionalTooltip
                     active={loggedIn}
