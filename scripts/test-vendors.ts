@@ -72,20 +72,37 @@ function fmt(res: Awaited<ReturnType<typeof fetchVendorData>>): string {
   return `✅ ${price}`;
 }
 
+/**
+ * Resolve the accurate track duration from iTunes so that Beatport and Bandcamp
+ * matching (which require ±2 s) gets precise input rather than our rough estimates.
+ * Falls back to the hardcoded approximation if iTunes doesn't have the track.
+ */
+async function resolveItunes(title: string, artist: string, fallbackMs: number): Promise<{ durationMs: number; itunesResult: Awaited<ReturnType<typeof fetchVendorData>> }> {
+  const itunesResult = await fetchVendorData({
+    vendorData: ITUNES_VENDOR,
+    region: REGION,
+    songData: { songId: "test", title, artist, duration: fallbackMs },
+  });
+  const durationMs = (itunesResult.data?.duration) ?? fallbackMs;
+  return { durationMs, itunesResult };
+}
+
 // ── main ─────────────────────────────────────────────────────────────────────
 
 async function testSong(song: (typeof SONGS)[0]) {
-  const { title, artist, durationMs } = song;
+  const { title, artist, durationMs: approxMs } = song;
   const songId = "test";
 
-  // Run all three vendors in parallel
-  const [itunes, beatport, bandcamp] = await Promise.all([
-    fetchVendorData({ vendorData: ITUNES_VENDOR,   region: REGION, songData: { songId, title, artist, duration: durationMs } }),
+  // Step 1: resolve exact duration from iTunes
+  const { durationMs, itunesResult } = await resolveItunes(title, artist, approxMs);
+
+  // Step 2: test Beatport and Bandcamp with the resolved duration
+  const [beatport, bandcamp] = await Promise.all([
     fetchVendorData({ vendorData: BEATPORT_VENDOR, region: REGION, songData: { songId, title, artist, duration: durationMs } }),
     fetchVendorData({ vendorData: BANDCAMP_VENDOR, region: REGION, songData: { songId, title, artist, duration: durationMs } }),
   ]);
 
-  return { title, artist, itunes, beatport, bandcamp };
+  return { title, artist, itunes: itunesResult, beatport, bandcamp };
 }
 
 async function main() {
