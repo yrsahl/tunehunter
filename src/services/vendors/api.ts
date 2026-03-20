@@ -7,6 +7,33 @@ import { filterListings } from ".";
 const SCRAPER_UA =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
 
+// Maps country code → Accept-Language header value so scrapers request
+// region-correct pricing/currency from vendor sites.
+const REGION_ACCEPT_LANGUAGE: Record<string, string> = {
+  US: "en-US,en;q=0.9",
+  GB: "en-GB,en;q=0.9",
+  DE: "de-DE,de;q=0.9",
+  FR: "fr-FR,fr;q=0.9",
+  ES: "es-ES,es;q=0.9",
+  IT: "it-IT,it;q=0.9",
+  JP: "ja-JP,ja;q=0.9",
+  CA: "en-CA,en;q=0.9",
+  AU: "en-AU,en;q=0.9",
+  MX: "es-MX,es;q=0.9",
+  BR: "pt-BR,pt;q=0.9",
+  IN: "en-IN,en;q=0.9",
+  NL: "nl-NL,nl;q=0.9",
+  SE: "sv-SE,sv;q=0.9",
+  PL: "pl-PL,pl;q=0.9",
+  TR: "tr-TR,tr;q=0.9",
+  SG: "en-SG,en;q=0.9",
+  AE: "ar-AE,ar;q=0.9",
+  SA: "ar-SA,ar;q=0.9",
+};
+
+const getAcceptLanguage = (region: string) =>
+  REGION_ACCEPT_LANGUAGE[region.toUpperCase()] ?? "en-US,en;q=0.9";
+
 // Interfaces
 interface VendorDataSuccessResponse {
   data: NewSongListing;
@@ -63,10 +90,16 @@ const fetchItunesData = async ({
   const response = await axios.get<ITunesData>(dataUrl);
 
   // 2. Extract data
+  // Replace the country segment in the Apple Music URL (e.g. /de/ → /fr/) to ensure
+  // the link targets the correct regional storefront regardless of server locale.
+  const regionLower = region.toLowerCase();
+  const toRegionalUrl = (url: string) =>
+    url.replace(/music\.apple\.com\/[a-z]{2}\//, `music.apple.com/${regionLower}/`);
+
   const itunesListings: NewSongListing[] = response.data.results.map((song) => ({
     songId,
     vendorId,
-    url: song.trackViewUrl,
+    url: toRegionalUrl(song.trackViewUrl),
     duration: song.trackTimeMillis,
     quality: "256kbps", // iTunes standard quality
     price: song.trackPrice?.toString(),
@@ -145,12 +178,14 @@ const fetchAmazonData = async ({
   const domain = AMAZON_DOMAIN_MAP[region.toUpperCase()] ?? "www.amazon.com";
   const currency = AMAZON_CURRENCY_MAP[region.toUpperCase()] ?? "USD";
   const query = encodeURIComponent(`${title} ${artist}`);
-  // n:163856011 = Amazon digital music category
-  const searchUrl = `https://${domain}/s?k=${query}&i=digital-music&rh=n%3A163856011`;
-  console.log("searching amazon with URL ", searchUrl);
+  // n:163856011 is the US-only digital music node; other storefronts use i=digital-music alone
+  const isUS = region.toUpperCase() === "US";
+  const searchUrl = isUS
+    ? `https://${domain}/s?k=${query}&i=digital-music&rh=n%3A163856011`
+    : `https://${domain}/s?k=${query}&i=digital-music`;
 
   const response = await axios.get<string>(searchUrl, {
-    headers: { "User-Agent": SCRAPER_UA },
+    headers: { "User-Agent": SCRAPER_UA, "Accept-Language": getAcceptLanguage(region) },
     timeout: 10_000,
   });
   // console.log("amazon response", response);
@@ -198,8 +233,8 @@ const fetchAmazonData = async ({
   return { error: "NO_MATCH_FOUND" };
 };
 
-// Beatport - Two prices: Base price for MP3 and surcharge of 0.75 for WAV, AIFF, FLAC
-// Beatport's website is a Next.js app; track data is embedded in __NEXT_DATA__ JSON.
+// Beatport - Next.js app; all track data (duration, price, id) is embedded in __NEXT_DATA__
+// on the search page, so no second request is needed.
 const fetchBeatportData = async ({
   region,
   vendorData,
@@ -210,14 +245,11 @@ const fetchBeatportData = async ({
 
   const query = encodeURIComponent(`${title} ${artist}`);
   const searchUrl = `https://www.beatport.com/search?q=${query}`;
-  console.log("searching beatport with URL ", searchUrl);
 
   const response = await axios.get<string>(searchUrl, {
-    headers: { "User-Agent": SCRAPER_UA },
+    headers: { "User-Agent": SCRAPER_UA, "Accept-Language": getAcceptLanguage(region) },
     timeout: 10_000,
   });
-
-  // console.log("beatport response", response);
 
   const $ = cheerio.load(response.data);
   const nextDataText = $("#__NEXT_DATA__").text();
@@ -247,28 +279,28 @@ const fetchBeatportData = async ({
 
   const listings: NewSongListing[] = tracks
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .filter((t: any) => t?.price?.value != null)
+    .filter((t: any) => t?.price?.value != null && typeof t?.length === "number")
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     .map((t: any) => {
-      // Duration can appear as milliseconds, or as { minutes, seconds }
-      const durationMs: number =
-        t?.duration?.milliseconds ??
-        (t?.duration?.minutes != null
-          ? ((t.duration.minutes as number) * 60 + ((t.duration.seconds as number) ?? 0)) * 1000
-          : null) ??
-        (typeof t?.length === "number" ? (t.length as number) * 1000 : null) ??
-        0;
+      // Build a URL slug from track name + mix name, e.g. "echelon-original-mix/17711829"
+      const slugParts = [t.track_name as string, t.mix_name as string]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+      const url = `https://www.beatport.com/track/${slugParts}/${t.track_id as number}`;
 
       return {
         songId,
         vendorId,
-        url: `https://www.beatport.com${(t.slug as string) ?? `/track/${t.id as string}`}`,
-        duration: durationMs,
-        quality: "MP3",
+        url,
+        duration: t.length as number,
+        quality: "MP3 (& WAV)",
         price: (t.price.value as number).toFixed(2),
         currency: ((t.price.code as string | undefined) ?? "USD").toUpperCase(),
         region,
-        format: "MP3",
+        format: "320kbps",
       } satisfies NewSongListing;
     });
 
@@ -304,7 +336,7 @@ const fetchBandcampData = async ({
   const searchUrl = `https://bandcamp.com/search?q=${query}&item_type=t`;
 
   const searchResponse = await axios.get<string>(searchUrl, {
-    headers: { "User-Agent": SCRAPER_UA },
+    headers: { "User-Agent": SCRAPER_UA, "Accept-Language": getAcceptLanguage(region) },
     timeout: 10_000,
   });
 
@@ -337,7 +369,7 @@ const fetchBandcampData = async ({
     let trackResponse;
     try {
       trackResponse = await axios.get<string>(url, {
-        headers: { "User-Agent": SCRAPER_UA },
+        headers: { "User-Agent": SCRAPER_UA, "Accept-Language": getAcceptLanguage(region) },
         timeout: 10_000,
       });
     } catch {
@@ -387,7 +419,7 @@ const fetchBandcampData = async ({
       price: bestPrice,
       currency: bestCurrency,
       region,
-      format: "FLAC / MP3",
+      format: "",
     } satisfies NewSongListing,
   };
 };

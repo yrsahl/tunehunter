@@ -61,12 +61,11 @@ export const userActivitiesRouter = createTRPCRouter({
       });
     }),
 
-  // For users only
-  addUserActivity: protectedProcedure
+  addUserActivity: publicProcedure
     .input(AddUserActivitySchema)
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(userActivities).values({
-        userId: ctx.session.user.id,
+        userId: ctx.session?.user.id ?? null,
         songId: input.songId,
         region: input.region,
         type: input.type,
