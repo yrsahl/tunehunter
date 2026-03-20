@@ -1,7 +1,7 @@
 import SearchSettings from "@/components/interactive/Search/SearchSettings";
 import useDb from "@/hooks/useDb";
 import { applyFilters } from "@/lib/filters";
-import { fetchItunesSearchData } from "@/services/itunes/api";
+import { fetchMusicBrainzSearchData } from "@/services/musicbrainz/api";
 import { SearchData } from "@/types/search-types";
 import { createContext, ReactNode, useContext, useState } from "react";
 
@@ -49,13 +49,11 @@ export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
     if (displayLoadingIndicator) setIsQueryDataLoading(true);
 
     try {
-      fetchItunesSearchData(query).then(async (itunesData) => {
-        if (itunesData?.tracks?.items.length) {
-          const filteredData = applyFilters(itunesData, searchSettings);
-
+      fetchMusicBrainzSearchData(query).then(async (mbData) => {
+        if (mbData?.tracks?.items.length) {
+          const filteredData = applyFilters(mbData, searchSettings);
           setQueryData(filteredData);
           if (displayLoadingIndicator) setIsQueryDataLoading(false);
-
           storeTracksInDb(filteredData.tracks.items);
           return;
         }
