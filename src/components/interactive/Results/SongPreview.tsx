@@ -1,4 +1,5 @@
 import ConditionalTooltip from "@/components/ConditonalTooltip";
+import { memo } from "react";
 import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
 import { useDisabledTabStore } from "@/hooks/stores/useDisabledTabStore";
 import { formatDate, formatDuration } from "@/lib/formatters";
@@ -15,7 +16,7 @@ interface ISongPreviewProps {
   isLoading: boolean;
 }
 
-export default function SongPreview({ trackData, isLoading }: ISongPreviewProps) {
+function SongPreview({ trackData, isLoading }: ISongPreviewProps) {
   const { status } = useSession();
   const { spotifyConnected } = useSpotifyUserDataContext();
   const { setDisabledTabButtonHovered } = useDisabledTabStore();
@@ -134,3 +135,5 @@ export default function SongPreview({ trackData, isLoading }: ISongPreviewProps)
     </>
   );
 }
+
+export default memo(SongPreview);

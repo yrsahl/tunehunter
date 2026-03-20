@@ -4,7 +4,7 @@ import { CountryCode } from "@/lib/validators";
 import { AppRouter } from "@/server/api/root";
 import { SongVendorType } from "@/server/db/schema";
 import { inferProcedureOutput } from "@trpc/server";
-import { createContext, useContext, useEffect, useMemo } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo } from "react";
 
 interface ISongListingContext {
   trackData: inferProcedureOutput<AppRouter["song"]["getTrack"]> | null | undefined;
@@ -53,7 +53,10 @@ export const SongListingContextProvider = ({
     }
   }, [songId, userAccessToken, !!trackData]);
 
-  const artists = trackData?.artists.map((artist) => artist.name).join(", ") || "";
+  const artists = useMemo(
+    () => trackData?.artists.map((artist) => artist.name).join(", ") ?? "",
+    [trackData?.artists],
+  );
 
   const isSongDataValid = useMemo(() => {
     return (
@@ -138,45 +141,49 @@ export const SongListingContextProvider = ({
       },
     );
 
-  const getVendorResponse = (vendor: SongVendorType) => {
-    switch (vendor) {
-      case "itunes":
-        return itunesResponse;
-      case "beatport":
-        return beatportResponse;
-      case "amazon":
-        return amazonResponse;
-      case "bandcamp":
-        return bandcampResponse;
-      default:
-        return null;
-    }
-  };
+  const getVendorResponse = useCallback(
+    (vendor: SongVendorType) => {
+      switch (vendor) {
+        case "itunes":
+          return itunesResponse;
+        case "beatport":
+          return beatportResponse;
+        case "amazon":
+          return amazonResponse;
+        case "bandcamp":
+          return bandcampResponse;
+        default:
+          return null;
+      }
+    },
+    [itunesResponse, beatportResponse, amazonResponse, bandcampResponse],
+  );
 
-  const getVendorResponseLoadingState = (vendor: SongVendorType) => {
-    switch (vendor) {
-      case "itunes":
-        return isItunesResponseLoading;
-      case "beatport":
-        return isBeatportResponseLoading;
-      case "amazon":
-        return isAmazonResponseLoading;
-      case "bandcamp":
-        return isBandcampResponseLoading;
-      default:
-        return true;
-    }
-  };
+  const getVendorResponseLoadingState = useCallback(
+    (vendor: SongVendorType) => {
+      switch (vendor) {
+        case "itunes":
+          return isItunesResponseLoading;
+        case "beatport":
+          return isBeatportResponseLoading;
+        case "amazon":
+          return isAmazonResponseLoading;
+        case "bandcamp":
+          return isBandcampResponseLoading;
+        default:
+          return true;
+      }
+    },
+    [isItunesResponseLoading, isBeatportResponseLoading, isAmazonResponseLoading, isBandcampResponseLoading],
+  );
+
+  const contextValue = useMemo(
+    () => ({ trackData, isSongDataLoading, getVendorResponse, getVendorResponseLoadingState }),
+    [trackData, isSongDataLoading, getVendorResponse, getVendorResponseLoadingState],
+  );
 
   return (
-    <SongListingContext.Provider
-      value={{
-        trackData,
-        isSongDataLoading,
-        getVendorResponse,
-        getVendorResponseLoadingState,
-      }}
-    >
+    <SongListingContext.Provider value={contextValue}>
       {children}
     </SongListingContext.Provider>
   );

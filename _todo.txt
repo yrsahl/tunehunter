@@ -5,6 +5,7 @@
 
 Fix the many refreshes
 Fix top TODO
+Fix region vendors
 
 Create backend API that FireCrawls Amazon Music, Bandcamp, Beatport
 
