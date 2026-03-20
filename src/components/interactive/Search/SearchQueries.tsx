@@ -7,8 +7,6 @@ import { fadeInAndOut } from "@/styles/animations";
 import { motion } from "framer-motion";
 import NoDataMessage from "./SearchTabContent/NoDataMessage";
 
-interface SearchTableProps {}
-
 const SearchQueries = () => {
   const { isQueryDataLoading, queryData } = useQueryDataContext();
   const { region } = useRegionSettings();

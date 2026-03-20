@@ -78,27 +78,26 @@ const useSearch = () => {
   const submitSearch = async (track: Track, region: CountryCode) => {
     const { song, artists } = track;
     const { id, title } = song;
-    const artist = artists.map((artist) => artist.name).join(", ");
-    console.log("artists", artist, "track artists", artists);
+    const artistsJoined = artists.map((artist) => artist.name).join(", ");
+
+    console.log("song", song, "artists", artists);
 
     // Hide queries if currently visible
     if (setShowQueries) setShowQueries(false);
 
     // Enrich song data if logged in and not yet fully rich
-    const isArtistComplete = (a: TrackArtist) =>
-      a.popularity != null && a.followers != null && a.genres != null && a.genres.length > 0;
+    const isArtistComplete = (a: TrackArtist) => a.popularity != null && a.followers != null;
     const isTrackRich = !!song.spotifyId && artists.every(isArtistComplete);
     if (userAccessToken && !isTrackRich) {
-      console.log(`Enriching ${song.id} - ${song.title} by ${artist}`);
       enrichArtists({ songId: id, accessToken: userAccessToken });
     }
 
     // Update store (input text + syncRouteSearch change detection) and start the search
-    setSelectedSearch({ id, region, artist, title });
-    publishSearchSubmitted({ id, region, artist, title }, false);
+    setSelectedSearch({ id, region, artist: artistsJoined, title });
+    publishSearchSubmitted({ id, region, artist: artistsJoined, title }, false);
 
     // Refresh query data to show new queries for selected song
-    requestQueryData(`${artist} - ${title}`, searchSettings, false);
+    requestQueryData(`${artistsJoined} - ${title}`, searchSettings, false);
 
     // Store search activity and refresh history data for user
     try {
@@ -119,7 +118,7 @@ const useSearch = () => {
         id,
         region,
         title,
-        artist,
+        artist: artistsJoined,
         isPlaying: false,
       },
     };
