@@ -2,6 +2,7 @@ import { NewSongListing } from "@/server/api/schemas/song-listings-schemas";
 import { ITunesData } from "@/types/itunes-types";
 import axios from "axios";
 import * as cheerio from "cheerio";
+import { createHash, createHmac } from "crypto";
 import { filterListings } from ".";
 
 const SCRAPER_UA =
@@ -101,11 +102,9 @@ const fetchItunesData = async ({
     vendorId,
     url: toRegionalUrl(song.trackViewUrl),
     duration: song.trackTimeMillis,
-    quality: "256kbps", // iTunes standard quality
     price: song.trackPrice?.toString(),
     currency: song.currency,
     region,
-    format: "AAC", // iTunes standard format
   }));
 
   // 3. Find the best match by closest duration
@@ -122,50 +121,54 @@ const fetchItunesData = async ({
   };
 };
 
-// Amazon - region maps to the appropriate Amazon storefront
-const AMAZON_DOMAIN_MAP: Record<string, string> = {
-  US: "www.amazon.com",
-  GB: "www.amazon.co.uk",
-  DE: "www.amazon.de",
-  FR: "www.amazon.fr",
-  ES: "www.amazon.es",
-  IT: "www.amazon.it",
-  JP: "www.amazon.co.jp",
-  CA: "www.amazon.ca",
-  AU: "www.amazon.com.au",
-  MX: "www.amazon.com.mx",
-  BR: "www.amazon.com.br",
-  IN: "www.amazon.in",
-  NL: "www.amazon.nl",
-  SE: "www.amazon.se",
-  PL: "www.amazon.pl",
-  TR: "www.amazon.com.tr",
-  SG: "www.amazon.sg",
-  AE: "www.amazon.ae",
-  SA: "www.amazon.sa",
+// Amazon Product Advertising API 5.0
+// Credentials are optional — returns NO_MATCH_FOUND until they are configured.
+// Set in .env: AMAZON_PA_ACCESS_KEY, AMAZON_PA_SECRET_KEY, AMAZON_PA_TAG_<REGION>
+
+interface PaapiMarketplaceConfig {
+  host: string;
+  awsRegion: string;
+  marketplace: string;
+}
+
+const PAAPI_MARKETPLACES: Record<string, PaapiMarketplaceConfig> = {
+  GB: { host: "webservices.amazon.co.uk", awsRegion: "eu-west-1", marketplace: "www.amazon.co.uk" },
+  US: { host: "webservices.amazon.com",    awsRegion: "us-east-1", marketplace: "www.amazon.com" },
+  DE: { host: "webservices.amazon.de",     awsRegion: "eu-west-1", marketplace: "www.amazon.de" },
+  FR: { host: "webservices.amazon.fr",     awsRegion: "eu-west-1", marketplace: "www.amazon.fr" },
+  ES: { host: "webservices.amazon.es",     awsRegion: "eu-west-1", marketplace: "www.amazon.es" },
+  IT: { host: "webservices.amazon.it",     awsRegion: "eu-west-1", marketplace: "www.amazon.it" },
+  JP: { host: "webservices.amazon.co.jp",  awsRegion: "us-west-2", marketplace: "www.amazon.co.jp" },
+  CA: { host: "webservices.amazon.ca",     awsRegion: "us-east-1", marketplace: "www.amazon.ca" },
+  AU: { host: "webservices.amazon.com.au", awsRegion: "us-west-2", marketplace: "www.amazon.com.au" },
 };
 
-const AMAZON_CURRENCY_MAP: Record<string, string> = {
-  US: "USD",
-  GB: "GBP",
-  DE: "EUR",
-  FR: "EUR",
-  ES: "EUR",
-  IT: "EUR",
-  JP: "JPY",
-  CA: "CAD",
-  AU: "AUD",
-  MX: "MXN",
-  BR: "BRL",
-  IN: "INR",
-  NL: "EUR",
-  SE: "SEK",
-  PL: "PLN",
-  TR: "TRY",
-  SG: "SGD",
-  AE: "AED",
-  SA: "SAR",
+// Maps region code to the env var holding its associate tag
+const PAAPI_TAG_ENV: Record<string, string> = {
+  GB: "AMAZON_PA_TAG_GB",
+  US: "AMAZON_PA_TAG_US",
+  DE: "AMAZON_PA_TAG_DE",
+  FR: "AMAZON_PA_TAG_FR",
+  ES: "AMAZON_PA_TAG_ES",
+  IT: "AMAZON_PA_TAG_IT",
+  JP: "AMAZON_PA_TAG_JP",
+  CA: "AMAZON_PA_TAG_CA",
+  AU: "AMAZON_PA_TAG_AU",
 };
+
+const PAAPI_PATH = "/paapi5/searchitems";
+const PAAPI_TARGET = "com.amazon.paapi5.v1.ProductAdvertisingAPIv1.SearchItems";
+const PAAPI_SERVICE = "ProductAdvertisingAPI";
+
+function hmac(key: Buffer | string, data: string): Buffer {
+  return createHmac("sha256", key).update(data, "utf8").digest();
+}
+function sha256hex(data: string): string {
+  return createHash("sha256").update(data, "utf8").digest("hex");
+}
+function getSigningKey(secretKey: string, dateStamp: string, awsRegion: string): Buffer {
+  return hmac(hmac(hmac(hmac(`AWS4${secretKey}`, dateStamp), awsRegion), PAAPI_SERVICE), "aws4_request");
+}
 
 const fetchAmazonData = async ({
   region,
@@ -175,61 +178,74 @@ const fetchAmazonData = async ({
   const { songId, title, artist, duration } = songData;
   const { vendorId } = vendorData;
 
-  const domain = AMAZON_DOMAIN_MAP[region.toUpperCase()] ?? "www.amazon.com";
-  const currency = AMAZON_CURRENCY_MAP[region.toUpperCase()] ?? "USD";
-  const query = encodeURIComponent(`${title} ${artist}`);
-  // n:163856011 is the US-only digital music node; other storefronts use i=digital-music alone
-  const isUS = region.toUpperCase() === "US";
-  const searchUrl = isUS
-    ? `https://${domain}/s?k=${query}&i=digital-music&rh=n%3A163856011`
-    : `https://${domain}/s?k=${query}&i=digital-music`;
+  const accessKey = process.env.AMAZON_PA_ACCESS_KEY;
+  const secretKey = process.env.AMAZON_PA_SECRET_KEY;
+  const regionUpper = region.toUpperCase();
+  const tagEnvKey = PAAPI_TAG_ENV[regionUpper];
+  const tag = tagEnvKey ? process.env[tagEnvKey] : undefined;
+  const config = PAAPI_MARKETPLACES[regionUpper];
 
-  const response = await axios.get<string>(searchUrl, {
-    headers: { "User-Agent": SCRAPER_UA, "Accept-Language": getAcceptLanguage(region) },
-    timeout: 10_000,
+  if (!accessKey || !secretKey || !tag || !config) return { error: "NO_MATCH_FOUND" };
+
+  const now = new Date();
+  const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g, "");
+  const dateStamp = amzDate.slice(0, 8);
+
+  const payload = JSON.stringify({
+    Keywords: `${title} ${artist}`,
+    SearchIndex: "Music",
+    Resources: ["ItemInfo.Title", "Offers.Listings.Price"],
+    PartnerTag: tag,
+    PartnerType: "Associates",
+    Marketplace: config.marketplace,
+    ItemCount: 5,
   });
-  // console.log("amazon response", response);
 
-  const $ = cheerio.load(response.data);
+  // Headers must be sorted alphabetically for canonical form
+  const reqHeaders: Record<string, string> = {
+    "content-encoding": "amz-1.0",
+    "content-type": "application/json; charset=utf-8",
+    "host": config.host,
+    "x-amz-date": amzDate,
+    "x-amz-target": PAAPI_TARGET,
+  };
+  const sortedHeaderKeys = Object.keys(reqHeaders).sort();
+  const canonicalHeaders = `${sortedHeaderKeys.map((k) => `${k}:${reqHeaders[k]}`).join("\n")}\n`;
+  const signedHeaders = sortedHeaderKeys.join(";");
 
-  let foundListing: NewSongListing | undefined;
+  const canonicalRequest = ["POST", PAAPI_PATH, "", canonicalHeaders, signedHeaders, sha256hex(payload)].join("\n");
+  const credentialScope = `${dateStamp}/${config.awsRegion}/${PAAPI_SERVICE}/aws4_request`;
+  const stringToSign = ["AWS4-HMAC-SHA256", amzDate, credentialScope, sha256hex(canonicalRequest)].join("\n");
+  const signature = hmac(getSigningKey(secretKey, dateStamp, config.awsRegion), stringToSign).toString("hex");
+  const authorization = `AWS4-HMAC-SHA256 Credential=${accessKey}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
 
-  $('[data-component-type="s-search-result"]').each((_, el) => {
-    if (foundListing) return;
-    const $el = $(el);
+  const response = await axios.post<{
+    SearchResult?: { Items?: { DetailPageURL: string; Offers?: { Listings?: { Price?: { Amount?: number; Currency?: string } }[] } }[] };
+  }>(
+    `https://${config.host}${PAAPI_PATH}`,
+    payload,
+    { headers: { ...reqHeaders, Authorization: authorization }, timeout: 10_000 },
+  );
 
-    const titleEl = $el.find("h2 a.a-link-normal").first();
-    const titleText = titleEl.text().trim();
-    const href = titleEl.attr("href");
-    const priceText = $el.find(".a-price .a-offscreen").first().text().trim();
+  const items = response.data?.SearchResult?.Items ?? [];
+  for (const item of items) {
+    const listing = item?.Offers?.Listings?.[0];
+    if (!listing?.Price?.Amount) continue;
 
-    if (!titleText || !priceText || !href) return;
-
-    // Rough match: result title must contain the track title or artist
-    const titleLower = titleText.toLowerCase();
-    if (!titleLower.includes(title.toLowerCase()) && !titleLower.includes(artist.toLowerCase()))
-      return;
-
-    const priceMatch = priceText.match(/[\d.,]+/);
-    if (!priceMatch) return;
-
-    foundListing = {
-      songId,
-      vendorId,
-      // Amazon search result hrefs are relative
-      url: href.startsWith("http") ? href : `https://${domain}${href}`,
-      // Amazon search doesn't surface track duration; use input duration so
-      // filterListings can accept this result
-      duration,
-      quality: "256kbps",
-      price: priceMatch[0],
-      currency,
-      region,
-      format: "MP3",
+    return {
+      data: {
+        songId,
+        vendorId,
+        // DetailPageURL already contains the affiliate tag
+        url: item.DetailPageURL,
+        duration,
+        price: listing.Price.Amount.toString(),
+        currency: listing.Price.Currency ?? "GBP",
+        region,
+      },
     };
-  });
+  }
 
-  if (foundListing) return { data: foundListing };
   return { error: "NO_MATCH_FOUND" };
 };
 
@@ -296,11 +312,9 @@ const fetchBeatportData = async ({
         vendorId,
         url,
         duration: t.length as number,
-        quality: "MP3 (& WAV)",
         price: (t.price.value as number).toFixed(2),
         currency: ((t.price.code as string | undefined) ?? "USD").toUpperCase(),
         region,
-        format: "320kbps",
       } satisfies NewSongListing;
     });
 
@@ -415,11 +429,9 @@ const fetchBandcampData = async ({
       vendorId,
       url: bestUrl,
       duration: bestDurationMs,
-      quality: "Multiple",
       price: bestPrice,
       currency: bestCurrency,
       region,
-      format: "",
     } satisfies NewSongListing,
   };
 };

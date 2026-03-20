@@ -199,6 +199,8 @@ export const songVendors = pgTable("songVendor", {
   id: serial("id").primaryKey(),
   name: songVendorTypeEnum().notNull(),
   artistsShare: integer("artists_share").notNull(),
+  format: varchar("format", { length: 255 }).notNull().default(""),
+  quality: varchar("quality", { length: 255 }).notNull().default(""),
 });
 
 export const songVendorsRelations = relations(songVendors, ({ many }) => ({
@@ -216,12 +218,10 @@ export const songListings = pgTable(
       .notNull()
       .references(() => songVendors.id),
     url: varchar("url", { length: 255 }).notNull(),
-    quality: varchar("quality", { length: 255 }).notNull(),
     duration: integer("duration").notNull(),
     price: varchar("price", { length: 255 }),
     currency: varchar("currency", { length: 255 }).notNull(),
     region: varchar("region", { length: 255 }).notNull(),
-    format: varchar("format", { length: 255 }).notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),

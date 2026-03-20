@@ -43,12 +43,10 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
   const { data } = vendorResponse;
   const {
     currency,
-    format,
     price,
-    quality,
     url,
     songId,
-    songVendor: { artistsShare },
+    songVendor: { artistsShare, quality, format },
   } = data;
 
   // Visit Vendor

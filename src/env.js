@@ -28,6 +28,20 @@ export const env = createEnv({
     EMAIL_FROM: z.string().email(),
     SPOTIFY_CLIENT_ID: z.string(),
     SPOTIFY_CLIENT_SECRET: z.string(),
+    // Amazon Product Advertising API (PA API 5.0)
+    // Credentials available once 3 qualified purchases are made in Associates portal.
+    AMAZON_PA_ACCESS_KEY: z.string().optional(),
+    AMAZON_PA_SECRET_KEY: z.string().optional(),
+    // Per-marketplace associate tags (add more as you register additional marketplaces)
+    AMAZON_PA_TAG_GB: z.string().optional(),
+    AMAZON_PA_TAG_US: z.string().optional(),
+    AMAZON_PA_TAG_DE: z.string().optional(),
+    AMAZON_PA_TAG_FR: z.string().optional(),
+    AMAZON_PA_TAG_ES: z.string().optional(),
+    AMAZON_PA_TAG_IT: z.string().optional(),
+    AMAZON_PA_TAG_JP: z.string().optional(),
+    AMAZON_PA_TAG_CA: z.string().optional(),
+    AMAZON_PA_TAG_AU: z.string().optional(),
   },
 
   /**
@@ -57,6 +71,17 @@ export const env = createEnv({
     EMAIL_FROM: process.env.EMAIL_FROM,
     SPOTIFY_CLIENT_ID: process.env.SPOTIFY_CLIENT_ID,
     SPOTIFY_CLIENT_SECRET: process.env.SPOTIFY_CLIENT_SECRET,
+    AMAZON_PA_ACCESS_KEY: process.env.AMAZON_PA_ACCESS_KEY,
+    AMAZON_PA_SECRET_KEY: process.env.AMAZON_PA_SECRET_KEY,
+    AMAZON_PA_TAG_GB: process.env.AMAZON_PA_TAG_GB,
+    AMAZON_PA_TAG_US: process.env.AMAZON_PA_TAG_US,
+    AMAZON_PA_TAG_DE: process.env.AMAZON_PA_TAG_DE,
+    AMAZON_PA_TAG_FR: process.env.AMAZON_PA_TAG_FR,
+    AMAZON_PA_TAG_ES: process.env.AMAZON_PA_TAG_ES,
+    AMAZON_PA_TAG_IT: process.env.AMAZON_PA_TAG_IT,
+    AMAZON_PA_TAG_JP: process.env.AMAZON_PA_TAG_JP,
+    AMAZON_PA_TAG_CA: process.env.AMAZON_PA_TAG_CA,
+    AMAZON_PA_TAG_AU: process.env.AMAZON_PA_TAG_AU,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
