@@ -42,6 +42,7 @@ export const SongListingContextProvider = ({
   const { data: trackData, isLoading: isTrackDataLoading } = api.song.getTrack.useQuery({
     id: songId,
   });
+
   // 2. Enrich artist data (popularity, followers, genres) if logged in
   const { mutate: enrichArtists } = api.song.enrichArtists.useMutation({
     onSuccess: () => utils.song.getTrack.invalidate({ id: songId }),
