@@ -79,6 +79,7 @@ const useSearch = () => {
     const { song, artists } = track;
     const { id, title } = song;
     const artist = artists.map((artist) => artist.name).join(", ");
+    console.log("artists", artist, "track artists", artists);
 
     // Hide queries if currently visible
     if (setShowQueries) setShowQueries(false);
@@ -87,7 +88,6 @@ const useSearch = () => {
     const isArtistComplete = (a: TrackArtist) =>
       a.popularity != null && a.followers != null && a.genres != null && a.genres.length > 0;
     const isTrackRich = !!song.spotifyId && artists.every(isArtistComplete);
-    console.log("isArtistComplete", isArtistComplete, " - isTrackRich", isTrackRich);
     if (userAccessToken && !isTrackRich) {
       console.log(`Enriching ${song.id} - ${song.title} by ${artist}`);
       enrichArtists({ songId: id, accessToken: userAccessToken });

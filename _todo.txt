@@ -8,6 +8,7 @@ Move search to different API
 - Start new iTunes search on search click in Spotify Table
 
 Fix the many refreshes
+Fix top TODO
 
 Create backend API that FireCrawls Amazon Music, Bandcamp, Beatport
 

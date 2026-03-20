@@ -89,6 +89,8 @@ export const fetchItunesSearchData = async (query: string): Promise<SearchData |
 
   const data = (await response.json()) as ItunesApiResponse;
 
+  console.log("itunes data", data);
+
   return {
     tracks: {
       href: `${ITUNES_SEARCH_ENDPOINT}?${params}`,

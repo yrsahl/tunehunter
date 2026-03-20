@@ -8,6 +8,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "dev": "next dev",
+    "dev:quiet": "next dev 2>&1 | grep -vE '^[[:space:]]*(GET|POST|PUT|PATCH|DELETE|OPTIONS|HEAD) /'",
     "lint": "next lint",
     "start": "next start",
     "test:unit:watch": "vitest",

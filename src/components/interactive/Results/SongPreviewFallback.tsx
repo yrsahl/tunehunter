@@ -5,7 +5,7 @@ const SongPreviewFallback = () => {
     <>
       {/* Mobile */}
       <div className="mx-auto block w-4/5 pb-2 text-center sm:pb-0 sm:pt-2 md:hidden">
-        <h2 className="text-lg font-bold tracking-normal drop-shadow-sm sm:text-xl text-muted-foreground">
+        <h2 className="text-lg font-bold tracking-normal text-muted-foreground drop-shadow-sm sm:text-xl">
           Track not found
         </h2>
       </div>
@@ -15,13 +15,12 @@ const SongPreviewFallback = () => {
           {/* Top Row */}
           <div className="flex gap-8 rounded-3xl px-3 py-4 pl-4 drop-shadow-sm">
             {/* Art placeholder */}
-            <figure className="h-48 w-48 flex-shrink-0 content-center overflow-hidden rounded-2xl drop-shadow-lg bg-muted" />
+            <figure className="h-48 w-48 flex-shrink-0 content-center overflow-hidden rounded-2xl bg-muted drop-shadow-lg" />
             <div className="flex flex-grow flex-col justify-evenly">
               <div className="flex flex-col gap-2 p-0">
-                <h2 className="text-lg font-bold tracking-normal drop-shadow-sm text-muted-foreground">
+                <h2 className="text-lg font-bold tracking-normal text-muted-foreground drop-shadow-sm">
                   Track not found
                 </h2>
-                <p className="text-md text-muted-foreground">—</p>
               </div>
             </div>
           </div>
@@ -29,19 +28,19 @@ const SongPreviewFallback = () => {
           <div className="grid grid-cols-2 gap-4 px-4">
             <div className="flex items-center gap-3">
               <Music className="h-4 w-4 text-primary" />
-              <span className="text-sm text-muted-foreground">—</span>
+              <span className="text-sm text-muted-foreground">No data.</span>
             </div>
             <div className="flex items-center gap-3">
               <Clock className="h-4 w-4 text-primary" />
-              <span className="text-sm text-muted-foreground">—</span>
+              <span className="text-sm text-muted-foreground">No data.</span>
             </div>
             <div className="flex items-center gap-3">
               <Album className="h-4 w-4 text-primary" />
-              <span className="text-sm text-muted-foreground">—</span>
+              <span className="text-sm text-muted-foreground">No data.</span>
             </div>
             <div className="flex items-center gap-3">
               <Calendar className="h-4 w-4 text-primary" />
-              <span className="text-sm text-muted-foreground">—</span>
+              <span className="text-sm text-muted-foreground">No data.</span>
             </div>
           </div>
         </div>

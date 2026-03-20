@@ -107,7 +107,7 @@ export const activityTypeEnum = pgEnum("activity_type", userActivityTypes);
 export const userActivities = pgTable("userActivity", {
   id: serial("id").primaryKey(),
   userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
-  songId: varchar("song_id", { length: 255 }).references(() => songs.id),
+  songId: varchar("song_id", { length: 255 }).references(() => songs.id, { onDelete: "cascade" }),
   type: activityTypeEnum().notNull(),
   region: varchar("region", { length: 255 }).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
@@ -210,7 +210,7 @@ export const songListings = pgTable(
   {
     songId: varchar("song_id", { length: 255 })
       .notNull()
-      .references(() => songs.id),
+      .references(() => songs.id, { onDelete: "cascade" }),
     vendorId: integer("vendor_id")
       .notNull()
       .references(() => songVendors.id),

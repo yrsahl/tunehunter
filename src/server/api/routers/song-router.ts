@@ -62,8 +62,9 @@ export const songRouter = createTRPCRouter({
       const song = await ctx.db.query.songs.findFirst({
         where: (songs, { eq }) => eq(songs.id, input.songId),
       });
-      console.log("-------------- song in DB:", song);
       if (!song) return;
+
+      console.log("not returning");
 
       const artistsDb = await ctx.db
         .select({
@@ -80,32 +81,42 @@ export const songRouter = createTRPCRouter({
         .where(eq(songArtists.songId, input.songId))
         .groupBy(artists.id);
 
-      // Update song spotifyId if missing
-      if (!song.spotifyId) {
-        console.log("----- Enriching Spotify ID");
-        const query = `${song.title} ${artistsDb[0]?.name ?? ""}`;
-        const spotifyTrack = await fetchSpotifyTrack(input.accessToken, query, song.duration);
-        if (spotifyTrack) {
-          await ctx.db
-            .update(songs)
-            .set({ spotifyId: spotifyTrack.song.spotifyId })
-            .where(eq(songs.id, song.id));
-          console.log(
-            `-------[enrichArtists] spotifyId: ${spotifyTrack.song.spotifyId} (song: "${song.title}")`,
-          );
-        }
-      }
+      console.log("artists in db", artistsDb);
 
-      // Enrich each artist that is missing data
+      const needsSpotifyId = !song.spotifyId;
       const artistsToEnrich = artistsDb.filter(
         (a) => a.popularity == null || a.followers == null || a.genres.every((g) => g === null),
       );
 
-      console.log("----- Artists to enrich", artistsToEnrich);
+      // Fetch Spotify track if we need the song's spotifyId or artist Spotify IDs for enrichment
+      let spotifyArtistIdByName: Map<string, string> | null = null;
+      if (needsSpotifyId || artistsToEnrich.length > 0) {
+        const query = `${song.title} ${artistsDb[0]?.name ?? ""}`;
+        const spotifyTrack = await fetchSpotifyTrack(input.accessToken, query, song.duration);
+        console.log("spotifyTrack", spotifyTrack);
+        if (spotifyTrack) {
+          if (needsSpotifyId) {
+            await ctx.db
+              .update(songs)
+              .set({ spotifyId: spotifyTrack.song.spotifyId })
+              .where(eq(songs.id, song.id));
+          }
+          spotifyArtistIdByName = new Map(
+            spotifyTrack.artists.map((a) => [a.name.toLowerCase(), a.id]),
+          );
+        }
+      }
+
+      console.log("artists to enrich", artistsToEnrich);
 
       await Promise.all(
         artistsToEnrich.map(async (artist) => {
-          const spotifyArtist = await fetchSpotifyArtistData(input.accessToken, artist.id);
+          const spotifyArtistId = spotifyArtistIdByName?.get(artist.name.toLowerCase());
+          if (!spotifyArtistId) return;
+          const spotifyArtist = await fetchSpotifyArtistData(input.accessToken, spotifyArtistId);
+
+          console.log("spotify artist data", spotifyArtist);
+
           if (!spotifyArtist) return;
 
           // Only update popularity/followers if missing
@@ -138,10 +149,6 @@ export const songRouter = createTRPCRouter({
               .values(allGenres.map((genre) => ({ artistId: artist.id, genreId: genre.id })))
               .onConflictDoNothing();
           }
-
-          console.log(
-            `-------[enrichArtists] artist "${artist.name}": popularity=${spotifyArtist.popularity}, followers=${spotifyArtist.followers.total}, genres=${spotifyArtist.genres.join(", ")}`,
-          );
         }),
       );
     }),
@@ -322,6 +329,7 @@ export const songRouter = createTRPCRouter({
         })),
       );
       await ctx.db.insert(artists).values(simpleArtistValues).onConflictDoNothing();
+      console.log("added artists:", simpleArtistValues);
 
       // Add relations
       const relationValues = uniqueInput.flatMap(({ song, artists }) =>

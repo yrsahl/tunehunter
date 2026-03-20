@@ -124,6 +124,7 @@ export const fetchSpotifySearchData = async (token: string, query: string) => {
 
 export const fetchSpotifyArtistData = async (token: string, artistId: string) => {
   const artistUrl = `${ARTIST_ENDPOINT}/${artistId}`;
+  console.log("Hitting spotify artist API with:", artistUrl);
   // Fetch
   return fetchSpotifyData<SpotifyArtist>(token, artistUrl);
 };
