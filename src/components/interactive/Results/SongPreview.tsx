@@ -1,11 +1,11 @@
 import ConditionalTooltip from "@/components/ConditonalTooltip";
-import { memo } from "react";
 import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
 import { useDisabledTabStore } from "@/hooks/stores/useDisabledTabStore";
 import { formatDate, formatDuration } from "@/lib/formatters";
 import { Track } from "@/types/song-types";
 import { Album, Calendar, Clock, HeartIcon, Music, Play } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { memo } from "react";
 import SpotifyPlayIcon from "../Search/SearchTabContent/SpotifyPlayIcon";
 import WishlistStatusIcon from "../Search/SearchTabContent/WishlistStatusIcon";
 import SongPreviewFallback from "./SongPreviewFallback";
@@ -21,6 +21,8 @@ function SongPreview({ trackData, isLoading }: ISongPreviewProps) {
   const { spotifyConnected } = useSpotifyUserDataContext();
   const { setDisabledTabButtonHovered } = useDisabledTabStore();
   const loggedIn = status === "authenticated";
+
+  console.log("trackData", trackData);
 
   if (isLoading) {
     return <SongPreviewSkeleton />;

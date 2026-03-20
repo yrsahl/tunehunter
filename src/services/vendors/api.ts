@@ -58,6 +58,40 @@ interface IFetchVendorData {
   };
 }
 
+// --- Matching helpers ---
+
+/** Lowercase, strip punctuation, split into tokens longer than 1 char. */
+function tokenize(text: string): string[] {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s]/g, " ")
+    .split(/\s+/)
+    .filter((t) => t.length > 1);
+}
+
+/**
+ * Returns true if ≥75% of the search title's tokens appear in the result title.
+ * Allows "Stellar" to match "Stellar (Original Mix)" while still blocking
+ * completely unrelated titles.
+ */
+function titleMatches(resultTitle: string, searchTitle: string): boolean {
+  const searchTokens = tokenize(searchTitle);
+  if (searchTokens.length === 0) return true;
+  const resultSet = new Set(tokenize(resultTitle));
+  const matched = searchTokens.filter((t) => resultSet.has(t)).length;
+  return matched / searchTokens.length >= 0.75;
+}
+
+/**
+ * Returns true if at least one token from searchArtist appears as a substring
+ * of resultArtist. Handles minor spelling differences (e.g. "diedlonely" in
+ * "diedlonelyy") and multi-artist strings.
+ */
+function artistMatches(resultArtist: string, searchArtist: string): boolean {
+  const resultNorm = resultArtist.toLowerCase().replace(/[^\w]/g, "");
+  return tokenize(searchArtist).some((t) => resultNorm.includes(t));
+}
+
 export const fetchVendorData = async ({
   vendorData,
   region,
@@ -295,7 +329,13 @@ const fetchBeatportData = async ({
 
   const listings: NewSongListing[] = tracks
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .filter((t: any) => t?.price?.value != null && typeof t?.length === "number")
+    .filter((t: any) => {
+      if (t?.price?.value == null || typeof t?.length !== "number") return false;
+      const resultTitle = [t.track_name as string, t.mix_name as string].filter(Boolean).join(" ");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const resultArtist = (t.artists as { artist_name: string }[] | undefined)?.map((a) => a.artist_name).join(" ") ?? "";
+      return titleMatches(resultTitle, title) && artistMatches(resultArtist, artist);
+    })
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     .map((t: any) => {
       // Build a URL slug from track name + mix name, e.g. "echelon-original-mix/17711829"
@@ -349,8 +389,10 @@ const fetchBandcampData = async ({
   const query = encodeURIComponent(`${title} ${artist}`);
   const searchUrl = `https://bandcamp.com/search?q=${query}&item_type=t`;
 
+  // No Accept-Language here — Bandcamp localises the .itemtype text (e.g. "TITEL" in German)
+  // which would break the "TRACK" filter. Price is read from the track page instead.
   const searchResponse = await axios.get<string>(searchUrl, {
-    headers: { "User-Agent": SCRAPER_UA, "Accept-Language": getAcceptLanguage(region) },
+    headers: { "User-Agent": SCRAPER_UA },
     timeout: 10_000,
   });
 
@@ -390,8 +432,13 @@ const fetchBandcampData = async ({
       continue;
     }
 
+    // Artist check: extract from subdomain (e.g. "diedlonelyy" from diedlonelyy.bandcamp.com)
+    const subdomain = new URL(url).hostname.replace(".bandcamp.com", "");
+    if (!artistMatches(subdomain, artist)) continue;
+
     const $track = cheerio.load(trackResponse.data);
     let durationMs: number | null = null;
+    let trackTitle: string | null = null;
     let price: string | null = null;
     let currency = "USD";
 
@@ -399,6 +446,7 @@ const fetchBandcampData = async ({
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const json = JSON.parse($track(el).html() ?? "") as any;
+        if (json.name) trackTitle = json.name as string;
         if (json.duration) durationMs = parseBandcampDuration(json.duration as string);
         const offers = json?.inAlbum?.albumRelease?.[0]?.offers;
         if (offers?.price != null) {
@@ -411,6 +459,7 @@ const fetchBandcampData = async ({
     });
 
     if (durationMs === null) continue;
+    if (trackTitle && !titleMatches(trackTitle, title)) continue;
     const delta = Math.abs(durationMs - duration);
     if (delta < bestDelta) {
       bestDelta = delta;
