@@ -29,7 +29,6 @@ const SearchTabContent = ({ activeSearchTab }: SearchTabContentProps) => {
         {/* Fade content on tab change */}
         <motion.div
           {...fadeIn(0.3)}
-          key={activeSearchTab}
           className={cn("relative mx-auto flex h-full w-full flex-col items-center")}
         >
           {activeSearchTab === "trending" && <TrendingTable />}
