@@ -62,6 +62,7 @@ export const fetchItunesTrack = async (query: string, duration: number): Promise
       album: closest.collectionName ?? null,
       albumArtUrl: closest.artworkUrl100 ?? "",
       year: closest.releaseDate?.substring(0, 10) ?? "",
+      genre: closest.primaryGenreName ?? null,
       spotifyId: null,
       isrc: null,
     },
@@ -89,8 +90,6 @@ export const fetchItunesSearchData = async (query: string): Promise<SearchData |
 
   const data = (await response.json()) as ItunesApiResponse;
 
-  console.log("itunes data", data);
-
   return {
     tracks: {
       href: `${ITUNES_SEARCH_ENDPOINT}?${params}`,
@@ -104,6 +103,7 @@ export const fetchItunesSearchData = async (query: string): Promise<SearchData |
             album: track.collectionName ?? null,
             albumArtUrl: track.artworkUrl100 ?? "",
             year: track.releaseDate?.substring(0, 10) ?? "",
+            genre: track.primaryGenreName ?? null,
             spotifyId: null,
             isrc: null,
           },

@@ -80,8 +80,6 @@ const useSearch = () => {
     const { id, title } = song;
     const artistsJoined = artists.map((artist) => artist.name).join(", ");
 
-    console.log("song", song, "artists", artists);
-
     // Hide queries if currently visible
     if (setShowQueries) setShowQueries(false);
 

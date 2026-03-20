@@ -30,7 +30,7 @@ export default function SongPreview({ trackData, isLoading }: ISongPreviewProps)
   }
 
   const { song, artists } = trackData;
-  const { id, albumArtUrl, title, duration, album, spotifyId, year } = song;
+  const { id, albumArtUrl, genre, title, duration, album, spotifyId, year } = song;
 
   // Format artist names
   const artistNames = artists
@@ -40,11 +40,6 @@ export default function SongPreview({ trackData, isLoading }: ISongPreviewProps)
       if (index === artists.length - 1) return `${acc} & ${name}`;
       return `${acc}, ${name}`;
     }, "");
-
-  // Combine genres of artists
-  const genres = artists
-    .flatMap((artist) => artist.genres)
-    .filter((genre, index, self) => genre && self.indexOf(genre) === index);
 
   return (
     <>
@@ -116,16 +111,7 @@ export default function SongPreview({ trackData, isLoading }: ISongPreviewProps)
             <div className="flex items-center gap-3">
               <Music className="h-4 w-4 text-primary" />
               <p className="max-w-36 overflow-hidden text-ellipsis whitespace-nowrap text-sm">
-                {genres.length > 0 ? (
-                  genres.map((genre, index) => (
-                    <span key={genre} className="capitalize">
-                      {genre}
-                      {index < genres.length - 1 ? ", " : ""}
-                    </span>
-                  ))
-                ) : (
-                  <span>Unknown</span>
-                )}
+                {genre}
               </p>
             </div>
             <div className="flex items-center gap-3">

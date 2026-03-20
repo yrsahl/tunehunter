@@ -102,6 +102,7 @@ const getUserActivityByType = async (userId: string, type: UserActivityType) => 
         album: songs.album,
         albumArtUrl: songs.albumArtUrl,
         year: songs.year,
+        genre: songs.genre,
         spotifyId: songs.spotifyId,
         isrc: songs.isrc,
       },

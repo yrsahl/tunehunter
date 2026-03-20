@@ -6,7 +6,6 @@ const useDb = () => {
 
   // Store tracks in the database
   const storeTracksInDb = async (tracks: Track[]) => {
-    console.log("storing:", tracks);
     const results = tracks.map((track) => {
       const { song, artists } = track;
       return {
@@ -17,6 +16,7 @@ const useDb = () => {
           album: song.album || null,
           albumArtUrl: song.albumArtUrl || null,
           year: song.year,
+          genre: song.genre ?? null,
           spotifyId: null,
           isrc: null,
         },

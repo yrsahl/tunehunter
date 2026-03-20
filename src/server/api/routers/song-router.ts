@@ -64,8 +64,6 @@ export const songRouter = createTRPCRouter({
       });
       if (!song) return;
 
-      console.log("not returning");
-
       const artistsDb = await ctx.db
         .select({
           id: artists.id,
@@ -81,8 +79,6 @@ export const songRouter = createTRPCRouter({
         .where(eq(songArtists.songId, input.songId))
         .groupBy(artists.id);
 
-      console.log("artists in db", artistsDb);
-
       const needsSpotifyId = !song.spotifyId;
       const artistsToEnrich = artistsDb.filter(
         (a) => a.popularity == null || a.followers == null || a.genres.every((g) => g === null),
@@ -93,7 +89,6 @@ export const songRouter = createTRPCRouter({
       if (needsSpotifyId || artistsToEnrich.length > 0) {
         const query = `${song.title} ${artistsDb[0]?.name ?? ""}`;
         const spotifyTrack = await fetchSpotifyTrack(input.accessToken, query, song.duration);
-        console.log("spotifyTrack", spotifyTrack);
         if (spotifyTrack) {
           if (needsSpotifyId) {
             await ctx.db
@@ -107,15 +102,11 @@ export const songRouter = createTRPCRouter({
         }
       }
 
-      console.log("artists to enrich", artistsToEnrich);
-
       await Promise.all(
         artistsToEnrich.map(async (artist) => {
           const spotifyArtistId = spotifyArtistIdByName?.get(artist.name.toLowerCase());
           if (!spotifyArtistId) return;
           const spotifyArtist = await fetchSpotifyArtistData(input.accessToken, spotifyArtistId);
-
-          console.log("spotify artist data", spotifyArtist);
 
           if (!spotifyArtist) return;
 
@@ -178,6 +169,7 @@ export const songRouter = createTRPCRouter({
           album: songs.album,
           albumArtUrl: songs.albumArtUrl,
           year: songs.year,
+          genre: songs.genre,
           spotifyId: songs.spotifyId,
           isrc: songs.isrc,
         },
@@ -207,6 +199,7 @@ export const songRouter = createTRPCRouter({
           album: songs.album,
           albumArtUrl: songs.albumArtUrl,
           year: songs.year,
+          genre: songs.genre,
           spotifyId: songs.spotifyId,
           isrc: songs.isrc,
         },
@@ -236,6 +229,7 @@ export const songRouter = createTRPCRouter({
           album: songs.album,
           albumArtUrl: songs.albumArtUrl,
           year: songs.year,
+          genre: songs.genre,
           spotifyId: songs.spotifyId,
           isrc: songs.isrc,
         },
@@ -312,6 +306,7 @@ export const songRouter = createTRPCRouter({
             album: song.album,
             albumArtUrl: song.albumArtUrl,
             year: song.year,
+            genre: song.genre,
             spotifyId: song.spotifyId,
             isrc: song.isrc,
           })),
@@ -329,7 +324,6 @@ export const songRouter = createTRPCRouter({
         })),
       );
       await ctx.db.insert(artists).values(simpleArtistValues).onConflictDoNothing();
-      console.log("added artists:", simpleArtistValues);
 
       // Add relations
       const relationValues = uniqueInput.flatMap(({ song, artists }) =>

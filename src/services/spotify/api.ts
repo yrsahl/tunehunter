@@ -95,6 +95,7 @@ export const fetchSpotifyTrack = async (
       album: closest.album.name ?? null,
       albumArtUrl: closest.album.images[0]?.url ?? "",
       year: closest.album.release_date,
+      genre: null,
       spotifyId: closest.id,
       isrc: closest.external_ids?.isrc,
     },
@@ -124,7 +125,6 @@ export const fetchSpotifySearchData = async (token: string, query: string) => {
 
 export const fetchSpotifyArtistData = async (token: string, artistId: string) => {
   const artistUrl = `${ARTIST_ENDPOINT}/${artistId}`;
-  console.log("Hitting spotify artist API with:", artistUrl);
   // Fetch
   return fetchSpotifyData<SpotifyArtist>(token, artistUrl);
 };

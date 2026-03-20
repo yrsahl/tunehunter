@@ -9,6 +9,7 @@ export const AddSongSchema = z.object({
   album: z.union([z.string(), z.null()]),
   albumArtUrl: z.union([z.string(), z.null()]),
   year: z.string(),
+  genre: z.union([z.string(), z.null()]),
   spotifyId: z.union([z.string(), z.null()]),
   isrc: z.union([z.string(), z.null()]),
 });

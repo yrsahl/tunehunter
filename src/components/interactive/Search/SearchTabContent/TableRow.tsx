@@ -4,7 +4,7 @@ import useDb from "@/hooks/useDb";
 import useDeviceSize from "@/hooks/useDeviceSize";
 import useSearch from "@/hooks/useSearch";
 import { cn } from "@/lib/utils";
-import { fetchMusicBrainzTrack } from "@/services/musicbrainz/api";
+import { fetchItunesTrack } from "@/services/itunes/api";
 import { fadeInAndOut } from "@/styles/animations";
 import { SpotifyTrack, Track } from "@/types/song-types";
 import clsx from "clsx";
@@ -42,13 +42,13 @@ const TableRow = ({
     } else {
       const artist = artists.map((a) => a.name).join(", ");
       const query = `${artist} - ${song.title}`;
-      const mbTrack = await fetchMusicBrainzTrack(query, song.duration);
-      if (!mbTrack) {
+      const itunesTrack = await fetchItunesTrack(query, song.duration);
+      if (!itunesTrack) {
         toast.error("Song not found");
         return;
       }
-      await storeTracksInDb([mbTrack]);
-      resolvedTrack = mbTrack;
+      await storeTracksInDb([itunesTrack]);
+      resolvedTrack = itunesTrack;
     }
 
     submitSearch(resolvedTrack, region);

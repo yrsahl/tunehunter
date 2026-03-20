@@ -54,6 +54,7 @@ const toTrack = (recording: MbRecording): Track => {
         ? `https://coverartarchive.org/release/${firstRelease.id}/front-250`
         : "",
       year: recording["first-release-date"] ?? firstRelease?.date ?? "",
+      genre: null,
       spotifyId: null,
       isrc: recording.isrcs?.[0] ?? null,
     },

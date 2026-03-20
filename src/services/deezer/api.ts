@@ -50,6 +50,7 @@ const toTrack = (track: DeezerTrack): Track => {
       album: track.album.title ?? null,
       albumArtUrl: track.album.cover_medium ?? "",
       year: track.release_date ?? track.album.release_date ?? "",
+      genre: null,
       spotifyId: null,
       isrc: track.isrc ?? null,
     },
