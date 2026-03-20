@@ -227,7 +227,7 @@ export const songListings = pgTable(
       .notNull(),
   },
   (table) => ({
-    compoundKey: primaryKey({ columns: [table.songId, table.vendorId] }),
+    compoundKey: primaryKey({ columns: [table.songId, table.vendorId, table.region] }),
   }),
 );
 

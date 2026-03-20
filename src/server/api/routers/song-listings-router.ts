@@ -29,7 +29,8 @@ export const songListingsRouter = createTRPCRouter({
 
     // 1. Try DB first
     const dbListing = await ctx.db.query.songListings.findFirst({
-      where: (data, { eq, and }) => and(eq(data.vendorId, vendorId), eq(data.songId, input.songId)),
+      where: (data, { eq, and }) =>
+        and(eq(data.vendorId, vendorId), eq(data.songId, input.songId), eq(data.region, region)),
       with: {
         songVendor: true,
         song: true,
@@ -51,7 +52,7 @@ export const songListingsRouter = createTRPCRouter({
 
       const dbListing = await ctx.db.query.songListings.findFirst({
         where: (data, { eq, and }) =>
-          and(eq(data.vendorId, vendorId), eq(data.songId, input.songId)),
+          and(eq(data.vendorId, vendorId), eq(data.songId, input.songId), eq(data.region, region)),
         with: {
           songVendor: true,
           song: true,
