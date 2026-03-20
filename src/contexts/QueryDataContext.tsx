@@ -52,9 +52,9 @@ export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
       fetchItunesSearchData(query).then(async (itunesData) => {
         if (itunesData?.tracks?.items.length) {
           const filteredData = applyFilters(itunesData, searchSettings);
+          await storeTracksInDb(filteredData.tracks.items);
           setQueryData(filteredData);
           if (displayLoadingIndicator) setIsQueryDataLoading(false);
-          storeTracksInDb(filteredData.tracks.items);
           return;
         }
 

@@ -278,8 +278,20 @@ const fetchBeatportData = async ({
 };
 
 // Bandcamp - One base price for many formats (MP3 V0, MP3 320, FLAC, AAC, Ogg Vorbis, ALAC, WAV, AIFF)
-// Step 1: search to find candidate tracks + duration
-// Step 2: fetch the best-matched track page to read price from structured meta tags
+// Step 1: search to collect candidate track page URLs (duration is not on the search page)
+// Step 2: fetch each track page and parse JSON-LD for duration + price
+// Step 3: return the candidate whose duration is closest to the input
+
+/** Parse Bandcamp's duration string e.g. "P00H01M39S" → milliseconds */
+const parseBandcampDuration = (raw: string): number | null => {
+  const m = raw.match(/P(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if (!m) return null;
+  const h = parseInt(m[1] ?? "0", 10);
+  const min = parseInt(m[2] ?? "0", 10);
+  const sec = parseInt(m[3] ?? "0", 10);
+  return (h * 3600 + min * 60 + sec) * 1000;
+};
+
 const fetchBandcampData = async ({
   region,
   vendorData,
@@ -289,65 +301,93 @@ const fetchBandcampData = async ({
   const { vendorId } = vendorData;
 
   const query = encodeURIComponent(`${title} ${artist}`);
-  // item_type=t limits results to tracks
   const searchUrl = `https://bandcamp.com/search?q=${query}&item_type=t`;
-  console.log("searching bandcamp with URL ", searchUrl);
 
-  const response = await axios.get<string>(searchUrl, {
+  const searchResponse = await axios.get<string>(searchUrl, {
     headers: { "User-Agent": SCRAPER_UA },
     timeout: 10_000,
   });
 
-  // console.log("bandcamp response", response);
+  const $ = cheerio.load(searchResponse.data);
 
-  const $ = cheerio.load(response.data);
-
-  const candidates: { url: string; durationMs: number }[] = [];
-
-  $("li.searchresult.track").each((_, el) => {
+  // Collect track page URLs. Bandcamp's class is "searchresult data-search";
+  // filter by the .itemtype div text to ensure we only pick tracks.
+  const candidateUrls: string[] = [];
+  $("li.searchresult").each((_, el) => {
     const $el = $(el);
-    const url = $el.find(".heading a").attr("href");
-    const lengthText = $el.find(".length").text().trim(); // "4:32"
-    if (!url || !lengthText) return;
-
-    // "MM:SS" → milliseconds
-    const [min, sec] = lengthText.split(":").map(Number);
-    const durationMs = ((min ?? 0) * 60 + (sec ?? 0)) * 1000;
-    candidates.push({ url, durationMs });
+    if ($el.find(".itemtype").text().trim().toUpperCase() !== "TRACK") return;
+    const rawHref = $el.find(".heading a").attr("href");
+    if (!rawHref) return;
+    // Strip search tracking params
+    const url = rawHref.split("?")[0] ?? rawHref;
+    candidateUrls.push(url);
   });
 
-  if (!candidates.length) return { error: "NO_MATCH_FOUND" };
+  if (!candidateUrls.length) return { error: "NO_MATCH_FOUND" };
 
-  // Pick candidate with duration closest to input
-  candidates.sort((a, b) => Math.abs(a.durationMs - duration) - Math.abs(b.durationMs - duration));
-  const best = candidates[0]!;
+  // Visit up to 3 candidate pages and pick the best duration match
+  const MAX_CANDIDATES = 3;
+  let bestUrl: string | null = null;
+  let bestPrice: string | null = null;
+  let bestCurrency = "USD";
+  let bestDurationMs = 0;
+  let bestDelta = Infinity;
 
-  if (Math.abs(best.durationMs - duration) > 2000) return { error: "NO_MATCH_FOUND" };
+  for (const url of candidateUrls.slice(0, MAX_CANDIDATES)) {
+    let trackResponse;
+    try {
+      trackResponse = await axios.get<string>(url, {
+        headers: { "User-Agent": SCRAPER_UA },
+        timeout: 10_000,
+      });
+    } catch {
+      continue;
+    }
 
-  // Fetch the track page and read price from Open Graph / itemprop meta tags
-  const trackResponse = await axios.get<string>(best.url, {
-    headers: { "User-Agent": SCRAPER_UA },
-    timeout: 10_000,
-  });
+    const $track = cheerio.load(trackResponse.data);
+    let durationMs: number | null = null;
+    let price: string | null = null;
+    let currency = "USD";
 
-  const $track = cheerio.load(trackResponse.data);
-  const price = $track('meta[itemprop="price"]').attr("content") ?? null;
-  const currency = (
-    $track('meta[itemprop="priceCurrency"]').attr("content") ?? "USD"
-  ).toUpperCase();
+    $track('script[type="application/ld+json"]').each((_, el) => {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const json = JSON.parse($track(el).html() ?? "") as any;
+        if (json.duration) durationMs = parseBandcampDuration(json.duration as string);
+        const offers = json?.inAlbum?.albumRelease?.[0]?.offers;
+        if (offers?.price != null) {
+          price = (offers.price as number).toString();
+          currency = ((offers.priceCurrency as string | undefined) ?? "USD").toUpperCase();
+        }
+      } catch {
+        // not valid JSON-LD, skip
+      }
+    });
+
+    if (durationMs === null) continue;
+    const delta = Math.abs(durationMs - duration);
+    if (delta < bestDelta) {
+      bestDelta = delta;
+      bestUrl = url;
+      bestPrice = price;
+      bestCurrency = currency;
+      bestDurationMs = durationMs;
+    }
+  }
+
+  if (!bestUrl || bestDelta > 2000) return { error: "NO_MATCH_FOUND" };
 
   return {
     data: {
       songId,
       vendorId,
-      url: best.url,
-      duration: best.durationMs,
-      // Bandcamp sells in many formats under one price; list the main ones
-      quality: "MP3 320kbps / FLAC",
-      price,
-      currency,
+      url: bestUrl,
+      duration: bestDurationMs,
+      quality: "Multiple",
+      price: bestPrice,
+      currency: bestCurrency,
       region,
-      format: "MP3 / FLAC / WAV",
+      format: "FLAC / MP3",
     } satisfies NewSongListing,
   };
 };

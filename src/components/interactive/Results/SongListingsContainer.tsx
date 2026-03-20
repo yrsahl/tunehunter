@@ -19,7 +19,7 @@ const SongListingsContainer = ({ region }: ISongListingsProps) => {
   return (
     <div className="hide-scrollbars flex flex-col gap-0 overflow-hidden overflow-x-auto sm:h-96 md:flex-row md:gap-12">
       <SongPreview trackData={trackData ?? undefined} isLoading={isTrackDataLoading} />
-      <table className="mx-auto my-auto table w-[83%] border-separate border-spacing-y-4 sm:h-[80%] sm:border-spacing-y-5 md:w-1/2 md:border-spacing-y-6">
+      <table className="mx-auto my-auto table w-[83%] border-separate border-spacing-y-4 overflow-y-scroll sm:h-[80%] sm:border-spacing-y-5 md:w-1/2 md:border-spacing-y-6">
         {!isExtraSmallDevice && (
           <thead>
             <tr>
