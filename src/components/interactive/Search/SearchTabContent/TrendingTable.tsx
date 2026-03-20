@@ -1,6 +1,6 @@
 import RankingIndicator from "@/components/icons/RankingIndicator";
 import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
-import { fadeInAndOut } from "@/styles/animations";
+import { fadeIn } from "@/styles/animations";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import NoDataMessage from "./NoDataMessage";
@@ -39,7 +39,7 @@ const TrendingTable = () => {
       {isLoading && <SkeletonTable hasHeader={true} tab="trending" />}
       {!isLoading && (
         <AnimatePresence mode="wait">
-          <motion.div key={activeSubTab} {...fadeInAndOut(0.2)} className="h-full w-full">
+          <motion.div key={activeSubTab} {...fadeIn(0.2)} className="h-full w-full">
             {activeSubTab === "today" && (
               <>
                 {trendingDataTodayExists ? (

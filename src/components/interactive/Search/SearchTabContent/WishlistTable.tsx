@@ -1,6 +1,6 @@
 import useWishlist from "@/hooks/useWishlist";
 import { fadeInAndOut } from "@/styles/animations";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import NoDataMessage from "./NoDataMessage";
 import SkeletonTable from "./SkeletonTable";
 import TableBody from "./TableBody";
@@ -22,18 +22,20 @@ const WishlistTable = () => {
         )}
         {wishlistDataExists && (
           <TableBody hasHeader={false}>
-            <AnimatePresence>
-              {wishlistData.map((wishlistedTrack) => (
-                <TableRow
-                  track={wishlistedTrack}
-                  key={wishlistedTrack.song.id}
-                  showDuration={true}
-                  extraElement={
-                    <WishlistStatusIcon variant="small" songId={wishlistedTrack.song.id} />
-                  }
-                />
-              ))}
-            </AnimatePresence>
+            <LayoutGroup id="wishlist">
+              <AnimatePresence>
+                {wishlistData.map((wishlistedTrack) => (
+                  <TableRow
+                    track={wishlistedTrack}
+                    key={wishlistedTrack.song.id}
+                    showDuration={true}
+                    extraElement={
+                      <WishlistStatusIcon variant="small" songId={wishlistedTrack.song.id} />
+                    }
+                  />
+                ))}
+              </AnimatePresence>
+            </LayoutGroup>
           </TableBody>
         )}
       </motion.div>

@@ -3,7 +3,6 @@
 
 ---- CORE
 
-Fix the many refreshes
 Fix top TODO
 Fix region vendors
 
