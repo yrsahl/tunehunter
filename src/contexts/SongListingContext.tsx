@@ -8,7 +8,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo } from "reac
 
 interface ISongListingContext {
   trackData: inferProcedureOutput<AppRouter["song"]["getTrack"]> | null | undefined;
-  isSongDataLoading: boolean;
+  isTrackDataLoading: boolean;
   getVendorResponse: (
     vendor: SongVendorType,
   ) => inferProcedureOutput<AppRouter["songListings"]["getSongListing"]> | null | undefined;
@@ -17,7 +17,7 @@ interface ISongListingContext {
 
 const SongListingContext = createContext<ISongListingContext>({
   trackData: null,
-  isSongDataLoading: true,
+  isTrackDataLoading: true,
   getVendorResponse: () => null,
   getVendorResponseLoadingState: () => true,
 });
@@ -39,7 +39,7 @@ export const SongListingContextProvider = ({
 
   // 1. Get trackData
   const utils = api.useUtils();
-  const { data: trackData, isLoading: isSongDataLoading } = api.song.getTrack.useQuery({
+  const { data: trackData, isLoading: isTrackDataLoading } = api.song.getTrack.useQuery({
     id: songId,
   });
   // 2. Enrich artist data (popularity, followers, genres) if logged in
@@ -60,14 +60,14 @@ export const SongListingContextProvider = ({
 
   const isSongDataValid = useMemo(() => {
     return (
-      !isSongDataLoading &&
+      !isTrackDataLoading &&
       !!trackData &&
       !!trackData.song.title &&
       !!trackData.song.album &&
       !!trackData.song.duration &&
       artists.length > 0
     );
-  }, [isSongDataLoading, trackData, artists]);
+  }, [isTrackDataLoading, trackData, artists]);
 
   // iTunes
   const { data: itunesResponse, isLoading: isItunesResponseLoading } =
@@ -174,17 +174,18 @@ export const SongListingContextProvider = ({
           return true;
       }
     },
-    [isItunesResponseLoading, isBeatportResponseLoading, isAmazonResponseLoading, isBandcampResponseLoading],
+    [
+      isItunesResponseLoading,
+      isBeatportResponseLoading,
+      isAmazonResponseLoading,
+      isBandcampResponseLoading,
+    ],
   );
 
   const contextValue = useMemo(
-    () => ({ trackData, isSongDataLoading, getVendorResponse, getVendorResponseLoadingState }),
-    [trackData, isSongDataLoading, getVendorResponse, getVendorResponseLoadingState],
+    () => ({ trackData, isTrackDataLoading, getVendorResponse, getVendorResponseLoadingState }),
+    [trackData, isTrackDataLoading, getVendorResponse, getVendorResponseLoadingState],
   );
 
-  return (
-    <SongListingContext.Provider value={contextValue}>
-      {children}
-    </SongListingContext.Provider>
-  );
+  return <SongListingContext.Provider value={contextValue}>{children}</SongListingContext.Provider>;
 };

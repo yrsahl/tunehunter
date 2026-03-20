@@ -20,7 +20,7 @@ const SongListings = () => {
   return (
     <AnimatePresence mode="wait">
       {search && (
-        <SongListingContextProvider region={search.region} songId={search.id}>
+        <SongListingContextProvider key={search.id} region={search.region} songId={search.id}>
           <motion.div
             {...slideInAndOutFromBottom(0.5)}
             className="w-full rounded-3xl lg:-mt-2"
