@@ -67,7 +67,7 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
 
       {/* Quality */}
       <td>
-        <div className="flex flex-col justify-center pl-4 text-sm sm:pl-0 sm:text-base md:justify-normal">
+        <div className="flex flex-col justify-center text-sm sm:pl-0 sm:text-base md:justify-normal">
           <span>{format}</span>
           {quality !== "Multiple" && (
             <span className="text-xs opacity-50 md:text-sm">{quality}</span>
