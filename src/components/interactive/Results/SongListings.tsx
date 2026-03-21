@@ -34,7 +34,7 @@ const SongListings = () => {
     <AnimatePresence mode="wait">
       {search && (
         <SongListingContextProvider
-          key={`${search.id}-${region}`}
+          key={`${region}`}
           region={region as CountryCode}
           songId={search.id}
         >
