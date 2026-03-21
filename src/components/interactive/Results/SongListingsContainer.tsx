@@ -2,6 +2,7 @@ import { useSongListingContext } from "@/contexts/SongListingContext";
 import useDeviceSize from "@/hooks/useDeviceSize";
 import { CountryCode } from "@/lib/validators";
 import { songVendorArray } from "@/server/db/schema";
+import { AnimatePresence, motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import SongPreview from "./SongPreview";
 const SongListingRow = dynamic(() => import("./SongListingRow"), {
@@ -13,8 +14,11 @@ interface ISongListingsProps {
 }
 
 const SongListingsContainer = ({ region }: ISongListingsProps) => {
-  const { trackData, isTrackDataLoading } = useSongListingContext();
+  const { trackData, isTrackDataLoading, getVendorResponse } = useSongListingContext();
   const { isExtraSmallDevice } = useDeviceSize();
+
+  const hasLosslessOption =
+    !!getVendorResponse("beatport")?.data || !!getVendorResponse("bandcamp")?.data;
 
   return (
     <div className="hide-scrollbars flex flex-col gap-0 overflow-hidden overflow-x-auto sm:h-96 md:flex-row md:gap-12">
@@ -40,9 +44,19 @@ const SongListingsContainer = ({ region }: ISongListingsProps) => {
             ))}
           </tbody>
         </table>
-        <p className="mx-auto w-[83%] text-xs text-foreground/50">
-          *Uncompressed and/or lossless options also available
-        </p>
+        <AnimatePresence>
+          {hasLosslessOption && (
+            <motion.p
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              transition={{ duration: 0.4 }}
+              className="mx-auto w-[83%] text-xs text-foreground/50"
+            >
+              *Uncompressed and/or lossless options also available
+            </motion.p>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

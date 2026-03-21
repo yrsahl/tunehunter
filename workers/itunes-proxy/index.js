@@ -2,6 +2,7 @@ const DESKTOP_UA =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:148.0) Gecko/20100101 Firefox/148.0";
 
 export default {
+  // @ts-ignore
   async fetch(request) {
     if (request.method === "OPTIONS") {
       return new Response(null, {

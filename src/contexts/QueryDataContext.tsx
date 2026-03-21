@@ -13,7 +13,7 @@ interface IQueryDataContext {
     query: string,
     searchSettings?: SearchSettings,
     displayLoadingIndicator?: boolean,
-  ) => void;
+  ) => Promise<void>;
   isQueryDataLoading: boolean;
   resetQueryData: () => void;
 }
@@ -22,7 +22,7 @@ const QueryDataContext = createContext<IQueryDataContext>({
   queryData: null,
   showQueries: false,
   setShowQueries: () => {},
-  requestQueryData: () => {},
+  requestQueryData: async () => {},
   isQueryDataLoading: false,
   resetQueryData: () => {},
 });
@@ -35,7 +35,7 @@ export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
   const [isQueryDataLoading, setIsQueryDataLoading] = useState(false);
   const { storeTracksInDb } = useDb();
 
-  const requestQueryData = (
+  const requestQueryData = async (
     query: string,
     searchSettings?: SearchSettings,
     displayLoadingIndicator: boolean = true,
@@ -49,24 +49,18 @@ export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
     if (displayLoadingIndicator) setIsQueryDataLoading(true);
 
     try {
-      fetchItunesSearchData(query).then(async (itunesData) => {
-        if (itunesData?.tracks?.items.length) {
-          const filteredData = applyFilters(itunesData, searchSettings);
-          await storeTracksInDb(filteredData.tracks.items);
-          setQueryData(filteredData);
-          if (displayLoadingIndicator) setIsQueryDataLoading(false);
-          return;
-        }
+      const itunesData = await fetchItunesSearchData(query);
+      if (itunesData?.tracks?.items.length) {
+        const filteredData = applyFilters(itunesData, searchSettings);
+        await storeTracksInDb(filteredData.tracks.items);
+        setQueryData(filteredData);
+      }
 
-        // iTunes returned nothing — fall back to MusicBrainz
-        // const mbData = await fetchMusicBrainzSearchData(query);
-        // if (!mbData?.tracks) {
-        //   if (displayLoadingIndicator) setIsQueryDataLoading(false);
-        //   return;
-        // }
-      });
+      // iTunes returned nothing — fall back to MusicBrainz
+      // const mbData = await fetchMusicBrainzSearchData(query);
     } catch (error) {
       console.error(error);
+    } finally {
       if (displayLoadingIndicator) setIsQueryDataLoading(false);
     }
   };

@@ -30,6 +30,8 @@ type ItunesApiResponse = {
 
 const DURATION_WINDOW_MS = 3000;
 
+const FETCH_TIMEOUT_MS = 8_000;
+
 export const fetchItunesTrack = async (query: string, duration: number): Promise<Track | null> => {
   const params = new URLSearchParams({
     term: query,
@@ -38,7 +40,9 @@ export const fetchItunesTrack = async (query: string, duration: number): Promise
     limit: SONG_LIMIT.toString(),
   });
 
-  const response = await fetch(`${getEndpoint()}?${params}`);
+  const response = await fetch(`${getEndpoint()}?${params}`, {
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+  });
   if (!response.ok) return null;
 
   const data = (await response.json()) as ItunesApiResponse;
@@ -87,7 +91,9 @@ export const fetchItunesSearchData = async (query: string): Promise<SearchData |
     limit: SONG_LIMIT.toString(),
   });
 
-  const response = await fetch(`${getEndpoint()}?${params}`);
+  const response = await fetch(`${getEndpoint()}?${params}`, {
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+  });
   if (!response.ok) return null;
 
   const data = (await response.json()) as ItunesApiResponse;
