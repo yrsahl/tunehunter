@@ -5,7 +5,7 @@ import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { CountryCode } from "@/lib/validators";
 import { SongVendorType } from "@/server/db/schema";
-import { transformCurrencyStringToIcon } from "@/services/vendors";
+import { transformCurrencyStringToIcon, withAffiliateTag } from "@/services/vendors";
 import { motion } from "framer-motion";
 import SongListingRowMessage from "./SongListingRowMessage";
 import SongListingRowSkeleton from "./SongListingRowSkeleton";
@@ -52,7 +52,7 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
   // Visit Vendor
   const visitVendor = async () => {
     // Open site
-    window.open(url, "_blank");
+    window.open(withAffiliateTag(url), "_blank");
 
     // Add activity
     addUserActivity.mutateAsync({ region, songId, type: "store_visit" });

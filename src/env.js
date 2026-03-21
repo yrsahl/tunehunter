@@ -49,7 +49,18 @@ export const env = createEnv({
    * isn't built with invalid env vars. To expose them to the client, prefix them with
    * `NEXT_PUBLIC_`.
    */
-  client: {},
+  client: {
+    // Amazon affiliate tags — public, appear in outbound URLs
+    NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_DE: z.string().optional(),
+    NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_US: z.string().optional(),
+    NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_GB: z.string().optional(),
+    NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_FR: z.string().optional(),
+    NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_ES: z.string().optional(),
+    NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_IT: z.string().optional(),
+    NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_JP: z.string().optional(),
+    NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_CA: z.string().optional(),
+    NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_AU: z.string().optional(),
+  },
 
   /**
    * You can't destruct `process.env` as a regular object in the Next.js edge runtimes (e.g.
@@ -82,6 +93,15 @@ export const env = createEnv({
     AMAZON_PA_TAG_JP: process.env.AMAZON_PA_TAG_JP,
     AMAZON_PA_TAG_CA: process.env.AMAZON_PA_TAG_CA,
     AMAZON_PA_TAG_AU: process.env.AMAZON_PA_TAG_AU,
+    NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_DE: process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_DE,
+    NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_US: process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_US,
+    NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_GB: process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_GB,
+    NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_FR: process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_FR,
+    NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_ES: process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_ES,
+    NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_IT: process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_IT,
+    NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_JP: process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_JP,
+    NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_CA: process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_CA,
+    NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_AU: process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_AU,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

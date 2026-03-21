@@ -243,8 +243,6 @@ const fetchAmazonData = async ({
   const regionUpper = region.toUpperCase();
   const domain = AMAZON_SCRAPE_DOMAIN[regionUpper];
   const currency = AMAZON_CURRENCY[regionUpper] ?? "USD";
-  const tagEnvKey = PAAPI_TAG_ENV[regionUpper];
-  const affiliateTag = tagEnvKey ? process.env[tagEnvKey] : undefined;
   if (!domain) return { error: "NO_MATCH_FOUND" };
 
   const query = encodeURIComponent(`${title} ${artist}`);
@@ -303,7 +301,7 @@ const fetchAmazonData = async ({
       data: {
         songId,
         vendorId,
-        url: affiliateTag ? `https://www.${domain}/dp/${asin}?tag=${affiliateTag}` : `https://www.${domain}/dp/${asin}`,
+        url: `https://www.${domain}/dp/${asin}`,
         duration,
         price,
         currency,
