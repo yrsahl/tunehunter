@@ -32,7 +32,7 @@ const Layout = ({ children }: PropsWithChildren) => {
         <Particles className="animate-fade-in absolute inset-0 -z-10" quantity={100} />
       )}
       {/* Footer's 80px high */}
-      <main className="page-container relative flex max-h-[calc(100%-80px)] flex-1 flex-col">
+      <main className="page-container relative flex max-h-[calc(100%-64px)] flex-1 flex-col md:max-h-[calc(100%-80px)]">
         <div className="flex h-full flex-col">
           <div className="flex-grow-[6.6]" /> {/* Empty space */}
           <div className="hide-scrollbars max-h-full w-full overflow-y-auto py-6">
