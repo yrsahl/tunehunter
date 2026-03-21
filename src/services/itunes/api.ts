@@ -1,7 +1,9 @@
+import { env } from "@/env";
 import { SearchData } from "@/types/search-types";
 import { Track } from "@/types/song-types";
 
-const ITUNES_SEARCH_ENDPOINT = "https://itunes.apple.com/search";
+const getEndpoint = () => env.NEXT_PUBLIC_ITUNES_PROXY_URL ?? "https://itunes.apple.com/search";
+
 const SONG_LIMIT = 30;
 
 type ItunesApiTrack = {
@@ -36,7 +38,7 @@ export const fetchItunesTrack = async (query: string, duration: number): Promise
     limit: SONG_LIMIT.toString(),
   });
 
-  const response = await fetch(`${ITUNES_SEARCH_ENDPOINT}?${params}`);
+  const response = await fetch(`${getEndpoint()}?${params}`);
   if (!response.ok) return null;
 
   const data = (await response.json()) as ItunesApiResponse;
@@ -85,14 +87,14 @@ export const fetchItunesSearchData = async (query: string): Promise<SearchData |
     limit: SONG_LIMIT.toString(),
   });
 
-  const response = await fetch(`${ITUNES_SEARCH_ENDPOINT}?${params}`);
+  const response = await fetch(`${getEndpoint()}?${params}`);
   if (!response.ok) return null;
 
   const data = (await response.json()) as ItunesApiResponse;
 
   return {
     tracks: {
-      href: `${ITUNES_SEARCH_ENDPOINT}?${params}`,
+      href: `${getEndpoint()}?${params}`,
       items: data.results
         .filter((r) => r.wrapperType === "track" && r.kind === "song")
         .map((track) => ({

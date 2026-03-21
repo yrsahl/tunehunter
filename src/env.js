@@ -50,6 +50,7 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
+    NEXT_PUBLIC_ITUNES_PROXY_URL: z.string().url().optional(),
     // Amazon affiliate tags — public, appear in outbound URLs
     NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_DE: z.string().optional(),
     NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_US: z.string().optional(),
@@ -93,6 +94,7 @@ export const env = createEnv({
     AMAZON_PA_TAG_JP: process.env.AMAZON_PA_TAG_JP,
     AMAZON_PA_TAG_CA: process.env.AMAZON_PA_TAG_CA,
     AMAZON_PA_TAG_AU: process.env.AMAZON_PA_TAG_AU,
+    NEXT_PUBLIC_ITUNES_PROXY_URL: process.env.NEXT_PUBLIC_ITUNES_PROXY_URL,
     NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_DE: process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_DE,
     NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_US: process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_US,
     NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_GB: process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_GB,
