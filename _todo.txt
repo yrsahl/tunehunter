@@ -3,11 +3,9 @@
 
 ---- CORE
 
-Bandcamp $
 Backend setup problematic for many users?
 
-Fix top TODO
-Fix region vendors
+Fix top songs (TODO)
 
 
 
@@ -20,7 +18,6 @@ Fix region vendors
 
 If data is older than 30 days: refresh
 
-Record hits on buys
 
 
 

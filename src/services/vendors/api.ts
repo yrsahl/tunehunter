@@ -2,7 +2,6 @@ import { NewSongListing } from "@/server/api/schemas/song-listings-schemas";
 import { ITunesData } from "@/types/itunes-types";
 import axios from "axios";
 import * as cheerio from "cheerio";
-import { createHash, createHmac } from "crypto";
 import { filterListings } from ".";
 
 const SCRAPER_UA =

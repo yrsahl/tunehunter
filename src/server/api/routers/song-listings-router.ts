@@ -3,6 +3,8 @@ import { songListings } from "@/server/db/schema";
 import { fetchVendorData } from "@/services/vendors";
 import { SongListingSchema } from "../schemas/song-listings-schemas";
 
+const LISTING_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
+
 /**
  *
  * Quality
@@ -36,19 +38,31 @@ export const songListingsRouter = createTRPCRouter({
         song: true,
       },
     });
-    if (dbListing) {
+    const isStale = dbListing && Date.now() - dbListing.updatedAt.getTime() > LISTING_TTL_MS;
+    if (dbListing && !isStale) {
       return { data: dbListing };
     }
 
-    // 2. Hit vendor API, store and return results
+    // 2. Hit vendor API, store or refresh results
     const vendorListing = await fetchVendorData({
       region,
       vendorData: { vendorId, store: vendor },
       songData: { songId, duration, title, artist },
     });
     if (vendorListing.data) {
-      // Store listings in DB and return
-      await ctx.db.insert(songListings).values(vendorListing.data);
+      await ctx.db
+        .insert(songListings)
+        .values(vendorListing.data)
+        .onConflictDoUpdate({
+          target: [songListings.songId, songListings.vendorId, songListings.region],
+          set: {
+            url: vendorListing.data.url,
+            price: vendorListing.data.price,
+            currency: vendorListing.data.currency,
+            duration: vendorListing.data.duration,
+            updatedAt: new Date(),
+          },
+        });
 
       const dbListing = await ctx.db.query.songListings.findFirst({
         where: (data, { eq, and }) =>
