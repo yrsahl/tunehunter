@@ -136,7 +136,7 @@ const fetchItunesData = async ({
     vendorId,
     url: toRegionalUrl(song.trackViewUrl),
     duration: song.trackTimeMillis,
-    price: song.trackPrice?.toString(),
+    price: song.trackPrice != null ? parseFloat(song.trackPrice.toString()).toFixed(2) : undefined,
     currency: song.currency,
     region,
   }));
@@ -384,7 +384,7 @@ const fetchAmazonDataPaapi = async ({
         vendorId,
         url: item.DetailPageURL,
         duration,
-        price: listing.Price.Amount.toString(),
+        price: parseFloat(listing.Price.Amount.toString()).toFixed(2),
         currency: listing.Price.Currency ?? "USD",
         region,
       },
@@ -567,7 +567,7 @@ const fetchBandcampData = async ({
             .find((o) => o?.price != null) ?? null;
         const offers = releaseOffers ?? (json?.offers as { price?: number; priceCurrency?: string } | undefined) ?? null;
         if (offers?.price != null) {
-          price = (offers.price as number).toString();
+          price = (offers.price as number).toFixed(2);
           currency = ((offers.priceCurrency as string | undefined) ?? "USD").toUpperCase();
         }
       } catch {
