@@ -2,6 +2,7 @@ import { NewSongListing } from "@/server/api/schemas/song-listings-schemas";
 import { ITunesData } from "@/types/itunes-types";
 import axios from "axios";
 import * as cheerio from "cheerio";
+import { createHash, createHmac } from "crypto";
 import { filterListings } from ".";
 
 const SCRAPER_UA =
@@ -203,7 +204,122 @@ function getSigningKey(secretKey: string, dateStamp: string, awsRegion: string):
   return hmac(hmac(hmac(hmac(`AWS4${secretKey}`, dateStamp), awsRegion), PAAPI_SERVICE), "aws4_request");
 }
 
+// ── Amazon scraper (active) ───────────────────────────────────────────────────
+// Scrapes the digital-music search page. Works on regions whose Amazon domain
+// does not serve a WAF JavaScript challenge (DE and US confirmed; GB blocked).
+// Switch to fetchAmazonDataPaapi once PA API credentials are available.
+
+const AMAZON_SCRAPE_DOMAIN: Record<string, string> = {
+  US: "amazon.com",
+  GB: "amazon.co.uk",
+  DE: "amazon.de",
+  FR: "amazon.fr",
+  ES: "amazon.es",
+  IT: "amazon.it",
+  JP: "amazon.co.jp",
+  CA: "amazon.ca",
+  AU: "amazon.com.au",
+};
+
+const AMAZON_CURRENCY: Record<string, string> = {
+  US: "USD",
+  GB: "GBP",
+  DE: "EUR",
+  FR: "EUR",
+  ES: "EUR",
+  IT: "EUR",
+  JP: "JPY",
+  CA: "CAD",
+  AU: "AUD",
+};
+
 const fetchAmazonData = async ({
+  region,
+  vendorData,
+  songData,
+}: IFetchVendorData): Promise<VendorDataResponse> => {
+  const { songId, title, artist, duration } = songData;
+  const { vendorId } = vendorData;
+  const regionUpper = region.toUpperCase();
+  const domain = AMAZON_SCRAPE_DOMAIN[regionUpper];
+  const currency = AMAZON_CURRENCY[regionUpper] ?? "USD";
+  const tagEnvKey = PAAPI_TAG_ENV[regionUpper];
+  const affiliateTag = tagEnvKey ? process.env[tagEnvKey] : undefined;
+  if (!domain) return { error: "NO_MATCH_FOUND" };
+
+  const query = encodeURIComponent(`${title} ${artist}`);
+  const searchUrl = `https://www.${domain}/s?k=${query}&i=digital-music`;
+
+  let response;
+  try {
+    response = await axios.get<string>(searchUrl, {
+      headers: {
+        "User-Agent": SCRAPER_UA,
+        "Accept-Language": getAcceptLanguage(region),
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Encoding": "identity",
+      },
+      timeout: 10_000,
+    });
+  } catch {
+    return { error: "NO_MATCH_FOUND" };
+  }
+
+  // WAF JavaScript challenge — scraping is blocked for this region
+  if ((response.data as string).includes("awsWafCookieDomainList")) {
+    return { error: "NO_MATCH_FOUND" };
+  }
+
+  const $ = cheerio.load(response.data as string);
+  let result: VendorDataResponse = { error: "NO_MATCH_FOUND" };
+
+  $('[data-component-type="s-search-result"]').each((_, el) => {
+    if (result.data) return; // already found a match
+
+    const $el = $(el);
+    const asin = $el.attr("data-asin");
+    if (!asin) return;
+
+    // Cards for individual tracks have `trackAsin=` in their link href.
+    // Album cards do not — skip them.
+    if (!$el.find('a[href*="trackAsin="]').length) return;
+
+    // Title is in h2 > span
+    const cardTitle = $el.find("h2 span").first().text().trim();
+    if (!titleMatches(cardTitle, title)) return;
+
+    // Artist is the last span.a-size-base inside the first .a-color-secondary div
+    // (the first span in that div is the localised "by"/"von"/"de" label)
+    const cardArtist = $el.find(".a-color-secondary").first().find(".a-size-base").last().text().trim();
+    if (!artistMatches(cardArtist, artist)) return;
+
+    // Price text: "Oder 1,29 €, …" / "$1.29 to buy" / etc.
+    const priceText = $el.find('[data-cy="secondary-offer-recipe"] span').text().trim();
+    const priceMatch = priceText.match(/(\d+)[,.](\d{2})/);
+    if (!priceMatch) return;
+    const price = `${priceMatch[1]}.${priceMatch[2]}`;
+
+    result = {
+      data: {
+        songId,
+        vendorId,
+        url: affiliateTag ? `https://www.${domain}/dp/${asin}?tag=${affiliateTag}` : `https://www.${domain}/dp/${asin}`,
+        duration,
+        price,
+        currency,
+        region,
+      } satisfies NewSongListing,
+    };
+  });
+
+  return result;
+};
+
+// ── Amazon Product Advertising API 5.0 (kept for when credentials arrive) ────
+// To activate: rename this to fetchAmazonData and remove the scraper above.
+// Set in .env: AMAZON_PA_ACCESS_KEY, AMAZON_PA_SECRET_KEY, AMAZON_PA_TAG_<REGION>
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const fetchAmazonDataPaapi = async ({
   region,
   vendorData,
   songData,
@@ -234,7 +350,6 @@ const fetchAmazonData = async ({
     ItemCount: 5,
   });
 
-  // Headers must be sorted alphabetically for canonical form
   const reqHeaders: Record<string, string> = {
     "content-encoding": "amz-1.0",
     "content-type": "application/json; charset=utf-8",
@@ -269,11 +384,10 @@ const fetchAmazonData = async ({
       data: {
         songId,
         vendorId,
-        // DetailPageURL already contains the affiliate tag
         url: item.DetailPageURL,
         duration,
         price: listing.Price.Amount.toString(),
-        currency: listing.Price.Currency ?? "GBP",
+        currency: listing.Price.Currency ?? "USD",
         region,
       },
     };
