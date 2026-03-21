@@ -448,7 +448,13 @@ const fetchBandcampData = async ({
         const json = JSON.parse($track(el).html() ?? "") as any;
         if (json.name) trackTitle = json.name as string;
         if (json.duration) durationMs = parseBandcampDuration(json.duration as string);
-        const offers = json?.inAlbum?.albumRelease?.[0]?.offers;
+        // Standalone singles expose offers directly; album tracks nest it under albumRelease.
+        // Scan all albumRelease entries because [0] is not guaranteed to carry offers.
+        const releaseOffers =
+          (json?.inAlbum?.albumRelease as { offers?: { price?: number; priceCurrency?: string } }[] | undefined)
+            ?.map((r) => r.offers)
+            .find((o) => o?.price != null) ?? null;
+        const offers = releaseOffers ?? (json?.offers as { price?: number; priceCurrency?: string } | undefined) ?? null;
         if (offers?.price != null) {
           price = (offers.price as number).toString();
           currency = ((offers.priceCurrency as string | undefined) ?? "USD").toUpperCase();
