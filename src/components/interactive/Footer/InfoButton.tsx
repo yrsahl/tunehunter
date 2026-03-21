@@ -55,8 +55,8 @@ const InfoButton = () => {
         <SheetHeader>
           <SheetTitle>
             <div className="-ml-1 flex font-quicksand text-3xl md:text-4xl">
-              <h2 className="tracking-wider">Track</h2>
-              <h2 className="tracking-wider text-primary">Scout</h2>
+              <h2 className="tracking-wider">Tune</h2>
+              <h2 className="tracking-wider text-primary">Hunter</h2>
             </div>
             {/* <p className="flex items-center gap-1 pl-2 text-sm font-normal text-foreground/70">
               <span>By</span>
@@ -104,7 +104,7 @@ const InfoButton = () => {
                   )}
                 </div>
                 <div className="m-auto flex w-[90%] flex-col gap-4">
-                  <a href="mailto:contact@trackscout.app?subject=Feedback">
+                  <a href="mailto:contact@tunehunter.app?subject=Feedback">
                     {/* <IconButton
                       variant="primary"
                       text={isExtraSmallDevice ? "For Feedback" : "Have feedback?"}

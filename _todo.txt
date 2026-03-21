@@ -3,11 +3,11 @@
 
 ---- CORE
 
+Bandcamp $
+Backend setup problematic for many users?
+
 Fix top TODO
 Fix region vendors
-
-Create backend API that FireCrawls Amazon Music, Bandcamp, Beatport
-
 
 
 

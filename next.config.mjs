@@ -33,7 +33,7 @@ const sentryConfig = {
   // https://github.com/getsentry/sentry-webpack-plugin#options
 
   org: "alvarny-dev",
-  project: "trackscout",
+  project: "tunehunter",
 
   // Only print logs for uploading source maps in CI
   silent: !process.env.CI,

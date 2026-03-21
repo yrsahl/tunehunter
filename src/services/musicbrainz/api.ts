@@ -5,7 +5,7 @@ const MB_SEARCH_ENDPOINT = "https://musicbrainz.org/ws/2/recording";
 const SONG_LIMIT = 30;
 const DURATION_WINDOW_MS = 3000;
 const MB_HEADERS = {
-  "User-Agent": "trackscout/0.1.0 (https://github.com/trackscout)",
+  "User-Agent": "tunehunter/0.1.0 (https://github.com/tunehunter)",
   Accept: "application/json",
 };
 

@@ -6,9 +6,9 @@ const resend = new Resend(env.EMAIL_SERVER_PASSWORD);
 
 export const sendVerificationCodeEmail = async (email: string, verificationCode: string) => {
   const { data, error } = await resend.emails.send({
-    from: "TrackScout <contact@trackscout.app>",
+    from: "TuneHunter <contact@tunehunter.app>",
     to: [email],
-    subject: "Your verification code for TrackScout",
+    subject: "Your verification code for TuneHunter",
     react: VerificationTokenTemplate({ verificationCode }),
   });
 

@@ -7,7 +7,7 @@ test.describe("@full Home Page", () => {
     await waitForPageLoad(page);
 
     // Verify page title
-    await expect(page).toHaveTitle(/TrackScout/);
+    await expect(page).toHaveTitle(/TuneHunter/);
 
     // Verify main search component is present
     await waitForSearchToLoad(page);

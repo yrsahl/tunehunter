@@ -179,6 +179,6 @@ When tests fail, you have multiple debugging options:
 - ✅ Theme switching
 - ✅ Data persistence
 
-The E2E testing framework is now ready to ensure your TrackScout application works perfectly for your users! 🎵
+The E2E testing framework is now ready to ensure your TuneHunter application works perfectly for your users! 🎵
 
 Start by adding test IDs to your components and running your first test. The framework will grow with your application and catch issues before they reach production.
