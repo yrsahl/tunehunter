@@ -12,24 +12,6 @@ import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const userActivitiesRouter = createTRPCRouter({
   // ********* Queries *********
-  getAllUserActivities: protectedProcedure.query(async ({ ctx }) => {
-    const activities = await ctx.db.query.userActivities.findMany({
-      where: (activities, { eq }) => eq(activities.userId, ctx.session.user.id),
-      with: { song: true },
-      orderBy: (activities, { desc }) => [desc(activities.createdAt)],
-    });
-
-    const searchActivities = activities.filter((activity) => activity.type === "search");
-    const storeVisitActivities = activities.filter((activity) => activity.type === "store_visit");
-    const wishlistActivities = activities.filter((activity) => activity.type === "wishlist");
-
-    return {
-      search: searchActivities,
-      storeVisit: storeVisitActivities,
-      wishlist: wishlistActivities,
-    };
-  }),
-
   getUserActivity: protectedProcedure.input(GetUserActivitySchema).query(async ({ ctx, input }) => {
     const userId = ctx.session.user.id;
     return await getUserActivityByType(userId, input.type);
@@ -37,8 +19,10 @@ export const userActivitiesRouter = createTRPCRouter({
 
   getHistory: protectedProcedure.query<UserHistory>(async ({ ctx }) => {
     const userId = ctx.session.user.id;
-    const searchHistory = await getUserActivityByType(userId, "search");
-    const storeVisitHistory = await getUserActivityByType(userId, "store_visit");
+    const [searchHistory, storeVisitHistory] = await Promise.all([
+      getUserActivityByType(userId, "search"),
+      getUserActivityByType(userId, "store_visit"),
+    ]);
 
     return {
       userId,

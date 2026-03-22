@@ -11,16 +11,11 @@ Create a logo
 
 ---- SCALABILITY (from audit)
 
-
-HIGH:
-[x] Rate limiter is global, not per-user — a single user can consume the quota for everyone
-[x] Set up cron job for materialized view refresh instead of on-demand per request (already noted in schema.ts, needs Neon paid plan or external cron)
-
 MEDIUM:
-[ ] Set maxDuration in next.config.mjs to avoid Vercel timeout on slow Bandcamp scrapes + view refreshes
+[ ] Set maxDuration in next.config.mjs to avoid Vercel timeout on slow Bandcamp scrapes + view refreshes (max. API duration is 10s on Hobby plan, 15s on Pro)
 [ ] Add tRPC-level rate limiting (currently only vendor API calls are rate limited)
 [x] account-router: remove duplicate DB query after token update
-[ ] user-activity-router: complex join with no index on (userId, type) — add index and review join complexity
+[x] user-activity-router: complex join with no index on (userId, type) — add index and review join complexity
 
 PRE-LAUNCH:
 [ ] Fill in imprint placeholders: Gewerbename, full name, address, Steuernummer, Umsatzsteuer-ID
