@@ -28,6 +28,13 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
   if (isVendorResponseLoading || (vendorResponse && vendorResponse.error === "INVALID_FIELDS"))
     return <SongListingRowSkeleton store={vendor} region={region} />;
 
+  // Store unreachable (timeout)
+  if (vendorResponse?.error === "STORE_UNREACHABLE") {
+    return (
+      <SongListingRowMessage message="Store not reachable." store={vendor} region={region} />
+    );
+  }
+
   // No data
   if (!vendorResponse || !vendorResponse?.data || vendorResponse.error === "NO_DATA_FOUND") {
     return (

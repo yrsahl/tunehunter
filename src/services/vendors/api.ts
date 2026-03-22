@@ -56,6 +56,7 @@ interface IFetchVendorData {
     artist: string;
     duration: number;
   };
+  signal?: AbortSignal;
 }
 
 // --- Matching helpers ---
@@ -96,13 +97,14 @@ export const fetchVendorData = async ({
   vendorData,
   region,
   songData,
+  signal,
 }: IFetchVendorData): Promise<VendorDataResponse> => {
-  if (vendorData.store === "itunes") return await fetchItunesData({ region, vendorData, songData });
+  if (vendorData.store === "itunes") return await fetchItunesData({ region, vendorData, songData, signal });
   if (vendorData.store === "beatport")
-    return await fetchBeatportData({ region, vendorData, songData });
+    return await fetchBeatportData({ region, vendorData, songData, signal });
   if (vendorData.store === "bandcamp")
-    return await fetchBandcampData({ region, vendorData, songData });
-  if (vendorData.store === "amazon") return await fetchAmazonData({ region, vendorData, songData });
+    return await fetchBandcampData({ region, vendorData, songData, signal });
+  if (vendorData.store === "amazon") return await fetchAmazonData({ region, vendorData, songData, signal });
 
   return {
     error: "VENDOR_NOT_SUPPORTED",
@@ -114,6 +116,7 @@ const fetchItunesData = async ({
   region,
   vendorData,
   songData,
+  signal,
 }: IFetchVendorData): Promise<VendorDataResponse> => {
   const { songId, title, artist, duration } = songData;
   const { vendorId } = vendorData;
@@ -122,7 +125,7 @@ const fetchItunesData = async ({
   const dataUrl = new URL(
     `https://itunes.apple.com/search?country=${region}&media=music&entity=song&limit=5&term=${title}+${artist}`,
   ).href;
-  const response = await axios.get<ITunesData>(dataUrl);
+  const response = await axios.get<ITunesData>(dataUrl, { signal });
 
   // 2. Extract data
   // Replace the country segment in the Apple Music URL (e.g. /de/ → /fr/) to ensure
@@ -237,6 +240,7 @@ const fetchAmazonData = async ({
   region,
   vendorData,
   songData,
+  signal,
 }: IFetchVendorData): Promise<VendorDataResponse> => {
   const { songId, title, artist, duration } = songData;
   const { vendorId } = vendorData;
@@ -257,7 +261,7 @@ const fetchAmazonData = async ({
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         "Accept-Encoding": "identity",
       },
-      timeout: 10_000,
+      signal,
     });
   } catch {
     return { error: "NO_MATCH_FOUND" };
@@ -400,6 +404,7 @@ const fetchBeatportData = async ({
   region,
   vendorData,
   songData,
+  signal,
 }: IFetchVendorData): Promise<VendorDataResponse> => {
   const { songId, title, artist, duration } = songData;
   const { vendorId } = vendorData;
@@ -409,7 +414,7 @@ const fetchBeatportData = async ({
 
   const response = await axios.get<string>(searchUrl, {
     headers: { "User-Agent": SCRAPER_UA, "Accept-Language": getAcceptLanguage(region) },
-    timeout: 10_000,
+    signal,
   });
 
   const $ = cheerio.load(response.data);
@@ -493,6 +498,7 @@ const fetchBandcampData = async ({
   region,
   vendorData,
   songData,
+  signal,
 }: IFetchVendorData): Promise<VendorDataResponse> => {
   const { songId, title, artist, duration } = songData;
   const { vendorId } = vendorData;
@@ -504,7 +510,7 @@ const fetchBandcampData = async ({
   // which would break the "TRACK" filter. Price is read from the track page instead.
   const searchResponse = await axios.get<string>(searchUrl, {
     headers: { "User-Agent": SCRAPER_UA },
-    timeout: 10_000,
+    signal,
   });
 
   const $ = cheerio.load(searchResponse.data);
@@ -537,7 +543,7 @@ const fetchBandcampData = async ({
     try {
       trackResponse = await axios.get<string>(url, {
         headers: { "User-Agent": SCRAPER_UA, "Accept-Language": getAcceptLanguage(region) },
-        timeout: 10_000,
+        signal,
       });
     } catch {
       continue;

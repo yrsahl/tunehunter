@@ -44,11 +44,17 @@ export const songListingsRouter = createTRPCRouter({
     }
 
     // 2. Hit vendor API, store or refresh results
-    const vendorListing = await fetchVendorData({
-      region,
-      vendorData: { vendorId, store: vendor },
-      songData: { songId, duration, title, artist },
-    });
+    let vendorListing;
+    try {
+      vendorListing = await fetchVendorData({
+        region,
+        vendorData: { vendorId, store: vendor },
+        songData: { songId, duration, title, artist },
+        signal: AbortSignal.timeout(8_000),
+      });
+    } catch {
+      return { error: "STORE_UNREACHABLE" };
+    }
     if (vendorListing.data) {
       await ctx.db
         .insert(songListings)

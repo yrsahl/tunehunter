@@ -5,7 +5,6 @@
 
 Backend setup problematic for many users?
 
-Fix top songs (TODO)
 
 
 
@@ -16,7 +15,7 @@ Fix top songs (TODO)
 
 
 
-If data is older than 30 days: refresh
+
 
 
 
