@@ -10,7 +10,6 @@ export const env = createEnv({
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
     DATABASE_URL: z.string().url(),
     DATABASE_URL_DEV: z.string().url(),
-    SENTRY_AUTH_TOKEN: z.string(),
     UPSTASH_REDIS_REST_URL: z.string().url(),
     UPSTASH_REDIS_REST_TOKEN: z.string(),
     NEXTAUTH_SECRET: process.env.NODE_ENV === "production" ? z.string() : z.string().optional(),
@@ -32,6 +31,8 @@ export const env = createEnv({
     // Credentials available once 3 qualified purchases are made in Associates portal.
     DASHBOARD_PASSWORD: z.string(),
     CRON_SECRET: z.string(),
+    UPSTASH_EMAIL: z.string().email().optional(),
+    UPSTASH_API_KEY: z.string().optional(),
     AMAZON_PA_ACCESS_KEY: z.string().optional(),
     AMAZON_PA_SECRET_KEY: z.string().optional(),
     // Per-marketplace associate tags (add more as you register additional marketplaces)
@@ -73,7 +74,6 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
     DATABASE_URL: process.env.DATABASE_URL,
     DATABASE_URL_DEV: process.env.DATABASE_URL_DEV,
-    SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
@@ -87,6 +87,8 @@ export const env = createEnv({
     SPOTIFY_CLIENT_SECRET: process.env.SPOTIFY_CLIENT_SECRET,
     DASHBOARD_PASSWORD: process.env.DASHBOARD_PASSWORD,
     CRON_SECRET: process.env.CRON_SECRET,
+    UPSTASH_EMAIL: process.env.UPSTASH_EMAIL,
+    UPSTASH_API_KEY: process.env.UPSTASH_API_KEY,
     AMAZON_PA_ACCESS_KEY: process.env.AMAZON_PA_ACCESS_KEY,
     AMAZON_PA_SECRET_KEY: process.env.AMAZON_PA_SECRET_KEY,
     AMAZON_PA_TAG_GB: process.env.AMAZON_PA_TAG_GB,

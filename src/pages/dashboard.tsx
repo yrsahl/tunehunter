@@ -3,6 +3,15 @@ import type { NextPage } from "next";
 
 const vendors = ["itunes", "bandcamp", "beatport", "amazon"] as const;
 
+type ServiceRow = {
+  name: string;
+  description: string;
+  limit: string;
+  usageLabel: string;
+  usageValue: string | null; // null = not yet implemented
+  url: string;
+};
+
 const StatCard = ({ label, value }: { label: string; value: number }) => (
   <div className="flex flex-col gap-1 rounded-lg border border-primary/20 bg-background/50 p-6">
     <span className="text-3xl font-semibold">{value.toLocaleString()}</span>
@@ -12,6 +21,7 @@ const StatCard = ({ label, value }: { label: string; value: number }) => (
 
 const Dashboard: NextPage = () => {
   const { data, isLoading } = api.stats.getStats.useQuery();
+  const { data: serviceUsage } = api.stats.getServiceUsage.useQuery();
 
   if (isLoading) return <div className="p-10 text-muted-foreground">Loading...</div>;
   if (!data) return null;
@@ -133,6 +143,88 @@ const Dashboard: NextPage = () => {
             {data.trpcRateLimited.toLocaleString()}
           </span>
         </p>
+      </section>
+
+      {/* External services */}
+      <section className="flex flex-col gap-3">
+        <h2 className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
+          External Services
+        </h2>
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-primary/10 text-left text-muted-foreground">
+              <th className="pb-2 font-normal">Service</th>
+              <th className="pb-2 font-normal">Purpose</th>
+              <th className="pb-2 font-normal">This month</th>
+              <th className="pb-2 font-normal">Free tier limit</th>
+              <th className="pb-2 font-normal" />
+            </tr>
+          </thead>
+          <tbody>
+            {(
+              [
+                {
+                  name: "Neon",
+                  description: "PostgreSQL database",
+                  limit: "0.5 GB storage, 191 compute hours/month",
+                  usageLabel: "compute hours",
+                  usageValue: null,
+                  url: "https://console.neon.tech",
+                },
+                {
+                  name: "Upstash",
+                  description: "Redis (rate limiting, stats)",
+                  limit: "500k commands/month",
+                  usageLabel: "commands",
+                  usageValue:
+                    serviceUsage?.upstashCommandsThisMonth != null
+                      ? `${serviceUsage.upstashCommandsThisMonth.toLocaleString()} / 500,000`
+                      : null,
+                  url: "https://console.upstash.com",
+                },
+                {
+                  name: "Vercel",
+                  description: "Hosting & deployments",
+                  limit: "100 GB bandwidth, 10s function timeout",
+                  usageLabel: "bandwidth",
+                  usageValue: null,
+                  url: "https://vercel.com/dashboard",
+                },
+                {
+                  name: "Resend",
+                  description: "Transactional email",
+                  limit: "3,000 emails/month, 100/day",
+                  usageLabel: "emails",
+                  usageValue: null,
+                  url: "https://resend.com/overview",
+                },
+              ] satisfies ServiceRow[]
+            ).map((s) => (
+              <tr key={s.name} className="border-b border-primary/5">
+                <td className="py-3 font-medium">{s.name}</td>
+                <td className="py-3 text-muted-foreground">{s.description}</td>
+                <td className="py-3">
+                  {s.usageValue != null ? (
+                    <span>{s.usageValue}</span>
+                  ) : (
+                    <span className="text-muted-foreground">—</span>
+                  )}
+                </td>
+                <td className="py-3 text-muted-foreground">{s.limit}</td>
+                <td className="py-3">
+                  <a
+                    href={s.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-primary underline-offset-4 hover:underline"
+                  >
+                    Dashboard ↗
+                  </a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </section>
     </div>
   );

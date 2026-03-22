@@ -53,10 +53,3 @@ Fix:
 Pay functionality: Stripe 
 - Supporter
 - Extra features
-
-
-
------ Infra
-Host: Vercel
-DB: NeonDB
-Mail: Resend
