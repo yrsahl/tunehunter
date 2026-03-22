@@ -50,6 +50,7 @@ const Dashboard: NextPage = () => {
               <th className="pb-2 font-normal">Vendor</th>
               <th className="pb-2 font-normal">From cache</th>
               <th className="pb-2 font-normal">External</th>
+              <th className="pb-2 font-normal">No match</th>
               <th className="pb-2 font-normal">Rate limited</th>
               <th className="pb-2 font-normal">Unreachable</th>
               <th className="pb-2 font-normal">Total</th>
@@ -59,6 +60,7 @@ const Dashboard: NextPage = () => {
             {vendors.map((vendor) => {
               const cache = data.byVendor.find((r) => r.vendor === vendor && r.source === "db_cache")?.count ?? 0;
               const external = data.byVendor.find((r) => r.vendor === vendor && r.source === "external")?.count ?? 0;
+              const noMatch = data.byVendor.find((r) => r.vendor === vendor && r.source === "no_match")?.count ?? 0;
               const rateLimited = data.byVendor.find((r) => r.vendor === vendor && r.source === "rate_limited")?.count ?? 0;
               const unreachable = data.byVendor.find((r) => r.vendor === vendor && r.source === "store_unreachable")?.count ?? 0;
               return (
@@ -66,6 +68,7 @@ const Dashboard: NextPage = () => {
                   <td className="py-3 capitalize">{vendor}</td>
                   <td className="py-3">{Number(cache).toLocaleString()}</td>
                   <td className="py-3">{Number(external).toLocaleString()}</td>
+                  <td className="py-3">{Number(noMatch) > 0 ? <span className="text-muted-foreground">{Number(noMatch).toLocaleString()}</span> : 0}</td>
                   <td className="py-3">{Number(rateLimited) > 0 ? <span className="text-yellow-500">{Number(rateLimited).toLocaleString()}</span> : 0}</td>
                   <td className="py-3">{Number(unreachable) > 0 ? <span className="text-red-500">{Number(unreachable).toLocaleString()}</span> : 0}</td>
                   <td className="py-3 font-medium">{(Number(cache) + Number(external)).toLocaleString()}</td>
@@ -74,10 +77,12 @@ const Dashboard: NextPage = () => {
             })}
           </tbody>
         </table>
-        {(data.rateLimited > 0 || data.storeUnreachable > 0) && (
+        {(data.rateLimited > 0 || data.storeUnreachable > 0 || data.noMatch > 0 || data.trpcRateLimited > 0) && (
           <p className="text-sm text-muted-foreground">
-            {data.rateLimited > 0 && <><span className="font-medium text-yellow-500">{data.rateLimited.toLocaleString()}</span> rate limited · </>}
-            {data.storeUnreachable > 0 && <><span className="font-medium text-red-500">{data.storeUnreachable.toLocaleString()}</span> unreachable</>}
+            {data.noMatch > 0 && <><span className="font-medium text-foreground">{data.noMatch.toLocaleString()}</span> no match · </>}
+            {data.rateLimited > 0 && <><span className="font-medium text-yellow-500">{data.rateLimited.toLocaleString()}</span> vendor rate limited · </>}
+            {data.storeUnreachable > 0 && <><span className="font-medium text-red-500">{data.storeUnreachable.toLocaleString()}</span> unreachable · </>}
+            {data.trpcRateLimited > 0 && <><span className="font-medium text-yellow-500">{data.trpcRateLimited.toLocaleString()}</span> tRPC rate limited</>}
           </p>
         )}
       </section>

@@ -9,6 +9,7 @@
 
 import { initTRPC, TRPCError } from "@trpc/server";
 import { trpcRateLimiter } from "@/lib/rate-limiter";
+import { redis } from "@/lib/redis";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { type Session } from "next-auth";
 import superjson from "superjson";
@@ -116,9 +117,17 @@ export const publicProcedure = t.procedure;
  * that should be protected against abuse. Limit: 60 requests/min per user or IP.
  */
 const enforceRateLimit = t.middleware(async ({ ctx, next }) => {
-  const identifier = ctx.session?.user?.id ?? ctx.ip;
-  const { success } = await trpcRateLimiter.limit(identifier);
-  if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
+  try {
+    const identifier = ctx.session?.user?.id ?? ctx.ip;
+    const { success } = await trpcRateLimiter.limit(identifier);
+    if (!success) {
+      void redis.incr("stats:trpc:rate_limited");
+      throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
+    }
+  } catch (err) {
+    // Fail open — if Redis is unreachable, let the request through
+    if (err instanceof TRPCError) throw err;
+  }
   return next();
 });
 

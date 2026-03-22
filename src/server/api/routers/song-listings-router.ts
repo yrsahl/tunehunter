@@ -102,14 +102,17 @@ export const songListingsRouter = createTRPCRouter({
       }
     }
 
-    // Cache the "not found" result so we don't re-hit the vendor within the TTL
-    await ctx.db
-      .insert(songListingMisses)
-      .values({ songId, vendorId, region })
-      .onConflictDoUpdate({
-        target: [songListingMisses.songId, songListingMisses.vendorId, songListingMisses.region],
-        set: { checkedAt: new Date() },
-      });
+    // Log the genuine no-match and cache it so we don't re-hit the vendor within the TTL
+    await Promise.all([
+      ctx.db.insert(songListingRequests).values({ songId, vendor, source: "no_match" }),
+      ctx.db
+        .insert(songListingMisses)
+        .values({ songId, vendorId, region })
+        .onConflictDoUpdate({
+          target: [songListingMisses.songId, songListingMisses.vendorId, songListingMisses.region],
+          set: { checkedAt: new Date() },
+        }),
+    ]);
 
     return { error: "NO_DATA_FOUND" };
   }),

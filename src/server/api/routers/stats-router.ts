@@ -1,10 +1,11 @@
+import { redis } from "@/lib/redis";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { songListingRequests, userActivities } from "@/server/db/schema";
 import { count, eq } from "drizzle-orm";
 
 export const statsRouter = createTRPCRouter({
   getStats: publicProcedure.query(async ({ ctx }) => {
-    const [totalSearches, dbCacheHits, externalFetches, rateLimited, storeUnreachable, byVendor] = await Promise.all([
+    const [totalSearches, dbCacheHits, externalFetches, rateLimited, storeUnreachable, noMatch, trpcRateLimited, byVendor] = await Promise.all([
       // Total song searches
       ctx.db
         .select({ count: count() })
@@ -40,6 +41,16 @@ export const statsRouter = createTRPCRouter({
         .where(eq(songListingRequests.source, "store_unreachable"))
         .then((r) => r[0]?.count ?? 0),
 
+      // Genuine no-match results (vendor found nothing)
+      ctx.db
+        .select({ count: count() })
+        .from(songListingRequests)
+        .where(eq(songListingRequests.source, "no_match"))
+        .then((r) => r[0]?.count ?? 0),
+
+      // tRPC-level rate limit rejections (stored in Redis)
+      redis.get<number>("stats:trpc:rate_limited").then((v) => v ?? 0),
+
       // Breakdown by vendor and source
       ctx.db
         .select({ vendor: songListingRequests.vendor, source: songListingRequests.source, count: count() })
@@ -47,6 +58,6 @@ export const statsRouter = createTRPCRouter({
         .groupBy(songListingRequests.vendor, songListingRequests.source),
     ]);
 
-    return { totalSearches, dbCacheHits, externalFetches, rateLimited, storeUnreachable, byVendor };
+    return { totalSearches, dbCacheHits, externalFetches, rateLimited, storeUnreachable, noMatch, trpcRateLimited, byVendor };
   }),
 });
