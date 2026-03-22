@@ -139,7 +139,7 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
                   </SelectTrigger>
                   <SelectContent>
                     {sortedRegions.map((region) => (
-                      <SelectItem key={region} value={region.toLowerCase()}>
+                      <SelectItem key={region} value={region}>
                         {createRegionName(region)}
                       </SelectItem>
                     ))}

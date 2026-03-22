@@ -155,7 +155,7 @@ const RegisterForm: FC<IProps> = ({ email, menuState, setMenuState }) => {
                       </SelectTrigger>
                       <SelectContent className="border-foreground/30">
                         {sortedRegions.map((region) => (
-                          <SelectItem key={region} value={region.toLowerCase()}>
+                          <SelectItem key={region} value={region}>
                             {createRegionName(region)}
                           </SelectItem>
                         ))}

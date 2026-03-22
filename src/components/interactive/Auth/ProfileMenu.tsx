@@ -150,9 +150,9 @@ const ProfileMenu = () => {
             <SelectContent>
               {sortedRegions.map((region) => (
                 <SelectItem
-                  data-testid={`region-option-${region.toLowerCase()}`}
+                  data-testid={`region-option-${region}`}
                   key={region}
-                  value={region.toLowerCase()}
+                  value={region}
                 >
                   {createRegionName(region)}
                 </SelectItem>
