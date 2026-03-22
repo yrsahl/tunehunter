@@ -15,6 +15,26 @@ export const config = {
 };
 
 export function middleware(request: NextRequest) {
+  // Password-protect the dashboard via HTTP Basic Auth
+  if (request.nextUrl.pathname.startsWith("/dashboard")) {
+    const authHeader = request.headers.get("authorization");
+    const password = process.env.DASHBOARD_PASSWORD;
+
+    const isAuthorized = !!password && (() => {
+      if (!authHeader?.startsWith("Basic ")) return false;
+      const decoded = atob(authHeader.slice(6));
+      const providedPassword = decoded.split(":").slice(1).join(":");
+      return providedPassword === password;
+    })();
+
+    if (!isAuthorized) {
+      return new NextResponse("Unauthorized", {
+        status: 401,
+        headers: { "WWW-Authenticate": 'Basic realm="Dashboard"' },
+      });
+    }
+  }
+
   // Check if locale is present in request URL and matches the one in the NEXT_LOCALE cookie
   const urlLocale = request.nextUrl.locale;
   const cookieLocale = request.cookies.get("NEXT_LOCALE")?.value;
