@@ -126,7 +126,7 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = () 
                 whileHover={{ scale: 1.15 }}
                 className="flex items-center justify-center"
               >
-                <IconButton icon="x" size="icon" variant="default" onClick={resetSearch} />
+                <IconButton icon="x" size="icon" variant="default" onClick={resetSearch} type="button" />
               </motion.div>
             )}
           </AnimatePresence>
