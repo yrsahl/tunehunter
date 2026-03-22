@@ -24,7 +24,7 @@ const SongListings = () => {
 
   // Keep the URL region param in sync with the current region setting
   useEffect(() => {
-    if (!search || !router.isReady) return;
+    if (!router.isReady) return;
     if (router.getParams("region") !== region) {
       router.setParams({ region });
     }

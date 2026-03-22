@@ -10,7 +10,7 @@ import { iso1A2Code } from "@rapideditor/country-coder"; // ESM import named
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import useUserSettings from "./useUserSettings";
 
@@ -20,7 +20,10 @@ import useUserSettings from "./useUserSettings";
 
 const useRegionSettings = () => {
   const router = useRouter();
-  const [region, setRegion] = useLocalStorage("region", "de");
+  const hasStoredRegion = useRef(
+    typeof window !== "undefined" && window.localStorage.getItem("region") !== null,
+  );
+  const [region, setRegion] = useLocalStorage("region", "us");
   const { status, data: userData } = useSession();
   const loggedIn = status === "authenticated";
   const {
@@ -29,6 +32,19 @@ const useRegionSettings = () => {
   } = useUserSettings(userData?.user.id);
 
   const sortedRegions = sortRegions(CountryCodes, router.locale || "en");
+
+  // Auto-detect region from browser locale on first visit
+  useEffect(() => {
+    if (hasStoredRegion.current) return;
+    for (const locale of navigator.languages) {
+      const parts = locale.split("-");
+      const countryTag = (parts.length > 1 ? parts[parts.length - 1] : parts[0])!.toUpperCase();
+      if (isCountryCode(countryTag)) {
+        setRegion(countryTag.toLowerCase());
+        break;
+      }
+    }
+  }, []);
 
   // Set region from DB
   useEffect(() => {
