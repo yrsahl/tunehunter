@@ -36,23 +36,23 @@ const SearchProvider = ({ children }: SearchProviderProps) => {
   useEffect(() => {
     if (!router.isReady) return;
 
+    const regionUpper = searchRegionParam?.toUpperCase() ?? "";
     if (
       !!searchIdParam &&
-      !!searchRegionParam &&
-      isCountryCode(searchRegionParam.toUpperCase()) &&
+      isCountryCode(regionUpper) &&
       !!searchArtistParam &&
       !!searchTitleParam
     ) {
       const hasChanged = syncRouteSearch({
         id: searchIdParam,
-        region: searchRegionParam,
+        region: regionUpper,
         artist: searchArtistParam,
         title: searchTitleParam,
       });
 
       if (hasChanged) {
         publishSearchSubmitted(
-          { id: searchIdParam, region: searchRegionParam, artist: searchArtistParam, title: searchTitleParam },
+          { id: searchIdParam, region: regionUpper, artist: searchArtistParam, title: searchTitleParam },
           false,
         );
       }

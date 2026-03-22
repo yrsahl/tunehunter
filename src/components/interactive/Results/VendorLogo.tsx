@@ -1,4 +1,4 @@
-import { countryNamesEnglish } from "@/lib/validators";
+import { getCountryName } from "@/lib/validators";
 
 interface VendorLogoProps {
   store: string;
@@ -16,7 +16,7 @@ const VendorLogo = ({ store, region }: VendorLogoProps) => {
       <div className="hidden">
         <div className="font-bold">{store}</div>
         <div className="text-sm font-normal opacity-50">
-          {countryNamesEnglish[region.toUpperCase()]}
+          {getCountryName(region)}
         </div>
       </div>
     </div>

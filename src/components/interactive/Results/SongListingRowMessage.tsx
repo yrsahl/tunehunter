@@ -1,4 +1,4 @@
-import { countryNamesEnglish } from "@/lib/validators";
+import { getCountryName } from "@/lib/validators";
 import { motion } from "framer-motion";
 
 interface ISongListingRowMessageProps {
@@ -21,7 +21,7 @@ const SongListingRowMessage = ({ message, store, region }: ISongListingRowMessag
           <div className="hidden">
             <div className="font-bold">{store}</div>
             <div className="text-sm font-normal opacity-50">
-              {countryNamesEnglish[region.toUpperCase()]}
+              {getCountryName(region)}
             </div>
           </div>
         </div>

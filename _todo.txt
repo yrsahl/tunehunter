@@ -42,6 +42,10 @@ TrendingSettings:
 - PRO: specific region
 - Genre: <>
 
+PRO:
+- Data insight, trending per region
+- Playlist import, search
+
 Ai trending: once a day recommend something
 
 Spotify quota reached -> search our own DB -> show “Currently unavailable” and disable input
