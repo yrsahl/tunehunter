@@ -530,7 +530,7 @@ const fetchBandcampData = async ({
 
   if (!candidateUrls.length) return { error: "NO_MATCH_FOUND" };
 
-  // Visit up to 3 candidate pages and pick the best duration match
+  // Fetch up to 3 candidate pages in parallel and pick the best duration match
   const MAX_CANDIDATES = 3;
   let bestUrl: string | null = null;
   let bestPrice: string | null = null;
@@ -538,22 +538,25 @@ const fetchBandcampData = async ({
   let bestDurationMs = 0;
   let bestDelta = Infinity;
 
-  for (const url of candidateUrls.slice(0, MAX_CANDIDATES)) {
-    let trackResponse;
-    try {
-      trackResponse = await axios.get<string>(url, {
+  const fetchResults = await Promise.allSettled(
+    candidateUrls.slice(0, MAX_CANDIDATES).map(async (url) => {
+      const res = await axios.get<string>(url, {
         headers: { "User-Agent": SCRAPER_UA, "Accept-Language": getAcceptLanguage(region) },
         signal,
       });
-    } catch {
-      continue;
-    }
+      return { url, html: res.data };
+    }),
+  );
+
+  for (const result of fetchResults) {
+    if (result.status === "rejected") continue;
+    const { url, html } = result.value;
 
     // Artist check: extract from subdomain (e.g. "diedlonelyy" from diedlonelyy.bandcamp.com)
     const subdomain = new URL(url).hostname.replace(".bandcamp.com", "");
     if (!artistMatches(subdomain, artist)) continue;
 
-    const $track = cheerio.load(trackResponse.data);
+    const $track = cheerio.load(html);
     let durationMs: number | null = null;
     let trackTitle: string | null = null;
     let price: string | null = null;
