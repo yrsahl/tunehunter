@@ -26,7 +26,7 @@ export const applyFilters = (data: SearchData, searchSettings?: SearchSettings) 
 
   if (searchSettings?.minimumLengthOption && searchSettings?.minimumLengthSeconds) {
     data.tracks.items = data.tracks.items.filter((track) => {
-      return track.song.duration >= searchSettings.minimumLengthSeconds;
+      return track.song.duration >= searchSettings.minimumLengthSeconds * 1000;
     });
   }
 

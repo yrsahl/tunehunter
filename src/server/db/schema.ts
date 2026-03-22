@@ -222,6 +222,9 @@ export const songListings = pgTable(
     price: varchar("price", { length: 255 }),
     currency: varchar("currency", { length: 255 }).notNull(),
     region: varchar("region", { length: 255 }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),

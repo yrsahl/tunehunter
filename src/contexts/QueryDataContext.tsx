@@ -50,9 +50,11 @@ export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       const itunesData = await fetchItunesSearchData(query);
-      if (itunesData?.tracks?.items.length) {
+      if (itunesData) {
         const filteredData = applyFilters(itunesData, searchSettings);
-        await storeTracksInDb(filteredData.tracks.items);
+        if (filteredData.tracks.items.length) {
+          await storeTracksInDb(filteredData.tracks.items);
+        }
         setQueryData(filteredData);
       }
 
