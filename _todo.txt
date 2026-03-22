@@ -29,9 +29,9 @@ External service billing alerts (set up in each dashboard, not in app):
 [ ] Resend — watch manually (3,000 emails/month free)
 
 In-app dashboard additions:
-[ ] Track rate limiter rejections — log when Upstash throttles a vendor request (currently silent)
-[ ] Add vendor error rate to dashboard — STORE_UNREACHABLE count per vendor over time
-[ ] Note: external vs. cache ratio already tracked via songListingRequests table
+[x] Track rate limiter rejections — log when Upstash throttles a vendor request (currently silent)
+[x] Add vendor error rate to dashboard — STORE_UNREACHABLE count per vendor over time
+[x] Note: external vs. cache ratio already tracked via songListingRequests table
 
 
 

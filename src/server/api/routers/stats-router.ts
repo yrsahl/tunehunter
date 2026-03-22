@@ -4,7 +4,7 @@ import { count, eq } from "drizzle-orm";
 
 export const statsRouter = createTRPCRouter({
   getStats: publicProcedure.query(async ({ ctx }) => {
-    const [totalSearches, dbCacheHits, externalFetches, byVendor] = await Promise.all([
+    const [totalSearches, dbCacheHits, externalFetches, rateLimited, storeUnreachable, byVendor] = await Promise.all([
       // Total song searches
       ctx.db
         .select({ count: count() })
@@ -26,13 +26,27 @@ export const statsRouter = createTRPCRouter({
         .where(eq(songListingRequests.source, "external"))
         .then((r) => r[0]?.count ?? 0),
 
-      // Breakdown by vendor
+      // Rate limit rejections
+      ctx.db
+        .select({ count: count() })
+        .from(songListingRequests)
+        .where(eq(songListingRequests.source, "rate_limited"))
+        .then((r) => r[0]?.count ?? 0),
+
+      // Store unreachable errors
+      ctx.db
+        .select({ count: count() })
+        .from(songListingRequests)
+        .where(eq(songListingRequests.source, "store_unreachable"))
+        .then((r) => r[0]?.count ?? 0),
+
+      // Breakdown by vendor and source
       ctx.db
         .select({ vendor: songListingRequests.vendor, source: songListingRequests.source, count: count() })
         .from(songListingRequests)
         .groupBy(songListingRequests.vendor, songListingRequests.source),
     ]);
 
-    return { totalSearches, dbCacheHits, externalFetches, byVendor };
+    return { totalSearches, dbCacheHits, externalFetches, rateLimited, storeUnreachable, byVendor };
   }),
 });

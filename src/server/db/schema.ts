@@ -199,7 +199,7 @@ export const artistGenres = pgTable(
   }),
 );
 
-export const listingRequestSourceArray = ["db_cache", "external"] as const;
+export const listingRequestSourceArray = ["db_cache", "external", "rate_limited", "store_unreachable"] as const;
 export type ListingRequestSource = (typeof listingRequestSourceArray)[number];
 export const listingRequestSourceEnum = pgEnum("listing_request_source", listingRequestSourceArray);
 
