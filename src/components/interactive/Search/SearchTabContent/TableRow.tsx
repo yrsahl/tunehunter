@@ -58,6 +58,7 @@ const TableRow = ({
     <motion.tr
       {...fadeInAndOut(0.3)}
       className={cn("max-h-16 overflow-hidden", isSmallDevice && "cursor-pointer")}
+      whileTap={isSmallDevice ? { scale: 0.9 } : undefined}
       layout
       onClick={isSmallDevice ? () => handleSearchClick() : () => {}}
     >
