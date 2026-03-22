@@ -1,8 +1,12 @@
+import { ShieldCheck } from "lucide-react";
 import { type NextPage } from "next";
 import Link from "next/link";
-import { ShieldCheck } from "lucide-react";
 
-const sections = [
+type Section =
+  | { title: string; subsections: { heading: string; items: string[] }[] }
+  | { title: string; items: string[] };
+
+const sections: Section[] = [
   {
     title: "What we collect",
     subsections: [
@@ -65,7 +69,7 @@ const Privacy: NextPage = () => {
           <h1 className="text-2xl font-bold tracking-wide md:text-3xl">Data Privacy</h1>
         </div>
         <p className="text-sm text-foreground/60 md:text-base">
-          We believe you should know exactly what data TuneHunter stores and why.
+          You should know exactly what data TuneHunter stores and why, so here it is:
         </p>
       </div>
 
@@ -99,12 +103,12 @@ const Privacy: NextPage = () => {
               </div>
             ) : (
               <ul className="flex flex-col gap-1 pl-4">
-                {section.items!.map((item) => (
+                {section.items.map((item) => (
                   <li
                     key={item}
                     className="flex items-start gap-2 text-sm text-foreground/70 md:text-base"
                   >
-                    <span className="mt-[6px] h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                    <span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-primary md:mt-[9px]" />
                     {item}
                   </li>
                 ))}
