@@ -17,5 +17,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     db.refreshMaterializedView(trendingViewLast30Days),
   ]);
 
-  res.status(200).end();
+  res.status(200).json({ refreshed: true, at: new Date().toISOString() });
 }

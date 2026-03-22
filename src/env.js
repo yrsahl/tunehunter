@@ -33,6 +33,7 @@ export const env = createEnv({
     CRON_SECRET: z.string(),
     UPSTASH_EMAIL: z.string().email().optional(),
     UPSTASH_API_KEY: z.string().optional(),
+    VERCEL_API_TOKEN: z.string().optional(),
     AMAZON_PA_ACCESS_KEY: z.string().optional(),
     AMAZON_PA_SECRET_KEY: z.string().optional(),
     // Per-marketplace associate tags (add more as you register additional marketplaces)
@@ -89,6 +90,7 @@ export const env = createEnv({
     CRON_SECRET: process.env.CRON_SECRET,
     UPSTASH_EMAIL: process.env.UPSTASH_EMAIL,
     UPSTASH_API_KEY: process.env.UPSTASH_API_KEY,
+    VERCEL_API_TOKEN: process.env.VERCEL_API_TOKEN,
     AMAZON_PA_ACCESS_KEY: process.env.AMAZON_PA_ACCESS_KEY,
     AMAZON_PA_SECRET_KEY: process.env.AMAZON_PA_SECRET_KEY,
     AMAZON_PA_TAG_GB: process.env.AMAZON_PA_TAG_GB,

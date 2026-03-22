@@ -34,6 +34,41 @@ async function fetchUpstashCommandsThisMonth(): Promise<number | null> {
     .reduce((sum, d) => sum + (d.y ?? 0), 0);
 }
 
+async function fetchResendEmailsThisMonth(): Promise<number | null> {
+  // Resend API key is the same credential used for SMTP auth
+  const apiKey = env.EMAIL_SERVER_PASSWORD;
+  if (!apiKey?.startsWith("re_")) return null;
+
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  // Fetch up to 100 emails (newest first); enough for a low-volume transactional sender
+  const res = await fetch("https://api.resend.com/emails?limit=100", {
+    headers: { Authorization: `Bearer ${apiKey}` },
+  });
+  if (!res.ok) return null;
+
+  const data = (await res.json()) as { data?: Array<{ created_at: string }> };
+  if (!data.data) return null;
+
+  return data.data.filter((e) => new Date(e.created_at) >= startOfMonth).length;
+}
+
+async function fetchVercelBandwidthGb(): Promise<number | null> {
+  if (!env.VERCEL_API_TOKEN) return null;
+
+  const res = await fetch("https://api.vercel.com/v2/usage", {
+    headers: { Authorization: `Bearer ${env.VERCEL_API_TOKEN}` },
+  });
+  if (!res.ok) return null;
+
+  const data = (await res.json()) as { bandwidth?: { used?: number } };
+  const bytes = data.bandwidth?.used;
+  if (bytes == null) return null;
+
+  return Math.round((bytes / 1_073_741_824) * 100) / 100; // bytes → GB, 2 decimal places
+}
+
 export const statsRouter = createTRPCRouter({
   getStats: publicProcedure.query(async ({ ctx }) => {
     const [totalSearches, dbCacheHits, externalFetches, rateLimited, storeUnreachable, noMatch, trpcRateLimited, byVendor] = await Promise.all([
@@ -93,7 +128,11 @@ export const statsRouter = createTRPCRouter({
   }),
 
   getServiceUsage: publicProcedure.query(async () => {
-    const upstashCommandsThisMonth = await fetchUpstashCommandsThisMonth();
-    return { upstashCommandsThisMonth };
+    const [upstashCommandsThisMonth, vercelBandwidthUsedGb, resendEmailsThisMonth] = await Promise.all([
+      fetchUpstashCommandsThisMonth(),
+      fetchVercelBandwidthGb(),
+      fetchResendEmailsThisMonth(),
+    ]);
+    return { upstashCommandsThisMonth, vercelBandwidthUsedGb, resendEmailsThisMonth };
   }),
 });

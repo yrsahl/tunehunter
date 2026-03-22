@@ -155,14 +155,25 @@ const Dashboard: NextPage = () => {
             <tr className="border-b border-primary/10 text-left text-muted-foreground">
               <th className="pb-2 font-normal">Service</th>
               <th className="pb-2 font-normal">Purpose</th>
-              <th className="pb-2 font-normal">This month</th>
               <th className="pb-2 font-normal">Free tier limit</th>
+              <th className="pb-2 font-normal">This month</th>
               <th className="pb-2 font-normal" />
             </tr>
           </thead>
           <tbody>
             {(
               [
+                {
+                  name: "Vercel",
+                  description: "Hosting & deployments",
+                  limit: "100 GB bandwidth, 10s function timeout",
+                  usageLabel: "bandwidth",
+                  usageValue:
+                    serviceUsage?.vercelBandwidthUsedGb != null
+                      ? `${serviceUsage.vercelBandwidthUsedGb} GB / 100 GB`
+                      : null,
+                  url: "https://vercel.com/dashboard",
+                },
                 {
                   name: "Neon",
                   description: "PostgreSQL database",
@@ -183,19 +194,14 @@ const Dashboard: NextPage = () => {
                   url: "https://console.upstash.com",
                 },
                 {
-                  name: "Vercel",
-                  description: "Hosting & deployments",
-                  limit: "100 GB bandwidth, 10s function timeout",
-                  usageLabel: "bandwidth",
-                  usageValue: null,
-                  url: "https://vercel.com/dashboard",
-                },
-                {
                   name: "Resend",
                   description: "Transactional email",
                   limit: "3,000 emails/month, 100/day",
                   usageLabel: "emails",
-                  usageValue: null,
+                  usageValue:
+                    serviceUsage?.resendEmailsThisMonth != null
+                      ? `${serviceUsage.resendEmailsThisMonth.toLocaleString()} / 3,000`
+                      : null,
                   url: "https://resend.com/overview",
                 },
               ] satisfies ServiceRow[]
@@ -203,6 +209,7 @@ const Dashboard: NextPage = () => {
               <tr key={s.name} className="border-b border-primary/5">
                 <td className="py-3 font-medium">{s.name}</td>
                 <td className="py-3 text-muted-foreground">{s.description}</td>
+                <td className="py-3 text-muted-foreground">{s.limit}</td>
                 <td className="py-3">
                   {s.usageValue != null ? (
                     <span>{s.usageValue}</span>
@@ -210,7 +217,6 @@ const Dashboard: NextPage = () => {
                     <span className="text-muted-foreground">—</span>
                   )}
                 </td>
-                <td className="py-3 text-muted-foreground">{s.limit}</td>
                 <td className="py-3">
                   <a
                     href={s.url}
