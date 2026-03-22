@@ -15,6 +15,7 @@ import { quicksand } from "@/pages/layout";
 import { slideInAndOutFromAbove } from "@/styles/animations";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { useState } from "react";
 
 const InfoButton = () => {
@@ -201,6 +202,22 @@ const InfoButton = () => {
                   </div>
                 </div>
               </div> */}
+              <div className="flex justify-center gap-4">
+                <Link
+                  href="/privacy"
+                  className="text-xs text-foreground/40 underline underline-offset-4 hover:text-foreground/60"
+                  onClick={() => setInfoFrameOpen(false)}
+                >
+                  Data Privacy
+                </Link>
+                {/* <Link
+                  href="/imprint"
+                  className="text-xs text-foreground/40 underline underline-offset-4 hover:text-foreground/60"
+                  onClick={() => setInfoFrameOpen(false)}
+                >
+                  Imprint
+                </Link> */}
+              </div>
             </div>
           </SheetDescription>
         </SheetHeader>
