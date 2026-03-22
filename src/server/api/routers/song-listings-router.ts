@@ -23,22 +23,28 @@ export const songListingsRouter = createTRPCRouter({
     if (!validatedFields.success) return { error: "INVALID_FIELDS" };
     const { vendor, songId, region, duration, title, artist } = input;
 
-    // Get vendor id
-    const vendorMetaData = await ctx.db.query.songVendors.findFirst({
-      where: (data, { eq }) => eq(data.name, vendor),
-    });
-    const vendorId = vendorMetaData?.id;
-    if (!vendorId) return { error: "VENDOR_NOT_FOUND" };
+    // Round 1: vendor lookup + song fetch in parallel (both only need input fields)
+    const [vendorMetaData, songRecord] = await Promise.all([
+      ctx.db.query.songVendors.findFirst({ where: (data, { eq }) => eq(data.name, vendor) }),
+      ctx.db.query.songs.findFirst({ where: (data, { eq }) => eq(data.id, songId) }),
+    ]);
+    if (!vendorMetaData?.id) return { error: "VENDOR_NOT_FOUND" };
+    const vendorId = vendorMetaData.id;
+
+    // Round 2: listing cache + miss cache in parallel (both need vendorId)
+    const [dbListing, dbMiss] = await Promise.all([
+      ctx.db.query.songListings.findFirst({
+        where: (data, { eq, and }) =>
+          and(eq(data.vendorId, vendorId), eq(data.songId, songId), eq(data.region, region)),
+        with: { songVendor: true, song: true },
+      }),
+      ctx.db.query.songListingMisses.findFirst({
+        where: (data, { eq, and }) =>
+          and(eq(data.vendorId, vendorId), eq(data.songId, songId), eq(data.region, region)),
+      }),
+    ]);
 
     // 1. Try DB first
-    const dbListing = await ctx.db.query.songListings.findFirst({
-      where: (data, { eq, and }) =>
-        and(eq(data.vendorId, vendorId), eq(data.songId, input.songId), eq(data.region, region)),
-      with: {
-        songVendor: true,
-        song: true,
-      },
-    });
     const isStale = dbListing && Date.now() - dbListing.updatedAt.getTime() > LISTING_TTL_MS;
     if (dbListing && !isStale) {
       await ctx.db.insert(songListingRequests).values({ songId, vendor, source: "db_cache" });
@@ -46,10 +52,6 @@ export const songListingsRouter = createTRPCRouter({
     }
 
     // Check cached "not found" result
-    const dbMiss = await ctx.db.query.songListingMisses.findFirst({
-      where: (data, { eq, and }) =>
-        and(eq(data.vendorId, vendorId), eq(data.songId, songId), eq(data.region, region)),
-    });
     const isMissStale = dbMiss && Date.now() - dbMiss.checkedAt.getTime() > MISS_TTL_MS;
     if (dbMiss && !isMissStale) {
       await ctx.db.insert(songListingRequests).values({ songId, vendor, source: "db_cache" });
@@ -70,7 +72,7 @@ export const songListingsRouter = createTRPCRouter({
     }
     await ctx.db.insert(songListingRequests).values({ songId, vendor, source: "external" });
     if (vendorListing.data) {
-      await ctx.db
+      const [upserted] = await ctx.db
         .insert(songListings)
         .values(vendorListing.data)
         .onConflictDoUpdate({
@@ -82,17 +84,12 @@ export const songListingsRouter = createTRPCRouter({
             duration: vendorListing.data.duration,
             updatedAt: new Date(),
           },
-        });
-
-      const dbListing = await ctx.db.query.songListings.findFirst({
-        where: (data, { eq, and }) =>
-          and(eq(data.vendorId, vendorId), eq(data.songId, input.songId), eq(data.region, region)),
-        with: {
-          songVendor: true,
-          song: true,
-        },
-      });
-      if (dbListing) return { data: dbListing };
+        })
+        .returning();
+      // Construct the response from already-fetched relations — no extra round-trip needed
+      if (upserted && songRecord) {
+        return { data: { ...upserted, songVendor: vendorMetaData, song: songRecord } };
+      }
     }
 
     // Cache the "not found" result so we don't re-hit the vendor within the TTL

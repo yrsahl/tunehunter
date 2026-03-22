@@ -22,7 +22,7 @@ CRITICAL:
 
 HIGH:
 [x] Bandcamp scraping: 3 sequential HTTP calls with 8s timeout each = 24s worst case — consider parallelising candidate URL fetches
-[ ] song-listings-router: 4 sequential DB queries per getSongListing — combine vendor lookup + cache check, remove duplicate re-query after upsert
+[x] song-listings-router: 4 sequential DB queries per getSongListing — combine vendor lookup + cache check, remove duplicate re-query after upsert
 [ ] Rate limiter is global, not per-user — a single user can consume the quota for everyone
 [ ] Set up cron job for materialized view refresh instead of on-demand per request (already noted in schema.ts, needs Neon paid plan or external cron)
 
