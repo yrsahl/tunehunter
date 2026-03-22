@@ -145,8 +145,6 @@ export const songRouter = createTRPCRouter({
     }),
 
   getTrendingSongs: publicProcedure.query<TrendingTracks>(async ({ ctx }) => {
-    await ctx.db.refreshMaterializedView(trendingViewToday);
-
     // Check if cache is still valid
     const currentTime = Date.now();
     if (cachedTrendingSongs && lastRefreshTime && currentTime - lastRefreshTime < CACHE_DURATION) {
