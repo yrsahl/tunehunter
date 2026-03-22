@@ -29,7 +29,7 @@ HIGH:
 MEDIUM:
 [ ] Set maxDuration in next.config.mjs to avoid Vercel timeout on slow Bandcamp scrapes + view refreshes
 [ ] Add tRPC-level rate limiting (currently only vendor API calls are rate limited)
-[ ] account-router: remove duplicate DB query after token update
+[x] account-router: remove duplicate DB query after token update
 [ ] user-activity-router: complex join with no index on (userId, type) — add index and review join complexity
 
 PRE-LAUNCH:

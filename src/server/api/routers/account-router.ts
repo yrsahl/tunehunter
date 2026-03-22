@@ -19,23 +19,16 @@ export const accountRouter = createTRPCRouter({
 
       if (account === undefined) return { error: "Account not found" };
 
-      // Update token if expired
-      if (account?.expires_at && account?.refresh_token && Date.now() / 1000 > account.expires_at) {
+      // Update token if expired, and patch the in-memory account to avoid a re-query
+      if (account.expires_at && account.refresh_token && Date.now() / 1000 > account.expires_at) {
         const { access_token, expires_at } = await requestNewAccessToken(account.refresh_token);
         await db
           .update(accounts)
           .set({ access_token, expires_at })
           .where(eq(accounts.userId, userId));
+        return { data: { ...account, access_token, expires_at } };
       }
 
-      // Return account
-      const accountUpdated = await ctx.db.query.accounts.findFirst({
-        where: (accounts, { eq, and }) =>
-          and(eq(accounts.userId, userId), eq(accounts.provider, "spotify")),
-      });
-
-      if (accountUpdated === undefined) return { error: "Account not found after update" };
-
-      return { data: accountUpdated };
+      return { data: account };
     }),
 });
