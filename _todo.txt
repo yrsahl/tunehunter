@@ -3,7 +3,48 @@
 
 ---- CORE
 
-Backend setup problematic for many users?
+Spotify callback not working
+
+
+---- SCALABILITY (from audit)
+
+CRITICAL:
+[ ] Enable Neon connection pooling — switch DATABASE_URL to pooled endpoint (-pooler hostname) from Neon dashboard
+[ ] Add missing DB indexes:
+    - userActivities: (userId), (songId), (type), composite (userId, type)
+    - songListings: (vendorId), (region)
+    - songListingMisses: same as songListings
+    - songListingRequests: (vendor), (source)
+[ ] Move trending songs cache from in-memory to Upstash Redis (already configured) to avoid per-instance cache and stampede on view refresh
+
+HIGH:
+[ ] Bandcamp scraping: 3 sequential HTTP calls with 8s timeout each = 24s worst case — consider parallelising candidate URL fetches
+[ ] song-listings-router: 4 sequential DB queries per getSongListing — combine vendor lookup + cache check, remove duplicate re-query after upsert
+[ ] Rate limiter is global, not per-user — a single user can consume the quota for everyone
+[ ] Set up cron job for materialized view refresh instead of on-demand per request (already noted in schema.ts, needs Neon paid plan or external cron)
+
+MEDIUM:
+[ ] Set maxDuration in next.config.mjs to avoid Vercel timeout on slow Bandcamp scrapes + view refreshes
+[ ] Add tRPC-level rate limiting (currently only vendor API calls are rate limited)
+[ ] account-router: remove duplicate DB query after token update
+[ ] user-activity-router: complex join with no index on (userId, type) — add index and review join complexity
+
+PRE-LAUNCH:
+[ ] Fill in imprint placeholders: Gewerbename, full name, address, Steuernummer, Umsatzsteuer-ID
+[ ] Uncomment Imprint link in InfoButton.tsx once imprint is filled out
+
+---- MONITORING
+
+External service billing alerts (set up in each dashboard, not in app):
+[ ] Upstash — set alert on daily commands (free tier: 10k/day, 256MB storage)
+[ ] Neon — set billing alert on compute hours and storage
+[ ] Vercel — set billing alert on function invocations and bandwidth
+[ ] Resend — watch manually (3,000 emails/month free)
+
+In-app dashboard additions:
+[ ] Track rate limiter rejections — log when Upstash throttles a vendor request (currently silent)
+[ ] Add vendor error rate to dashboard — STORE_UNREACHABLE count per vendor over time
+[ ] Note: external vs. cache ratio already tracked via songListingRequests table
 
 
 
