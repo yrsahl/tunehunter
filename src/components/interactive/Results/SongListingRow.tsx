@@ -62,7 +62,7 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
     window.open(withAffiliateTag(url), "_blank");
 
     // Add activity
-    addUserActivity.mutateAsync({ region, songId, type: "store_visit" });
+    addUserActivity.mutate({ region, songId, type: "store_visit" });
   };
 
   return (

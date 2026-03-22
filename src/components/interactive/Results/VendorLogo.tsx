@@ -10,7 +10,7 @@ const VendorLogo = ({ store, region }: VendorLogoProps) => {
     <div className="flex items-center space-x-5">
       <div className="avatar">
         <div className="mask mask-squircle h-10 w-10 sm:h-12 sm:w-12">
-          <img src={`logos/${store.toLowerCase()}.svg`} alt="Avatar Tailwind CSS Component" />
+          <img src={`logos/${store.toLowerCase()}.svg`} alt={`${store} logo`} />
         </div>
       </div>
       <div className="hidden">

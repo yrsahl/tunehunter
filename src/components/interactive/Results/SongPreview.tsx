@@ -86,7 +86,7 @@ function SongPreview({ trackData, isLoading }: ISongPreviewProps) {
                       </div>
                     }
                   >
-                    <SpotifyPlayIcon spotifyId={spotifyId!!} />
+                    <SpotifyPlayIcon spotifyId={spotifyId!} />
                   </ConditionalTooltip>
                   <ConditionalTooltip
                     active={loggedIn}
