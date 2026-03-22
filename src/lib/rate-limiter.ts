@@ -1,10 +1,5 @@
 import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis";
-
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL!,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-});
+import { redis } from "./redis";
 
 // Sliding window rate limits — global per vendor, not per user.
 // Bandcamp: up to 4 outbound requests per lookup (1 search + 3 track pages),

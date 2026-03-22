@@ -104,16 +104,25 @@ export type UserActivityType = (typeof userActivityTypes)[number];
 export const activityTypeEnum = pgEnum("activity_type", userActivityTypes);
 
 // What people are searching or buying
-export const userActivities = pgTable("userActivity", {
-  id: serial("id").primaryKey(),
-  userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
-  songId: varchar("song_id", { length: 255 }).references(() => songs.id, { onDelete: "cascade" }),
-  type: activityTypeEnum().notNull(),
-  region: varchar("region", { length: 255 }).notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .default(sql`CURRENT_TIMESTAMP`)
-    .notNull(),
-});
+export const userActivities = pgTable(
+  "userActivity",
+  {
+    id: serial("id").primaryKey(),
+    userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
+    songId: varchar("song_id", { length: 255 }).references(() => songs.id, { onDelete: "cascade" }),
+    type: activityTypeEnum().notNull(),
+    region: varchar("region", { length: 255 }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => ({
+    userIdIdx: index("userActivity_userId_idx").on(table.userId),
+    songIdIdx: index("userActivity_songId_idx").on(table.songId),
+    typeIdx: index("userActivity_type_idx").on(table.type),
+    userIdTypeIdx: index("userActivity_userId_type_idx").on(table.userId, table.type),
+  }),
+);
 
 export const userActivitiesRelations = relations(userActivities, ({ one }) => ({
   user: one(users, {
@@ -194,15 +203,22 @@ export const listingRequestSourceArray = ["db_cache", "external"] as const;
 export type ListingRequestSource = (typeof listingRequestSourceArray)[number];
 export const listingRequestSourceEnum = pgEnum("listing_request_source", listingRequestSourceArray);
 
-export const songListingRequests = pgTable("songListingRequest", {
-  id: serial("id").primaryKey(),
-  songId: varchar("song_id", { length: 255 }).references(() => songs.id, { onDelete: "set null" }),
-  vendor: varchar("vendor", { length: 255 }).notNull(),
-  source: listingRequestSourceEnum().notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .default(sql`CURRENT_TIMESTAMP`)
-    .notNull(),
-});
+export const songListingRequests = pgTable(
+  "songListingRequest",
+  {
+    id: serial("id").primaryKey(),
+    songId: varchar("song_id", { length: 255 }).references(() => songs.id, { onDelete: "set null" }),
+    vendor: varchar("vendor", { length: 255 }).notNull(),
+    source: listingRequestSourceEnum().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => ({
+    vendorIdx: index("songListingRequest_vendor_idx").on(table.vendor),
+    sourceIdx: index("songListingRequest_source_idx").on(table.source),
+  }),
+);
 
 export const songVendorArray = ["itunes", "bandcamp", "beatport", "amazon"] as const;
 export type SongVendorType = (typeof songVendorArray)[number];
@@ -245,6 +261,8 @@ export const songListings = pgTable(
   },
   (table) => ({
     compoundKey: primaryKey({ columns: [table.songId, table.vendorId, table.region] }),
+    vendorIdIdx: index("songListing_vendorId_idx").on(table.vendorId),
+    regionIdx: index("songListing_region_idx").on(table.region),
   }),
 );
 
@@ -265,6 +283,8 @@ export const songListingMisses = pgTable(
   },
   (table) => ({
     compoundKey: primaryKey({ columns: [table.songId, table.vendorId, table.region] }),
+    vendorIdIdx: index("songListingMiss_vendorId_idx").on(table.vendorId),
+    regionIdx: index("songListingMiss_region_idx").on(table.region),
   }),
 );
 
