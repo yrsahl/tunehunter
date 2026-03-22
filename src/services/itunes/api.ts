@@ -32,9 +32,34 @@ const DURATION_WINDOW_MS = 3000;
 
 const FETCH_TIMEOUT_MS = 8_000;
 
-export const fetchItunesTrack = async (query: string, duration: number): Promise<Track | null> => {
+function tokenize(text: string): string[] {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s]/g, " ")
+    .split(/\s+/)
+    .filter((t) => t.length > 1);
+}
+
+function titleMatches(resultTitle: string, searchTitle: string): boolean {
+  const searchTokens = tokenize(searchTitle);
+  if (searchTokens.length === 0) return true;
+  const resultSet = new Set(tokenize(resultTitle));
+  const matched = searchTokens.filter((t) => resultSet.has(t)).length;
+  return matched / searchTokens.length >= 0.75;
+}
+
+function artistMatches(resultArtist: string, searchArtist: string): boolean {
+  const resultNorm = resultArtist.toLowerCase().replace(/[^\w]/g, "");
+  return tokenize(searchArtist).some((t) => resultNorm.includes(t));
+}
+
+export const fetchItunesTrack = async (
+  title: string,
+  artist: string,
+  duration: number,
+): Promise<Track | null> => {
   const params = new URLSearchParams({
-    term: query,
+    term: `${artist} ${title}`,
     media: "music",
     entity: "song",
     limit: SONG_LIMIT.toString(),
@@ -51,7 +76,9 @@ export const fetchItunesTrack = async (query: string, duration: number): Promise
     (r) =>
       r.wrapperType === "track" &&
       r.kind === "song" &&
-      Math.abs(r.trackTimeMillis - duration) <= DURATION_WINDOW_MS,
+      Math.abs(r.trackTimeMillis - duration) <= DURATION_WINDOW_MS &&
+      titleMatches(r.trackName, title) &&
+      artistMatches(r.artistName, artist),
   );
 
   if (candidates.length === 0) return null;

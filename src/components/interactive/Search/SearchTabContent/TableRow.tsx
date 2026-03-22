@@ -41,10 +41,9 @@ const TableRow = ({
       resolvedTrack = track as Track;
     } else {
       const artist = artists.map((a) => a.name).join(", ");
-      const query = `${artist} - ${song.title}`;
-      const itunesTrack = await fetchItunesTrack(query, song.duration);
+      const itunesTrack = await fetchItunesTrack(song.title, artist, song.duration);
       if (!itunesTrack) {
-        toast.error("Song not found");
+        toast.error("No results for this song.");
         return;
       }
       await storeTracksInDb([itunesTrack]);
