@@ -4,7 +4,12 @@
 ---- CORE
 
 Spotify callback not working
+E-mail templates for login
+Edit picture functionality (s3 bucket)
+Neon DB refresh materialized view every 15 minutes via cron job
+Stresstest + Monitoring
 
+Create a logo
 
 ---- SCALABILITY (from audit)
 
@@ -59,110 +64,24 @@ In-app dashboard additions:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 TrendingSettings: 
 - Local / global
 - PRO: specific region
 - Genre: <>
 
-
 Ai trending: once a day recommend something
 
-
-Useract
-- region on search
-
-Create a logo
-
 Spotify quota reached -> search our own DB -> show “Currently unavailable” and disable input
-
-Thoughts
-- Set results to 12 or 24
-- Filters: club, extended, original
-- Filter results: one search for every filter -> interweave results
-- Min length: recursively fill up (hit the next endpoint for more songs until enough)
-
-
-Paid plan
-- Account creation: Free / Pro
-- DB user status field: level Basic - Pro
-
-Settings
-- Region
-- PRO settings
-    - Set filters?
-    - Set minimum length?
-
-Solidify auth:
-- E-mail templates
-- Email login with token
-
-Solidify settings:
-- Edit picture functionality (s3 bucket)
-- Edit user name functionality (double-click)
-
-Add:
-- Trending/History/Wishlist functionality
-- Responsive Layout
-- Sidebar: Legal, Info, Other products
 
 Fix:
 - Layout shift callback page
 - Access token expiring on old tabs
 
-
-
-
----- THEN
-Stresstest + Monitoring
-
-SearchResults: load more after initial 30
-
-Add (cypress) tests
-SENTRY & Upstash
-
-Add rate limiting to search with: 
-- const { success } = ratelimit.limit(user.id);
-
 Pay functionality: Stripe 
 - Supporter
 - Extra features
 
-Neon DB refresh materialized view every 15 minutes via cron job
 
-
-
----- Fork
-Fit into eco-system
-- Remove page-side login and replace with SSO
-- Keep settings
-
-
------ Qs
-! and enabled pattern in useQuery (to figure out a way to conditionally query for user settings)
 
 ----- Infra
 Host: Vercel
