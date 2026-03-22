@@ -1,0 +1,15 @@
+name: Refresh trending views
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call refresh endpoint
+        run: |
+          curl --fail -X GET \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "https://tunehunter.app/api/cron/refresh-trending"

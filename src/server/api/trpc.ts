@@ -57,9 +57,13 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   // Get the session from the server using the getServerSession wrapper function
   const session = await getServerAuthSession({ req, res });
 
-  return createInnerTRPCContext({
-    session,
-  });
+  const forwarded = req.headers["x-forwarded-for"];
+  const ip = (typeof forwarded === "string" ? forwarded.split(",")[0] : req.socket.remoteAddress) ?? "unknown";
+
+  return {
+    ...createInnerTRPCContext({ session }),
+    ip,
+  };
 };
 
 /**

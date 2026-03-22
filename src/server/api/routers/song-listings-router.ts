@@ -1,4 +1,5 @@
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { vendorRateLimiters } from "@/lib/rate-limiter";
 import { songListingMisses, songListingRequests, songListings } from "@/server/db/schema";
 import { fetchVendorData } from "@/services/vendors";
 import { SongListingSchema } from "../schemas/song-listings-schemas";
@@ -58,7 +59,12 @@ export const songListingsRouter = createTRPCRouter({
       return { error: "NO_DATA_FOUND" };
     }
 
-    // 2. Hit vendor API, store or refresh results
+    // 2. Rate limit per user (or IP for unauthenticated requests)
+    const identifier = ctx.session?.user?.id ?? ctx.ip;
+    const { success } = await vendorRateLimiters[vendor]!.limit(identifier);
+    if (!success) return { error: "RATE_LIMITED" as const };
+
+    // 3. Hit vendor API, store or refresh results
     let vendorListing;
     try {
       vendorListing = await fetchVendorData({

@@ -15,14 +15,6 @@ import { desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { AddSearchQueriesSchema, AddSongSchema } from "../schemas/song-schemas";
 
-// Cache for trending songs, eventually replace this with Neon Cron Job
-let cachedTrendingSongs: {
-  today: TrendingTrack[];
-  last7Days: TrendingTrack[];
-  last30Days: TrendingTrack[];
-} | null = null;
-let lastRefreshTime: number | null = null;
-const CACHE_DURATION = 15 * 60 * 1000;
 
 export const songRouter = createTRPCRouter({
   // ********* Queries *********
@@ -145,18 +137,6 @@ export const songRouter = createTRPCRouter({
     }),
 
   getTrendingSongs: publicProcedure.query<TrendingTracks>(async ({ ctx }) => {
-    // Check if cache is still valid
-    const currentTime = Date.now();
-    if (cachedTrendingSongs && lastRefreshTime && currentTime - lastRefreshTime < CACHE_DURATION) {
-      return cachedTrendingSongs;
-    }
-
-    // Else refresh view and return new results
-    await Promise.all([
-      ctx.db.refreshMaterializedView(trendingViewToday),
-      ctx.db.refreshMaterializedView(trendingViewLast7Days),
-      ctx.db.refreshMaterializedView(trendingViewLast30Days),
-    ]);
 
     const trendingSongsToday: TrendingTrack[] = await ctx.db
       .select({
@@ -248,17 +228,11 @@ export const songRouter = createTRPCRouter({
       .orderBy(desc(trendingViewLast30Days.searchCount))
       .limit(30);
 
-    // Update cache
-    const trendingSongs = {
+    return {
       today: trendingSongsToday,
       last7Days: trendingSongsLast7Days,
       last30Days: trendingSongsLast30Days,
     };
-    cachedTrendingSongs = trendingSongs;
-    lastRefreshTime = currentTime;
-
-    // Return
-    return trendingSongs;
   }),
 
   // ********* Mutations *********

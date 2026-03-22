@@ -16,7 +16,7 @@ export const SongListingSchema = z.object({
 // Interfaces
 export type SongListing = InferSelectModel<typeof songListings>;
 export type NewSongListing = InferInsertModel<typeof songListings>;
-export type SongListingError = "INVALID_FIELDS" | "VENDOR_NOT_FOUND" | "NO_DATA_FOUND";
+export type SongListingError = "INVALID_FIELDS" | "VENDOR_NOT_FOUND" | "NO_DATA_FOUND" | "STORE_UNREACHABLE" | "RATE_LIMITED";
 export type SongListingResponse = SongListingSuccessResponse | SongListingErrorResponse;
 interface SongListingSuccessResponse {
   data: SongListingWithRelations;

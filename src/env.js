@@ -31,6 +31,7 @@ export const env = createEnv({
     // Amazon Product Advertising API (PA API 5.0)
     // Credentials available once 3 qualified purchases are made in Associates portal.
     DASHBOARD_PASSWORD: z.string(),
+    CRON_SECRET: z.string(),
     AMAZON_PA_ACCESS_KEY: z.string().optional(),
     AMAZON_PA_SECRET_KEY: z.string().optional(),
     // Per-marketplace associate tags (add more as you register additional marketplaces)
@@ -85,6 +86,7 @@ export const env = createEnv({
     SPOTIFY_CLIENT_ID: process.env.SPOTIFY_CLIENT_ID,
     SPOTIFY_CLIENT_SECRET: process.env.SPOTIFY_CLIENT_SECRET,
     DASHBOARD_PASSWORD: process.env.DASHBOARD_PASSWORD,
+    CRON_SECRET: process.env.CRON_SECRET,
     AMAZON_PA_ACCESS_KEY: process.env.AMAZON_PA_ACCESS_KEY,
     AMAZON_PA_SECRET_KEY: process.env.AMAZON_PA_SECRET_KEY,
     AMAZON_PA_TAG_GB: process.env.AMAZON_PA_TAG_GB,

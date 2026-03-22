@@ -13,8 +13,8 @@ Create a logo
 
 
 HIGH:
-[ ] Rate limiter is global, not per-user — a single user can consume the quota for everyone
-[ ] Set up cron job for materialized view refresh instead of on-demand per request (already noted in schema.ts, needs Neon paid plan or external cron)
+[x] Rate limiter is global, not per-user — a single user can consume the quota for everyone
+[x] Set up cron job for materialized view refresh instead of on-demand per request (already noted in schema.ts, needs Neon paid plan or external cron)
 
 MEDIUM:
 [ ] Set maxDuration in next.config.mjs to avoid Vercel timeout on slow Bandcamp scrapes + view refreshes
