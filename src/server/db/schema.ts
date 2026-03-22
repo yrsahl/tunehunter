@@ -190,6 +190,20 @@ export const artistGenres = pgTable(
   }),
 );
 
+export const listingRequestSourceArray = ["db_cache", "external"] as const;
+export type ListingRequestSource = (typeof listingRequestSourceArray)[number];
+export const listingRequestSourceEnum = pgEnum("listing_request_source", listingRequestSourceArray);
+
+export const songListingRequests = pgTable("songListingRequest", {
+  id: serial("id").primaryKey(),
+  songId: varchar("song_id", { length: 255 }).references(() => songs.id, { onDelete: "set null" }),
+  vendor: varchar("vendor", { length: 255 }).notNull(),
+  source: listingRequestSourceEnum().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+});
+
 export const songVendorArray = ["itunes", "bandcamp", "beatport", "amazon"] as const;
 export type SongVendorType = (typeof songVendorArray)[number];
 export const songVendorTypeEnum = pgEnum("song_vendor_type", songVendorArray);
@@ -226,6 +240,26 @@ export const songListings = pgTable(
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => ({
+    compoundKey: primaryKey({ columns: [table.songId, table.vendorId, table.region] }),
+  }),
+);
+
+// Cached "not found" results — avoids re-hitting vendor APIs within the TTL window
+export const songListingMisses = pgTable(
+  "songListingMiss",
+  {
+    songId: varchar("song_id", { length: 255 })
+      .notNull()
+      .references(() => songs.id, { onDelete: "cascade" }),
+    vendorId: integer("vendor_id")
+      .notNull()
+      .references(() => songVendors.id),
+    region: varchar("region", { length: 255 }).notNull(),
+    checkedAt: timestamp("checked_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
   },

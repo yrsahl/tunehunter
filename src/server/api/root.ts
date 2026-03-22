@@ -5,6 +5,7 @@ import { clientCredentialsRouter } from "./routers/client-credentials-router";
 import { songArtistRouter } from "./routers/song-artist-router";
 import { songListingsRouter } from "./routers/song-listings-router";
 import { songRouter } from "./routers/song-router";
+import { statsRouter } from "./routers/stats-router";
 import { userActivitiesRouter } from "./routers/user-activity-router";
 import { userRouter } from "./routers/user-router";
 
@@ -22,6 +23,7 @@ export const appRouter = createTRPCRouter({
   songListings: songListingsRouter,
   clientCredentials: clientCredentialsRouter,
   userActivities: userActivitiesRouter,
+  stats: statsRouter,
 });
 
 // export type definition of API

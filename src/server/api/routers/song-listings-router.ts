@@ -1,9 +1,10 @@
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { songListings } from "@/server/db/schema";
+import { songListingMisses, songListingRequests, songListings } from "@/server/db/schema";
 import { fetchVendorData } from "@/services/vendors";
 import { SongListingSchema } from "../schemas/song-listings-schemas";
 
 const LISTING_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
+const MISS_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 /**
  *
@@ -40,7 +41,19 @@ export const songListingsRouter = createTRPCRouter({
     });
     const isStale = dbListing && Date.now() - dbListing.updatedAt.getTime() > LISTING_TTL_MS;
     if (dbListing && !isStale) {
+      await ctx.db.insert(songListingRequests).values({ songId, vendor, source: "db_cache" });
       return { data: dbListing };
+    }
+
+    // Check cached "not found" result
+    const dbMiss = await ctx.db.query.songListingMisses.findFirst({
+      where: (data, { eq, and }) =>
+        and(eq(data.vendorId, vendorId), eq(data.songId, songId), eq(data.region, region)),
+    });
+    const isMissStale = dbMiss && Date.now() - dbMiss.checkedAt.getTime() > MISS_TTL_MS;
+    if (dbMiss && !isMissStale) {
+      await ctx.db.insert(songListingRequests).values({ songId, vendor, source: "db_cache" });
+      return { error: "NO_DATA_FOUND" };
     }
 
     // 2. Hit vendor API, store or refresh results
@@ -55,6 +68,7 @@ export const songListingsRouter = createTRPCRouter({
     } catch {
       return { error: "STORE_UNREACHABLE" };
     }
+    await ctx.db.insert(songListingRequests).values({ songId, vendor, source: "external" });
     if (vendorListing.data) {
       await ctx.db
         .insert(songListings)
@@ -81,9 +95,15 @@ export const songListingsRouter = createTRPCRouter({
       if (dbListing) return { data: dbListing };
     }
 
-    // Return error if no data from vendor API
-    return {
-      error: "NO_DATA_FOUND",
-    };
+    // Cache the "not found" result so we don't re-hit the vendor within the TTL
+    await ctx.db
+      .insert(songListingMisses)
+      .values({ songId, vendorId, region })
+      .onConflictDoUpdate({
+        target: [songListingMisses.songId, songListingMisses.vendorId, songListingMisses.region],
+        set: { checkedAt: new Date() },
+      });
+
+    return { error: "NO_DATA_FOUND" };
   }),
 });
