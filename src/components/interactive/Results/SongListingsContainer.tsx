@@ -2,7 +2,7 @@ import { useSongListingContext } from "@/contexts/SongListingContext";
 import useDeviceSize from "@/hooks/useDeviceSize";
 import { CountryCode } from "@/lib/validators";
 import { songVendorArray } from "@/server/db/schema";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import SongPreview from "./SongPreview";
 const SongListingRow = dynamic(() => import("./SongListingRow"), {
@@ -44,19 +44,13 @@ const SongListingsContainer = ({ region }: ISongListingsProps) => {
             ))}
           </tbody>
         </table>
-        <AnimatePresence>
-          {hasLosslessOption && (
-            <motion.p
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 8 }}
-              transition={{ duration: 0.4 }}
-              className="mx-auto w-[83%] text-center text-xs text-foreground/50"
-            >
-              *Uncompressed and/or lossless options also available
-            </motion.p>
-          )}
-        </AnimatePresence>
+        <motion.p
+          animate={{ opacity: hasLosslessOption ? 1 : 0 }}
+          transition={{ duration: 0.4 }}
+          className="mx-auto w-[83%] text-center text-xs text-foreground/50"
+        >
+          *Uncompressed and/or lossless options also available
+        </motion.p>
       </div>
     </div>
   );
