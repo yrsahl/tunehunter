@@ -8,7 +8,7 @@ import {
   GetUserActivitySchema,
   RemoveUserActivitySchema,
 } from "../schemas/user-activity-schemas";
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, rateLimitedProcedure } from "../trpc";
 
 export const userActivitiesRouter = createTRPCRouter({
   // ********* Queries *********
@@ -33,7 +33,7 @@ export const userActivitiesRouter = createTRPCRouter({
 
   // ********* Mutations *********
   // Guests and registered users may add search activities
-  addSearchActivity: publicProcedure
+  addSearchActivity: rateLimitedProcedure
     .input(z.object({ songId: z.string(), region: z.string() }))
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(userActivities).values({
@@ -45,7 +45,7 @@ export const userActivitiesRouter = createTRPCRouter({
       });
     }),
 
-  addUserActivity: publicProcedure
+  addUserActivity: rateLimitedProcedure
     .input(AddUserActivitySchema)
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(userActivities).values({

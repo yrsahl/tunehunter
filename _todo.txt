@@ -3,7 +3,6 @@
 Spotify callback not working
 E-mail templates for login
 Edit picture functionality (s3 bucket)
-Neon DB refresh materialized view every 15 minutes via cron job
 Stresstest + Monitoring
 
 Create a logo
@@ -13,7 +12,7 @@ Create a logo
 
 MEDIUM:
 [ ] Set maxDuration in next.config.mjs to avoid Vercel timeout on slow Bandcamp scrapes + view refreshes (max. API duration is 10s on Hobby plan, 15s on Pro)
-[ ] Add tRPC-level rate limiting (currently only vendor API calls are rate limited)
+[x] Add tRPC-level rate limiting (currently only vendor API calls are rate limited)
 [x] account-router: remove duplicate DB query after token update
 [x] user-activity-router: complex join with no index on (userId, type) — add index and review join complexity
 

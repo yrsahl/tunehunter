@@ -1,7 +1,14 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { redis } from "./redis";
 
-// Sliding window rate limits — global per vendor, not per user.
+// General tRPC rate limit — broad guard against API abuse.
+export const trpcRateLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(60, "1 m"),
+  prefix: "rl:trpc",
+});
+
+// Per-vendor limits — applied on cache misses only (when outbound HTTP calls are made).
 // Bandcamp: up to 4 outbound requests per lookup (1 search + 3 track pages),
 // so 10 lookups/min ≈ 40 HTTP requests/min to Bandcamp.
 // Beatport/Amazon: 1 request per lookup.

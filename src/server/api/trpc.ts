@@ -8,6 +8,7 @@
  */
 
 import { initTRPC, TRPCError } from "@trpc/server";
+import { trpcRateLimiter } from "@/lib/rate-limiter";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { type Session } from "next-auth";
 import superjson from "superjson";
@@ -109,6 +110,19 @@ export const createTRPCRouter = t.router;
  * are logged in.
  */
 export const publicProcedure = t.procedure;
+
+/**
+ * Rate-limited public procedure — use instead of publicProcedure for user-facing queries
+ * that should be protected against abuse. Limit: 60 requests/min per user or IP.
+ */
+const enforceRateLimit = t.middleware(async ({ ctx, next }) => {
+  const identifier = ctx.session?.user?.id ?? ctx.ip;
+  const { success } = await trpcRateLimiter.limit(identifier);
+  if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
+  return next();
+});
+
+export const rateLimitedProcedure = t.procedure.use(enforceRateLimit);
 
 /**
  * Protected (authenticated) procedure
