@@ -20,8 +20,13 @@ const StatCard = ({ label, value }: { label: string; value: number }) => (
 );
 
 const Dashboard: NextPage = () => {
-  const { data, isLoading } = api.stats.getStats.useQuery();
-  const { data: serviceUsage } = api.stats.getServiceUsage.useQuery();
+  const { data, isLoading } = api.stats.getStats.useQuery(undefined, { staleTime: 60 * 1000 });
+  const { data: serviceUsage } = api.stats.getServiceUsage.useQuery(undefined, {
+    staleTime: 5 * 60 * 1000,
+  });
+  const { data: insights } = api.stats.getInsights.useQuery(undefined, {
+    staleTime: 5 * 60 * 1000,
+  });
 
   if (isLoading) return <div className="p-10 text-muted-foreground">Loading...</div>;
   if (!data) return null;
@@ -67,57 +72,82 @@ const Dashboard: NextPage = () => {
               <th className="pb-2 font-normal">Rate limited</th>
               <th className="pb-2 font-normal">Unreachable</th>
               <th className="pb-2 font-normal">Total</th>
+              <th className="pb-2 font-normal">Avg latency</th>
             </tr>
           </thead>
           <tbody>
             {vendors.map((vendor) => {
-              const cache =
+              const cache = Number(
                 data.byVendor.find((r) => r.vendor === vendor && r.source === "db_cache")?.count ??
-                0;
-              const external =
+                  0,
+              );
+              const external = Number(
                 data.byVendor.find((r) => r.vendor === vendor && r.source === "external")?.count ??
-                0;
-              const noMatch =
+                  0,
+              );
+              const noMatch = Number(
                 data.byVendor.find((r) => r.vendor === vendor && r.source === "no_match")?.count ??
-                0;
-              const rateLimited =
+                  0,
+              );
+              const rateLimited = Number(
                 data.byVendor.find((r) => r.vendor === vendor && r.source === "rate_limited")
-                  ?.count ?? 0;
-              const unreachable =
+                  ?.count ?? 0,
+              );
+              const unreachable = Number(
                 data.byVendor.find((r) => r.vendor === vendor && r.source === "store_unreachable")
-                  ?.count ?? 0;
+                  ?.count ?? 0,
+              );
+              const total = cache + external;
+              const cacheTotal = cache + external + noMatch;
+              const cacheRate = cacheTotal > 0 ? Math.round((cache / cacheTotal) * 100) : null;
+              const notFoundTotal = external + noMatch;
+              const notFoundRate =
+                notFoundTotal > 0 ? Math.round((noMatch / notFoundTotal) * 100) : null;
+              const avgMs = insights?.vendorLatency.find((v) => v.vendor === vendor)?.avgMs ?? null;
+              const vendorLabel =
+                vendor === "itunes" ? "iTunes" : vendor.charAt(0).toUpperCase() + vendor.slice(1);
               return (
                 <tr key={vendor} className="border-b border-primary/5">
-                  <td className="py-3 capitalize">{vendor}</td>
-                  <td className="py-3">{Number(cache).toLocaleString()}</td>
-                  <td className="py-3">{Number(external).toLocaleString()}</td>
+                  <td className="py-3">{vendorLabel}</td>
                   <td className="py-3">
-                    {Number(noMatch) > 0 ? (
+                    {cache.toLocaleString()}
+                    {cacheRate != null && (
+                      <span className="ml-1 font-normal text-muted-foreground">({cacheRate}%)</span>
+                    )}
+                  </td>
+                  <td className="py-3">{external.toLocaleString()}</td>
+                  <td className="py-3">
+                    {noMatch > 0 ? (
                       <span className="text-muted-foreground">
-                        {Number(noMatch).toLocaleString()}
+                        {noMatch.toLocaleString()}
+                        {notFoundRate != null && (
+                          <span className={notFoundRate > 20 ? "text-yellow-500" : ""}>
+                            {" "}
+                            ({notFoundRate}%)
+                          </span>
+                        )}
                       </span>
                     ) : (
                       0
                     )}
                   </td>
                   <td className="py-3">
-                    {Number(rateLimited) > 0 ? (
-                      <span className="text-yellow-500">
-                        {Number(rateLimited).toLocaleString()}
-                      </span>
+                    {rateLimited > 0 ? (
+                      <span className="text-yellow-500">{rateLimited.toLocaleString()}</span>
                     ) : (
                       0
                     )}
                   </td>
                   <td className="py-3">
-                    {Number(unreachable) > 0 ? (
-                      <span className="text-red-500">{Number(unreachable).toLocaleString()}</span>
+                    {unreachable > 0 ? (
+                      <span className="text-red-500">{unreachable.toLocaleString()}</span>
                     ) : (
                       0
                     )}
                   </td>
-                  <td className="py-3 font-medium">
-                    {(Number(cache) + Number(external)).toLocaleString()}
+                  <td className="py-3 font-medium">{total.toLocaleString()}</td>
+                  <td className="py-3 text-muted-foreground">
+                    {avgMs != null ? `${Number(avgMs).toLocaleString()} ms` : "—"}
                   </td>
                 </tr>
               );

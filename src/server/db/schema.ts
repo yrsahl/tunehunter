@@ -210,6 +210,7 @@ export const songListingRequests = pgTable(
     songId: varchar("song_id", { length: 255 }).references(() => songs.id, { onDelete: "set null" }),
     vendor: varchar("vendor", { length: 255 }).notNull(),
     source: listingRequestSourceEnum().notNull(),
+    fetchDurationMs: integer("fetch_duration_ms"), // only set for source="external"
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),

@@ -1,7 +1,7 @@
 import { redis } from "@/lib/redis";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { songListingRequests, userActivities } from "@/server/db/schema";
-import { count, eq } from "drizzle-orm";
+import { artists, songArtists, songListingRequests, songs, userActivities } from "@/server/db/schema";
+import { and, count, desc, eq, isNotNull, sql } from "drizzle-orm";
 import { env } from "@/env.js";
 
 async function fetchUpstashCommandsThisMonth(): Promise<number | null> {
@@ -125,6 +125,43 @@ export const statsRouter = createTRPCRouter({
     ]);
 
     return { totalSearches, dbCacheHits, externalFetches, rateLimited, storeUnreachable, noMatch, trpcRateLimited, byVendor };
+  }),
+
+  getInsights: publicProcedure.query(async ({ ctx }) => {
+    const [topArtists, topRegions, vendorLatency] = await Promise.all([
+      // Top 10 most-searched artists
+      ctx.db
+        .select({ name: artists.name, searches: count() })
+        .from(userActivities)
+        .innerJoin(songs, eq(userActivities.songId, songs.id))
+        .innerJoin(songArtists, eq(songs.id, songArtists.songId))
+        .innerJoin(artists, eq(songArtists.artistId, artists.id))
+        .where(eq(userActivities.type, "search"))
+        .groupBy(artists.id, artists.name)
+        .orderBy(desc(count()))
+        .limit(10),
+
+      // Top 10 regions by search count
+      ctx.db
+        .select({ region: userActivities.region, searches: count() })
+        .from(userActivities)
+        .where(eq(userActivities.type, "search"))
+        .groupBy(userActivities.region)
+        .orderBy(desc(count()))
+        .limit(10),
+
+      // Average fetch duration per vendor (external fetches only)
+      ctx.db
+        .select({
+          vendor: songListingRequests.vendor,
+          avgMs: sql<number>`round(avg(${songListingRequests.fetchDurationMs}))`,
+        })
+        .from(songListingRequests)
+        .where(and(eq(songListingRequests.source, "external"), isNotNull(songListingRequests.fetchDurationMs)))
+        .groupBy(songListingRequests.vendor),
+    ]);
+
+    return { topArtists, topRegions, vendorLatency };
   }),
 
   getServiceUsage: publicProcedure.query(async () => {

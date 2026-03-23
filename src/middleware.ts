@@ -16,7 +16,7 @@ export const config = {
 
 export function middleware(request: NextRequest) {
   // Password-protect the dashboard via HTTP Basic Auth
-  if (request.nextUrl.pathname.startsWith("/dashboard")) {
+  if (request.nextUrl.pathname.startsWith("/dashboard") || request.nextUrl.pathname.startsWith("/insights")) {
     const authHeader = request.headers.get("authorization");
     const password = process.env.DASHBOARD_PASSWORD;
 

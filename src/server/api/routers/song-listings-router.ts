@@ -69,6 +69,7 @@ export const songListingsRouter = createTRPCRouter({
 
     // 3. Hit vendor API, store or refresh results
     let vendorListing;
+    const fetchStart = Date.now();
     try {
       vendorListing = await fetchVendorData({
         region,
@@ -80,7 +81,8 @@ export const songListingsRouter = createTRPCRouter({
       await ctx.db.insert(songListingRequests).values({ songId, vendor, source: "store_unreachable" });
       return { error: "STORE_UNREACHABLE" };
     }
-    await ctx.db.insert(songListingRequests).values({ songId, vendor, source: "external" });
+    const fetchDurationMs = Date.now() - fetchStart;
+    await ctx.db.insert(songListingRequests).values({ songId, vendor, source: "external", fetchDurationMs });
     if (vendorListing.data) {
       const [upserted] = await ctx.db
         .insert(songListings)
