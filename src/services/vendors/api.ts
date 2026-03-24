@@ -263,7 +263,8 @@ const fetchAmazonData = async ({
       },
       signal,
     });
-  } catch {
+  } catch (err) {
+    if (signal?.aborted) throw err;
     return { error: "NO_MATCH_FOUND" };
   }
 
@@ -400,6 +401,50 @@ const fetchAmazonDataPaapi = async ({
 
 // Beatport - Next.js app; all track data (duration, price, id) is embedded in __NEXT_DATA__
 // on the search page, so no second request is needed.
+
+/** Return first matching string value across a list of candidate field names. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function bpStr(obj: any, ...keys: string[]): string | undefined {
+  for (const k of keys) {
+    if (typeof obj[k] === "string" && (obj[k] as string).length > 0) return obj[k] as string;
+  }
+  return undefined;
+}
+
+/** Return first matching number value across a list of candidate field names. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function bpNum(obj: any, ...keys: string[]): number | undefined {
+  for (const k of keys) {
+    if (typeof obj[k] === "number") return obj[k] as number;
+  }
+  return undefined;
+}
+
+/**
+ * Walk the dehydrated React Query cache and return the first non-empty track array.
+ * Tries several known data shapes so that minor Beatport restructurings don't break the scraper.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function extractBeatportTracks(nextData: any): any[] {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const queries: any[] = nextData?.props?.pageProps?.dehydratedState?.queries ?? [];
+  for (const q of queries) {
+    // Primary shape (current): { tracks: { data: [...] } }
+    const v1 = q?.state?.data?.tracks?.data;
+    if (Array.isArray(v1) && v1.length > 0) return v1 as unknown[];
+    // Fallback: wrapper removed → { data: [...] }
+    const v2 = q?.state?.data?.data;
+    if (Array.isArray(v2) && v2.length > 0) return v2 as unknown[];
+    // Fallback: renamed to results → { results: [...] }
+    const v3 = q?.state?.data?.results;
+    if (Array.isArray(v3) && v3.length > 0) return v3 as unknown[];
+    // Fallback: state.data is directly the array
+    const v4 = q?.state?.data;
+    if (Array.isArray(v4) && v4.length > 0) return v4 as unknown[];
+  }
+  return [];
+}
+
 const fetchBeatportData = async ({
   region,
   vendorData,
@@ -412,12 +457,19 @@ const fetchBeatportData = async ({
   const query = encodeURIComponent(`${title} ${artist}`);
   const searchUrl = `https://www.beatport.com/search?q=${query}`;
 
-  const response = await axios.get<string>(searchUrl, {
-    headers: { "User-Agent": SCRAPER_UA, "Accept-Language": getAcceptLanguage(region) },
-    signal,
-  });
+  let html: string;
+  try {
+    const response = await axios.get<string>(searchUrl, {
+      headers: { "User-Agent": SCRAPER_UA, "Accept-Language": getAcceptLanguage(region) },
+      signal,
+    });
+    html = response.data;
+  } catch (err) {
+    if (signal?.aborted) throw err;
+    return { error: "NO_MATCH_FOUND" };
+  }
 
-  const $ = cheerio.load(response.data);
+  const $ = cheerio.load(html);
   const nextDataText = $("#__NEXT_DATA__").text();
   if (!nextDataText) return { error: "NO_MATCH_FOUND" };
 
@@ -429,47 +481,52 @@ const fetchBeatportData = async ({
     return { error: "NO_MATCH_FOUND" };
   }
 
-  // Walk the dehydrated React Query cache for a query that contains track results
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const queries: any[] = nextData?.props?.pageProps?.dehydratedState?.queries ?? [];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let tracks: any[] = [];
-  for (const q of queries) {
-    if (Array.isArray(q?.state?.data?.tracks?.data)) {
-      tracks = q.state.data.tracks.data;
-      break;
-    }
-  }
-
+  const tracks = extractBeatportTracks(nextData);
   if (!tracks.length) return { error: "NO_MATCH_FOUND" };
 
-  const listings: NewSongListing[] = tracks
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const listings: NewSongListing[] = (tracks as any[])
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     .filter((t: any) => {
-      if (t?.price?.value == null || typeof t?.length !== "number") return false;
-      const resultTitle = [t.track_name as string, t.mix_name as string].filter(Boolean).join(" ");
+      // Must have a duration field to do duration-based matching
+      if (bpNum(t, "length", "duration", "length_ms", "lengthMs", "duration_ms") === undefined) return false;
+      const resultTitle = [
+        bpStr(t, "track_name", "name", "title"),
+        bpStr(t, "mix_name", "mix", "mixName"),
+      ].filter(Boolean).join(" ");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const resultArtist = (t.artists as { artist_name: string }[] | undefined)?.map((a) => a.artist_name).join(" ") ?? "";
+      const resultArtist = (t.artists as { artist_name?: string; name?: string }[] | undefined)
+        ?.map((a) => a.artist_name ?? a.name ?? "").join(" ") ?? "";
       return titleMatches(resultTitle, title) && artistMatches(resultArtist, artist);
     })
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     .map((t: any) => {
-      // Build a URL slug from track name + mix name, e.g. "echelon-original-mix/17711829"
-      const slugParts = [t.track_name as string, t.mix_name as string]
+      const len = bpNum(t, "length", "duration", "length_ms", "lengthMs", "duration_ms")!;
+      const trackName = bpStr(t, "track_name", "name", "title") ?? "";
+      const mixName = bpStr(t, "mix_name", "mix", "mixName");
+      const trackId = bpNum(t, "track_id", "id") ?? bpStr(t, "track_id", "id");
+
+      // Prefer a pre-built slug in the data; fall back to constructing one
+      const slug = bpStr(t, "slug") ?? [trackName, mixName]
         .filter(Boolean)
         .join(" ")
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-|-$/g, "");
-      const url = `https://www.beatport.com/track/${slugParts}/${t.track_id as number}`;
+
+      const url = `https://www.beatport.com/track/${slug}/${trackId ?? ""}`.replace(/\/$/, "");
+
+      // Price is optional — support multiple known field shapes, store null if unavailable
+      const priceValue = t?.price?.value ?? t?.price?.amount ?? t?.purchase_price;
+      const priceCurrency = t?.price?.code ?? t?.price?.currency ?? t?.currency;
 
       return {
         songId,
         vendorId,
         url,
-        duration: t.length as number,
-        price: (t.price.value as number).toFixed(2),
-        currency: ((t.price.code as string | undefined) ?? "USD").toUpperCase(),
+        duration: len,
+        price: priceValue != null ? (priceValue as number).toFixed(2) : undefined,
+        currency: (typeof priceCurrency === "string" ? priceCurrency : "USD").toUpperCase(),
         region,
       } satisfies NewSongListing;
     });
@@ -547,6 +604,10 @@ const fetchBandcampData = async ({
       return { url, html: res.data };
     }),
   );
+
+  // If the abort signal fired during the candidate fetches, re-throw so the router
+  // records STORE_UNREACHABLE rather than caching a spurious miss.
+  if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
 
   for (const result of fetchResults) {
     if (result.status === "rejected") continue;

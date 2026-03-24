@@ -93,8 +93,11 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
       <td>
         <div className="flex justify-normal gap-4 text-sm sm:justify-normal sm:text-base">
           <div className="inline-block">
-            {price}
-            {transformCurrencyStringToIcon(currency)}
+            {price != null ? (
+              <>{price}{transformCurrencyStringToIcon(currency)}</>
+            ) : (
+              <span className="text-muted-foreground">See store</span>
+            )}
           </div>
         </div>
       </td>
