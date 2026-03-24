@@ -1,7 +1,7 @@
 import { redis } from "@/lib/redis";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { artists, songArtists, songListingRequests, songs, userActivities } from "@/server/db/schema";
-import { and, count, desc, eq, isNotNull, sql } from "drizzle-orm";
+import { and, count, desc, eq, gt, isNotNull, or, sql } from "drizzle-orm";
 import { env } from "@/env.js";
 
 async function fetchUpstashCommandsThisMonth(): Promise<number | null> {
@@ -162,6 +162,51 @@ export const statsRouter = createTRPCRouter({
     ]);
 
     return { topArtists, topRegions, vendorLatency };
+  }),
+
+  getScraperHealth: publicProcedure.query(async ({ ctx }) => {
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+    const [unreachable24h, p95Latency, lastFailure, attempts24h] = await Promise.all([
+      // Unreachable count per vendor in the last 24 hours
+      ctx.db
+        .select({ vendor: songListingRequests.vendor, count: count() })
+        .from(songListingRequests)
+        .where(and(eq(songListingRequests.source, "store_unreachable"), gt(songListingRequests.createdAt, yesterday)))
+        .groupBy(songListingRequests.vendor),
+
+      // P95 fetch duration per vendor (external fetches only)
+      ctx.db
+        .select({
+          vendor: songListingRequests.vendor,
+          p95Ms: sql<number | null>`round(percentile_cont(0.95) within group (order by ${songListingRequests.fetchDurationMs}))`,
+        })
+        .from(songListingRequests)
+        .where(and(eq(songListingRequests.source, "external"), isNotNull(songListingRequests.fetchDurationMs)))
+        .groupBy(songListingRequests.vendor),
+
+      // Most recent store_unreachable event per vendor
+      ctx.db
+        .select({
+          vendor: songListingRequests.vendor,
+          lastAt: sql<Date | null>`max(${songListingRequests.createdAt})`,
+        })
+        .from(songListingRequests)
+        .where(eq(songListingRequests.source, "store_unreachable"))
+        .groupBy(songListingRequests.vendor),
+
+      // No-match and successful external fetches in last 24h (proxy for bot detection / structure changes)
+      ctx.db
+        .select({ vendor: songListingRequests.vendor, source: songListingRequests.source, count: count() })
+        .from(songListingRequests)
+        .where(and(
+          or(eq(songListingRequests.source, "no_match"), eq(songListingRequests.source, "external")),
+          gt(songListingRequests.createdAt, yesterday),
+        ))
+        .groupBy(songListingRequests.vendor, songListingRequests.source),
+    ]);
+
+    return { unreachable24h, p95Latency, lastFailure, attempts24h };
   }),
 
   getServiceUsage: publicProcedure.query(async () => {

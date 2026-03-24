@@ -33,6 +33,9 @@ const Dashboard: NextPage = () => {
   const { data: insights } = api.stats.getInsights.useQuery(undefined, {
     staleTime: 5 * 60 * 1000,
   });
+  const { data: scraperHealth } = api.stats.getScraperHealth.useQuery(undefined, {
+    staleTime: 2 * 60 * 1000,
+  });
 
   if (isLoading) return <div className="p-10 text-muted-foreground">Loading...</div>;
   if (!data) return null;
@@ -158,7 +161,7 @@ const Dashboard: NextPage = () => {
             <tr className="border-b border-primary/10 text-left text-muted-foreground">
               <th className="pb-2 font-normal">Vendor</th>
               <th className="pb-2 font-normal">Total</th>
-              <th className="pb-2 font-normal">Matched</th>
+              <th className="pb-2 font-normal">Match</th>
               <th className="pb-2 font-normal">No match</th>
             </tr>
           </thead>
@@ -210,31 +213,117 @@ const Dashboard: NextPage = () => {
         </table>
       </section>
 
-      {/* Vendor latency */}
+      {/* Vendor health */}
       <section className="flex flex-col gap-3">
-        <SectionHeading>Vendor latency</SectionHeading>
+        <SectionHeading>Vendor health</SectionHeading>
         <table className="w-full table-fixed text-sm">
           <colgroup>
-            <col className="w-1/2" />
-            <col className="w-1/2" />
+            <col className="w-[18%]" />
+            <col className="w-[15%]" />
+            <col className="w-[15%]" />
+            <col className="w-[17%]" />
+            <col className="w-[17%]" />
+            <col className="w-[18%]" />
           </colgroup>
           <thead>
             <tr className="border-b border-primary/10 text-left text-muted-foreground">
               <th className="pb-2 font-normal">Vendor</th>
               <th className="pb-2 font-normal">Avg latency</th>
+              <th className="pb-2 font-normal">P95 latency</th>
+              <th className="pb-2 font-normal">Unreachable (24h)</th>
+              <th className="pb-2 font-normal">No-match (24h)</th>
+              <th className="pb-2 font-normal">Last failure</th>
             </tr>
           </thead>
           <tbody>
             {vendors.map((vendor) => {
               const avgMs = insights?.vendorLatency.find((v) => v.vendor === vendor)?.avgMs ?? null;
+              const p95Ms =
+                scraperHealth?.p95Latency.find((r) => r.vendor === vendor)?.p95Ms ?? null;
+              const failures24h = Number(
+                scraperHealth?.unreachable24h.find((r) => r.vendor === vendor)?.count ?? 0,
+              );
+              const noMatch24h = Number(
+                scraperHealth?.attempts24h.find(
+                  (r) => r.vendor === vendor && r.source === "no_match",
+                )?.count ?? 0,
+              );
+              const external24h = Number(
+                scraperHealth?.attempts24h.find(
+                  (r) => r.vendor === vendor && r.source === "external",
+                )?.count ?? 0,
+              );
+              const totalAttempts24h = noMatch24h + external24h;
+              const noMatchRate24h =
+                totalAttempts24h > 0 ? Math.round((noMatch24h / totalAttempts24h) * 100) : null;
+              const lastAt =
+                scraperHealth?.lastFailure.find((r) => r.vendor === vendor)?.lastAt ?? null;
               const vendorLabel =
                 vendor === "itunes" ? "iTunes" : vendor.charAt(0).toUpperCase() + vendor.slice(1);
+              const lastFailureLabel = lastAt
+                ? new Date(lastAt).toLocaleString(undefined, {
+                    month: "short",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })
+                : "Never";
+
               return (
                 <tr key={vendor} className="border-b border-primary/5">
                   <td className="py-3">{vendorLabel}</td>
-                  <td className="py-3 text-foreground">
-                    {avgMs != null ? `${Number(avgMs).toLocaleString()} ms` : "—"}
+                  <td className="py-3">
+                    {avgMs != null ? (
+                      `${Number(avgMs).toLocaleString()} ms`
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
                   </td>
+                  <td className="py-3">
+                    {p95Ms != null ? (
+                      <span
+                        className={
+                          Number(p95Ms) > 6500
+                            ? "text-red-500"
+                            : Number(p95Ms) > 4000
+                              ? "text-yellow-500"
+                              : ""
+                        }
+                      >
+                        {Number(p95Ms).toLocaleString()} ms
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
+                  </td>
+                  <td className="py-3">
+                    {failures24h > 5 ? (
+                      <span className="text-red-500">{failures24h}</span>
+                    ) : failures24h > 0 ? (
+                      <span className="text-yellow-500">{failures24h}</span>
+                    ) : (
+                      0
+                    )}
+                  </td>
+                  <td className="py-3">
+                    {noMatchRate24h != null ? (
+                      <span
+                        className={
+                          noMatchRate24h > 50
+                            ? "text-red-500"
+                            : noMatchRate24h > 20
+                              ? "text-yellow-500"
+                              : ""
+                        }
+                      >
+                        {noMatch24h}{" "}
+                        <span className="text-muted-foreground">({noMatchRate24h}%)</span>
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
+                  </td>
+                  <td className="py-3 text-muted-foreground">{lastFailureLabel}</td>
                 </tr>
               );
             })}
