@@ -1,3 +1,4 @@
+import { Track } from "@/types/song-types";
 import { CountryCode } from "@/lib/validators";
 import { create } from "zustand";
 
@@ -21,6 +22,7 @@ export interface SelectedSearchParams {
   region: CountryCode;
   artist: string;
   title: string;
+  track?: Track | null;
 }
 
 export const SEARCH_SUBMITTED = "searchSubmitted";

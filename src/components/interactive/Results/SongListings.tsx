@@ -3,8 +3,10 @@ import useRegionSettings from "@/hooks/settings/useRegionSettings";
 import { SEARCH_SUBMITTED, SelectedSearchParams } from "@/hooks/stores/useSearchStore";
 import { useEventEmitter } from "@/hooks/useEventEmitter";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
+import { api } from "@/lib/api";
 import { CountryCode } from "@/lib/validators";
 import { slideInAndOutFromBottom } from "@/styles/animations";
+import { Track } from "@/types/song-types";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef } from "react";
 import SongListingsContainer from "./SongListingsContainer";
@@ -14,6 +16,13 @@ const SongListings = () => {
   const { region } = useRegionSettings();
   const router = useRouterWithHelpers();
   const containerRef = useRef<HTMLDivElement | null>(null);
+
+  // For route restore: fetch track when it's not already in the event payload
+  const { data: fetchedTrack } = api.song.getTrack.useQuery(
+    { id: search?.id ?? "" },
+    { enabled: !!search?.id && !search?.track, staleTime: 5 * 60 * 1000 },
+  );
+  const track: Track | null = (search?.track ?? fetchedTrack ?? null) as Track | null;
 
   // Scroll into view when a search is submitted
   useEffect(() => {
@@ -32,11 +41,11 @@ const SongListings = () => {
 
   return (
     <AnimatePresence mode="wait">
-      {search && (
+      {search && track && (
         <SongListingContextProvider
           key={`${region}`}
           region={region as CountryCode}
-          songId={search.id}
+          track={track}
         >
           <motion.div
             {...slideInAndOutFromBottom(0.5)}

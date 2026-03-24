@@ -5,6 +5,7 @@ import { formatDate, formatDuration } from "@/lib/formatters";
 import { Track } from "@/types/song-types";
 import { Album, Calendar, Clock, HeartIcon, Music, Play } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { AnimatePresence, motion } from "framer-motion";
 import { memo } from "react";
 import SpotifyPlayIcon from "../Search/SearchTabContent/SpotifyPlayIcon";
 import WishlistStatusIcon from "../Search/SearchTabContent/WishlistStatusIcon";
@@ -43,14 +44,22 @@ function SongPreview({ trackData, isLoading }: ISongPreviewProps) {
     }, "");
 
   return (
-    <>
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={id}
+        className="md:my-auto md:w-1/2"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+      >
       {/* Mobile */}
       <div className="mx-auto block w-4/5 pb-2 text-center sm:pb-0 sm:pt-2 md:hidden">
         <h2 className="text-lg font-bold tracking-normal drop-shadow-sm sm:text-xl">{title}</h2>
         {artists.length > 0 && <span className="text-md sm:text-lg">By {artistNames}</span>}
       </div>
       {/* Medium and up */}
-      <div className="my-auto hidden w-1/2 md:block">
+      <div className="hidden md:block">
         <div className="flex w-full flex-col gap-6 pl-2">
           {/* Top Row */}
           <div className="flex gap-8 rounded-3xl px-3 py-4 pl-4 drop-shadow-sm">
@@ -132,7 +141,8 @@ function SongPreview({ trackData, isLoading }: ISongPreviewProps) {
           </div>
         </div>
       </div>
-    </>
+      </motion.div>
+    </AnimatePresence>
   );
 }
 

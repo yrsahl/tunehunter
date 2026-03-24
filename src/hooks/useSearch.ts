@@ -83,7 +83,7 @@ const useSearch = () => {
 
     // Update store (input text + syncRouteSearch change detection) and start the search
     setSelectedSearch({ id, region, artist: artistsJoined, title });
-    publishSearchSubmitted({ id, region, artist: artistsJoined, title }, false);
+    publishSearchSubmitted({ id, region, artist: artistsJoined, title, track }, false);
 
     // Store search activity and refresh history data for user (fire-and-forget)
     addSearchActivity.mutate({ songId: id, region }, {

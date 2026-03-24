@@ -3,11 +3,12 @@ import { api } from "@/lib/api";
 import { CountryCode } from "@/lib/validators";
 import { AppRouter } from "@/server/api/root";
 import { SongVendorType } from "@/server/db/schema";
+import { Track } from "@/types/song-types";
 import { inferProcedureOutput } from "@trpc/server";
 import { createContext, useCallback, useContext, useEffect, useMemo } from "react";
 
 interface ISongListingContext {
-  trackData: inferProcedureOutput<AppRouter["song"]["getTrack"]> | null | undefined;
+  trackData: Track | null | undefined;
   isTrackDataLoading: boolean;
   getVendorResponse: (
     vendor: SongVendorType,
@@ -17,7 +18,7 @@ interface ISongListingContext {
 
 const SongListingContext = createContext<ISongListingContext>({
   trackData: null,
-  isTrackDataLoading: true,
+  isTrackDataLoading: false,
   getVendorResponse: () => null,
   getVendorResponseLoadingState: () => true,
 });
@@ -25,24 +26,32 @@ const SongListingContext = createContext<ISongListingContext>({
 export const useSongListingContext = () => useContext(SongListingContext);
 
 interface ISongListingContextProviderProps {
-  songId: string;
+  track: Track;
   region: CountryCode;
   children: React.ReactNode;
 }
 
 export const SongListingContextProvider = ({
-  songId,
+  track,
   region,
   children,
 }: ISongListingContextProviderProps) => {
   const { userAccessToken } = useSpotifyTokens();
+  const songId = track.song.id;
 
-  // 1. Get trackData
+  // Keep a query for background refresh after artist enrichment
   const utils = api.useUtils();
-  const { data: trackData, isLoading: isTrackDataLoading } = api.song.getTrack.useQuery(
+  const { data: fetchedTrackData } = api.song.getTrack.useQuery(
     { id: songId },
-    { staleTime: 5 * 60 * 1000 },
+    {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      initialData: track as any,
+      staleTime: 5 * 60 * 1000,
+    },
   );
+
+  // Always fall back to the passed track so trackData is never undefined mid-transition
+  const trackData = fetchedTrackData ?? track;
 
   // 2. Enrich artist data (popularity, followers, genres) if logged in
   const { mutate: enrichArtists } = api.song.enrichArtists.useMutation({
@@ -62,14 +71,13 @@ export const SongListingContextProvider = ({
 
   const isSongDataValid = useMemo(() => {
     return (
-      !isTrackDataLoading &&
       !!trackData &&
       !!trackData.song.title &&
       !!trackData.song.album &&
       !!trackData.song.duration &&
       artists.length > 0
     );
-  }, [isTrackDataLoading, trackData, artists]);
+  }, [trackData, artists]);
 
   // iTunes
   const { data: itunesResponse, isLoading: isItunesResponseLoading } =
@@ -185,8 +193,13 @@ export const SongListingContextProvider = ({
   );
 
   const contextValue = useMemo(
-    () => ({ trackData, isTrackDataLoading, getVendorResponse, getVendorResponseLoadingState }),
-    [trackData, isTrackDataLoading, getVendorResponse, getVendorResponseLoadingState],
+    () => ({
+      trackData,
+      isTrackDataLoading: false,
+      getVendorResponse,
+      getVendorResponseLoadingState,
+    }),
+    [trackData, getVendorResponse, getVendorResponseLoadingState],
   );
 
   return <SongListingContext.Provider value={contextValue}>{children}</SongListingContext.Provider>;
