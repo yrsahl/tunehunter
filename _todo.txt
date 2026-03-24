@@ -1,5 +1,7 @@
 ---- CORE
 
+Production vendor search buggy
+
 Spotify callback not working
 E-mail templates for login
 Edit picture functionality (s3 bucket)
