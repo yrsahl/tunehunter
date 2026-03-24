@@ -1,11 +1,13 @@
 "use client";
 
+import { resetDevTrpcLog } from "@/lib/api";
 import { useRouter } from "next/navigation";
 
 const Header = () => {
   const router = useRouter();
 
   const handleClick = () => {
+    if (process.env.NODE_ENV === "development") resetDevTrpcLog();
     router.push("/");
   };
 
