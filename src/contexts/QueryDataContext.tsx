@@ -2,7 +2,7 @@ import SearchSettings from "@/components/interactive/Search/SearchSettings";
 import { applyFilters } from "@/lib/filters";
 import { fetchItunesSearchData } from "@/services/itunes/api";
 import { SearchData } from "@/types/search-types";
-import { createContext, ReactNode, useContext, useState } from "react";
+import { createContext, ReactNode, useCallback, useContext, useState } from "react";
 
 interface IQueryDataContext {
   queryData: SearchData | null;
@@ -32,7 +32,7 @@ export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
   const [showQueries, setShowQueries] = useState(false);
   const [queryData, setQueryData] = useState<SearchData | null>(null);
   const [isQueryDataLoading, setIsQueryDataLoading] = useState(false);
-  const requestQueryData = async (
+  const requestQueryData = useCallback(async (
     query: string,
     searchSettings?: SearchSettings,
     displayLoadingIndicator: boolean = true,
@@ -59,11 +59,11 @@ export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       if (displayLoadingIndicator) setIsQueryDataLoading(false);
     }
-  };
+  }, []);
 
-  const resetQueryData = () => {
+  const resetQueryData = useCallback(() => {
     setQueryData(null);
-  };
+  }, []);
 
   return (
     <QueryDataContext.Provider

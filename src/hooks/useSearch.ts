@@ -120,7 +120,7 @@ const useSearch = () => {
         isPlaying: false,
       },
     };
-    await router.push(trackSearchHref);
+    await router.push(trackSearchHref, undefined, { shallow: true });
   };
 
   return {
