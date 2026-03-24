@@ -87,19 +87,24 @@ const Dashboard: NextPage = () => {
           <tbody>
             {vendors.map((vendor) => {
               const cache = Number(
-                data.byVendor.find((r) => r.vendor === vendor && r.source === "db_cache")?.count ?? 0,
+                data.byVendor.find((r) => r.vendor === vendor && r.source === "db_cache")?.count ??
+                  0,
               );
               const external = Number(
-                data.byVendor.find((r) => r.vendor === vendor && r.source === "external")?.count ?? 0,
+                data.byVendor.find((r) => r.vendor === vendor && r.source === "external")?.count ??
+                  0,
               );
               const noMatch = Number(
-                data.byVendor.find((r) => r.vendor === vendor && r.source === "no_match")?.count ?? 0,
+                data.byVendor.find((r) => r.vendor === vendor && r.source === "no_match")?.count ??
+                  0,
               );
               const rateLimited = Number(
-                data.byVendor.find((r) => r.vendor === vendor && r.source === "rate_limited")?.count ?? 0,
+                data.byVendor.find((r) => r.vendor === vendor && r.source === "rate_limited")
+                  ?.count ?? 0,
               );
               const unreachable = Number(
-                data.byVendor.find((r) => r.vendor === vendor && r.source === "store_unreachable")?.count ?? 0,
+                data.byVendor.find((r) => r.vendor === vendor && r.source === "store_unreachable")
+                  ?.count ?? 0,
               );
               const externalTotal = external + noMatch;
               const total = cache + externalTotal;
@@ -160,13 +165,16 @@ const Dashboard: NextPage = () => {
           <tbody>
             {vendors.map((vendor) => {
               const cache = Number(
-                data.byVendor.find((r) => r.vendor === vendor && r.source === "db_cache")?.count ?? 0,
+                data.byVendor.find((r) => r.vendor === vendor && r.source === "db_cache")?.count ??
+                  0,
               );
               const external = Number(
-                data.byVendor.find((r) => r.vendor === vendor && r.source === "external")?.count ?? 0,
+                data.byVendor.find((r) => r.vendor === vendor && r.source === "external")?.count ??
+                  0,
               );
               const noMatch = Number(
-                data.byVendor.find((r) => r.vendor === vendor && r.source === "no_match")?.count ?? 0,
+                data.byVendor.find((r) => r.vendor === vendor && r.source === "no_match")?.count ??
+                  0,
               );
               const matched = cache + external;
               const total = matched + noMatch;
@@ -224,7 +232,7 @@ const Dashboard: NextPage = () => {
               return (
                 <tr key={vendor} className="border-b border-primary/5">
                   <td className="py-3">{vendorLabel}</td>
-                  <td className="py-3 text-muted-foreground">
+                  <td className="py-3 text-foreground">
                     {avgMs != null ? `${Number(avgMs).toLocaleString()} ms` : "—"}
                   </td>
                 </tr>
