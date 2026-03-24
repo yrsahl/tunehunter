@@ -18,7 +18,7 @@ import { AddSearchQueriesSchema, AddSongSchema } from "../schemas/song-schemas";
 
 export const songRouter = createTRPCRouter({
   // ********* Queries *********
-  getSongById: rateLimitedProcedure.input(z.object({ id: z.string() })).query(({ ctx, input }) => {
+  getSongById: publicProcedure.input(z.object({ id: z.string() })).query(({ ctx, input }) => {
     return ctx.db.query.songs.findFirst({
       where: (songs, { eq }) => eq(songs.id, input.id),
     });
@@ -136,7 +136,7 @@ export const songRouter = createTRPCRouter({
       );
     }),
 
-  getTrendingSongs: rateLimitedProcedure.query<TrendingTracks>(async ({ ctx }) => {
+  getTrendingSongs: publicProcedure.query<TrendingTracks>(async ({ ctx }) => {
 
     const trendingSongsToday: TrendingTrack[] = await ctx.db
       .select({
@@ -236,7 +236,7 @@ export const songRouter = createTRPCRouter({
   }),
 
   // ********* Mutations *********
-  addSong: rateLimitedProcedure.input(AddSongSchema).mutation(async ({ ctx, input }) => {
+  addSong: publicProcedure.input(AddSongSchema).mutation(async ({ ctx, input }) => {
     const song = await ctx.db.query.songs.findFirst({
       where: (songs, { eq }) => eq(songs.id, input.id),
     });

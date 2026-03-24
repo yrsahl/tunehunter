@@ -1,11 +1,11 @@
 import { db } from "@/server/db";
 import { clientCredentialsToken } from "@/server/db/schema";
 import { requestClientCredentialsToken } from "@/services/spotify";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, rateLimitedProcedure } from "../trpc";
 
 export const clientCredentialsRouter = createTRPCRouter({
   // Singleton behavior
-  getToken: publicProcedure.query(async ({ ctx }) => {
+  getToken: rateLimitedProcedure.query(async ({ ctx }) => {
     const clientCredentialsData = await ctx.db.query.clientCredentialsToken.findFirst();
     const isTokenExpired =
       clientCredentialsData?.expires && new Date() > clientCredentialsData.expires;

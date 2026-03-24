@@ -17,6 +17,7 @@ const useSpotifyTokens = () => {
     },
   );
   const { data: clientCredentialsData } = api.clientCredentials.getToken.useQuery(undefined, {
+    staleTime: 25 * 60 * 1000,       // Consider fresh for 25 minutes
     refetchInterval: 30 * 60 * 1000, // Refetch every 30 minutes to refresh the access token
   });
   const userAccessToken = spotifyAccountData?.data?.access_token;

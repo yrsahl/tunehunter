@@ -4,13 +4,59 @@
  *
  * We also create a few inference helpers for input and output types.
  */
-import { TRPCClientError, httpBatchLink } from "@trpc/client";
+import { type TRPCLink, TRPCClientError, httpBatchLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
 import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
+import { observable } from "@trpc/server/observable";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import superjson from "superjson";
 
 import { type AppRouter } from "@/server/api/root";
+
+// Procedures that use rateLimitedProcedure on the server
+const RATE_LIMITED_PATHS = new Set([
+  "song.enrichArtists",
+  "userActivities.addUserActivity",
+  "clientCredentials.getToken",
+  "artist.addSimpleArtist",
+  "artist.addOrUpdateArtist",
+  "artist.addSimpleArtists",
+  "songArtist.addArtistsToSong",
+]);
+
+// Dev-only tRPC request tracker
+let _devCount = 0;
+let _devRateLimitedCount = 0;
+let _devLog: { index: number; path: string; rateLimited: boolean }[] = [];
+const _devListeners = new Set<() => void>();
+
+export const resetDevTrpcLog = () => {
+  _devCount = 0;
+  _devRateLimitedCount = 0;
+  _devLog = [];
+  _devListeners.forEach((fn) => fn());
+};
+
+export const useDevTrpcLog = () => {
+  const [log, setLog] = useState(_devLog);
+  useEffect(() => {
+    const fn = () => setLog([..._devLog]);
+    _devListeners.add(fn);
+    return () => { _devListeners.delete(fn); };
+  }, []);
+  return { count: _devCount, rateLimitedCount: _devRateLimitedCount, log };
+};
+
+const devCounterLink: TRPCLink<AppRouter> = () => ({ next, op }) =>
+  observable((observer) => {
+    const rateLimited = RATE_LIMITED_PATHS.has(op.path);
+    _devCount++;
+    if (rateLimited) _devRateLimitedCount++;
+    _devLog = [..._devLog.slice(-49), { index: _devCount, path: op.path, rateLimited }];
+    _devListeners.forEach((fn) => fn());
+    return next(op).subscribe(observer);
+  });
 
 const onError = (error: unknown) => {
   if (error instanceof TRPCClientError && error.data?.code === "TOO_MANY_REQUESTS") {
@@ -41,11 +87,7 @@ export const api = createTRPCNext<AppRouter>({
        * @see https://trpc.io/docs/links
        */
       links: [
-        // loggerLink({
-        //   enabled: (opts) =>
-        //     process.env.NODE_ENV === "development" ||
-        //     (opts.direction === "down" && opts.result instanceof Error),
-        // }),
+        ...(process.env.NODE_ENV === "development" ? [devCounterLink] : []),
         httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,
         }),

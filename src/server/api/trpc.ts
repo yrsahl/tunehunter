@@ -8,7 +8,7 @@
  */
 
 import { initTRPC, TRPCError } from "@trpc/server";
-import { trpcRateLimiter } from "@/lib/rate-limiter";
+import { emailRateLimiter, trpcRateLimiter } from "@/lib/rate-limiter";
 import { redis } from "@/lib/redis";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { type Session } from "next-auth";
@@ -132,6 +132,21 @@ const enforceRateLimit = t.middleware(async ({ ctx, next }) => {
 });
 
 export const rateLimitedProcedure = t.procedure.use(enforceRateLimit);
+
+const enforceEmailRateLimit = t.middleware(async ({ ctx, next }) => {
+  try {
+    const identifier = ctx.session?.user?.id ?? ctx.ip;
+    const { success } = await emailRateLimiter.limit(identifier);
+    if (!success) {
+      throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
+    }
+  } catch (err) {
+    if (err instanceof TRPCError) throw err;
+  }
+  return next();
+});
+
+export const emailRateLimitedProcedure = t.procedure.use(enforceEmailRateLimit);
 
 /**
  * Protected (authenticated) procedure

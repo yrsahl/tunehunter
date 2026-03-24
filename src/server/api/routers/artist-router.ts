@@ -1,4 +1,4 @@
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, publicProcedure, rateLimitedProcedure } from "@/server/api/trpc";
 import { artistGenres, artists, genres } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
@@ -38,7 +38,7 @@ export const artistRouter = createTRPCRouter({
     }),
 
   // ********* Mutations *********
-  addSimpleArtist: publicProcedure.input(AddSimpleArtistSchema).mutation(async ({ ctx, input }) => {
+  addSimpleArtist: rateLimitedProcedure.input(AddSimpleArtistSchema).mutation(async ({ ctx, input }) => {
     // Check if artist already exists
     const artist = await ctx.db.query.artists.findFirst({
       where: (artists, { eq }) => eq(artists.id, input.id),
@@ -56,7 +56,7 @@ export const artistRouter = createTRPCRouter({
     };
   }),
 
-  addOrUpdateArtist: publicProcedure.input(AddArtistSchema).mutation(async ({ ctx, input }) => {
+  addOrUpdateArtist: rateLimitedProcedure.input(AddArtistSchema).mutation(async ({ ctx, input }) => {
     // Check if artist already exists
     const artist = await ctx.db.query.artists.findFirst({
       where: (artists, { eq }) => eq(artists.id, input.id),
@@ -107,7 +107,7 @@ export const artistRouter = createTRPCRouter({
     };
   }),
 
-  addSimpleArtists: publicProcedure
+  addSimpleArtists: rateLimitedProcedure
     .input(z.array(AddSimpleArtistSchema))
     .mutation(async ({ ctx, input }) => {
       // Check if artists already exist

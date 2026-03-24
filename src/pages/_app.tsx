@@ -20,6 +20,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { DefaultSeo } from "next-seo";
 import SEO from "../../next-seo.config";
+import DevOverlay from "@/components/dev/DevOverlay";
 
 const toastOptions = {
   // Figure this out at some later day
@@ -45,6 +46,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       </Head>
       <DefaultSeo {...SEO} />
       <Toaster position="top-right" toastOptions={toastOptions} closeButton richColors />
+      {process.env.NODE_ENV === "development" && <DevOverlay />}
       <SpeedInsights />
       <Analytics />
       <SessionProvider session={session}>

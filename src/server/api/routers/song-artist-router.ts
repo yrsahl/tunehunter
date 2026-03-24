@@ -1,10 +1,10 @@
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, rateLimitedProcedure } from "@/server/api/trpc";
 import { songArtists } from "@/server/db/schema";
 import { z } from "zod";
 
 export const songArtistRouter = createTRPCRouter({
   // ********* Mutations *********
-  addArtistsToSong: publicProcedure
+  addArtistsToSong: rateLimitedProcedure
     .input(z.object({ songId: z.string(), artistIds: z.array(z.string()) }))
     .mutation(async ({ ctx, input }) => {
       // Check if song exists in song table

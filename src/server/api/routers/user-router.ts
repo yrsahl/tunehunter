@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { z } from "zod";
 
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, emailRateLimitedProcedure, protectedProcedure, publicProcedure } from "@/server/api/trpc";
 import { accounts, users, verificationTokens } from "@/server/db/schema";
 import { sendVerificationCodeEmail } from "@/services/email";
 import { TRPCError } from "@trpc/server";
@@ -77,7 +77,7 @@ export const userRouter = createTRPCRouter({
       return { success: "ACCOUNT_CREATED" };
     }),
 
-  storeAndSendVerificationToken: publicProcedure
+  storeAndSendVerificationToken: emailRateLimitedProcedure
     .input(z.object({ email: z.string().email(), token: z.string() }))
     .mutation(async ({ ctx, input }) => {
       await sendVerificationCodeEmail(input.email, input.token);
