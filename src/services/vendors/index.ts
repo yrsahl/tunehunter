@@ -15,14 +15,24 @@ const AMAZON_AFFILIATE_TAGS: Record<string, string | undefined> = {
   "amazon.com.au": process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_AU,
 };
 
-/** Appends the affiliate tag to Amazon URLs; returns other URLs unchanged. */
+const BEATPORT_AFFILIATE_ID = process.env.NEXT_PUBLIC_BEATPORT_AFFILIATE_ID;
+
+/** Appends the affiliate tag to known vendor URLs; returns other URLs unchanged. */
 export function withAffiliateTag(url: string): string {
   try {
     const { hostname } = new URL(url);
     const domain = hostname.replace(/^www\./, "");
-    const tag = AMAZON_AFFILIATE_TAGS[domain];
-    if (!tag) return url;
-    return `${url}?tag=${tag}`;
+
+    // Amazon
+    const amazonTag = AMAZON_AFFILIATE_TAGS[domain];
+    if (amazonTag) return `${url}?tag=${amazonTag}`;
+
+    // Beatport (Post Affiliate Pro: a_aid param)
+    if (domain === "beatport.com" && BEATPORT_AFFILIATE_ID) {
+      return `${url}?a_aid=${BEATPORT_AFFILIATE_ID}`;
+    }
+
+    return url;
   } catch {
     return url;
   }
