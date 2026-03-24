@@ -1,9 +1,9 @@
 ---- CORE
 
-Production vendor search buggy
+Check region functionality (Uppercase?)
 
 Spotify callback not working
-E-mail templates for login
+E-mail templates for login, open mails button only on mobile
 Edit picture functionality (s3 bucket)
 Stresstest + Monitoring
 
