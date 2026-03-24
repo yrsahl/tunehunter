@@ -13,7 +13,7 @@ import { fetchSpotifyArtistData, fetchSpotifyTrack } from "@/services/spotify";
 import { TrendingTrack, TrendingTracks } from "@/types/song-types";
 import { desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
-import { AddSearchQueriesSchema, AddSongSchema } from "../schemas/song-schemas";
+import { StoreSongSchema } from "../schemas/song-schemas";
 
 
 export const songRouter = createTRPCRouter({
@@ -236,31 +236,8 @@ export const songRouter = createTRPCRouter({
   }),
 
   // ********* Mutations *********
-  addSong: publicProcedure.input(AddSongSchema).mutation(async ({ ctx, input }) => {
-    const song = await ctx.db.query.songs.findFirst({
-      where: (songs, { eq }) => eq(songs.id, input.id),
-    });
-    if (song) return { info: "SONG_ALREADY_EXISTS" };
-
-    await ctx.db.insert(songs).values({
-      id: input.id,
-      title: input.title,
-      duration: input.duration,
-      album: input.album,
-      albumArtUrl: input.albumArtUrl,
-      year: input.year,
-      spotifyId: input.spotifyId,
-      isrc: input.isrc,
-    });
-
-    return {
-      success: "SONG_ADDED",
-    };
-  }),
-
-  // Store search queries in the database
-  storeQueryResults: publicProcedure
-    .input(AddSearchQueriesSchema)
+  storeSong: publicProcedure
+    .input(StoreSongSchema)
     .mutation(async ({ ctx, input }) => {
       // Deduplicate by song id (same title+artist hash can appear multiple times in results)
       const uniqueInput = input.filter(

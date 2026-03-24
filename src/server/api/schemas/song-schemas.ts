@@ -14,7 +14,7 @@ export const AddSongSchema = z.object({
   isrc: z.union([z.string(), z.null()]),
 });
 
-export const AddSearchQueriesSchema = z.array(
+export const StoreSongSchema = z.array(
   z.object({
     song: AddSongSchema,
     artists: z.array(AddSimpleArtistSchema),
