@@ -39,9 +39,10 @@ export const SongListingContextProvider = ({
 
   // 1. Get trackData
   const utils = api.useUtils();
-  const { data: trackData, isLoading: isTrackDataLoading } = api.song.getTrack.useQuery({
-    id: songId,
-  });
+  const { data: trackData, isLoading: isTrackDataLoading } = api.song.getTrack.useQuery(
+    { id: songId },
+    { staleTime: 5 * 60 * 1000 },
+  );
 
   // 2. Enrich artist data (popularity, followers, genres) if logged in
   const { mutate: enrichArtists } = api.song.enrichArtists.useMutation({

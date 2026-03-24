@@ -2,14 +2,14 @@ import { useQueryDataContext } from "@/contexts/QueryDataContext";
 import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { api } from "@/lib/api";
 import { CountryCode } from "@/lib/validators";
-import { Track, TrackArtist } from "@/types/song-types";
+import { Track } from "@/types/song-types";
 import { debounce } from "lodash";
 import { FormEvent, useCallback, useEffect, useMemo } from "react";
 import { useSearchSettingsStore } from "./stores/useSearchSettingsStore";
 import useSearchStore, { SEARCH_SUBMITTED, SelectedSearchParams } from "./stores/useSearchStore";
 import { useEventEmitter } from "./useEventEmitter";
 import useRouterWithHelpers from "./useRouterWithHelpers";
-import useSpotifyTokens from "./useSpotifyTokens";
+
 const useSearch = () => {
   const { searchState, setSearchInput, setSelectedSearch } = useSearchStore();
   const { publishEvent: publishSearchSubmitted } = useEventEmitter<SelectedSearchParams | null>(
@@ -19,8 +19,6 @@ const useSearch = () => {
   const { history } = useSearchTabDataContext();
   const router = useRouterWithHelpers();
   const addSearchActivity = api.userActivities.addSearchActivity.useMutation();
-  const { mutate: enrichArtists } = api.song.enrichArtists.useMutation();
-  const { userAccessToken } = useSpotifyTokens();
 
   // Are there any settings set?
   const { searchForClubMixesOnly, minimumLengthOption, minimumLengthSeconds } =
@@ -75,7 +73,7 @@ const useSearch = () => {
   };
 
   // Submit search
-  const submitSearch = async (track: Track, region: CountryCode) => {
+  const submitSearch = (track: Track, region: CountryCode) => {
     const { song, artists } = track;
     const { id, title } = song;
     const artistsJoined = artists.map((artist) => artist.name).join(", ");
@@ -83,30 +81,15 @@ const useSearch = () => {
     // Hide queries if currently visible
     if (setShowQueries) setShowQueries(false);
 
-    // Enrich song data if logged in and not yet fully rich
-    const isArtistComplete = (a: TrackArtist) => a.popularity != null && a.followers != null;
-    const isTrackRich = !!song.spotifyId && artists.every(isArtistComplete);
-    if (userAccessToken && !isTrackRich) {
-      enrichArtists({ songId: id, accessToken: userAccessToken });
-    }
-
     // Update store (input text + syncRouteSearch change detection) and start the search
     setSelectedSearch({ id, region, artist: artistsJoined, title });
     publishSearchSubmitted({ id, region, artist: artistsJoined, title }, false);
 
-    // Refresh query data to show new queries for selected song
-    requestQueryData(`${artistsJoined} - ${title}`, searchSettings, false);
-
-    // Store search activity and refresh history data for user
-    try {
-      await addSearchActivity.mutateAsync({ songId: id, region });
-      history.refetchData();
-    } catch (error) {
-      console.error(
-        "User activity could not be stored, probably due to missing song in database",
-        error,
-      );
-    }
+    // Store search activity and refresh history data for user (fire-and-forget)
+    addSearchActivity.mutate({ songId: id, region }, {
+      onSuccess: () => history.refetchData(),
+      onError: (error) => console.error("User activity could not be stored", error),
+    });
 
     // Push to router
     const trackSearchHref = {
@@ -120,7 +103,7 @@ const useSearch = () => {
         isPlaying: false,
       },
     };
-    await router.push(trackSearchHref, undefined, { shallow: true });
+    void router.push(trackSearchHref, undefined, { shallow: true });
   };
 
   return {

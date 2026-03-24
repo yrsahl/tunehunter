@@ -74,7 +74,7 @@ export const SearchTabDataProvider = ({ children }: { children: ReactNode }) => 
 
   // Fetch data
   const { data: trendingData, isLoading: isTrendingDataLoading } =
-    api.song.getTrendingSongs.useQuery();
+    api.song.getTrendingSongs.useQuery(undefined, { staleTime: 5 * 60 * 1000 });
   const { data: historyData, isLoading: isHistoryDataLoading } =
     api.userActivities.getHistory.useQuery(undefined, { enabled: loggedIn });
   const { data: wishlistData, isLoading: isWishlistDataLoading } =
