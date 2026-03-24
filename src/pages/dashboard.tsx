@@ -19,6 +19,12 @@ const StatCard = ({ label, value }: { label: string; value: number }) => (
   </div>
 );
 
+const SectionHeading = ({ children }: { children: React.ReactNode }) => (
+  <h2 className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
+    {children}
+  </h2>
+);
+
 const Dashboard: NextPage = () => {
   const { data, isLoading } = api.stats.getStats.useQuery(undefined, { staleTime: 60 * 1000 });
   const { data: serviceUsage } = api.stats.getServiceUsage.useQuery(undefined, {
@@ -31,7 +37,7 @@ const Dashboard: NextPage = () => {
   if (isLoading) return <div className="p-10 text-muted-foreground">Loading...</div>;
   if (!data) return null;
 
-  const totalListingRequests = data.dbCacheHits + data.externalFetches;
+  const totalListingRequests = data.dbCacheHits + data.externalFetches + data.noMatch;
   const cacheRate =
     totalListingRequests > 0 ? Math.round((data.dbCacheHits / totalListingRequests) * 100) : 0;
 
@@ -39,16 +45,15 @@ const Dashboard: NextPage = () => {
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-10 p-8">
       <h1 className="text-2xl font-semibold">Dashboard</h1>
 
-      {/* Top stats */}
+      {/* Overview cards */}
       <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
-          Overview
-        </h2>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <SectionHeading>Overview</SectionHeading>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           <StatCard label="Total searches" value={data.totalSearches} />
           <StatCard label="Listing requests" value={totalListingRequests} />
           <StatCard label="Served from cache" value={data.dbCacheHits} />
-          <StatCard label="Fetched externally" value={data.externalFetches} />
+          <StatCard label="Fetched externally" value={data.externalFetches + data.noMatch} />
+          <StatCard label="tRPC rate limited" value={data.trpcRateLimited} />
         </div>
         {totalListingRequests > 0 && (
           <p className="text-sm text-muted-foreground">
@@ -57,80 +62,55 @@ const Dashboard: NextPage = () => {
         )}
       </section>
 
-      {/* Breakdown by vendor */}
+      {/* Listing requests */}
       <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
-          By vendor
-        </h2>
-        <table className="w-full text-sm">
+        <SectionHeading>Listing requests</SectionHeading>
+        <table className="w-full table-fixed text-sm">
+          <colgroup>
+            <col className="w-1/6" />
+            <col className="w-1/6" />
+            <col className="w-1/6" />
+            <col className="w-1/6" />
+            <col className="w-1/6" />
+            <col className="w-1/6" />
+          </colgroup>
           <thead>
             <tr className="border-b border-primary/10 text-left text-muted-foreground">
               <th className="pb-2 font-normal">Vendor</th>
+              <th className="pb-2 font-normal">Total</th>
               <th className="pb-2 font-normal">From cache</th>
               <th className="pb-2 font-normal">External</th>
-              <th className="pb-2 font-normal">No match</th>
               <th className="pb-2 font-normal">Rate limited</th>
               <th className="pb-2 font-normal">Unreachable</th>
-              <th className="pb-2 font-normal">Total</th>
-              <th className="pb-2 font-normal">Avg latency</th>
             </tr>
           </thead>
           <tbody>
             {vendors.map((vendor) => {
               const cache = Number(
-                data.byVendor.find((r) => r.vendor === vendor && r.source === "db_cache")?.count ??
-                  0,
+                data.byVendor.find((r) => r.vendor === vendor && r.source === "db_cache")?.count ?? 0,
               );
               const external = Number(
-                data.byVendor.find((r) => r.vendor === vendor && r.source === "external")?.count ??
-                  0,
+                data.byVendor.find((r) => r.vendor === vendor && r.source === "external")?.count ?? 0,
               );
               const noMatch = Number(
-                data.byVendor.find((r) => r.vendor === vendor && r.source === "no_match")?.count ??
-                  0,
+                data.byVendor.find((r) => r.vendor === vendor && r.source === "no_match")?.count ?? 0,
               );
               const rateLimited = Number(
-                data.byVendor.find((r) => r.vendor === vendor && r.source === "rate_limited")
-                  ?.count ?? 0,
+                data.byVendor.find((r) => r.vendor === vendor && r.source === "rate_limited")?.count ?? 0,
               );
               const unreachable = Number(
-                data.byVendor.find((r) => r.vendor === vendor && r.source === "store_unreachable")
-                  ?.count ?? 0,
+                data.byVendor.find((r) => r.vendor === vendor && r.source === "store_unreachable")?.count ?? 0,
               );
-              const total = cache + external;
-              const cacheTotal = cache + external + noMatch;
-              const cacheRate = cacheTotal > 0 ? Math.round((cache / cacheTotal) * 100) : null;
-              const notFoundTotal = external + noMatch;
-              const notFoundRate =
-                notFoundTotal > 0 ? Math.round((noMatch / notFoundTotal) * 100) : null;
-              const avgMs = insights?.vendorLatency.find((v) => v.vendor === vendor)?.avgMs ?? null;
+              const externalTotal = external + noMatch;
+              const total = cache + externalTotal;
               const vendorLabel =
                 vendor === "itunes" ? "iTunes" : vendor.charAt(0).toUpperCase() + vendor.slice(1);
               return (
                 <tr key={vendor} className="border-b border-primary/5">
                   <td className="py-3">{vendorLabel}</td>
-                  <td className="py-3">
-                    {cache.toLocaleString()}
-                    {cacheRate != null && (
-                      <span className="ml-1 font-normal text-muted-foreground">({cacheRate}%)</span>
-                    )}
-                  </td>
-                  <td className="py-3">{external.toLocaleString()}</td>
-                  <td className="py-3">
-                    {noMatch > 0 ? (
-                      <span className="text-muted-foreground">
-                        {noMatch.toLocaleString()}
-                        {notFoundRate != null && (
-                          <span className={notFoundRate > 20 ? "text-yellow-500" : ""}>
-                            {" "}
-                            ({notFoundRate}%)
-                          </span>
-                        )}
-                      </span>
-                    ) : (
-                      0
-                    )}
-                  </td>
+                  <td className="py-3 font-medium">{total.toLocaleString()}</td>
+                  <td className="py-3">{cache.toLocaleString()}</td>
+                  <td className="py-3">{externalTotal.toLocaleString()}</td>
                   <td className="py-3">
                     {rateLimited > 0 ? (
                       <span className="text-yellow-500">{rateLimited.toLocaleString()}</span>
@@ -145,7 +125,93 @@ const Dashboard: NextPage = () => {
                       0
                     )}
                   </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </section>
+
+      {/* Match quality */}
+      <section className="flex flex-col gap-3">
+        <SectionHeading>Match quality</SectionHeading>
+        <table className="w-full table-fixed text-sm">
+          <colgroup>
+            <col className="w-1/4" />
+            <col className="w-1/4" />
+            <col className="w-1/4" />
+            <col className="w-1/4" />
+          </colgroup>
+          <thead>
+            <tr className="border-b border-primary/10 text-left text-muted-foreground">
+              <th className="pb-2 font-normal">Vendor</th>
+              <th className="pb-2 font-normal">Total</th>
+              <th className="pb-2 font-normal">Matched</th>
+              <th className="pb-2 font-normal">No match</th>
+            </tr>
+          </thead>
+          <tbody>
+            {vendors.map((vendor) => {
+              const cache = Number(
+                data.byVendor.find((r) => r.vendor === vendor && r.source === "db_cache")?.count ?? 0,
+              );
+              const external = Number(
+                data.byVendor.find((r) => r.vendor === vendor && r.source === "external")?.count ?? 0,
+              );
+              const noMatch = Number(
+                data.byVendor.find((r) => r.vendor === vendor && r.source === "no_match")?.count ?? 0,
+              );
+              const matched = cache + external;
+              const total = matched + noMatch;
+              const vendorLabel =
+                vendor === "itunes" ? "iTunes" : vendor.charAt(0).toUpperCase() + vendor.slice(1);
+              return (
+                <tr key={vendor} className="border-b border-primary/5">
+                  <td className="py-3">{vendorLabel}</td>
                   <td className="py-3 font-medium">{total.toLocaleString()}</td>
+                  <td className="py-3">{matched.toLocaleString()}</td>
+                  <td className="py-3">
+                    {noMatch > 0 ? (
+                      <span
+                        className={
+                          total > 0 && noMatch / total > 0.2 ? "text-yellow-500" : "text-foreground"
+                        }
+                      >
+                        {noMatch.toLocaleString()}
+                      </span>
+                    ) : (
+                      0
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </section>
+
+      {/* Vendor latency */}
+      <section className="flex flex-col gap-3">
+        <SectionHeading>Vendor latency</SectionHeading>
+        <table className="w-full table-fixed text-sm">
+          <colgroup>
+            <col className="w-1/2" />
+            <col className="w-1/2" />
+          </colgroup>
+          <thead>
+            <tr className="border-b border-primary/10 text-left text-muted-foreground">
+              <th className="pb-2 font-normal">Vendor</th>
+              <th className="pb-2 font-normal">Avg latency</th>
+            </tr>
+          </thead>
+          <tbody>
+            {vendors.map((vendor) => {
+              const avgMs = insights?.vendorLatency.find((v) => v.vendor === vendor)?.avgMs ?? null;
+              const vendorLabel =
+                vendor === "itunes" ? "iTunes" : vendor.charAt(0).toUpperCase() + vendor.slice(1);
+              return (
+                <tr key={vendor} className="border-b border-primary/5">
+                  <td className="py-3">{vendorLabel}</td>
                   <td className="py-3 text-muted-foreground">
                     {avgMs != null ? `${Number(avgMs).toLocaleString()} ms` : "—"}
                   </td>
@@ -156,30 +222,9 @@ const Dashboard: NextPage = () => {
         </table>
       </section>
 
-      {/* API protection */}
-      <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
-          API Protection
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          tRPC rate limited:{" "}
-          <span
-            className={
-              data.trpcRateLimited > 0
-                ? "font-medium text-yellow-500"
-                : "font-medium text-foreground"
-            }
-          >
-            {data.trpcRateLimited.toLocaleString()}
-          </span>
-        </p>
-      </section>
-
       {/* External services */}
       <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
-          External Services
-        </h2>
+        <SectionHeading>External services</SectionHeading>
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-primary/10 text-left text-muted-foreground">
