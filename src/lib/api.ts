@@ -4,12 +4,19 @@
  *
  * We also create a few inference helpers for input and output types.
  */
-import { httpBatchLink } from "@trpc/client";
+import { TRPCClientError, httpBatchLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
 import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
+import { toast } from "sonner";
 import superjson from "superjson";
 
 import { type AppRouter } from "@/server/api/root";
+
+const onError = (error: unknown) => {
+  if (error instanceof TRPCClientError && error.data?.code === "TOO_MANY_REQUESTS") {
+    toast.error("Too many requests. Please wait a moment.", { id: "rate-limit" });
+  }
+};
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url
@@ -43,6 +50,12 @@ export const api = createTRPCNext<AppRouter>({
           url: `${getBaseUrl()}/api/trpc`,
         }),
       ],
+      queryClientConfig: {
+        defaultOptions: {
+          queries: { onError },
+          mutations: { onError },
+        },
+      },
       // ---- Invalidate everything on any mutation
       // overrides: {
       //   useMutation: {

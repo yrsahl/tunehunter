@@ -35,6 +35,13 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
     );
   }
 
+  // Rate limited
+  if (vendorResponse?.error === "RATE_LIMITED") {
+    return (
+      <SongListingRowMessage message="Rate limited — try again shortly." store={vendor} region={region} />
+    );
+  }
+
   // No data
   if (!vendorResponse || !vendorResponse?.data || vendorResponse.error === "NO_DATA_FOUND") {
     return (
