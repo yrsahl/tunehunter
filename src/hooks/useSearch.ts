@@ -97,7 +97,7 @@ const useSearch = () => {
       query: {
         ...router.query,
         id,
-        region,
+        region: region.toLowerCase(),
         title,
         artist: artistsJoined,
         isPlaying: false,
