@@ -110,7 +110,14 @@ const Dashboard: NextPage = () => {
                   <td className="py-3">{vendorLabel}</td>
                   <td className="py-3 font-medium">{total.toLocaleString()}</td>
                   <td className="py-3">{cache.toLocaleString()}</td>
-                  <td className="py-3">{externalTotal.toLocaleString()}</td>
+                  <td className="py-3">
+                    {externalTotal.toLocaleString()}
+                    {total > 0 && (
+                      <span className="ml-1 text-muted-foreground">
+                        ({Math.round((externalTotal / total) * 100)}%)
+                      </span>
+                    )}
+                  </td>
                   <td className="py-3">
                     {rateLimited > 0 ? (
                       <span className="text-yellow-500">{rateLimited.toLocaleString()}</span>
@@ -178,6 +185,11 @@ const Dashboard: NextPage = () => {
                         }
                       >
                         {noMatch.toLocaleString()}
+                        {total > 0 && (
+                          <span className="ml-1 text-muted-foreground">
+                            ({Math.round((noMatch / total) * 100)}%)
+                          </span>
+                        )}
                       </span>
                     ) : (
                       0
