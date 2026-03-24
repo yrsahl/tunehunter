@@ -4,7 +4,7 @@
  *
  * We also create a few inference helpers for input and output types.
  */
-import { type TRPCLink, TRPCClientError, httpBatchLink } from "@trpc/client";
+import { type TRPCLink, TRPCClientError, unstable_httpBatchStreamLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
 import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 import { observable } from "@trpc/server/observable";
@@ -88,7 +88,7 @@ export const api = createTRPCNext<AppRouter>({
        */
       links: [
         ...(process.env.NODE_ENV === "development" ? [devCounterLink] : []),
-        httpBatchLink({
+        unstable_httpBatchStreamLink({
           url: `${getBaseUrl()}/api/trpc`,
         }),
       ],
