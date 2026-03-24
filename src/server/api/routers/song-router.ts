@@ -1,4 +1,4 @@
-import { createTRPCRouter, rateLimitedProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, publicProcedure, rateLimitedProcedure } from "@/server/api/trpc";
 import {
   artistGenres,
   artists,
@@ -24,7 +24,7 @@ export const songRouter = createTRPCRouter({
     });
   }),
 
-  getTrack: rateLimitedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+  getTrack: publicProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
     const song = await ctx.db.query.songs.findFirst({
       where: (songs, { eq }) => eq(songs.id, input.id),
     });
@@ -259,7 +259,7 @@ export const songRouter = createTRPCRouter({
   }),
 
   // Store search queries in the database
-  storeQueryResults: rateLimitedProcedure
+  storeQueryResults: publicProcedure
     .input(AddSearchQueriesSchema)
     .mutation(async ({ ctx, input }) => {
       // Deduplicate by song id (same title+artist hash can appear multiple times in results)

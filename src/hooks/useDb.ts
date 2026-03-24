@@ -4,8 +4,8 @@ import { Track } from "@/types/song-types";
 const useDb = () => {
   const storeQueryResults = api.song.storeQueryResults.useMutation();
 
-  // Store tracks in the database
-  const storeTracksInDb = async (tracks: Track[]) => {
+  // Store tracks in the database. Returns false if the request failed (e.g. rate limited).
+  const storeTracksInDb = async (tracks: Track[]): Promise<boolean> => {
     const results = tracks.map((track) => {
       const { song, artists } = track;
       return {
@@ -30,7 +30,12 @@ const useDb = () => {
         }),
       };
     });
-    await storeQueryResults.mutateAsync(results);
+    try {
+      await storeQueryResults.mutateAsync(results);
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   return { storeTracksInDb };

@@ -1,5 +1,6 @@
 import { LoadingIndicator } from "@/components/Indicators";
 import { useQueryDataContext } from "@/contexts/QueryDataContext";
+import useDb from "@/hooks/useDb";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
 import useDeviceSize from "@/hooks/useDeviceSize";
 import useSearch from "@/hooks/useSearch";
@@ -8,9 +9,10 @@ import { motion } from "framer-motion";
 import NoDataMessage from "./SearchTabContent/NoDataMessage";
 
 const SearchQueries = () => {
-  const { isQueryDataLoading, queryData } = useQueryDataContext();
+  const { isQueryDataLoading, queryData, setShowQueries } = useQueryDataContext();
   const { region } = useRegionSettings();
   const { submitSearch } = useSearch();
+  const { storeTracksInDb } = useDb();
   const { isSmallDevice } = useDeviceSize();
 
   // No search
@@ -45,7 +47,7 @@ const SearchQueries = () => {
                         transition: { duration: 0.1 },
                       }}
                       className="cursor-pointer"
-                      onClick={() => submitSearch(track, region)}
+                      onClick={async () => { setShowQueries(false); const ok = await storeTracksInDb([track]); if (ok) submitSearch(track, region); }}
                       key={song.id}
                     >
                       <td className="py-2 pl-3 pr-6 md:py-3 md:pl-5 md:pr-6">

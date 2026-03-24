@@ -1,4 +1,4 @@
-import { createTRPCRouter, rateLimitedProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { vendorRateLimiters } from "@/lib/rate-limiter";
 import { songListingMisses, songListingRequests, songListings } from "@/server/db/schema";
 import { fetchVendorData } from "@/services/vendors";
@@ -18,7 +18,7 @@ const MISS_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
  */
 
 export const songListingsRouter = createTRPCRouter({
-  getSongListing: rateLimitedProcedure.input(SongListingSchema).query(async ({ ctx, input }) => {
+  getSongListing: publicProcedure.input(SongListingSchema).query(async ({ ctx, input }) => {
     // Validate input
     const validatedFields = SongListingSchema.safeParse(input);
     if (!validatedFields.success) return { error: "INVALID_FIELDS" };
