@@ -1,12 +1,15 @@
 ---- CORE
 
 Amazon ID for all remaining regions
+Visuals
+Create a logo
+
 
 E-mail templates for login, open mails button only on mobile
 Edit picture functionality (s3 bucket)
 Stresstest + Monitoring
 
-Create a logo
+
 
 
 ---- SCALABILITY (from audit)

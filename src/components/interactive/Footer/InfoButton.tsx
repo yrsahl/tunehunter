@@ -10,10 +10,7 @@ import {
 } from "@/components/ui/sheet";
 import useDeviceSize from "@/hooks/useDeviceSize";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
-import { cn } from "@/lib/utils";
 import { quicksand } from "@/pages/layout";
-import { slideInAndOutFromAbove } from "@/styles/animations";
-import { AnimatePresence, motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
@@ -128,7 +125,7 @@ const InfoButton = () => {
                       </span>
                     </Button>
                   </a>
-                  <div className="relative">
+                  {/* <div className="relative">
                     <Button
                       variant="success"
                       size={buttonSize}
@@ -181,7 +178,7 @@ const InfoButton = () => {
                         </motion.div>
                       )}
                     </AnimatePresence>
-                  </div>
+                  </div> */}
                 </div>
               </div>
 
