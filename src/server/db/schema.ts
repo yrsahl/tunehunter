@@ -218,6 +218,7 @@ export const songListingRequests = pgTable(
   (table) => ({
     vendorIdx: index("songListingRequest_vendor_idx").on(table.vendor),
     sourceIdx: index("songListingRequest_source_idx").on(table.source),
+    createdAtIdx: index("songListingRequest_createdAt_idx").on(table.createdAt),
   }),
 );
 
