@@ -24,9 +24,11 @@ const SkeletonTable = ({ hasHeader, hasExtraElement }: SkeletonTableProps) => {
           {Array.from({ length: SKELETON_ROW_COUNT }, (_, i) => (
             <tr key={i} className="max-h-16 overflow-hidden">
               <td className="w-[56px] py-2 pr-4 sm:w-[84px] sm:pr-8">
-                <div className="avatar">
-                  <div className="mask mask-squircle h-10 w-10 md:h-12 md:w-12">
-                    <Skeleton className="h-full w-full" />
+                <div className="flex items-center gap-4">
+                  <div className="avatar">
+                    <div className="mask mask-squircle h-10 w-10 md:h-12 md:w-12">
+                      <Skeleton className="h-full w-full" />
+                    </div>
                   </div>
                 </div>
               </td>
@@ -44,10 +46,10 @@ const SkeletonTable = ({ hasHeader, hasExtraElement }: SkeletonTableProps) => {
               <td className="w-[48%] min-w-0 pl-1 pr-2 sm:w-[52%] sm:pl-2 sm:pr-4">
                 <Skeleton className="h-4 w-4/5" />
               </td>
-              <td className="hidden w-[60px] pr-2 align-middle sm:table-cell sm:pr-4">
+              <td className="hidden w-[60px] pr-2 align-middle md:table-cell md:pr-4">
                 <Skeleton className="h-4 w-12" />
               </td>
-              <td className="hidden w-[96px] pl-2 text-right align-middle sm:table-cell sm:pl-4">
+              <td className="hidden w-[96px] pl-2 text-right align-middle md:table-cell md:pl-4">
                 <Skeleton className="h-8 w-20 bg-primary/50 sm:h-9 sm:w-20" />
               </td>
             </tr>

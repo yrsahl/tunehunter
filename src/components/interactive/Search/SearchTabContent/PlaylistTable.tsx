@@ -61,7 +61,7 @@ const PlaylistTable = () => {
       </form>
 
       <div className="relative flex-1 overflow-hidden">
-        {isFetching ? (
+        {!isFetching ? (
           <SkeletonTable hasHeader={false} />
         ) : (
           <AnimatePresence mode="wait">
