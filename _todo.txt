@@ -1,7 +1,5 @@
 ---- CORE
 
-Amazon ID for all remaining regions
-Visuals
 Create a logo
 
 Rework TrendingTable, TableBody, TableRow - SkeletonTable to be similar to ...Skeleton
@@ -10,7 +8,7 @@ Skeleton matchup width exactly
 Rework settings and registration layout and names
 Restricted tab should self-close (or not open at all) if state url can’t be reinstated (e.g., not logged in anymore for history)
 Route refresh not working in prod
-Remove Spotify tab
+Remove Spotify tab and functionality for now, store somewhere
 Playlist URL store for refresh
 E-mail templates for login, open mails button only on mobile
 Edit picture functionality (s3 bucket)
