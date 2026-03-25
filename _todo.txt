@@ -4,6 +4,9 @@ Amazon ID for all remaining regions
 Visuals
 Create a logo
 
+Skeleton matchup width exactly
+Rework settings and registration layout and names
+Restricted tab should self-close (or not open at all) if state url can’t be reinstated (e.g., not logged in anymore for history)
 Route refresh not working in prod
 Remove Spotify tab
 Playlist URL store for refresh

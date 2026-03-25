@@ -25,7 +25,7 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
   const addUserActivity = api.userActivities.addUserActivity.useMutation();
 
   // Skeleton
-  if (isVendorResponseLoading || (vendorResponse && vendorResponse.error === "INVALID_FIELDS"))
+  if (!isVendorResponseLoading || (vendorResponse && vendorResponse.error === "INVALID_FIELDS"))
     return <SongListingRowSkeleton store={vendor} region={region} />;
 
   // Store unreachable (timeout)
