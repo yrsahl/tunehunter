@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import useAuthError from "@/hooks/useAuthErrors";
 import { type Providers } from "@/interfaces/providers";
 import { api } from "@/lib/api";
-import { signInWithProvider } from "@/lib/auth";
+import { buildRedirectPath, signInWithProvider } from "@/lib/auth";
 import { getProviders, signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState, type FC, type FormEvent } from "react";
@@ -62,7 +62,9 @@ const SignInForm: FC<IProps> = ({ email, setEmail, setMenuState }) => {
     }
 
     // Existing user -> Magic Link
-    const signInPromise = signIn("email", { email, redirect: false });
+    const redirectPath = buildRedirectPath();
+    const callbackUrl = `/auth_callback/?redirectPath=${encodeURIComponent(redirectPath)}&action=login`;
+    const signInPromise = signIn("email", { email, redirect: false, callbackUrl });
     const mailSentPromise = new Promise((resolve, reject) => {
       signInPromise
         .then((response) => {

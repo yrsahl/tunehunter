@@ -3,7 +3,6 @@
 Create a logo
 
 Reinstate params after login
-Sometimes SearchBar placeholder not being put back if no id
 
 Rework settings and registration layout and names
 Remove or replace spotify login

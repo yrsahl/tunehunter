@@ -38,6 +38,6 @@ export const signInWithProvider = async (
 ) => {
   const redirectPath = buildRedirectPath();
   const localePart = locale ? `/${locale}` : "";
-  const callbackUrl = `${localePart}/auth_callback/?redirectPath=${redirectPath}${type && `&action=${type}`}`;
+  const callbackUrl = `${localePart}/auth_callback/?redirectPath=${encodeURIComponent(redirectPath)}${type && `&action=${type}`}`;
   await signIn(providerId, { callbackUrl });
 };
