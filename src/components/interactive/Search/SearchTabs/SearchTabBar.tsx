@@ -1,7 +1,8 @@
 import useDeviceSize from "@/hooks/useDeviceSize";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
+import { useSession } from "next-auth/react";
 import { useEffect } from "react";
-import SearchTabButton from "./SearchTabButton";
+import SearchTabButton, { tabAccessMap } from "./SearchTabButton";
 
 // Tabs
 export const searchTabs = ["trending", "wishlist", "history", "playlist"] as const;
@@ -17,17 +18,23 @@ interface SearchTabBarProps {
 const SearchTabBar = ({ activeSearchTab, setActiveSearchTab }: SearchTabBarProps) => {
   const router = useRouterWithHelpers();
   const { isMobileDevice } = useDeviceSize();
+  const { status: sessionStatus } = useSession();
+  const loggedIn = sessionStatus === "authenticated";
 
-  // Restore active tab if param is present
+  // Restore active tab if param is present and user has access
   useEffect(() => {
-    if (!router.isReady) return;
+    if (!router.isReady || sessionStatus === "loading") return;
     const searchParam = router.getParams("search");
-    if (router.isReady && searchParam && isSearchTab(searchParam)) {
-      setActiveSearchTab(searchParam);
-    } else {
-      setActiveSearchTab("");
+    if (searchParam && isSearchTab(searchParam)) {
+      const access = tabAccessMap[searchParam];
+      const hasAccess = access === "all" || (access === "signed-in" && loggedIn);
+      if (hasAccess) {
+        setActiveSearchTab(searchParam);
+        return;
+      }
     }
-  }, [router.isReady, router.query]);
+    setActiveSearchTab("");
+  }, [router.isReady, router.query, sessionStatus]);
 
   if (isMobileDevice) {
     return (

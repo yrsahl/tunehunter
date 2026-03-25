@@ -2,8 +2,6 @@
 
 Create a logo
 
-Access token expiring on old tabs
-Region setting moving profile menu up
 Restricted tab should self-close (or not open at all) if state url can’t be reinstated (e.g., not logged in anymore for history)
 Sometimes SearchBar placeholder not being put back if no id
 

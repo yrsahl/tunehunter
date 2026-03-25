@@ -8,8 +8,8 @@ import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import type { SearchTab } from "./SearchTabBar";
 
-type AccessScopes = "all" | "signed-in-to-spotify" | "signed-in";
-const tabAccessMap: Record<SearchTab, AccessScopes> = {
+export type AccessScopes = "all" | "signed-in-to-spotify" | "signed-in";
+export const tabAccessMap: Record<SearchTab, AccessScopes> = {
   trending: "all",
   playlist: "all",
   history: "signed-in",
@@ -83,8 +83,8 @@ const SearchTabButton = ({
             )}
           >
             <div className="flex items-center gap-2 px-1 pb-1">
-              <CustomIcon icon={searchTab} variant={isTabEnabled ? "primary" : "primary-muted"} />
-              <span className="capitalize">{searchTab}</span>
+              <CustomIcon icon={searchTab} variant={isTabEnabled ? "primary" : "primary-muted"} className="pointer-events-none" />
+              <span className="pointer-events-none capitalize">{searchTab}</span>
             </div>
             {!isTabEnabled && (
               <TooltipContent className="border-foreground/30 bg-background text-foreground">
