@@ -3,8 +3,11 @@ import { type GetServerSidePropsContext } from "next";
 import { getServerSession, type DefaultSession, type NextAuthOptions } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
 
+import { SignInTemplate } from "@/components/email-templates/SignInTemplate";
 import { env } from "@/env";
 import { eq } from "drizzle-orm";
+import { renderToStaticMarkup } from "react-dom/server";
+import { Resend } from "resend";
 
 import { db } from "@/server/db";
 import { requestNewAccessToken } from "@/services/spotify";
@@ -12,6 +15,8 @@ import { pgTable } from "drizzle-orm/pg-core";
 import EmailProvider from "next-auth/providers/email";
 import SpotifyProvider from "next-auth/providers/spotify";
 import { accounts } from "./db/schema";
+
+const resend = new Resend(env.EMAIL_SERVER_PASSWORD);
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -92,6 +97,14 @@ export const authOptions: NextAuthOptions = {
       },
       from: env.EMAIL_FROM,
       maxAge: 10 * 60, // Links and codes are valid for 10 minutes
+      sendVerificationRequest: async ({ identifier, url }) => {
+        await resend.emails.send({
+          from: "TuneHunter <contact@tunehunter.app>",
+          to: [identifier],
+          subject: "Sign in to TuneHunter",
+          html: renderToStaticMarkup(SignInTemplate({ url })),
+        });
+      },
     }),
     SpotifyProvider({
       clientId: env.SPOTIFY_CLIENT_ID,

@@ -2,14 +2,11 @@
 
 Create a logo
 
-Reinstate params after login
-
 Rework settings and registration layout and names
+Open mails button only on mobile
+
 Remove or replace spotify login
-
-E-mail templates for login, open mails button only on mobile
 Edit picture functionality (s3 bucket)
-
 Songs that are not on itunes won’t be found? Mix/match with Beatport?
 
 Monitor scrapers in production
