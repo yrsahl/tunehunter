@@ -1,3 +1,4 @@
+import IconButton from "@/components/IconButton";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { api } from "@/lib/api";
 import { fadeInAndOut } from "@/styles/animations";
@@ -51,13 +52,15 @@ const PlaylistTable = () => {
           placeholder="https://open.spotify.com/playlist/3TxNViSYOIVuZLEe9ZIbyx?si=8974367fcb0f488a"
           className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground/50"
         />
-        <button
-          type="submit"
-          disabled={!inputValue.trim() || isFetching}
-          className="shrink-0 rounded-full border border-primary/40 px-3 py-1 text-xs uppercase tracking-wide text-primary transition-colors hover:border-primary hover:bg-primary/10 disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          Load
-        </button>
+        <div className="min-w-0">
+          <IconButton
+            disabled={!inputValue.trim() || isFetching}
+            variant="primary"
+            text="Load"
+            type="submit"
+            textStyle="uppercase text-xs"
+          />
+        </div>
       </form>
 
       <div className="relative flex-1 overflow-hidden">
