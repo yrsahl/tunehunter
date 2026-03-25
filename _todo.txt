@@ -4,6 +4,7 @@ Amazon ID for all remaining regions
 Visuals
 Create a logo
 
+Route refresh not working in prod
 Remove Spotify tab
 Playlist URL store for refresh
 E-mail templates for login, open mails button only on mobile
