@@ -4,9 +4,8 @@ Create a logo
 
 Region setting moving profile menu up
 Rework settings and registration layout and names
+Remove or replace spotify login
 Restricted tab should self-close (or not open at all) if state url can’t be reinstated (e.g., not logged in anymore for history)
-Remove Spotify tab and functionality for now, store somewhere
-Playlist URL store for refresh
 E-mail templates for login, open mails button only on mobile
 Edit picture functionality (s3 bucket)
 
@@ -16,9 +15,7 @@ Monitor scrapers in production
 Stresstest + Monitoring
 
 
-
-
----- SCALABILITY (from audit)
+---- SCALABILITY
 
 MEDIUM:
 [ ] Set maxDuration in next.config.mjs to avoid Vercel timeout on slow Bandcamp scrapes + view refreshes (max. API duration is 10s on Hobby plan, 15s on Pro)
@@ -39,24 +36,12 @@ External service billing alerts (set up in each dashboard, not in app):
 
 
 
-
-
-
-
-
-
 ----- OLD
 
-TrendingSettings: 
-- Local / global
-- PRO: specific region
-- Genre: <>
-
 PRO:
-- Data insight, trending per region
+- Data insights
+- Trending per region, maybe genre, maybe some AI integration?
 - Playlist import, search
-
-Ai trending: once a day recommend something
 
 Fix:
 - App stuck in half-height mode

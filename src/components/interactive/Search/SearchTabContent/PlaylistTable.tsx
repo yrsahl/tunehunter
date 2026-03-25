@@ -1,8 +1,8 @@
 import IconButton from "@/components/IconButton";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { api } from "@/lib/api";
-import { fadeInAndOut } from "@/styles/animations";
-import { AnimatePresence, motion } from "framer-motion";
+import { fadeIn } from "@/styles/animations";
+import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import NoDataMessage from "./NoDataMessage";
 import SkeletonTable from "./SkeletonTable";
@@ -65,42 +65,38 @@ const PlaylistTable = () => {
 
       <div className="relative flex-1 overflow-hidden">
         {isFetching ? (
-          <SkeletonTable hasHeader={false} />
+          <motion.div key="skeleton" {...fadeIn(0.3)} className="h-full w-full">
+            <SkeletonTable hasHeader={false} />
+          </motion.div>
         ) : (
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={submittedUrl || "empty"}
-              {...fadeInAndOut(0.2)}
-              className="h-full w-full"
-            >
-              {!submittedUrl && (
-                <NoDataMessage message="Paste a public Spotify playlist link above to browse its tracks." />
-              )}
-              {submittedUrl && hasError && (
-                <NoDataMessage
-                  message={"error" in data && data.error ? data.error : "Something went wrong."}
-                />
-              )}
-              {submittedUrl && tracks && tracks.length === 0 && (
-                <NoDataMessage message="This playlist is empty." />
-              )}
-              {submittedUrl && tracks && tracks.length > 0 && (
-                <div className="hide-scrollbars relative h-full w-full overflow-scroll overflow-x-hidden px-3 pb-4 pt-2 sm:px-5 sm:pt-4 md:px-7">
-                  <table className="w-full table-fixed">
-                    <tbody>
-                      {tracks.map((track, index) => (
-                        <TableRow
-                          key={`${index}-${track.song.spotifyId}`}
-                          track={track}
-                          showDuration
-                        />
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </motion.div>
-          </AnimatePresence>
+          <motion.div key={submittedUrl || "empty"} {...fadeIn(0.3)} className="h-full w-full">
+            {!submittedUrl && (
+              <NoDataMessage message="Paste a public Spotify playlist link above to browse its tracks." />
+            )}
+            {submittedUrl && hasError && (
+              <NoDataMessage
+                message={"error" in data && data.error ? data.error : "Something went wrong."}
+              />
+            )}
+            {submittedUrl && tracks && tracks.length === 0 && (
+              <NoDataMessage message="This playlist is empty." />
+            )}
+            {submittedUrl && tracks && tracks.length > 0 && (
+              <div className="hide-scrollbars relative h-full w-full overflow-scroll overflow-x-hidden px-3 pb-4 pt-2 sm:px-5 sm:pt-4 md:px-7">
+                <table className="w-full table-fixed">
+                  <tbody>
+                    {tracks.map((track, index) => (
+                      <TableRow
+                        key={`${index}-${track.song.spotifyId}`}
+                        track={track}
+                        showDuration
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </motion.div>
         )}
       </div>
     </div>

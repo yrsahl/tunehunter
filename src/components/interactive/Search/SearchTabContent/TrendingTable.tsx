@@ -1,7 +1,7 @@
 import RankingIndicator from "@/components/icons/RankingIndicator";
 import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { fadeIn } from "@/styles/animations";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useState } from "react";
 import NoDataMessage from "./NoDataMessage";
 import SkeletonTable from "./SkeletonTable";
@@ -39,30 +39,30 @@ const TrendingTable = () => {
         setActiveSubTab={setActiveSubTab}
       />
       {isLoading ? (
-        <SkeletonTable hasHeader hasExtraElement />
+        <motion.div key="skeleton" {...fadeIn(0.3)} className="h-full w-full">
+          <SkeletonTable hasHeader hasExtraElement />
+        </motion.div>
       ) : (
-        <AnimatePresence mode="wait">
-          <motion.div key={activeSubTab} {...fadeIn(0.2)} className="h-full w-full">
-            {activeData?.length ? (
-              <div className="hide-scrollbars relative h-full w-full overflow-scroll overflow-x-hidden px-3 pb-4 pt-8 sm:px-5 sm:pt-12 md:px-7 md:pt-12">
-                <table className="w-full table-fixed">
-                  <tbody>
-                    {activeData.map((track, index) => (
-                      <TableRow
-                        key={`${index}-${track.song.id}`}
-                        track={track}
-                        showDuration
-                        extraElement={<RankingIndicator rank={index + 1} />}
-                      />
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <NoDataMessage message={noDataMessages[activeSubTab]} />
-            )}
-          </motion.div>
-        </AnimatePresence>
+        <motion.div key={activeSubTab} {...fadeIn(0.3)} className="h-full w-full">
+          {activeData?.length ? (
+            <div className="hide-scrollbars relative h-full w-full overflow-scroll overflow-x-hidden px-3 pb-4 pt-8 sm:px-5 sm:pt-12 md:px-7 md:pt-12">
+              <table className="w-full table-fixed">
+                <tbody>
+                  {activeData.map((track, index) => (
+                    <TableRow
+                      key={`${index}-${track.song.id}`}
+                      track={track}
+                      showDuration
+                      extraElement={<RankingIndicator rank={index + 1} />}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <NoDataMessage message={noDataMessages[activeSubTab]} />
+          )}
+        </motion.div>
       )}
     </>
   );
