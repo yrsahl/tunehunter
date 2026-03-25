@@ -2,10 +2,14 @@
 
 Create a logo
 
+Access token expiring on old tabs
 Region setting moving profile menu up
+Restricted tab should self-close (or not open at all) if state url can’t be reinstated (e.g., not logged in anymore for history)
+Sometimes SearchBar placeholder not being put back if no id
+
 Rework settings and registration layout and names
 Remove or replace spotify login
-Restricted tab should self-close (or not open at all) if state url can’t be reinstated (e.g., not logged in anymore for history)
+
 E-mail templates for login, open mails button only on mobile
 Edit picture functionality (s3 bucket)
 
@@ -42,10 +46,6 @@ PRO:
 - Data insights
 - Trending per region, maybe genre, maybe some AI integration?
 - Playlist import, search
-
-Fix:
-- App stuck in half-height mode
-- Access token expiring on old tabs
 
 Pay functionality: Stripe 
 - Supporter

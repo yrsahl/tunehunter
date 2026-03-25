@@ -16,6 +16,7 @@ const SongListings = () => {
   const { region } = useRegionSettings();
   const router = useRouterWithHelpers();
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const scrolledForIdRef = useRef<string | undefined>(undefined);
 
   // For route restore: fetch track when it's not already in the event payload
   const { data: fetchedTrack } = api.song.getTrack.useQuery(
@@ -24,9 +25,11 @@ const SongListings = () => {
   );
   const track: Track | null = (search?.track ?? fetchedTrack ?? null) as Track | null;
 
-  // Scroll into view when a search is submitted
+  // Scroll into view when a new search is submitted (not on region change remounts)
   useEffect(() => {
-    if (search && containerRef.current) {
+    if (!search?.id || search.id === scrolledForIdRef.current) return;
+    if (containerRef.current) {
+      scrolledForIdRef.current = search.id;
       containerRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [search]);
