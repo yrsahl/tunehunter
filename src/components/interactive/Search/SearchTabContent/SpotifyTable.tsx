@@ -8,12 +8,17 @@ import { SkipForward } from "lucide-react";
 import { useState } from "react";
 import NoDataMessage from "./NoDataMessage";
 import SkeletonTable from "./SkeletonTable";
-import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 import TableRow from "./TableRow";
 
 const spotifySubTabs = ["recently_played", "queue", "most_played"] as const;
 export type SpotifySubTab = (typeof spotifySubTabs)[number];
+
+const noDataMessages: Record<SpotifySubTab, string> = {
+  recently_played: "You haven't listened to anything on Spotify recently!",
+  queue: "Your queue is empty!",
+  most_played: "Songs you've played the most (in Spotify) will appear here!",
+};
 
 const SpotifyTable = () => {
   const {
@@ -23,24 +28,30 @@ const SpotifyTable = () => {
   const [activeSubTab, setActiveSubTab] = useState<SpotifySubTab>(spotifySubTabs[0]);
   const [rotateAngleIcon, setRotateAngleIcon] = useState(0);
 
-  const recentlyPlayedDataExists = data?.recentlyPlayed && data?.recentlyPlayed?.length > 0;
-  const queueDataExists = data?.queue && data?.queue?.length > 0;
-  const topTracksDataExists = data?.topTracks && data?.topTracks?.length > 0;
-
   const handleClick = () => {
-    setRotateAngleIcon(rotateAngleIcon + 360); // Rotate
-    refetchData(); // Fetch
+    setRotateAngleIcon(rotateAngleIcon + 360);
+    refetchData();
+  };
+
+  const activeData = {
+    recently_played: data?.recentlyPlayed,
+    queue: data?.queue,
+    most_played: data?.topTracks,
+  }[activeSubTab];
+
+  const getExtraElement = (index: number) => {
+    if (activeSubTab === "recently_played") return undefined;
+    if (activeSubTab === "queue") return index === 0 ? <SkipForward size="16px" /> : `${index + 1}.`;
+    return <RankingIndicator rank={index + 1} />;
   };
 
   return (
     <>
-      {/* Header */}
       <TableHeader<SpotifySubTab>
         activeSubTab={activeSubTab}
         subTabs={spotifySubTabs}
         setActiveSubTab={setActiveSubTab}
       />
-      {/* Refresh */}
       <motion.div
         className="absolute bottom-3 z-10 hidden cursor-pointer opacity-60 sm:bottom-auto sm:right-4 sm:top-3 sm:block md:right-8"
         animate={{ rotate: rotateAngleIcon }}
@@ -58,80 +69,35 @@ const SpotifyTable = () => {
           className="border-0 bg-primary/10"
         />
       </motion.div>
-      {/* Loading */}
-      {isLoading && <SkeletonTable hasHeader={true} hasExtraElement={true} />}
-      {/* Ready */}
-      {!isLoading && (
+      {isLoading ? (
+        <SkeletonTable hasHeader hasExtraElement />
+      ) : (
         <AnimatePresence mode="wait">
           <motion.div key={activeSubTab} {...fadeInAndOut(0.2)} className="h-full w-full">
-            {activeSubTab === "recently_played" && (
-              <>
-                {!recentlyPlayedDataExists && (
-                  <NoDataMessage message="You haven't listened to anything on Spotify recently!" />
-                )}
-                {recentlyPlayedDataExists && (
-                  <TableBody hasHeader={true}>
-                    <>
-                      {data.currentlyPlaying && (
-                        <TableRow
-                          track={data.currentlyPlaying}
-                          showDuration={true}
-                          extraElement={<MusicPlayingIndicator size={12} />}
-                        />
-                      )}
-                      {data.recentlyPlayed?.map((recentlyPlayedTrack, index) => (
-                        <TableRow
-                          key={`${index}-${recentlyPlayedTrack.song.spotifyId}`}
-                          track={recentlyPlayedTrack}
-                          showDuration={true}
-                        />
-                      ))}
-                    </>
-                  </TableBody>
-                )}
-              </>
-            )}
-            {activeSubTab === "queue" && (
-              <>
-                {!queueDataExists && <NoDataMessage message="Your queue is empty!" />}
-                {queueDataExists && (
-                  <TableBody hasHeader={true}>
-                    <>
-                      {data.queue?.map((queueTrack, index) => (
-                        <TableRow
-                          key={`${index}-${queueTrack.song.spotifyId}`}
-                          track={queueTrack}
-                          showDuration={true}
-                          extraElement={
-                            index === 0 ? <SkipForward size={"16px"} /> : `${index + 1}.`
-                          }
-                        />
-                      ))}
-                    </>
-                  </TableBody>
-                )}
-              </>
-            )}
-            {activeSubTab === "most_played" && (
-              <>
-                {!topTracksDataExists && (
-                  <NoDataMessage message="Songs you've played the most (in Spotify) will appear here!" />
-                )}
-                {topTracksDataExists && (
-                  <TableBody hasHeader={true}>
-                    <>
-                      {data.topTracks?.map((topTrack, index) => (
-                        <TableRow
-                          key={`${index}-${topTrack.song.spotifyId}`}
-                          track={topTrack}
-                          showDuration={true}
-                          extraElement={<RankingIndicator rank={index + 1} />}
-                        />
-                      ))}
-                    </>
-                  </TableBody>
-                )}
-              </>
+            {activeData?.length ? (
+              <div className="hide-scrollbars relative h-full w-full overflow-scroll overflow-x-hidden px-3 pb-4 pt-8 sm:px-5 sm:pt-12 md:px-7 md:pt-12">
+                <table className="w-full table-fixed">
+                  <tbody>
+                    {activeSubTab === "recently_played" && data?.currentlyPlaying && (
+                      <TableRow
+                        track={data.currentlyPlaying}
+                        showDuration
+                        extraElement={<MusicPlayingIndicator size={12} />}
+                      />
+                    )}
+                    {activeData.map((track, index) => (
+                      <TableRow
+                        key={`${index}-${track.song.spotifyId}`}
+                        track={track}
+                        showDuration
+                        extraElement={getExtraElement(index)}
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <NoDataMessage message={noDataMessages[activeSubTab]} />
             )}
           </motion.div>
         </AnimatePresence>

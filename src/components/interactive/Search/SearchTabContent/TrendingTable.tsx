@@ -5,19 +5,19 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import NoDataMessage from "./NoDataMessage";
 import SkeletonTable from "./SkeletonTable";
-import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 import TableRow from "./TableRow";
 
 const trendingSubTabs = ["today", "last_7_days", "last_30_days"] as const;
 export type TrendingSubTab = (typeof trendingSubTabs)[number];
-export const isTrendingSubTab = (value: string): value is TrendingSubTab => {
-  return trendingSubTabs.includes(value as TrendingSubTab);
-};
+export const isTrendingSubTab = (value: string): value is TrendingSubTab =>
+  trendingSubTabs.includes(value as TrendingSubTab);
 
-// Today, Week, Month
-// Local, global
-// Genre
+const noDataMessages: Record<TrendingSubTab, string> = {
+  today: "Nothing's trending right now...",
+  last_7_days: "Nothing's trending the last 7 days...",
+  last_30_days: "Nothing's trending the last 30 days...",
+};
 
 const TrendingTable = () => {
   const {
@@ -25,9 +25,11 @@ const TrendingTable = () => {
   } = useSearchTabDataContext();
   const [activeSubTab, setActiveSubTab] = useState<TrendingSubTab>(trendingSubTabs[0]);
 
-  const trendingDataTodayExists = data?.today && data.today.length > 0;
-  const trendingData7DaysExists = data?.last7Days && data.last7Days.length > 0;
-  const trendingData30DaysExists = data?.last30Days && data.last30Days.length > 0;
+  const activeData = {
+    today: data?.today,
+    last_7_days: data?.last7Days,
+    last_30_days: data?.last30Days,
+  }[activeSubTab];
 
   return (
     <>
@@ -36,69 +38,28 @@ const TrendingTable = () => {
         subTabs={trendingSubTabs}
         setActiveSubTab={setActiveSubTab}
       />
-      {isLoading && <SkeletonTable hasHeader={true} hasExtraElement={true} />}
-      {!isLoading && (
+      {isLoading ? (
+        <SkeletonTable hasHeader hasExtraElement />
+      ) : (
         <AnimatePresence mode="wait">
           <motion.div key={activeSubTab} {...fadeIn(0.2)} className="h-full w-full">
-            {activeSubTab === "today" && (
-              <>
-                {trendingDataTodayExists ? (
-                  <TableBody hasHeader={true}>
-                    <>
-                      {data?.today.map((trendingDailyTrack, index) => (
-                        <TableRow
-                          key={`${index}-${trendingDailyTrack.song.id}`}
-                          track={trendingDailyTrack}
-                          showDuration={true}
-                          extraElement={<RankingIndicator rank={index + 1} />}
-                        />
-                      ))}
-                    </>
-                  </TableBody>
-                ) : (
-                  <NoDataMessage message="Nothing's trending right now..." />
-                )}
-              </>
-            )}
-            {activeSubTab === "last_7_days" && (
-              <>
-                {trendingData7DaysExists ? (
-                  <TableBody hasHeader={true}>
-                    <>
-                      {data?.last7Days.map((trendingWeeklyTrack, index) => (
-                        <TableRow
-                          key={`${index}-${trendingWeeklyTrack.song.id}`}
-                          track={trendingWeeklyTrack}
-                          showDuration={true}
-                          extraElement={<RankingIndicator rank={index + 1} />}
-                        />
-                      ))}
-                    </>
-                  </TableBody>
-                ) : (
-                  <NoDataMessage message="Nothing's trending the last 7 days..." />
-                )}
-              </>
-            )}
-            {activeSubTab === "last_30_days" && (
-              <>
-                {trendingData30DaysExists ? (
-                  <TableBody hasHeader={true}>
-                    <>
-                      {data?.last30Days.map((trendingMonthlyTrack, index) => (
-                        <TableRow
-                          key={`${index}-${trendingMonthlyTrack.song.id}`}
-                          track={trendingMonthlyTrack}
-                          showDuration={true}
-                          extraElement={<RankingIndicator rank={index + 1} />}
-                        />
-                      ))}
-                    </>
-                  </TableBody>
-                ) : (
-                  <NoDataMessage message="Nothing's trending the last 30 days..." />
-                )}
-              </>
+            {activeData?.length ? (
+              <div className="hide-scrollbars relative h-full w-full overflow-scroll overflow-x-hidden px-3 pb-4 pt-8 sm:px-5 sm:pt-12 md:px-7 md:pt-12">
+                <table className="w-full table-fixed">
+                  <tbody>
+                    {activeData.map((track, index) => (
+                      <TableRow
+                        key={`${index}-${track.song.id}`}
+                        track={track}
+                        showDuration
+                        extraElement={<RankingIndicator rank={index + 1} />}
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <NoDataMessage message={noDataMessages[activeSubTab]} />
             )}
           </motion.div>
         </AnimatePresence>

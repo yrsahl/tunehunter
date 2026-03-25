@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import NoDataMessage from "./NoDataMessage";
 import SkeletonTable from "./SkeletonTable";
-import TableBody from "./TableBody";
 import TableRow from "./TableRow";
 
 const PlaylistTable = () => {
@@ -26,7 +25,6 @@ const PlaylistTable = () => {
 
   return (
     <div className="flex h-full w-full flex-col">
-      {/* URL input */}
       <form
         onSubmit={handleSubmit}
         className="flex shrink-0 items-center gap-2 border-b border-foreground/10 px-4 py-3 sm:px-6"
@@ -47,10 +45,10 @@ const PlaylistTable = () => {
         </button>
       </form>
 
-      {/* Content */}
       <div className="relative flex-1 overflow-hidden">
-        {isFetching && <SkeletonTable hasHeader={false} hasExtraElement={false} />}
-        {!isFetching && (
+        {isFetching ? (
+          <SkeletonTable hasHeader={false} />
+        ) : (
           <AnimatePresence mode="wait">
             <motion.div
               key={submittedUrl || "empty"}
@@ -69,17 +67,19 @@ const PlaylistTable = () => {
                 <NoDataMessage message="This playlist is empty." />
               )}
               {submittedUrl && tracks && tracks.length > 0 && (
-                <TableBody hasHeader={false}>
-                  <>
-                    {tracks.map((track, index) => (
-                      <TableRow
-                        key={`${index}-${track.song.spotifyId}`}
-                        track={track}
-                        showDuration={true}
-                      />
-                    ))}
-                  </>
-                </TableBody>
+                <div className="hide-scrollbars relative h-full w-full overflow-scroll overflow-x-hidden px-3 pb-4 pt-2 sm:px-5 sm:pt-4 md:px-7">
+                  <table className="w-full table-fixed">
+                    <tbody>
+                      {tracks.map((track, index) => (
+                        <TableRow
+                          key={`${index}-${track.song.spotifyId}`}
+                          track={track}
+                          showDuration
+                        />
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </motion.div>
           </AnimatePresence>
