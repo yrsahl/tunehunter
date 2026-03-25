@@ -32,14 +32,11 @@ const SkeletonTable = ({ hasHeader, hasExtraElement }: SkeletonTableProps) => {
             hasExtraElement ? "w-0 pr-0 sm:w-12 sm:pr-5" : "w-0 pr-0 sm:w-0 sm:pr-0",
           )}
         >
-          {!isSmallDevice && hasExtraElement && <Skeleton className="h-4 w-4" />}
+          {!isSmallDevice && hasExtraElement && <Skeleton className="h-6 w-6" />}
         </td>
         {/* Artist */}
         <td className="w-[30%] min-w-0 pr-5 sm:w-[28%] sm:pr-6">
-          <div className="flex flex-col gap-1">
-            <Skeleton className="h-4 w-3/4" />
-            <Skeleton className="h-4 w-1/2" />
-          </div>
+          <Skeleton className="h-4 w-3/4" />
         </td>
         {/* Title */}
         <td className="w-[48%] min-w-0 pl-1 pr-2 sm:w-[52%] sm:pl-2 sm:pr-4">
@@ -51,7 +48,7 @@ const SkeletonTable = ({ hasHeader, hasExtraElement }: SkeletonTableProps) => {
         </td>
         {/* Search */}
         <td className="hidden w-[96px] pl-2 text-right align-middle sm:table-cell sm:pl-4">
-          <Skeleton className="h-8 w-20 bg-primary/50 sm:h-9 sm:w-24" />
+          <Skeleton className="h-8 w-20 bg-primary/50 sm:h-9 sm:w-20" />
         </td>
       </tr>
     );
