@@ -4,6 +4,8 @@ Amazon ID for all remaining regions
 Visuals
 Create a logo
 
+Rework TrendingTable, TableBody, TableRow - SkeletonTable to be similar to ...Skeleton
+Region setting moving profile menu up
 Skeleton matchup width exactly
 Rework settings and registration layout and names
 Restricted tab should self-close (or not open at all) if state url can’t be reinstated (e.g., not logged in anymore for history)
@@ -12,6 +14,8 @@ Remove Spotify tab
 Playlist URL store for refresh
 E-mail templates for login, open mails button only on mobile
 Edit picture functionality (s3 bucket)
+
+Songs that are not on itunes won’t be found? Mix/match with Beatport?
 
 Monitor scrapers in production
 Stresstest + Monitoring
@@ -60,7 +64,7 @@ PRO:
 Ai trending: once a day recommend something
 
 Fix:
-- Layout shift callback page
+- App stuck in half-height mode
 - Access token expiring on old tabs
 
 Pay functionality: Stripe 

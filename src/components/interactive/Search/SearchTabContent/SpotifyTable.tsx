@@ -59,7 +59,7 @@ const SpotifyTable = () => {
         />
       </motion.div>
       {/* Loading */}
-      {isLoading && <SkeletonTable hasHeader={true} tab="spotify" />}
+      {isLoading && <SkeletonTable hasHeader={true} hasExtraElement={true} />}
       {/* Ready */}
       {!isLoading && (
         <AnimatePresence mode="wait">

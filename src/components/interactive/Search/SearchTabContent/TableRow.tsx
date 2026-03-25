@@ -39,7 +39,7 @@ const TableRow = ({
 
     if ("id" in track.song) {
       resolvedTrack = track as Track;
-      if (!await storeTracksInDb([resolvedTrack])) return;
+      if (!(await storeTracksInDb([resolvedTrack]))) return;
     } else {
       const artist = artists.map((a) => a.name).join(", ");
       const itunesTrack = await fetchItunesTrack(song.title, artist, song.duration);
@@ -47,7 +47,7 @@ const TableRow = ({
         toast.error("No results for this song.");
         return;
       }
-      if (!await storeTracksInDb([itunesTrack])) return;
+      if (!(await storeTracksInDb([itunesTrack]))) return;
       resolvedTrack = itunesTrack;
     }
 
@@ -62,7 +62,7 @@ const TableRow = ({
       layout
       onClick={isSmallDevice ? () => handleSearchClick() : () => {}}
     >
-      <td className="py-2 pr-4 sm:pr-8">
+      <td className="w-[56px] py-2 pr-4 sm:w-[84px] sm:pr-8">
         <div className="flex items-center gap-4">
           <div className="avatar">
             <div className="mask mask-squircle h-10 w-10 md:h-12 md:w-12">
@@ -77,39 +77,40 @@ const TableRow = ({
         </div>
       </td>
       {/* Extra Element */}
-      <td className={clsx("align-middle", extraElement ? "pr-2 sm:pr-5" : "pr-0")}>
+      <td
+        className={clsx(
+          "align-middle",
+          extraElement ? "w-0 pr-0 sm:w-12 sm:pr-5" : "w-0 pr-0 sm:w-0 sm:pr-0",
+        )}
+      >
         {!isSmallDevice && (
           <div className="-ml-2 flex justify-center text-sm sm:text-base">{extraElement}</div>
         )}
       </td>
       {/* Artist(s) */}
-      <td className="pr-3 sm:pr-4">
-        <p className="max-w-32 overflow-hidden text-ellipsis whitespace-nowrap text-sm sm:text-base">
-          {primaryArtist}
-        </p>
+      <td className="w-[30%] min-w-0 pr-5 sm:w-[28%] sm:pr-6">
+        <p className="w-full truncate text-sm sm:text-base">{primaryArtist}</p>
         {artists[1] && (
-          <p className="max-w-28 overflow-hidden text-ellipsis whitespace-nowrap text-sm text-muted-foreground sm:text-base">
+          <p className="w-full truncate text-sm text-muted-foreground sm:text-base">
             {artists[1].name}
           </p>
         )}
       </td>
       {/* Title */}
-      <td className="pr-2 sm:pr-4">
-        <span className="block max-w-48 overflow-hidden text-ellipsis break-words text-sm sm:text-base">
-          {song.title}
-        </span>
+      <td className="w-[48%] min-w-0 pl-1 pr-2 sm:w-[52%] sm:pl-2 sm:pr-4">
+        <span className="block w-full truncate text-sm sm:text-base">{song.title}</span>
       </td>
       {!isSmallDevice && (
         <>
           {/* Duration */}
           {showDuration && (
-            <td className="pr-2 align-middle text-xs text-foreground/50 sm:pr-4 md:text-sm">
+            <td className="w-[60px] pr-2 align-middle text-xs text-foreground/50 sm:pr-4 md:text-sm">
               <span>{new Date(song.duration).toISOString().substr(14, 5)}</span>
             </td>
           )}
           {/* Search */}
           {showSearch && (
-            <td className="pl-2 text-right align-middle sm:pl-4">
+            <td className="w-[96px] pl-2 text-right align-middle sm:pl-4">
               <IconButton
                 variant="outlinePrimary"
                 text="Search"

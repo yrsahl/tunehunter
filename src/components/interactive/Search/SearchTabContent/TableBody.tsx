@@ -15,7 +15,7 @@ const TableBody = ({ hasHeader, children }: TableProps) => {
           hasHeader ? "pt-8 sm:pt-12 md:pt-12" : "pt-2 sm:pt-4",
         )}
       >
-        <table className="w-full">
+        <table className="w-full table-fixed">
           <tbody>{children}</tbody>
         </table>
       </div>

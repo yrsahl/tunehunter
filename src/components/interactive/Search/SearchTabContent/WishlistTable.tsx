@@ -15,7 +15,7 @@ const WishlistTable = () => {
     <AnimatePresence mode="wait">
       <motion.div {...fadeInAndOut(0.2)} className="h-full w-full">
         {/* Loading */}
-        {wishlistDataIsLoading && <SkeletonTable hasHeader={false} tab="history" />}
+        {wishlistDataIsLoading && <SkeletonTable hasHeader={false} hasExtraElement={true} />}
         {/* Ready */}
         {!wishlistDataIsLoading && !wishlistDataExists && (
           <NoDataMessage message="Your wishlist is empty! Add songs by clicking the heart icon on the results page." />

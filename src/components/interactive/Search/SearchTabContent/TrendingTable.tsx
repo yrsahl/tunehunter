@@ -36,7 +36,7 @@ const TrendingTable = () => {
         subTabs={trendingSubTabs}
         setActiveSubTab={setActiveSubTab}
       />
-      {isLoading && <SkeletonTable hasHeader={true} tab="trending" />}
+      {isLoading && <SkeletonTable hasHeader={true} hasExtraElement={true} />}
       {!isLoading && (
         <AnimatePresence mode="wait">
           <motion.div key={activeSubTab} {...fadeIn(0.2)} className="h-full w-full">

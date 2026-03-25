@@ -49,7 +49,7 @@ const PlaylistTable = () => {
 
       {/* Content */}
       <div className="relative flex-1 overflow-hidden">
-        {isFetching && <SkeletonTable hasHeader={false} tab="spotify" />}
+        {isFetching && <SkeletonTable hasHeader={false} hasExtraElement={false} />}
         {!isFetching && (
           <AnimatePresence mode="wait">
             <motion.div

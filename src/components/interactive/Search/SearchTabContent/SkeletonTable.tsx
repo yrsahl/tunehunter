@@ -1,87 +1,71 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import useDeviceSize from "@/hooks/useDeviceSize";
 import clsx from "clsx";
-import { SearchTab } from "../SearchTabs/SearchTabBar";
 
 const SKELETON_ROW_IDS = Array.from({ length: 20 }, (_, index) => `skeleton-row-${index + 1}`);
 
 interface SkeletonTableProps {
-  tab: SearchTab;
   hasHeader: boolean;
+  hasExtraElement?: boolean;
 }
 
-const SkeletonTable = ({ tab, hasHeader }: SkeletonTableProps) => {
+const SkeletonTable = ({ hasHeader, hasExtraElement }: SkeletonTableProps) => {
+  const { isSmallDevice } = useDeviceSize();
+
   const SkeletonRow = () => {
-    if (tab === "trending" || tab == "history") {
-      return (
-        // Avatar
-        <tr className="max-h-16">
-          <td className="py-2 pr-8">
-            <Skeleton className="h-12 w-12 rounded-full bg-foreground" />
-          </td>
-          {/* Extra element */}
-          <td className="pr-6 align-middle">
-            <Skeleton className={"h-4 w-4"} />
-          </td>
-          {/* Artist */}
-          <td className="pr-4">
-            <Skeleton className="h-4 w-36" />
-          </td>
-          {/* Title */}
-          <td className="pr-4">
-            <Skeleton className="h-4 w-44" />
-          </td>
-          {/* Duration */}
-          <td className="pr-4 text-foreground/50">
-            <Skeleton className="h-4 w-12" />
-          </td>
-          {/* Search */}
-          <td className="pl-4 text-right">
-            <Skeleton className="h-9 w-24 bg-primary/50" />
-          </td>
-        </tr>
-      );
-    }
-    if (tab === "spotify") {
-      return (
-        // Avatar
-        <tr className="max-h-16">
-          <td className="py-2 pr-8">
-            <Skeleton className="h-12 w-12 rounded-full" />
-          </td>
-          {/* Extra element */}
-          <td className="pr-8 align-middle">
-            <Skeleton className={"h-4 w-8"} />
-          </td>
-          {/* Artist */}
-          <td className="pr-14">
-            <Skeleton className="h-4 w-28" />
-          </td>
-          {/* Title */}
-          <td className="pr-8">
-            <Skeleton className="h-4 w-32" />
-          </td>
-          {/* Duration */}
-          <td className="pr-4 text-foreground/50">
-            <Skeleton className="h-4 w-14" />
-          </td>
-          {/* Search */}
-          <td className="pl-4 text-right">
-            <Skeleton className="h-9 w-[90px] bg-primary/50" />
-          </td>
-        </tr>
-      );
-    }
+    return (
+      <tr className="max-h-16 overflow-hidden">
+        {/* Avatar */}
+        <td className="w-[56px] py-2 pr-4 sm:w-[84px] sm:pr-8">
+          <div className="flex items-center gap-4">
+            <div className="avatar">
+              <div className="mask mask-squircle h-10 w-10 md:h-12 md:w-12">
+                <Skeleton className="h-full w-full" />
+              </div>
+            </div>
+          </div>
+        </td>
+        {/* Extra element */}
+        <td
+          className={clsx(
+            "align-middle",
+            hasExtraElement ? "w-0 pr-0 sm:w-12 sm:pr-5" : "w-0 pr-0 sm:w-0 sm:pr-0",
+          )}
+        >
+          {!isSmallDevice && hasExtraElement && <Skeleton className="h-4 w-4" />}
+        </td>
+        {/* Artist */}
+        <td className="w-[30%] min-w-0 pr-5 sm:w-[28%] sm:pr-6">
+          <div className="flex flex-col gap-1">
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+          </div>
+        </td>
+        {/* Title */}
+        <td className="w-[48%] min-w-0 pl-1 pr-2 sm:w-[52%] sm:pl-2 sm:pr-4">
+          <Skeleton className="h-4 w-4/5" />
+        </td>
+        {/* Duration */}
+        <td className="hidden w-[60px] pr-2 align-middle text-foreground/50 sm:table-cell sm:pr-4">
+          <Skeleton className="h-4 w-12" />
+        </td>
+        {/* Search */}
+        <td className="hidden w-[96px] pl-2 text-right align-middle sm:table-cell sm:pl-4">
+          <Skeleton className="h-8 w-20 bg-primary/50 sm:h-9 sm:w-24" />
+        </td>
+      </tr>
+    );
   };
 
   return (
-    <div className="h-full w-full px-3 sm:px-5 md:px-7">
+    <div className="h-full w-full">
       <div
         className={clsx(
-          "hide-scrollbars relative h-full w-full overflow-scroll pb-4",
-          hasHeader ? "pt-12" : "pt-4",
+          "hide-scrollbars relative h-full w-full overflow-scroll overflow-x-hidden px-3 pb-4 sm:px-5 md:px-7",
+          hasHeader ? "pt-8 sm:pt-12 md:pt-12" : "pt-2 sm:pt-4",
         )}
       >
-        <table className="w-full">
+        <table className="w-full table-fixed">
           <tbody>
             {SKELETON_ROW_IDS.map((rowId) => (
               <SkeletonRow key={rowId} />

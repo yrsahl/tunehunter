@@ -20,7 +20,7 @@ const HistoryTable = () => {
 
   return (
     <>
-      {isLoading && <SkeletonTable hasHeader={false} tab="history" />}
+      {isLoading && <SkeletonTable hasHeader={false} hasExtraElement={true} />}
       {!isLoading && (
         <>
           {searchHistoryExists ? (
