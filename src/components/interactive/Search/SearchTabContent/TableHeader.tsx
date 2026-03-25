@@ -48,7 +48,7 @@ const TableHeader = <T extends string>({
               {subTabs.map((subTab) => (
                 <SelectItem
                   value={String(subTab)}
-                  className="whitespace-nowrap text-xs capitalize ring-0 transition-colors md:text-base"
+                  className="whitespace-nowrap text-sm capitalize ring-0 transition-colors md:text-base [&:not(:last-child)]:pb-2"
                 >
                   {humanize(subTab)}
                 </SelectItem>

@@ -35,7 +35,7 @@ const PlaylistTable = () => {
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          placeholder="Paste a public Spotify playlist link…"
+          placeholder="https://open.spotify.com/playlist/3TxNViSYOIVuZLEe9ZIbyx?si=8974367fcb0f488a"
           className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground/50"
         />
         <button
@@ -52,12 +52,18 @@ const PlaylistTable = () => {
         {isFetching && <SkeletonTable hasHeader={false} tab="spotify" />}
         {!isFetching && (
           <AnimatePresence mode="wait">
-            <motion.div key={submittedUrl || "empty"} {...fadeInAndOut(0.2)} className="h-full w-full">
+            <motion.div
+              key={submittedUrl || "empty"}
+              {...fadeInAndOut(0.2)}
+              className="h-full w-full"
+            >
               {!submittedUrl && (
                 <NoDataMessage message="Paste a public Spotify playlist link above to browse its tracks." />
               )}
               {submittedUrl && hasError && (
-                <NoDataMessage message={"error" in data ? data.error : "Something went wrong."} />
+                <NoDataMessage
+                  message={"error" in data && data.error ? data.error : "Something went wrong."}
+                />
               )}
               {submittedUrl && tracks && tracks.length === 0 && (
                 <NoDataMessage message="This playlist is empty." />

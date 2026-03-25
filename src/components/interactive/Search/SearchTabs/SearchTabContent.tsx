@@ -16,7 +16,7 @@ interface SearchTabContentProps {
 const SearchTabContent = ({ activeSearchTab }: SearchTabContentProps) => {
   const { isMobileDevice } = useDeviceSize();
 
-  const contentHeight = isMobileDevice ? "18rem" : "16rem";
+  const contentHeight = isMobileDevice ? "12rem" : "16rem";
 
   return (
     <motion.div

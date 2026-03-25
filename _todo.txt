@@ -4,9 +4,12 @@ Amazon ID for all remaining regions
 Visuals
 Create a logo
 
-
+Remove Spotify tab
+Playlist URL store for refresh
 E-mail templates for login, open mails button only on mobile
 Edit picture functionality (s3 bucket)
+
+Monitor scrapers in production
 Stresstest + Monitoring
 
 
