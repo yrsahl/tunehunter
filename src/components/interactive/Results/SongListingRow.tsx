@@ -25,20 +25,22 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
   const addUserActivity = api.userActivities.addUserActivity.useMutation();
 
   // Skeleton
-  if (isVendorResponseLoading || (vendorResponse && vendorResponse.error === "INVALID_FIELDS"))
+  if (!isVendorResponseLoading || (vendorResponse && vendorResponse.error === "INVALID_FIELDS"))
     return <SongListingRowSkeleton store={vendor} region={region} />;
 
   // Store unreachable (timeout)
   if (vendorResponse?.error === "STORE_UNREACHABLE") {
-    return (
-      <SongListingRowMessage message="Store not reachable." store={vendor} region={region} />
-    );
+    return <SongListingRowMessage message="Store not reachable." store={vendor} region={region} />;
   }
 
   // Rate limited
   if (vendorResponse?.error === "RATE_LIMITED") {
     return (
-      <SongListingRowMessage message="Rate limited — try again shortly." store={vendor} region={region} />
+      <SongListingRowMessage
+        message="Rate limited — try again shortly."
+        store={vendor}
+        region={region}
+      />
     );
   }
 
@@ -91,10 +93,13 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
 
       {/* Price */}
       <td>
-        <div className="flex justify-normal gap-4 text-sm sm:justify-normal sm:text-base">
+        <div className="flex justify-center gap-4 text-sm sm:justify-normal sm:text-base">
           <div className="inline-block">
             {price != null ? (
-              <>{price}{transformCurrencyStringToIcon(currency)}</>
+              <>
+                {price}
+                {transformCurrencyStringToIcon(currency)}
+              </>
             ) : (
               <span className="text-muted-foreground">See store</span>
             )}
@@ -118,13 +123,14 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
 
       {/* Link */}
       <td>
-        <IconButton
-          size="icon"
-          variant="ghost"
-          icon="externalArrow"
-          iconSize={isSmallDevice ? "20px" : "24px"}
-          className="mx-auto border-none md:mx-0"
-        />
+        <div className="flex justify-end md:justify-start">
+          <IconButton
+            size="icon"
+            variant="ghost"
+            icon="externalArrow"
+            iconSize={isSmallDevice ? "20px" : "24px"}
+          />
+        </div>
       </td>
     </motion.tr>
   );
