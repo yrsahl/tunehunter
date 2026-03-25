@@ -2,7 +2,7 @@
 
 Create a logo
 
-Restricted tab should self-close (or not open at all) if state url can’t be reinstated (e.g., not logged in anymore for history)
+Reinstate params after login
 Sometimes SearchBar placeholder not being put back if no id
 
 Rework settings and registration layout and names
@@ -34,7 +34,6 @@ External service billing alerts (set up in each dashboard, not in app):
 [ ] Neon — set billing alert on compute hours and storage
 [ ] Vercel — set billing alert on function invocations and bandwidth
 [ ] Resend — watch manually (3,000 emails/month free)
-
 
 
 

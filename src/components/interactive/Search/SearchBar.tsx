@@ -14,9 +14,12 @@ import {
   forwardRef,
   ForwardRefRenderFunction,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
+
+const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 const SearchQueries = dynamic(() => import("./SearchQueries"), {
   ssr: false,
 });
@@ -50,11 +53,9 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = () 
   const searchSettingsWindowRef = useRef<HTMLDivElement>(null);
 
   // Puts a random placeholder song value into the search bar
-  useEffect(() => {
-    if (searchState.input) return;
+  useIsomorphicLayoutEffect(() => {
     const rndPlaceholderIndex = Math.floor(Math.random() * placeholderValues.length);
-    const rndPlaceholder = placeholderValues[rndPlaceholderIndex];
-    setCurrentPlaceholder(rndPlaceholder!);
+    setCurrentPlaceholder(placeholderValues[rndPlaceholderIndex]!);
   }, []);
 
   // Trigger form submit when settings change
