@@ -2,7 +2,6 @@
 
 Amazon ID for all remaining regions
 
-Spotify callback not working
 E-mail templates for login, open mails button only on mobile
 Edit picture functionality (s3 bucket)
 Stresstest + Monitoring

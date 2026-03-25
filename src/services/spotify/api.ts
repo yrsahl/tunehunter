@@ -129,6 +129,55 @@ export const fetchSpotifyArtistData = async (token: string, artistId: string) =>
   return fetchSpotifyData<SpotifyArtist>(token, artistUrl);
 };
 
+type SpotifyPlaylistTracksPage = {
+  items: { track: { id: string; name: string; duration_ms: number; album: { name: string; release_date: string; images: { url: string }[] }; artists: { id: string; name: string }[] } | null }[];
+  next: string | null;
+};
+
+export const fetchAllPlaylistTracks = async (
+  token: string,
+  playlistId: string,
+): Promise<import("@/types/song-types").SpotifyTrack[] | null> => {
+  const MAX_TRACKS = 500;
+  const tracks: import("@/types/song-types").SpotifyTrack[] = [];
+  let url: string | null =
+    `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=100&fields=items(track(id,name,duration_ms,album(name,release_date,images),artists(id,name))),next`;
+
+  const firstPage = await fetchSpotifyData<SpotifyPlaylistTracksPage>(token, url);
+  if (!firstPage) return null; // private or not found
+
+  const addTracks = (page: SpotifyPlaylistTracksPage) => {
+    for (const item of page.items) {
+      if (!item.track || tracks.length >= MAX_TRACKS) continue;
+      tracks.push({
+        song: {
+          title: item.track.name,
+          duration: item.track.duration_ms,
+          album: item.track.album.name,
+          albumArtUrl: item.track.album.images[0]?.url ?? null,
+          year: item.track.album.release_date,
+          genre: null,
+          spotifyId: item.track.id,
+          isrc: null,
+        },
+        artists: item.track.artists.map((a) => ({ id: a.id, name: a.name, popularity: null, followers: null })),
+      });
+    }
+  };
+
+  addTracks(firstPage);
+  url = firstPage.next;
+
+  while (url && tracks.length < MAX_TRACKS) {
+    const page = await fetchSpotifyData<SpotifyPlaylistTracksPage>(token, url);
+    if (!page) break;
+    addTracks(page);
+    url = page.next;
+  }
+
+  return tracks;
+};
+
 // Helper
 async function fetchSpotifyData<T>(token: string, endpoint: string): Promise<T | null> {
   const response = await fetch(endpoint, {

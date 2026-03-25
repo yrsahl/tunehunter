@@ -2,6 +2,7 @@ import { createTRPCRouter } from "@/server/api/trpc";
 import { accountRouter } from "./routers/account-router";
 import { artistRouter } from "./routers/artist-router";
 import { clientCredentialsRouter } from "./routers/client-credentials-router";
+import { playlistRouter } from "./routers/playlist-router";
 import { songArtistRouter } from "./routers/song-artist-router";
 import { songListingsRouter } from "./routers/song-listings-router";
 import { songRouter } from "./routers/song-router";
@@ -22,6 +23,7 @@ export const appRouter = createTRPCRouter({
   songArtists: songArtistRouter,
   songListings: songListingsRouter,
   clientCredentials: clientCredentialsRouter,
+  playlist: playlistRouter,
   userActivities: userActivitiesRouter,
   stats: statsRouter,
 });

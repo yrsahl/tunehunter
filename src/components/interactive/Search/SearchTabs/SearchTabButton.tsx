@@ -12,12 +12,14 @@ type AccessScopes = "all" | "signed-in-to-spotify" | "signed-in";
 const tabAccessMap: Record<SearchTab, AccessScopes> = {
   trending: "all",
   spotify: "signed-in-to-spotify",
+  playlist: "all",
   history: "signed-in",
   wishlist: "signed-in",
 };
 const tabTooltipRestrictionMap: Record<SearchTab, string> = {
   trending: "", // Always accessible
   spotify: "Sign in to view your Spotify songs!",
+  playlist: "",
   wishlist: "Sign in to view your wishlist!",
   history: "Sign in to view your history!",
 };

@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import SearchTabButton from "./SearchTabButton";
 
 // Tabs
-export const searchTabs = ["trending", "spotify", "history", "wishlist"] as const;
+export const searchTabs = ["trending", "spotify", "playlist", "history", "wishlist"] as const;
 export type SearchTab = (typeof searchTabs)[number];
 export const isSearchTab = (value: string): value is SearchTab =>
   searchTabs.includes(value as SearchTab);
