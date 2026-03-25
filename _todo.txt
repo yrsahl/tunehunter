@@ -5,7 +5,6 @@ Create a logo
 Region setting moving profile menu up
 Rework settings and registration layout and names
 Restricted tab should self-close (or not open at all) if state url can’t be reinstated (e.g., not logged in anymore for history)
-Route refresh not working in prod
 Remove Spotify tab and functionality for now, store somewhere
 Playlist URL store for refresh
 E-mail templates for login, open mails button only on mobile

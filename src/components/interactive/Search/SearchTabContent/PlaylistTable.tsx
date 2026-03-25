@@ -1,14 +1,25 @@
+import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { api } from "@/lib/api";
 import { fadeInAndOut } from "@/styles/animations";
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NoDataMessage from "./NoDataMessage";
 import SkeletonTable from "./SkeletonTable";
 import TableRow from "./TableRow";
 
 const PlaylistTable = () => {
+  const router = useRouterWithHelpers();
   const [inputValue, setInputValue] = useState("");
   const [submittedUrl, setSubmittedUrl] = useState("");
+
+  useEffect(() => {
+    if (!router.isReady) return;
+    const urlParam = router.getParams("playlist");
+    if (urlParam) {
+      setInputValue(urlParam);
+      setSubmittedUrl(urlParam);
+    }
+  }, [router.isReady]);
 
   const { data, isFetching } = api.playlist.getTracks.useQuery(
     { url: submittedUrl },
@@ -17,7 +28,11 @@ const PlaylistTable = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (inputValue.trim()) setSubmittedUrl(inputValue.trim());
+    const url = inputValue.trim();
+    if (url) {
+      setSubmittedUrl(url);
+      router.setParams({ playlist: url });
+    }
   };
 
   const hasError = data && "error" in data;
