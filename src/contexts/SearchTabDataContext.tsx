@@ -1,9 +1,9 @@
 import { SearchTab } from "@/components/interactive/Search/SearchTabs/SearchTabBar";
 import { useEventEmitter } from "@/hooks/useEventEmitter";
 import useSpotifySongData, { SpotifyTabData } from "@/hooks/useSpotifySongData";
+import { api } from "@/lib/api";
 import { AppRouter } from "@/server/api/root";
 import { SpotifyPlaybackStateShort } from "@/types/spotify-playback-types";
-import { api } from "@/lib/api";
 import { inferProcedureOutput } from "@trpc/server";
 import { useSession } from "next-auth/react";
 import { createContext, ReactNode, useContext, useEffect } from "react";
@@ -101,8 +101,6 @@ export const SearchTabDataProvider = ({ children }: { children: ReactNode }) => 
     switch (tab) {
       case "trending":
         return isTrendingDataLoading;
-      case "spotify":
-        return isSpotifyDataLoading;
       case "history":
         return isHistoryDataLoading;
       case "wishlist":
@@ -115,8 +113,6 @@ export const SearchTabDataProvider = ({ children }: { children: ReactNode }) => 
     switch (tab) {
       case "trending":
         return !isTrendingDataLoading && !!trendingData;
-      case "spotify":
-        return !isSpotifyDataLoading && !!spotifyData;
       case "history":
         return !isHistoryDataLoading && !!historyData;
       case "wishlist":

@@ -4,7 +4,6 @@ import { fadeIn } from "@/styles/animations";
 import { AnimatePresence, motion } from "framer-motion";
 import HistoryTable from "../SearchTabContent/HistoryTable";
 import PlaylistTable from "../SearchTabContent/PlaylistTable";
-import SpotifyTable from "../SearchTabContent/SpotifyTable";
 import TrendingTable from "../SearchTabContent/TrendingTable";
 import WishlistTable from "../SearchTabContent/WishlistTable";
 import { SearchTab } from "./SearchTabBar";
@@ -33,7 +32,6 @@ const SearchTabContent = ({ activeSearchTab }: SearchTabContentProps) => {
           className={cn("relative mx-auto flex h-full w-full flex-col items-center")}
         >
           {activeSearchTab === "trending" && <TrendingTable />}
-          {activeSearchTab === "spotify" && <SpotifyTable />}
           {activeSearchTab === "playlist" && <PlaylistTable />}
           {activeSearchTab === "history" && <HistoryTable />}
           {activeSearchTab === "wishlist" && <WishlistTable />}
