@@ -5,16 +5,16 @@ import { type Adapter } from "next-auth/adapters";
 
 import { SignInTemplate } from "@/components/email-templates/SignInTemplate";
 import { env } from "@/env";
-import { eq } from "drizzle-orm";
 import { renderToStaticMarkup } from "react-dom/server";
 import { Resend } from "resend";
 
 import { db } from "@/server/db";
-import { requestNewAccessToken } from "@/services/spotify";
 import { pgTable } from "drizzle-orm/pg-core";
 import EmailProvider from "next-auth/providers/email";
-import SpotifyProvider from "next-auth/providers/spotify";
-import { accounts } from "./db/schema";
+// [SPOTIFY_OAUTH] Re-enable when Spotify extended quota is approved
+// import { requestNewAccessToken } from "@/services/spotify";
+// import SpotifyProvider from "next-auth/providers/spotify";
+// import { accounts } from "./db/schema";
 
 const resend = new Resend(env.EMAIL_SERVER_PASSWORD);
 
@@ -73,16 +73,14 @@ export const authOptions: NextAuthOptions = {
       };
     },
 
-    signIn: async ({ user, account }) => {
-      if (account?.expires_at && account?.refresh_token && Date.now() / 1000 > account.expires_at) {
-        const { access_token, expires_at } = await requestNewAccessToken(account.refresh_token);
-        await db
-          .update(accounts)
-          .set({ access_token, expires_at })
-          .where(eq(accounts.userId, user.id));
-      }
-      return true;
-    },
+    // [SPOTIFY_OAUTH] Refresh expired Spotify tokens on sign-in — re-enable with SpotifyProvider
+    // signIn: async ({ user, account }) => {
+    //   if (account?.expires_at && account?.refresh_token && Date.now() / 1000 > account.expires_at) {
+    //     const { access_token, expires_at } = await requestNewAccessToken(account.refresh_token);
+    //     await db.update(accounts).set({ access_token, expires_at }).where(eq(accounts.userId, user.id));
+    //   }
+    //   return true;
+    // },
   },
   adapter: DrizzleAdapter(db, pgTable) as Adapter,
   providers: [
@@ -106,12 +104,12 @@ export const authOptions: NextAuthOptions = {
         });
       },
     }),
-    SpotifyProvider({
-      clientId: env.SPOTIFY_CLIENT_ID,
-      clientSecret: env.SPOTIFY_CLIENT_SECRET,
-      authorization:
-        "https://accounts.spotify.com/authorize?scope=user-read-email,user-read-private,user-read-currently-playing,user-read-playback-state,user-read-recently-played,user-top-read,user-modify-playback-state,streaming,user-read-playback-state",
-    }),
+    // [SPOTIFY_OAUTH] Re-enable when Spotify extended quota is approved
+    // SpotifyProvider({
+    //   clientId: env.SPOTIFY_CLIENT_ID,
+    //   clientSecret: env.SPOTIFY_CLIENT_SECRET,
+    //   authorization: "https://accounts.spotify.com/authorize?scope=user-read-email,user-read-private,user-read-currently-playing,user-read-playback-state,user-read-recently-played,user-top-read,user-modify-playback-state,streaming,user-read-playback-state",
+    // }),
   ],
 };
 

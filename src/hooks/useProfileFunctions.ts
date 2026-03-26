@@ -1,6 +1,6 @@
 import { api } from "@/lib/api";
 import { wait } from "@/lib/async";
-import { signInWithProvider } from "@/lib/auth";
+// [SPOTIFY_OAUTH] import { signInWithProvider } from "@/lib/auth";
 import { playJingle } from "@/lib/browser";
 import { ErrorFormat } from "@/lib/constants/trpc-errors";
 import { signOut, useSession } from "next-auth/react";
@@ -34,11 +34,11 @@ const handleServerError = (
 const useProfileFunctions = () => {
   const router = useRouterWithHelpers();
   const { data: userData, update } = useSession();
-  const utils = api.useUtils();
+  // [SPOTIFY_OAUTH] const utils = api.useUtils();
 
   const deleteAccount = api.user.deleteUserAndAccountsByUserId.useMutation();
-  const unlinkSpotifyAccount = api.user.unlinkSpotifyAccount.useMutation();
   const editUserMail = api.user.editUserMail.useMutation();
+  // [SPOTIFY_OAUTH] const unlinkSpotifyAccount = api.user.unlinkSpotifyAccount.useMutation();
 
   const handleChangeMail = async (newEmail: string) => {
     if (!userData) {
@@ -106,37 +106,27 @@ const useProfileFunctions = () => {
     );
   };
 
-  const handleUnlinkSpotify = async (userId: string) => {
-    const loadingToast = toast.loading("Removing Spotify account link...");
-    unlinkSpotifyAccount.mutate(
-      { userId },
-      {
-        onSuccess: () => {
-          utils.account.getSpotifyAccountById
-            .invalidate()
-            .then(() => {
-              if (router.getParams("search") === "spotify") router.setParams({ search: "" });
-            })
-            .then(() =>
-              toast.success("Spotify account successfully unlinked.", { id: loadingToast }),
-            );
-        },
-        onError: (opts) => handleServerError(opts, "unlink your Spotify account", loadingToast),
-      },
-    );
-  };
-
-  const handleLinkSpotify = async () => {
-    await signInWithProvider("spotify", router.locale ?? "", "link");
-  };
+  // [SPOTIFY_OAUTH] Re-enable when Spotify extended quota is approved
+  // const handleUnlinkSpotify = async (userId: string) => {
+  //   const loadingToast = toast.loading("Removing Spotify account link...");
+  //   unlinkSpotifyAccount.mutate({ userId }, {
+  //     onSuccess: () => {
+  //       utils.account.getSpotifyAccountById.invalidate()
+  //         .then(() => { if (router.getParams("search") === "spotify") router.setParams({ search: "" }); })
+  //         .then(() => toast.success("Spotify account successfully unlinked.", { id: loadingToast }));
+  //     },
+  //     onError: (opts) => handleServerError(opts, "unlink your Spotify account", loadingToast),
+  //   });
+  // };
+  // const handleLinkSpotify = async () => {
+  //   await signInWithProvider("spotify", router.locale ?? "", "link");
+  // };
 
   return {
     handleChangeAvatar,
     handleChangeMail,
     handleDeleteAccount,
-    handleLinkSpotify,
     handleSignOut,
-    handleUnlinkSpotify,
   };
 };
 

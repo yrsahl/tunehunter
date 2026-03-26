@@ -242,26 +242,6 @@ describe("ProfileMenu", () => {
     expect(mockHandleSignOut).toHaveBeenCalledTimes(1);
   });
 
-  it("calls link spotify when connect button is clicked", () => {
-    mockSpotifyAccountData = null;
-
-    render(<ProfileMenu />);
-
-    fireEvent.click(screen.getByText("Connect"));
-
-    expect(mockHandleLinkSpotify).toHaveBeenCalledTimes(1);
-  });
-
-  it("calls unlink spotify with user id from confirm action", () => {
-    mockSpotifyAccountData = { data: { providerAccountId: "spotify-user-id" } };
-
-    render(<ProfileMenu />);
-
-    fireEvent.click(screen.getByTestId("confirm-unlink"));
-
-    expect(mockHandleUnlinkSpotify).toHaveBeenCalledWith("user-123");
-  });
-
   it("calls delete account with user id from confirm action", () => {
     render(<ProfileMenu />);
 

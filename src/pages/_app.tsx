@@ -14,8 +14,9 @@ import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryDataProvider } from "@/contexts/QueryDataContext";
 import { SearchTabDataProvider } from "@/contexts/SearchTabDataContext";
-import { SpotifyPlayerProvider } from "@/contexts/SpotifyPlayerContext";
-import { SpotifyUserDataProvider } from "@/contexts/SpotifyUserDataContext";
+// [SPOTIFY_OAUTH] Re-enable when Spotify extended quota is approved
+// import { SpotifyPlayerProvider } from "@/contexts/SpotifyPlayerContext";
+// import { SpotifyUserDataProvider } from "@/contexts/SpotifyUserDataContext";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { DefaultSeo } from "next-seo";
@@ -50,21 +51,18 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <SpeedInsights />
       <Analytics />
       <SessionProvider session={session}>
-        <SpotifyUserDataProvider>
-          <SpotifyPlayerProvider>
-            <TooltipProvider delayDuration={150}>
-              <ThemeProvider attribute="class" defaultTheme="auto" enableSystem={false}>
-                <Layout>
-                  <QueryDataProvider>
-                    <SearchTabDataProvider>
-                      <Component {...pageProps} />
-                    </SearchTabDataProvider>
-                  </QueryDataProvider>
-                </Layout>
-              </ThemeProvider>
-            </TooltipProvider>
-          </SpotifyPlayerProvider>
-        </SpotifyUserDataProvider>
+        {/* [SPOTIFY_OAUTH] Re-wrap with SpotifyUserDataProvider + SpotifyPlayerProvider when quota approved */}
+        <TooltipProvider delayDuration={150}>
+          <ThemeProvider attribute="class" defaultTheme="auto" enableSystem={false}>
+            <Layout>
+              <QueryDataProvider>
+                <SearchTabDataProvider>
+                  <Component {...pageProps} />
+                </SearchTabDataProvider>
+              </QueryDataProvider>
+            </Layout>
+          </ThemeProvider>
+        </TooltipProvider>
       </SessionProvider>
     </>
   );

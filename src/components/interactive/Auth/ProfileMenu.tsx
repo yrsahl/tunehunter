@@ -9,18 +9,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
+// [SPOTIFY_OAUTH] import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
 import useThemeSettings, { AutoThemePreferences } from "@/hooks/settings/useThemeSettings";
-import useAuthError from "@/hooks/useAuthErrors";
+// [SPOTIFY_OAUTH] import useAuthError from "@/hooks/useAuthErrors";
 import useProfileFunctions from "@/hooks/useProfileFunctions";
-import { api } from "@/lib/api";
 import { growIn } from "@/styles/animations";
 import clsx from "clsx";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { useState } from "react";
 import IconButton from "../../IconButton";
 import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import ChangeAvatarModal from "../Modals/ChangeAvatarModal";
@@ -30,8 +28,7 @@ import AuthCard from "./AuthCard";
 
 const ProfileMenu = () => {
   const [changeMailDialogOpen, setChangeMailDialogOpen] = useState(false);
-  const { handleDeleteAccount, handleLinkSpotify, handleSignOut, handleUnlinkSpotify } =
-    useProfileFunctions();
+  const { handleDeleteAccount, handleSignOut } = useProfileFunctions();
   const { region, changeRegion, createRegionName, setRegionByLocation, sortedRegions } =
     useRegionSettings();
   const {
@@ -41,9 +38,6 @@ const ProfileMenu = () => {
     changeParticlePreference,
   } = useThemeSettings();
   const autoThemePreference = preferredTheme === "auto" ? "auto" : "manual";
-  const { spotifyUserData } = useSpotifyUserDataContext();
-  const linkError = useAuthError("link");
-
   const { data: userData } = useSession();
   const userId = userData?.user.id ?? "";
   const userName = userData?.user.name;
@@ -51,19 +45,16 @@ const ProfileMenu = () => {
   const userImg = userData?.user.image;
   const userImgAlt = `Avatar image of ${userName}`;
 
-  const { data: spotifyAccount } = api.account.getSpotifyAccountById.useQuery(
-    { userId },
-    {
-      enabled: Boolean(userId),
-      refetchInterval: 30 * 60 * 1000, // Refetch every 30 minutes to refresh the access token
-      refetchIntervalInBackground: true,
-      refetchOnWindowFocus: false,
-    },
-  );
-  // Check for errors from linking spotify
-  useEffect(() => {
-    if (linkError) toast.error(linkError, { dismissible: true, duration: Infinity });
-  }, [linkError]);
+  // [SPOTIFY_OAUTH] Re-enable when Spotify extended quota is approved
+  // const { spotifyUserData } = useSpotifyUserDataContext();
+  // const linkError = useAuthError("link");
+  // const { data: spotifyAccount } = api.account.getSpotifyAccountById.useQuery(
+  //   { userId },
+  //   { enabled: Boolean(userId), refetchInterval: 30 * 60 * 1000, refetchIntervalInBackground: true, refetchOnWindowFocus: false },
+  // );
+  // useEffect(() => {
+  //   if (linkError) toast.error(linkError, { dismissible: true, duration: Infinity });
+  // }, [linkError]);
 
   if (!userData) {
     return (
@@ -172,52 +163,31 @@ const ProfileMenu = () => {
           />
         </div>
 
-        {/* Spotify */}
+        {/* [SPOTIFY_OAUTH] Spotify connect/disconnect row — re-enable when quota approved
         <p className="col-span-2 flex items-center justify-end">Spotify</p>
         {spotifyAccount?.data && (
           <>
-            <a
-              href={`https://open.spotify.com/user/${spotifyAccount.data.providerAccountId}`}
-              target="_blank"
-              className="col-span-2"
-            >
-              <Button
-                className="flex justify-start gap-2 p-0 font-light uppercase text-success"
-                variant="link"
-                size="sm"
-              >
-                <span className="max-w-40 overflow-hidden text-ellipsis">
-                  {spotifyUserData?.profileData?.display_name}
-                </span>
+            <a href={`https://open.spotify.com/user/${spotifyAccount.data.providerAccountId}`} target="_blank" className="col-span-2">
+              <Button className="flex justify-start gap-2 p-0 font-light uppercase text-success" variant="link" size="sm">
+                <span className="max-w-40 overflow-hidden text-ellipsis">{spotifyUserData?.profileData?.display_name}</span>
                 <CustomIcon icon="external" />
               </Button>
             </a>
             <ConfirmationModal
-              dialogAction={() => {
-                void handleUnlinkSpotify(userId);
-              }}
+              dialogAction={() => { void handleUnlinkSpotify(userId); }}
               dialogText={`Please confirm that you want to unlink your Spotify account ${spotifyUserData?.profileData?.display_name}.`}
               dialogTitle="Unlink Spotify account?"
             >
-              <div>
-                <IconButton icon="x" variant="ghostPrimary" size="icon" iconSize="20px" />
-              </div>
+              <div><IconButton icon="x" variant="ghostPrimary" size="icon" iconSize="20px" /></div>
             </ConfirmationModal>
           </>
         )}
         {!spotifyAccount?.data && (
           <div className="col-span-2">
-            <IconButton
-              icon={"spotify"}
-              variant="outlinePrimary"
-              text="Connect"
-              size="sm"
-              onClick={() => {
-                void handleLinkSpotify();
-              }}
-            />
+            <IconButton icon="spotify" variant="outlinePrimary" text="Connect" size="sm" onClick={() => { void handleLinkSpotify(); }} />
           </div>
         )}
+        */}
 
         {/* Theme */}
         <p className="gap-1font-normal col-span-2 flex items-center justify-end font-normal">
