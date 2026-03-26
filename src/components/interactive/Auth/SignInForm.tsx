@@ -60,7 +60,7 @@ const SignInForm: FC<IProps> = ({ email, setEmail, setMenuState }) => {
 
   return (
     <AuthCard title="Sign in" size="default">
-      <div className=" flex flex-col gap-3">
+      <div className=" flex flex-col gap-2">
         <form className="flex w-full flex-col gap-4" onSubmit={handleContinue}>
           <Input
             data-testid="auth-email-input"
@@ -76,13 +76,13 @@ const SignInForm: FC<IProps> = ({ email, setEmail, setMenuState }) => {
             text="Continue"
             icon="arrowRight"
             disabled={!isValidEmail || isPending}
-            size={"lg"}
+            size={"default"}
             variant="primary"
           />
         </form>
         <Button
           variant="link"
-          className="-mt-1 border-0 font-thin uppercase text-foreground"
+          className="-mt-1 border-0 text-xs font-thin uppercase text-foreground"
           onClick={() => setMenuState(MenuState.Register)}
         >
           Create account
