@@ -122,6 +122,12 @@ export const userRouter = createTRPCRouter({
       await ctx.db.update(users).set({ email: input.email }).where(eq(users.id, input.id));
     }),
 
+  editUserImage: protectedProcedure
+    .input(z.object({ id: z.string(), image: z.string().nullable() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.update(users).set({ image: input.image }).where(eq(users.id, input.id));
+    }),
+
   editUserName: protectedProcedure
     .input(z.object({ id: z.string(), name: z.string() }))
     .mutation(async ({ ctx, input }) => {

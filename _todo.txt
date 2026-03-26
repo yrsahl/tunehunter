@@ -3,9 +3,9 @@
 Create a logo
 visual: spotify logo instead of link for play, load smaller
 
-Rework settings and registration layout and names
-
+Rework settings layout and names
 Edit picture functionality (s3 bucket)
+
 Songs that are not on itunes won’t be found? Mix/match with Beatport?
 
 Monitor scrapers in production

@@ -20,11 +20,13 @@ import IconButton from "../../IconButton";
 import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import ChangeAvatarModal from "../Modals/ChangeAvatarModal";
 import ChangeMailModal from "../Modals/ChangeMailModal";
+import ChangeNameModal from "../Modals/ChangeNameModal";
 import ConfirmationModal from "../Modals/ConfirmationModal";
 import AuthCard from "./AuthCard";
 
 const ProfileMenu = () => {
   const [changeMailDialogOpen, setChangeMailDialogOpen] = useState(false);
+  const [changeNameDialogOpen, setChangeNameDialogOpen] = useState(false);
   const { handleDeleteAccount, handleSignOut } = useProfileFunctions();
   const { region, changeRegion, createRegionName, setRegionByLocation, sortedRegions } =
     useRegionSettings();
@@ -89,7 +91,22 @@ const ProfileMenu = () => {
             </Avatar>
           </div>
         </ChangeAvatarModal>
-        {userName && <p>{userName}</p>}
+        {userName && (
+          <div className="flex items-center gap-2">
+            <p>{userName}</p>
+            <ChangeNameModal open={changeNameDialogOpen} setOpen={setChangeNameDialogOpen}>
+              <div>
+                <IconButton
+                  icon="edit"
+                  variant="ghostPrimary"
+                  size="icon"
+                  iconSize="20px"
+                  onClick={() => setChangeNameDialogOpen(true)}
+                />
+              </div>
+            </ChangeNameModal>
+          </div>
+        )}
       </div>
 
       <div className="grid w-full grid-cols-[repeat(5,max-content)] gap-x-4 gap-y-6 sm:gap-x-12">
@@ -184,48 +201,50 @@ const ProfileMenu = () => {
 
         {/* Theme */}
         <p className="col-span-2 flex items-center justify-end font-normal">Theme</p>
-        <div className="col-span-3 flex items-center gap-2">
+        <div className="col-span-2 flex items-center gap-2">
           <span
             className={`w-10 font-thin transition-opacity md:text-base ${autoThemePreference === "auto" ? "opacity-100" : "opacity-30"}`}
           >
             Auto
           </span>
-          <Switch
-            data-testid="theme-toggle"
-            id="theme"
-            checked={autoThemePreference === "manual"}
-            onCheckedChange={(checked) => changeAutoThemePreference(checked ? "manual" : "auto")}
-          />
+          /
           <span
             className={`flex-1 font-thin transition-opacity md:text-base ${autoThemePreference === "manual" ? "opacity-100" : "opacity-30"}`}
           >
             Manual
           </span>
         </div>
+        <Switch
+          data-testid="theme-toggle"
+          id="theme"
+          checked={autoThemePreference === "manual"}
+          onCheckedChange={(checked) => changeAutoThemePreference(checked ? "manual" : "auto")}
+        />
 
         {/* Particles */}
         <p className="col-span-2 flex items-center justify-end font-normal">Particles</p>
-        <div className="col-span-3 flex items-center gap-2">
+        <div className="col-span-2 flex items-center gap-2">
           <span
             className={`w-10 font-thin transition-opacity md:text-base ${(particlePreference ?? false) ? "opacity-30" : "opacity-100"}`}
           >
             Off
           </span>
-          <Switch
-            data-testid="particles-toggle"
-            id="particles"
-            checked={particlePreference ?? false}
-            onCheckedChange={changeParticlePreference}
-          />
+          /
           <span
             className={`flex-1 font-thin transition-opacity md:text-base ${(particlePreference ?? false) ? "opacity-100" : "opacity-30"}`}
           >
             On
           </span>
         </div>
+        <Switch
+          data-testid="particles-toggle"
+          id="particles"
+          checked={particlePreference ?? false}
+          onCheckedChange={changeParticlePreference}
+        />
       </div>
 
-      <div className="mb-2 mt-2 flex flex-col items-center gap-2">
+      <div className="mt-2 flex flex-col items-center gap-2">
         <IconButton
           data-testid="logout-button"
           onClick={() => {

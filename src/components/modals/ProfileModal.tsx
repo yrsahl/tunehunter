@@ -10,8 +10,8 @@ interface IProps {
 }
 
 const ProfileModal: FC<IProps> = ({ open, enableAnimation }) => {
-  const { status } = useSession();
-  const isLoggedIn = status === "authenticated";
+  const { status, data } = useSession();
+  const isLoggedIn = status === "authenticated" || (status === "loading" && !!data);
 
   return (
     <div
