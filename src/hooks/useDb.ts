@@ -17,7 +17,7 @@ const useDb = () => {
           albumArtUrl: song.albumArtUrl || null,
           year: song.year,
           genre: song.genre ?? null,
-          spotifyId: null,
+          spotifyId: song.spotifyId ?? null,
           isrc: null,
         },
         artists: artists.map((artist) => {

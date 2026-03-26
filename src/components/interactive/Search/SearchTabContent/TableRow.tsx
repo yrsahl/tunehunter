@@ -43,12 +43,21 @@ const TableRow = ({
     } else {
       const artist = artists.map((a) => a.name).join(", ");
       const itunesTrack = await fetchItunesTrack(song.title, artist, song.duration);
-      if (!itunesTrack) {
-        toast.error("No results for this song.");
-        return;
+      if (itunesTrack) {
+        if (!(await storeTracksInDb([itunesTrack]))) return;
+        resolvedTrack = itunesTrack;
+      } else {
+        const spotifyTrack = track as SpotifyTrack;
+        if (!spotifyTrack.song.spotifyId) {
+          toast.error("No results for this song.");
+          return;
+        }
+        resolvedTrack = {
+          song: { ...spotifyTrack.song, id: `sp_${spotifyTrack.song.spotifyId}` },
+          artists: spotifyTrack.artists,
+        };
+        if (!(await storeTracksInDb([resolvedTrack]))) return;
       }
-      if (!(await storeTracksInDb([itunesTrack]))) return;
-      resolvedTrack = itunesTrack;
     }
 
     submitSearch(resolvedTrack, region);
