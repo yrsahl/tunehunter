@@ -19,17 +19,13 @@ const AuthCallbackPage: NextPage = ({}) => {
 
   useEffect(() => {
     if (!router.isReady) return;
-    if (!loggedIn) {
-      // setError("You're not logged in!");
-      return;
-    }
-    if (!spotifyUserData) {
-      // setError("We're still loading your Spotify account data.");
-      return;
-    }
+    if (!loggedIn) return;
 
     const redirectPath = router.query.redirectPath as string;
     const actionParam = router.getParams("action");
+
+    // For Spotify linking, wait for account data so we can show the account name
+    if (actionParam === "link" && !spotifyUserData) return;
 
     // Toast
     if (actionParam === "link") {
