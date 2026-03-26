@@ -138,7 +138,7 @@ const ProfileMenu = () => {
             <SelectTrigger
               id="region"
               data-testid="region-select"
-              className="h-9 max-w-36 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 font-thin text-foreground focus:ring-0 focus:ring-offset-0 md:max-w-44 md:text-base"
+              className="h-9 max-w-36 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 font-thin text-foreground focus:ring-0 focus:ring-offset-0 md:text-base"
             >
               <motion.div
                 key={region}
@@ -154,7 +154,7 @@ const ProfileMenu = () => {
                   {createRegionName(region)}
                 </SelectItem>
               ))}
-              <SelectSeparator />
+              <SelectSeparator className="" />
               {sortedRegions.rest.map((region) => (
                 <SelectItem data-testid={`region-option-${region}`} key={region} value={region}>
                   {createRegionName(region)}
