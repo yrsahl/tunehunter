@@ -1,5 +1,3 @@
-import CustomIcon from "@/components/CustomIcon";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -11,11 +9,10 @@ import {
 import { Switch } from "@/components/ui/switch";
 // [SPOTIFY_OAUTH] import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
-import useThemeSettings, { AutoThemePreferences } from "@/hooks/settings/useThemeSettings";
+import useThemeSettings from "@/hooks/settings/useThemeSettings";
 // [SPOTIFY_OAUTH] import useAuthError from "@/hooks/useAuthErrors";
 import useProfileFunctions from "@/hooks/useProfileFunctions";
 import { growIn } from "@/styles/animations";
-import clsx from "clsx";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
@@ -86,7 +83,7 @@ const ProfileMenu = () => {
             >
               <IconButton icon="upload" className="h-full w-full" size="icon" iconSize="20px" />
             </motion.div>
-            <Avatar className="relative z-10 border border-foreground">
+            <Avatar className="relative z-10 border border-foreground/20">
               {userImg && <AvatarImage src={userImg} alt={userImgAlt} />}
               {!userImg && <AvatarFallback>{userName?.slice(0, 2)}</AvatarFallback>}
             </Avatar>
@@ -140,11 +137,7 @@ const ProfileMenu = () => {
             </SelectTrigger>
             <SelectContent>
               {sortedRegions.map((region) => (
-                <SelectItem
-                  data-testid={`region-option-${region}`}
-                  key={region}
-                  value={region}
-                >
+                <SelectItem data-testid={`region-option-${region}`} key={region} value={region}>
                   {createRegionName(region)}
                 </SelectItem>
               ))}
@@ -190,108 +183,49 @@ const ProfileMenu = () => {
         */}
 
         {/* Theme */}
-        <p className="gap-1font-normal col-span-2 flex items-center justify-end font-normal">
-          <span>Theme</span>
-        </p>
-        <div className="col-span-2">
-          <Select value={autoThemePreference} onValueChange={changeAutoThemePreference}>
-            <SelectTrigger
-              id="region"
-              data-testid="theme-select"
-              className="h-9 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 font-thin text-foreground focus:ring-0 focus:ring-offset-0 md:text-base"
-            >
-              <motion.div {...growIn()} className="inline-block overflow-hidden text-ellipsis">
-                <SelectValue />
-              </motion.div>
-            </SelectTrigger>
-            <SelectContent>
-              {AutoThemePreferences.map((autoThemePreference) => (
-                <SelectItem
-                  data-testid={`theme-option-${autoThemePreference}`}
-                  key={autoThemePreference}
-                  value={autoThemePreference}
-                  className="py-2"
-                >
-                  {autoThemePreference === "auto" ? "Determine by sunset" : "Choose manually"}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <p className="col-span-2 flex items-center justify-end font-normal">Theme</p>
+        <div className="col-span-3 flex items-center gap-2">
+          <span
+            className={`w-10 font-thin transition-opacity md:text-base ${autoThemePreference === "auto" ? "opacity-100" : "opacity-30"}`}
+          >
+            Auto
+          </span>
+          <Switch
+            data-testid="theme-toggle"
+            id="theme"
+            checked={autoThemePreference === "manual"}
+            onCheckedChange={(checked) => changeAutoThemePreference(checked ? "manual" : "auto")}
+          />
+          <span
+            className={`flex-1 font-thin transition-opacity md:text-base ${autoThemePreference === "manual" ? "opacity-100" : "opacity-30"}`}
+          >
+            Manual
+          </span>
         </div>
 
-        {/* Disable particles */}
-        <p className="col-span-2 flex items-center justify-end gap-1 ">
-          <span>Particles</span>
-        </p>
-        <div className="col-span-3 flex items-center gap-4 font-thin">
+        {/* Particles */}
+        <p className="col-span-2 flex items-center justify-end font-normal">Particles</p>
+        <div className="col-span-3 flex items-center gap-2">
           <span
-            className={clsx(
-              "transition-colors",
-              particlePreference ? "text-foreground/20" : "text-foreground",
-            )}
+            className={`w-10 font-thin transition-opacity md:text-base ${(particlePreference ?? false) ? "opacity-30" : "opacity-100"}`}
           >
             Off
           </span>
           <Switch
             data-testid="particles-toggle"
-            id="minimumlength"
+            id="particles"
             checked={particlePreference ?? false}
             onCheckedChange={changeParticlePreference}
           />
           <span
-            className={clsx(
-              "transition-colors",
-              particlePreference ? "text-foreground" : "text-foreground/20",
-            )}
+            className={`flex-1 font-thin transition-opacity md:text-base ${(particlePreference ?? false) ? "opacity-100" : "opacity-30"}`}
           >
             On
           </span>
         </div>
-        {/* <div className="col-span-3">
-          <Select value={autoThemePreference} onValueChange={changeAutoThemePreference}>
-            <SelectTrigger
-              id="region"
-              className="h-9 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 text-base font-thin text-foreground focus:ring-0 focus:ring-offset-0"
-            >
-              <motion.div {...growIn()} className="inline-block overflow-hidden text-ellipsis">
-                <SelectValue />
-              </motion.div>
-            </SelectTrigger>
-            <SelectContent>
-              {["enable", "disable"].map((autoThemePreference) => (
-                <SelectItem key={autoThemePreference} value={autoThemePreference} className="py-2">
-                  {autoThemePreference === "auto" ? "Determine by sunset" : "Choose manually"}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div> */}
-
-        {/* Delete account */}
-        <p className="col-span-2 flex items-center justify-end font-normal">Account</p>
-        <div className="col-span-3">
-          <ConfirmationModal
-            dialogAction={() => {
-              void handleDeleteAccount(userId);
-            }}
-            dialogText="This action cannot be undone. This will permanently delete your account and all related data."
-            dialogTitle="Are you absolutely sure?"
-          >
-            <div>
-              <IconButton
-                text="Delete Account"
-                variant="ghostDestructive"
-                size="sm"
-                icon="x"
-                className="flex justify-start"
-              />
-            </div>
-          </ConfirmationModal>
-        </div>
       </div>
 
-      {/* Log out */}
-      <div className="mb-2 mt-6 w-fit">
+      <div className="mb-2 mt-2 flex flex-col items-center gap-2">
         <IconButton
           data-testid="logout-button"
           onClick={() => {
@@ -302,6 +236,22 @@ const ProfileMenu = () => {
           size="lg"
           icon="signOut"
         />
+        <ConfirmationModal
+          dialogAction={() => {
+            void handleDeleteAccount(userId);
+          }}
+          dialogText="This action cannot be undone. This will permanently delete your account and all related data."
+          dialogTitle="Are you absolutely sure?"
+        >
+          <div>
+            <IconButton
+              text="Delete account"
+              variant="link"
+              size="sm"
+              className="text-destructive/50 hover:text-destructive dark:text-destructive/90 dark:hover:text-destructive"
+            />
+          </div>
+        </ConfirmationModal>
       </div>
     </AuthCard>
   );
