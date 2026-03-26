@@ -3,6 +3,7 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -148,7 +149,13 @@ const ProfileMenu = () => {
               </motion.div>
             </SelectTrigger>
             <SelectContent>
-              {sortedRegions.map((region) => (
+              {sortedRegions.priority.map((region) => (
+                <SelectItem data-testid={`region-option-${region}`} key={region} value={region}>
+                  {createRegionName(region)}
+                </SelectItem>
+              ))}
+              <SelectSeparator />
+              {sortedRegions.rest.map((region) => (
                 <SelectItem data-testid={`region-option-${region}`} key={region} value={region}>
                   {createRegionName(region)}
                 </SelectItem>

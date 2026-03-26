@@ -8,7 +8,7 @@ import { RefObject } from "react";
 import IconButton from "../../IconButton";
 import { Label } from "../../ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
+import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from "../../ui/select";
 import { Slider } from "../../ui/slider";
 import { Switch } from "../../ui/switch";
 
@@ -127,7 +127,7 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
         </div>
 
         {/* Region */}
-        <div className="border-t border-border pt-3">
+        <div className="border-t border-foreground/30 pt-3">
           {loggedIn ? (
             <p className="text-xs font-light text-muted-foreground">
               Manage your region in your profile settings.
@@ -153,7 +153,13 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
                       </motion.div>
                     </SelectTrigger>
                     <SelectContent>
-                      {sortedRegions.map((region) => (
+                      {sortedRegions.priority.map((region) => (
+                        <SelectItem key={region} value={region}>
+                          {createRegionName(region)}
+                        </SelectItem>
+                      ))}
+                      <SelectSeparator />
+                      {sortedRegions.rest.map((region) => (
                         <SelectItem key={region} value={region}>
                           {createRegionName(region)}
                         </SelectItem>

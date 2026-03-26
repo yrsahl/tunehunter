@@ -12,6 +12,7 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -157,7 +158,13 @@ const RegisterForm: FC<IProps> = ({ email, setEmail, menuState, setMenuState }) 
                         </motion.div>
                       </SelectTrigger>
                       <SelectContent className="border-foreground/30">
-                        {sortedRegions.map((region) => (
+                        {sortedRegions.priority.map((region) => (
+                          <SelectItem key={region} value={region}>
+                            {createRegionName(region)}
+                          </SelectItem>
+                        ))}
+                        <SelectSeparator />
+                        {sortedRegions.rest.map((region) => (
                           <SelectItem key={region} value={region}>
                             {createRegionName(region)}
                           </SelectItem>

@@ -4,7 +4,7 @@ import {
   CountryCodes,
   getCountryName,
   isCountryCode,
-  sortRegions,
+  sortRegionsWithPriority,
 } from "@/lib/validators";
 import { iso1A2Code } from "@rapideditor/country-coder"; // ESM import named
 import { useLocalStorage } from "@uidotdev/usehooks";
@@ -29,7 +29,7 @@ const useRegionSettings = () => {
     userSettingsUpdaters: { updatePreferredRegion },
   } = useUserSettings(userData?.user.id);
 
-  const sortedRegions = sortRegions(CountryCodes);
+  const sortedRegions = sortRegionsWithPriority(CountryCodes);
 
   // Auto-detect region from browser locale on first visit
   useEffect(() => {

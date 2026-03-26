@@ -369,3 +369,29 @@ export const getCountryName = (code: string): string | undefined => {
 export const sortRegions = (regions: readonly CountryCode[]): CountryCode[] => {
   return [...regions].sort((a, b) => countryNames[a].localeCompare(countryNames[b]));
 };
+
+// Most commonly used regions shown at the top of the list
+export const PRIORITY_REGIONS: CountryCode[] = [
+  "US",
+  "GB",
+  "DE",
+  "FR",
+  "AU",
+  "CA",
+  "BR",
+  "ES",
+  "IT",
+];
+
+export const sortRegionsWithPriority = (
+  regions: readonly CountryCode[],
+): { priority: CountryCode[]; rest: CountryCode[] } => {
+  const prioritySet = new Set(PRIORITY_REGIONS);
+  const priority = PRIORITY_REGIONS.filter((r) => regions.includes(r)).sort((a, b) =>
+    countryNames[a].localeCompare(countryNames[b]),
+  );
+  const rest = [...regions]
+    .filter((r) => !prioritySet.has(r))
+    .sort((a, b) => countryNames[a].localeCompare(countryNames[b]));
+  return { priority, rest };
+};
