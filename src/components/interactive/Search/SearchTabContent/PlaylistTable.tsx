@@ -43,7 +43,7 @@ const PlaylistTable = () => {
     <div className="flex h-full w-full flex-col">
       <form
         onSubmit={handleSubmit}
-        className="flex shrink-0 items-center gap-2 border-b border-foreground/10 px-4 py-3 sm:px-6"
+        className="flex shrink-0 items-center gap-2 border-b border-foreground/10 px-3 py-2 sm:px-5"
       >
         <input
           type="text"
@@ -58,6 +58,7 @@ const PlaylistTable = () => {
             variant="primary"
             text="Load"
             type="submit"
+            size="xs"
             textStyle="uppercase text-xs"
           />
         </div>
