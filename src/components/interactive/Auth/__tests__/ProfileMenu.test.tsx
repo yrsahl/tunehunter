@@ -62,7 +62,7 @@ vi.mock("@/hooks/settings/useRegionSettings", () => ({
     changeRegion: mockChangeRegion,
     createRegionName: (region: string) => region,
     setRegionByLocation: mockSetRegionByLocation,
-    sortedRegions: ["DE", "US"],
+    sortedRegions: { priority: ["DE", "US"], rest: [] },
   }),
 }));
 
@@ -159,6 +159,7 @@ vi.mock("@/components/ui/select", () => ({
   SelectItem: ({ children, "data-testid": dataTestId }: SelectItemProps) => (
     <div data-testid={dataTestId}>{children}</div>
   ),
+  SelectSeparator: () => <hr />,
 }));
 
 vi.mock("@/components/ui/switch", () => ({
