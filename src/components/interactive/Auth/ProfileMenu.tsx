@@ -92,21 +92,16 @@ const ProfileMenu = () => {
           </div>
         </ChangeAvatarModal>
         {userName && (
-          <div className="flex items-center gap-2">
-            <p>{userName}</p>
-            <ChangeNameModal open={changeNameDialogOpen} setOpen={setChangeNameDialogOpen}>
-              <div>
-                <IconButton
-                  icon="edit"
-                  variant="ghostPrimary"
-                  size="icon"
-                  iconSize="20px"
-                  onClick={() => setChangeNameDialogOpen(true)}
-                />
-              </div>
-            </ChangeNameModal>
-          </div>
+          <p
+            className="cursor-pointer underline-offset-4 hover:underline"
+            onClick={() => setChangeNameDialogOpen(true)}
+          >
+            {userName}
+          </p>
         )}
+        <ChangeNameModal open={changeNameDialogOpen} setOpen={setChangeNameDialogOpen}>
+          <span />
+        </ChangeNameModal>
       </div>
 
       <div className="grid w-full grid-cols-[repeat(5,max-content)] gap-x-4 gap-y-6 sm:gap-x-12">
@@ -121,7 +116,7 @@ const ProfileMenu = () => {
               <IconButton
                 data-testid="change-email-button"
                 icon="edit"
-                variant="outlinePrimary"
+                variant="ghostPrimary"
                 size="icon"
                 iconSize="20px"
                 onClick={() => setChangeMailDialogOpen(true)}
@@ -164,7 +159,7 @@ const ProfileMenu = () => {
         <div className="flex items-center justify-center">
           <IconButton
             data-testid="auto-detect-region-button"
-            variant="outlinePrimary"
+            variant="ghostPrimary"
             size="icon"
             icon="mapPin"
             iconSize="20px"
@@ -214,13 +209,15 @@ const ProfileMenu = () => {
             Manual
           </span>
         </div>
-        <Switch
-          data-testid="theme-toggle"
-          id="theme"
-          inverted
-          checked={autoThemePreference === "manual"}
-          onCheckedChange={(checked) => changeAutoThemePreference(checked ? "manual" : "auto")}
-        />
+        <div className="flex h-9 items-center">
+          <Switch
+            data-testid="theme-toggle"
+            id="theme"
+            inverted
+            checked={autoThemePreference === "manual"}
+            onCheckedChange={(checked) => changeAutoThemePreference(checked ? "manual" : "auto")}
+          />
+        </div>
 
         {/* Particles */}
         <p className="col-span-2 flex items-center justify-end font-normal">Particles</p>
@@ -237,13 +234,15 @@ const ProfileMenu = () => {
             On
           </span>
         </div>
-        <Switch
-          data-testid="particles-toggle"
-          id="particles"
-          inverted
-          checked={particlePreference ?? false}
-          onCheckedChange={changeParticlePreference}
-        />
+        <div className="flex h-9 items-center">
+          <Switch
+            data-testid="particles-toggle"
+            id="particles"
+            inverted
+            checked={particlePreference ?? false}
+            onCheckedChange={changeParticlePreference}
+          />
+        </div>
       </div>
 
       <div className="mt-3 flex flex-col items-center gap-2">

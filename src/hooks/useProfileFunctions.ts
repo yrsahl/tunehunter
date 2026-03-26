@@ -83,24 +83,47 @@ const useProfileFunctions = () => {
     }
   };
 
-  const handleChangeAvatar = async (imageUrl: string | null): Promise<{ error?: string }> => {
+  const handleChangeAvatar = async (file: File): Promise<{ error?: string }> => {
     if (!userData) throw new Error("User must be logged in to change avatar.");
 
-    const mutationPromise = new Promise<void>((resolve, reject) => {
-      editUserImage.mutate(
-        { id: userData.user.id, image: imageUrl },
-        { onSuccess: () => { void update(); resolve(); }, onError: reject },
-      );
-    });
+    const doUpload = async (): Promise<void> => {
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
 
-    toast.promise(mutationPromise, {
-      loading: "Updating profile picture...",
+      const response = await fetch("/api/upload/avatar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dataUrl, currentImageUrl: userData.user.image }),
+      });
+      const data = await response.json() as { url?: string; error?: string };
+      if (!response.ok) throw new Error(data.error ?? "Upload failed");
+
+      await new Promise<void>((resolve, reject) => {
+        editUserImage.mutate(
+          { id: userData.user.id, image: data.url! },
+          { onSuccess: () => { void update(); resolve(); }, onError: reject },
+        );
+      });
+    };
+
+    const uploadPromise = doUpload();
+
+    toast.promise(uploadPromise, {
+      loading: "Uploading profile picture...",
       success: "Profile picture successfully updated.",
-      error: "Something went wrong. Could not update your profile picture.",
+      error: (e: unknown) => e instanceof Error ? e.message : "Upload failed.",
     });
 
-    try { await mutationPromise; } catch { /* toast handles it */ }
-    return {};
+    try {
+      await uploadPromise;
+      return {};
+    } catch (e) {
+      return { error: e instanceof Error ? e.message : "Upload failed." };
+    }
   };
 
   const handleSignOut = async () => {

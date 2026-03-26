@@ -1,12 +1,22 @@
 ---- CORE
 
 Create a logo
-visual: spotify logo instead of link for play, load smaller
+Use Stitch for UI
+Visual: spotify logo instead of link for play, load smaller
+
+Another login provider? Apple Music?
 
 Rework settings layout and names
-Edit picture functionality (s3 bucket)
+Drop language from user table
 
-Songs that are not on itunes won’t be found? Mix/match with Beatport?
+If a song is not on itunes “no results for this song”, we can still scrape it and go directly after the vendors, without storing it, or storing it with an id +1000000 (or spotify’s hexadecimal one) or sth.
+
+Do we currently record unreachable (and maybe other errors) per songlistingrequest, so that we know exactly from which point onward which vendor failed
+
+Make playlist load smaller on mobile
+
+Amazon scraper for all regions?
+Put bigger regions on top, then the rest
 
 Monitor scrapers in production
 Stresstest + Monitoring

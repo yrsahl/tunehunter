@@ -388,6 +388,17 @@ const Dashboard: NextPage = () => {
                       : null,
                   url: "https://resend.com/overview",
                 },
+                {
+                  name: "Cloudinary",
+                  description: "Profile picture storage & delivery",
+                  limit: "25 credits/month (1 credit = 1 GB storage = 1 GB bandwidth = 1k transforms)",
+                  usageLabel: "credits",
+                  usageValue:
+                    serviceUsage?.cloudinaryCreditsUsed != null
+                      ? `${serviceUsage.cloudinaryCreditsUsed.toFixed(2)} / 25`
+                      : null,
+                  url: "https://console.cloudinary.com",
+                },
               ] satisfies ServiceRow[]
             ).map((s) => (
               <tr key={s.name} className="border-b border-primary/5">

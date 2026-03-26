@@ -11,7 +11,7 @@ const Switch = React.forwardRef<
     className={cn(
       "peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50",
       inverted
-        ? "border-2 bg-transparent data-[state=checked]:border-primary data-[state=unchecked]:border-primary/50 data-[state=checked]:bg-transparent data-[state=unchecked]:bg-transparent"
+        ? "border-[.5px] bg-transparent data-[state=checked]:border-primary data-[state=unchecked]:border-primary/50 data-[state=checked]:bg-transparent data-[state=unchecked]:bg-transparent"
         : "data-[state=checked]:bg-primary data-[state=unchecked]:bg-primary/50",
       className,
     )}

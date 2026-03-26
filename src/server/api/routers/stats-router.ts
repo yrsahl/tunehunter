@@ -54,6 +54,22 @@ async function fetchResendEmailsThisMonth(): Promise<number | null> {
   return data.data.filter((e) => new Date(e.created_at) >= startOfMonth).length;
 }
 
+async function fetchCloudinaryCreditsUsed(): Promise<number | null> {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  const apiKey = process.env.CLOUDINARY_API_KEY;
+  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+  if (!cloudName || !apiKey || !apiSecret) return null;
+
+  const auth = Buffer.from(`${apiKey}:${apiSecret}`).toString("base64");
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/usage`, {
+    headers: { Authorization: `Basic ${auth}` },
+  });
+  if (!res.ok) return null;
+
+  const data = (await res.json()) as { credits?: { usage?: number } };
+  return data.credits?.usage ?? null;
+}
+
 async function fetchVercelBandwidthGb(): Promise<number | null> {
   if (!env.VERCEL_API_TOKEN) return null;
 
@@ -210,11 +226,12 @@ export const statsRouter = createTRPCRouter({
   }),
 
   getServiceUsage: publicProcedure.query(async () => {
-    const [upstashCommandsThisMonth, vercelBandwidthUsedGb, resendEmailsThisMonth] = await Promise.all([
+    const [upstashCommandsThisMonth, vercelBandwidthUsedGb, resendEmailsThisMonth, cloudinaryCreditsUsed] = await Promise.all([
       fetchUpstashCommandsThisMonth(),
       fetchVercelBandwidthGb(),
       fetchResendEmailsThisMonth(),
+      fetchCloudinaryCreditsUsed(),
     ]);
-    return { upstashCommandsThisMonth, vercelBandwidthUsedGb, resendEmailsThisMonth };
+    return { upstashCommandsThisMonth, vercelBandwidthUsedGb, resendEmailsThisMonth, cloudinaryCreditsUsed };
   }),
 });
