@@ -25,7 +25,6 @@ export const users = pgTable("user", {
   image: text("image"),
   theme: varchar("theme", { length: 255 }),
   themeParticles: boolean().default(true),
-  language: varchar("language", { length: 255 }),
   region: varchar("region", { length: 255 }),
 });
 
@@ -200,7 +199,13 @@ export const artistGenres = pgTable(
   }),
 );
 
-export const listingRequestSourceArray = ["db_cache", "external", "rate_limited", "store_unreachable", "no_match"] as const;
+export const listingRequestSourceArray = [
+  "db_cache",
+  "external",
+  "rate_limited",
+  "store_unreachable",
+  "no_match",
+] as const;
 export type ListingRequestSource = (typeof listingRequestSourceArray)[number];
 export const listingRequestSourceEnum = pgEnum("listing_request_source", listingRequestSourceArray);
 
@@ -208,7 +213,9 @@ export const songListingRequests = pgTable(
   "songListingRequest",
   {
     id: serial("id").primaryKey(),
-    songId: varchar("song_id", { length: 255 }).references(() => songs.id, { onDelete: "set null" }),
+    songId: varchar("song_id", { length: 255 }).references(() => songs.id, {
+      onDelete: "set null",
+    }),
     vendor: varchar("vendor", { length: 255 }).notNull(),
     source: listingRequestSourceEnum().notNull(),
     fetchDurationMs: integer("fetch_duration_ms"), // only set for source="external"
