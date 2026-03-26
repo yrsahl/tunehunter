@@ -8,9 +8,6 @@ If a song is not on itunes “no results for this song”, we can still scrape i
 
 Do we currently record unreachable (and maybe other errors) per songlistingrequest, so that we know exactly from which point onward which vendor failed
 
-Amazon scraper for all regions?
-Put bigger regions on top, then the rest
-
 Monitor scrapers in production
 Stresstest + Monitoring
 

@@ -208,32 +208,33 @@ function getSigningKey(secretKey: string, dateStamp: string, awsRegion: string):
 }
 
 // ── Amazon scraper (active) ───────────────────────────────────────────────────
-// Scrapes the digital-music search page. Works on regions whose Amazon domain
-// does not serve a WAF JavaScript challenge (DE and US confirmed; GB blocked).
-// Switch to fetchAmazonDataPaapi once PA API credentials are available.
+// Scrapes the digital-music search page using the `i=digital-music` search index.
+// Individual track cards are identified by `trackAsin=` in their buy link.
+//
+// Region support:
+//   ✅ US, DE, FR, ES, IT  — digital music store present, scraping works
+//   ❌ GB                  — WAF JavaScript challenge blocks scraping
+//   ❌ CA, AU              — no digital music download store (i=digital-music
+//                            returns physical CDs / unrelated items, no trackAsin links)
+//
+// GB / CA / AU will return NO_MATCH_FOUND until PA API credentials are available.
+// Switch to fetchAmazonDataPaapi once AMAZON_PA_ACCESS_KEY + AMAZON_PA_SECRET_KEY are set.
 
 const AMAZON_SCRAPE_DOMAIN: Record<string, string> = {
   US: "amazon.com",
-  GB: "amazon.co.uk",
   DE: "amazon.de",
   FR: "amazon.fr",
   ES: "amazon.es",
   IT: "amazon.it",
-  JP: "amazon.co.jp",
-  CA: "amazon.ca",
-  AU: "amazon.com.au",
+  // GB: WAF blocked. CA/AU: no digital music store.
 };
 
 const AMAZON_CURRENCY: Record<string, string> = {
   US: "USD",
-  GB: "GBP",
   DE: "EUR",
   FR: "EUR",
   ES: "EUR",
   IT: "EUR",
-  JP: "JPY",
-  CA: "CAD",
-  AU: "AUD",
 };
 
 const fetchAmazonData = async ({
@@ -296,8 +297,12 @@ const fetchAmazonData = async ({
     const cardArtist = $el.find(".a-color-secondary").first().find(".a-size-base").last().text().trim();
     if (!artistMatches(cardArtist, artist)) return;
 
-    // Price text: "Oder 1,29 €, …" / "$1.29 to buy" / etc.
-    const priceText = $el.find('[data-cy="secondary-offer-recipe"] span').text().trim();
+    // Price text: "Oder 1,29 €, …" / "$1.29 to buy" / "£1.29" etc.
+    // Try the data-cy attribute first (may change across Amazon redesigns), then
+    // the stable accessible price span (.a-price .a-offscreen) as fallback.
+    const priceText =
+      $el.find('[data-cy="secondary-offer-recipe"] span').text().trim() ||
+      $el.find(".a-price .a-offscreen").first().text().trim();
     const priceMatch = priceText.match(/(\d+)[,.](\d{2})/);
     if (!priceMatch) return;
     const price = `${priceMatch[1]}.${priceMatch[2]}`;
