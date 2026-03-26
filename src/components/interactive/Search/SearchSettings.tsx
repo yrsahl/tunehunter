@@ -1,6 +1,6 @@
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
 import { useSearchSettingsStore } from "@/hooks/stores/useSearchSettingsStore";
-import { fadeInAndOut, growIn, slideInAndOutFromAbove } from "@/styles/animations";
+import { fadeInAndOut, growIn, slideInFromAbove } from "@/styles/animations";
 import { AnimatePresence, motion } from "framer-motion";
 import { Cog } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -11,12 +11,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Slider } from "../../ui/slider";
 import { Switch } from "../../ui/switch";
-
-type SearchSettings = {
-  searchForClubMixesOnly: boolean;
-  minimumLengthOption: boolean;
-  minimumLengthSeconds: number;
-};
 
 const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> }) => {
   const { status } = useSession();
@@ -35,6 +29,11 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
     useRegionSettings();
 
   const areSettingsSet = searchForClubMixesOnly || minimumLengthOption;
+
+  const resetSettings = () => {
+    setSearchForClubMixesOnly(false);
+    setMinimumLengthOption(false);
+  };
 
   // Prepared strings
   const minimumLengthDisplayMinutes = Math.floor(minimumLengthSeconds / 60)
@@ -56,25 +55,35 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
             {areSettingsSet && (
               <motion.div
                 {...fadeInAndOut(0.5)}
-                className="absolute -right-0 top-4 z-10 h-2 w-2 rounded-full bg-accent text-xl"
+                className="absolute -right-1 top-3 z-10 h-2 w-2 rounded-full bg-accent"
               />
             )}
           </AnimatePresence>
         </motion.div>
       </PopoverTrigger>
-      <PopoverContent className="flex flex-col items-center gap-4 px-6 py-4" ref={windowRef}>
-        {/* <div className="absolute inset-0 -z-10 bg-background opacity-80" /> */}
-        {/* 
-        <p className="border-b-[1px] border-foreground px-2 pb-1 text-lg text-foreground">
-          <span>Search Settings</span>
-        </p> */}
-        <div className="grid grid-cols-[240px_minmax(50px,_max-content)] gap-x-8 gap-y-1 opacity-100">
+      <PopoverContent className="flex flex-col gap-3 px-5 py-4" ref={windowRef}>
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-medium uppercase tracking-widest text-foreground opacity-60">
+            Search Filters
+          </p>
+          <AnimatePresence>
+            {areSettingsSet && (
+              <motion.button
+                {...fadeInAndOut(0.2)}
+                onClick={resetSettings}
+                className="text-xs font-light text-muted-foreground underline-offset-2 hover:underline"
+              >
+                Reset
+              </motion.button>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <div className="grid grid-cols-[1fr_auto] items-center gap-x-6 gap-y-1">
           {/* Minimum length */}
-          <Label htmlFor="minimumlength" className="flex items-center text-base font-thin">
-            <p>
-              Set a minimum length
-              {minimumLengthOption ? ":" : "?"}
-            </p>
+          <Label htmlFor="minimumlength" className="flex items-center text-base font-light">
+            Minimum length
           </Label>
           <div className="flex h-10 items-center justify-end">
             <Switch
@@ -83,14 +92,14 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
               onCheckedChange={setMinimumLengthOption}
             />
           </div>
-          <AnimatePresence mode="popLayout">
+          <AnimatePresence mode="popLayout" initial={false}>
             {minimumLengthOption && (
               <motion.div
-                className="col-span-2 mx-auto flex w-4/5 cursor-pointer items-center justify-center gap-4 py-2"
-                {...slideInAndOutFromAbove()}
-                key="mnimumlengthslider"
+                className="col-span-2 flex items-center gap-4 pb-1 pt-0.5"
+                {...slideInFromAbove()}
+                key="minimumlengthslider"
               >
-                <span className="font-normal">
+                <span className="w-10 shrink-0 text-center text-sm font-normal tabular-nums">
                   {minimumLengthDisplayMinutes}:{minimumLengthDisplaySeconds}
                 </span>
                 <Slider
@@ -105,9 +114,8 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
           </AnimatePresence>
 
           {/* Club Mixes only */}
-          <Label htmlFor="clubmixesonly" className="flex items-center font-thin">
-            [Club], [Extended] only
-            {!searchForClubMixesOnly && <span>?</span>}
+          <Label htmlFor="clubmixesonly" className="flex items-center text-base font-light">
+            Club &amp; Extended mixes only
           </Label>
           <div className="flex h-10 items-center justify-end">
             <Switch
@@ -116,48 +124,54 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
               onCheckedChange={setSearchForClubMixesOnly}
             />
           </div>
+        </div>
 
-          {/* Region */}
-          {!loggedIn && (
-            <>
-              <div className="flex items-center">
-                <Label htmlFor="region" className="flex items-center font-thin">
+        {/* Region */}
+        <div className="border-t border-border pt-3">
+          {loggedIn ? (
+            <p className="text-xs font-light text-muted-foreground">
+              Manage your region in your profile settings.
+            </p>
+          ) : (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-0">
+                <Label htmlFor="region" className="shrink-0 text-base font-light">
                   Region:
                 </Label>
-                <Select onValueChange={changeRegion} value={region}>
-                  <SelectTrigger
-                    id="region"
-                    className="h-9 max-w-44 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 px-1 text-base font-thin text-foreground focus:ring-0 focus:ring-offset-0"
-                  >
-                    <motion.div
-                      key={region}
-                      {...growIn()}
-                      className="inline-block w-36 overflow-hidden text-ellipsis text-start"
+                <div className="flex items-center gap-1">
+                  <Select onValueChange={changeRegion} value={region}>
+                    <SelectTrigger
+                      id="region"
+                      className="h-9 max-w-36 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 px-1 text-base font-light text-foreground focus:ring-0 focus:ring-offset-0"
                     >
-                      <SelectValue />
-                    </motion.div>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {sortedRegions.map((region) => (
-                      <SelectItem key={region} value={region}>
-                        {createRegionName(region)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                      <motion.div
+                        key={region}
+                        {...growIn()}
+                        className="inline-block w-36 overflow-hidden text-ellipsis text-start"
+                      >
+                        <SelectValue />
+                      </motion.div>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {sortedRegions.map((region) => (
+                        <SelectItem key={region} value={region}>
+                          {createRegionName(region)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-              <div className="flex h-10 items-center justify-center">
-                <IconButton
-                  variant="ghostPrimary"
-                  size="icon"
-                  icon="mapPin"
-                  iconSize="28px"
-                  className="h-10 w-10"
-                  bordered="default"
-                  onClick={setRegionByLocation}
-                />
-              </div>
-            </>
+              <IconButton
+                variant="ghostPrimary"
+                size="icon"
+                icon="mapPin"
+                iconSize="24px"
+                className="h-8 w-8 shrink-0"
+                bordered="default"
+                onClick={setRegionByLocation}
+              />
+            </div>
           )}
         </div>
       </PopoverContent>

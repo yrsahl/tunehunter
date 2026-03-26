@@ -1,4 +1,4 @@
-import SearchSettings from "@/components/interactive/Search/SearchSettings";
+import { SearchSettings } from "@/hooks/stores/useSearchSettingsStore";
 import { SearchData } from "@/types/search-types";
 
 export const filterOutDuplicates = (searchData: SearchData) => {

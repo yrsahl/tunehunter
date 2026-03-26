@@ -1,4 +1,4 @@
-import SearchSettings from "@/components/interactive/Search/SearchSettings";
+import { SearchSettings } from "@/hooks/stores/useSearchSettingsStore";
 import { applyFilters } from "@/lib/filters";
 import { fetchItunesSearchData } from "@/services/itunes/api";
 import { SearchData } from "@/types/search-types";

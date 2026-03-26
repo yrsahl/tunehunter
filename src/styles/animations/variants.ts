@@ -20,7 +20,6 @@ export const growIn = (duration = 0.3) => ({
 export const slideInFromAbove = (duration = 0.5, distance = 10) => ({
   initial: { opacity: 0, y: -distance },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -distance },
   transition: { duration },
 });
 

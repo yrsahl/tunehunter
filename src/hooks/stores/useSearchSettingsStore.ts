@@ -1,10 +1,13 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-type SearchSettingsStore = {
+export type SearchSettings = {
   searchForClubMixesOnly: boolean;
   minimumLengthOption: boolean;
   minimumLengthSeconds: number;
+};
+
+type SearchSettingsStore = SearchSettings & {
   setSearchForClubMixesOnly: (value: boolean) => void;
   setMinimumLengthOption: (value: boolean) => void;
   setMinimumLengthSeconds: (value: number) => void;
