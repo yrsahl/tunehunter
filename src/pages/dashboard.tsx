@@ -40,9 +40,16 @@ const Dashboard: NextPage = () => {
   if (isLoading) return <div className="p-10 text-muted-foreground">Loading...</div>;
   if (!data) return null;
 
-  const totalListingRequests = data.dbCacheHits + data.externalFetches + data.noMatch + data.rateLimited + data.storeUnreachable;
+  const totalListingRequests =
+    data.dbCacheHits +
+    data.externalFetches +
+    data.noMatch +
+    data.rateLimited +
+    data.storeUnreachable;
   const successRate =
-    totalListingRequests > 0 ? Math.round(((data.dbCacheHits + data.externalFetches) / totalListingRequests) * 100) : 0;
+    totalListingRequests > 0
+      ? Math.round(((data.dbCacheHits + data.externalFetches) / totalListingRequests) * 100)
+      : 0;
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-10 p-8">
@@ -80,12 +87,19 @@ const Dashboard: NextPage = () => {
           </colgroup>
           <thead>
             <tr className="text-left">
-              <th className="pb-1 font-normal text-muted-foreground" rowSpan={2}>Vendor</th>
-              <th className="pb-1 font-normal text-muted-foreground" rowSpan={2}>Total</th>
-              <th className="pb-1 font-medium text-green-600 dark:text-green-400 text-xs" colSpan={2}>
+              <th className="pb-1 font-normal text-muted-foreground" rowSpan={2}>
+                Vendor
+              </th>
+              <th className="pb-1 font-normal text-muted-foreground" rowSpan={2}>
+                Total
+              </th>
+              <th
+                className="pb-1 text-xs font-medium text-green-600 dark:text-green-400"
+                colSpan={2}
+              >
                 Success
               </th>
-              <th className="pb-1 font-medium text-red-500 text-xs" colSpan={3}>
+              <th className="pb-1 text-xs font-medium text-red-500" colSpan={3}>
                 Failure
               </th>
             </tr>
@@ -100,19 +114,24 @@ const Dashboard: NextPage = () => {
           <tbody>
             {vendors.map((vendor) => {
               const cache = Number(
-                data.byVendor.find((r) => r.vendor === vendor && r.source === "db_cache")?.count ?? 0,
+                data.byVendor.find((r) => r.vendor === vendor && r.source === "db_cache")?.count ??
+                  0,
               );
               const external = Number(
-                data.byVendor.find((r) => r.vendor === vendor && r.source === "external")?.count ?? 0,
+                data.byVendor.find((r) => r.vendor === vendor && r.source === "external")?.count ??
+                  0,
               );
               const noMatch = Number(
-                data.byVendor.find((r) => r.vendor === vendor && r.source === "no_match")?.count ?? 0,
+                data.byVendor.find((r) => r.vendor === vendor && r.source === "no_match")?.count ??
+                  0,
               );
               const rateLimited = Number(
-                data.byVendor.find((r) => r.vendor === vendor && r.source === "rate_limited")?.count ?? 0,
+                data.byVendor.find((r) => r.vendor === vendor && r.source === "rate_limited")
+                  ?.count ?? 0,
               );
               const unreachable = Number(
-                data.byVendor.find((r) => r.vendor === vendor && r.source === "store_unreachable")?.count ?? 0,
+                data.byVendor.find((r) => r.vendor === vendor && r.source === "store_unreachable")
+                  ?.count ?? 0,
               );
               const total = cache + external + noMatch + rateLimited + unreachable;
               const vendorLabel =
@@ -164,13 +183,26 @@ const Dashboard: NextPage = () => {
             <col className="w-[18%]" />
           </colgroup>
           <thead>
+            <tr className="text-left">
+              <th className="pb-1 font-normal text-muted-foreground" rowSpan={2}>
+                Vendor
+              </th>
+              <th className="pb-1 font-normal text-muted-foreground" rowSpan={2}>
+                Avg latency
+              </th>
+              <th className="pb-1 font-normal text-muted-foreground" rowSpan={2}>
+                P95 latency
+              </th>
+              <th className="pb-1 font-normal text-muted-foreground" rowSpan={2}>
+                Last failure
+              </th>
+              <th className="pb-1 text-xs font-medium text-red-500" colSpan={2}>
+                Failures
+              </th>
+            </tr>
             <tr className="border-b border-primary/10 text-left text-muted-foreground">
-              <th className="pb-2 font-normal">Vendor</th>
-              <th className="pb-2 font-normal">Avg latency</th>
-              <th className="pb-2 font-normal">P95 latency</th>
+              <th className="pb-2 font-normal">No match (24h)</th>
               <th className="pb-2 font-normal">Unreachable (24h)</th>
-              <th className="pb-2 font-normal">No-match (24h)</th>
-              <th className="pb-2 font-normal">Last failure</th>
             </tr>
           </thead>
           <tbody>
@@ -234,15 +266,7 @@ const Dashboard: NextPage = () => {
                       <span className="text-muted-foreground">—</span>
                     )}
                   </td>
-                  <td className="py-3">
-                    {failures24h > 5 ? (
-                      <span className="text-red-500">{failures24h}</span>
-                    ) : failures24h > 0 ? (
-                      <span className="text-yellow-500">{failures24h}</span>
-                    ) : (
-                      0
-                    )}
-                  </td>
+                  <td className="py-3 text-muted-foreground">{lastFailureLabel}</td>
                   <td className="py-3">
                     {noMatchRate24h != null ? (
                       <span
@@ -261,7 +285,15 @@ const Dashboard: NextPage = () => {
                       <span className="text-muted-foreground">—</span>
                     )}
                   </td>
-                  <td className="py-3 text-muted-foreground">{lastFailureLabel}</td>
+                  <td className="py-3">
+                    {failures24h > 5 ? (
+                      <span className="text-red-500">{failures24h}</span>
+                    ) : failures24h > 0 ? (
+                      <span className="text-yellow-500">{failures24h}</span>
+                    ) : (
+                      0
+                    )}
+                  </td>
                 </tr>
               );
             })}
@@ -329,7 +361,8 @@ const Dashboard: NextPage = () => {
                 {
                   name: "Cloudinary",
                   description: "Profile picture storage & delivery",
-                  limit: "25 credits/month (1 credit = 1 GB storage = 1 GB bandwidth = 1k transforms)",
+                  limit:
+                    "25 credits/month (1 credit = 1 GB storage = 1 GB bandwidth = 1k transforms)",
                   usageLabel: "credits",
                   usageValue:
                     serviceUsage?.cloudinaryCreditsUsed != null
