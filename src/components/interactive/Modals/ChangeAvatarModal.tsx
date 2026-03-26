@@ -33,6 +33,10 @@ const ChangeAvatarModal = ({ children }: ChangeAvatarDialogProps) => {
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     if (!selected) return;
+    if (!["image/jpeg", "image/png", "image/webp"].includes(selected.type)) {
+      setError("Only JPEG, PNG, and WebP images are allowed.");
+      return;
+    }
     if (selected.size > 5 * 1024 * 1024) {
       setError("File must be under 5 MB.");
       return;
@@ -105,7 +109,7 @@ const ChangeAvatarModal = ({ children }: ChangeAvatarDialogProps) => {
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/png,image/webp"
             className="hidden"
             onChange={handleFileChange}
           />

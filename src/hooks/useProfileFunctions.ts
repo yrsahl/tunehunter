@@ -99,8 +99,9 @@ const useProfileFunctions = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ dataUrl, currentImageUrl: userData.user.image }),
       });
-      const data = await response.json() as { url?: string; error?: string };
-      if (!response.ok) throw new Error(data.error ?? "Upload failed");
+      const text = await response.text();
+      const data = (() => { try { return JSON.parse(text) as { url?: string; error?: string }; } catch { return {}; } })();
+      if (!response.ok) throw new Error(data.error ?? (response.status === 413 ? "Image is too large." : "Upload failed"));
 
       await new Promise<void>((resolve, reject) => {
         editUserImage.mutate(
