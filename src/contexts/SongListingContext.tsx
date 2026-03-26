@@ -53,14 +53,15 @@ export const SongListingContextProvider = ({
   // Always fall back to the passed track so trackData is never undefined mid-transition
   const trackData = fetchedTrackData ?? track;
 
-  // 2. Enrich artist data (popularity, followers, genres) if logged in
-  const { mutate: enrichArtists } = api.song.enrichArtists.useMutation({
+  // 2. Enrich iTunes-sourced songs with Spotify data (popularity, followers, genres)
+  //    Not called for sp_ songs — those already have Spotify data from storeSpotifyTrack
+  const { mutate: enrichItunesTrackFromSpotify } = api.song.enrichItunesTrackFromSpotify.useMutation({
     onSuccess: () => utils.song.getTrack.invalidate({ id: songId }),
   });
 
   useEffect(() => {
-    if (userAccessToken && trackData) {
-      enrichArtists({ songId, accessToken: userAccessToken });
+    if (userAccessToken && trackData && !songId.startsWith("sp_")) {
+      enrichItunesTrackFromSpotify({ songId, accessToken: userAccessToken });
     }
   }, [songId, userAccessToken, !!trackData]);
 

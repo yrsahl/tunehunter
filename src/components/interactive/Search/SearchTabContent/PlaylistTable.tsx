@@ -50,7 +50,7 @@ const PlaylistTable = () => {
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="https://open.spotify.com/playlist/3TxNViSYOIVuZLEe9ZIbyx?si=8974367fcb0f488a"
-          className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground/50"
+          className="min-w-0 flex-1 bg-transparent text-sm text-foreground/80 outline-none placeholder:text-muted-foreground/50"
         />
         <div className="min-w-0">
           <IconButton

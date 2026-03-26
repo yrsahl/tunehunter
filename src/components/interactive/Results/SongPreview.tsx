@@ -25,6 +25,7 @@ function SongPreview({ trackData, isLoading }: ISongPreviewProps) {
     trackData?.song.title,
     trackData?.artists[0]?.name,
     trackData?.song.previewUrl,
+    trackData?.song.id,
   );
   const loggedIn = status === "authenticated";
 
@@ -112,7 +113,7 @@ function SongPreview({ trackData, isLoading }: ISongPreviewProps) {
               <div className="flex items-center gap-3">
                 <Music className="h-4 w-4 text-primary" />
                 <p className="max-w-36 overflow-hidden text-ellipsis whitespace-nowrap text-sm">
-                  {genre}
+                  {genre ?? "—"}
                 </p>
               </div>
               <div className="flex items-center gap-3">

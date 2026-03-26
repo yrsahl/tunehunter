@@ -1,3 +1,4 @@
+import { api } from "@/lib/api";
 import { fetchSpotifyTrackById } from "@/services/spotify/api";
 import { useEffect, useState } from "react";
 import useSpotifyTokens from "./useSpotifyTokens";
@@ -7,8 +8,10 @@ const useSpotifyPreviewUrl = (
   title?: string,
   artist?: string,
   existingPreviewUrl?: string | null,
+  songId?: string,
 ) => {
   const { accessToken } = useSpotifyTokens();
+  const savePreviewUrl = api.song.savePreviewUrl.useMutation();
   const [previewUrl, setPreviewUrl] = useState<string | null>(existingPreviewUrl ?? null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -30,6 +33,7 @@ const useSpotifyPreviewUrl = (
         const url = await fetchSpotifyTrackById(accessToken, spotifyId);
         if (!cancelled && url) {
           setPreviewUrl(url);
+          if (songId) savePreviewUrl.mutate({ songId, previewUrl: url });
           setIsLoading(false);
           return;
         }
@@ -44,6 +48,7 @@ const useSpotifyPreviewUrl = (
           if (!cancelled && response.ok) {
             const data = (await response.json()) as { previewUrl: string | null };
             setPreviewUrl(data.previewUrl);
+            if (songId && data.previewUrl) savePreviewUrl.mutate({ songId, previewUrl: data.previewUrl });
           }
         } catch {
           // silently fall through — component will show "Open in Spotify" link

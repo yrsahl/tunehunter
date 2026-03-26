@@ -2,12 +2,8 @@
 
 Create a logo
 Use Stitch for UI
-Visual: spotify logo instead of link for play, load smaller
-
-If a song is not on itunes “no results for this song”, we can still scrape it and go directly after the vendors, without storing it, or storing it with an id +1000000 (or spotify’s hexadecimal one) or sth.
 
 Do we currently record unreachable (and maybe other errors) per songlistingrequest, so that we know exactly from which point onward which vendor failed
-
 Monitor scrapers in production
 Stresstest + Monitoring
 

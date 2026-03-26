@@ -48,7 +48,8 @@ export const songRouter = createTRPCRouter({
     return { song, artists: artistsDb };
   }),
 
-  enrichArtists: rateLimitedProcedure
+  // Enriches an iTunes-sourced song with Spotify data: spotifyId, previewUrl, artist followers/genres
+  enrichItunesTrackFromSpotify: rateLimitedProcedure
     .input(z.object({ songId: z.string(), accessToken: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const song = await ctx.db.query.songs.findFirst({
@@ -96,6 +97,8 @@ export const songRouter = createTRPCRouter({
         }
       }
 
+      let firstGenre: string | null = null;
+
       await Promise.all(
         artistsToEnrich.map(async (artist) => {
           const spotifyArtistId = spotifyArtistIdByName?.get(artist.name.toLowerCase());
@@ -117,6 +120,8 @@ export const songRouter = createTRPCRouter({
 
           // Only update genres if missing
           if (artist.genres.every((g) => g === null) && spotifyArtist.genres?.length) {
+            if (!firstGenre) firstGenre = spotifyArtist.genres[0] ?? null;
+
             const existingGenres = await ctx.db.query.genres.findMany({
               where: (genres, { inArray }) => inArray(genres.name, spotifyArtist.genres),
             });
@@ -136,6 +141,10 @@ export const songRouter = createTRPCRouter({
           }
         }),
       );
+
+      if (!song.genre && firstGenre) {
+        await ctx.db.update(songs).set({ genre: firstGenre }).where(eq(songs.id, input.songId));
+      }
     }),
 
   getTrendingSongs: publicProcedure.query<TrendingTracks>(async ({ ctx }) => {
@@ -241,6 +250,111 @@ export const songRouter = createTRPCRouter({
   }),
 
   // ********* Mutations *********
+
+  // Stores a Spotify-sourced song (sp_ prefix) along with artist genres in one shot.
+  // Artist and song IDs are prefixed with sp_ to distinguish them from iTunes-sourced data.
+  storeSpotifyTrack: rateLimitedProcedure
+    .input(
+      z.object({
+        track: z.object({
+          spotifyId: z.string(),
+          title: z.string(),
+          duration: z.number(),
+          album: z.string().nullable(),
+          albumArtUrl: z.string().nullable(),
+          year: z.string(),
+          previewUrl: z.string().nullable(),
+          isrc: z.string().nullable(),
+        }),
+        artists: z.array(z.object({ spotifyId: z.string(), name: z.string() })),
+        accessToken: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const songId = `sp_${input.track.spotifyId}`;
+
+      // Fetch artist data in parallel (skipped if no access token)
+      const artistDataResults = await Promise.all(
+        input.artists.map(async (a) => {
+          const data = input.accessToken
+            ? await fetchSpotifyArtistData(input.accessToken, a.spotifyId)
+            : null;
+          return { spotifyId: a.spotifyId, name: a.name, data };
+        }),
+      );
+
+      const firstGenre =
+        artistDataResults.find((r) => r.data?.genres?.length)?.data?.genres[0] ?? null;
+
+      // Store song
+      await ctx.db
+        .insert(songs)
+        .values({
+          id: songId,
+          title: input.track.title,
+          duration: input.track.duration,
+          album: input.track.album,
+          albumArtUrl: input.track.albumArtUrl,
+          year: input.track.year,
+          genre: firstGenre,
+          spotifyId: input.track.spotifyId,
+          previewUrl: input.track.previewUrl,
+          isrc: input.track.isrc,
+        })
+        .onConflictDoNothing();
+
+      // Store artists with sp_ prefix + their genres
+      await Promise.all(
+        artistDataResults.map(async ({ spotifyId, name, data }) => {
+          const artistId = `sp_${spotifyId}`;
+
+          await ctx.db
+            .insert(artists)
+            .values({
+              id: artistId,
+              name,
+              popularity: data?.popularity ?? null,
+              followers: data?.followers.total ?? null,
+            })
+            .onConflictDoNothing();
+
+          if (data?.genres?.length) {
+            const existingGenres = await ctx.db.query.genres.findMany({
+              where: (genres, { inArray }) => inArray(genres.name, data.genres),
+            });
+            const existingNames = new Set(existingGenres.map((g) => g.name));
+            const toInsert = data.genres
+              .filter((g) => !existingNames.has(g))
+              .map((name) => ({ name }));
+            if (toInsert.length > 0) await ctx.db.insert(genres).values(toInsert);
+
+            const allGenres = await ctx.db.query.genres.findMany({
+              where: (genres, { inArray }) => inArray(genres.name, data.genres),
+            });
+            await ctx.db
+              .insert(artistGenres)
+              .values(allGenres.map((genre) => ({ artistId, genreId: genre.id })))
+              .onConflictDoNothing();
+          }
+        }),
+      );
+
+      // Store song-artist junctions
+      await ctx.db
+        .insert(songArtists)
+        .values(artistDataResults.map((r) => ({ songId, artistId: `sp_${r.spotifyId}` })))
+        .onConflictDoNothing();
+    }),
+
+  savePreviewUrl: publicProcedure
+    .input(z.object({ songId: z.string(), previewUrl: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(songs)
+        .set({ previewUrl: input.previewUrl })
+        .where(eq(songs.id, input.songId));
+    }),
+
   storeSong: publicProcedure
     .input(StoreSongSchema)
     .mutation(async ({ ctx, input }) => {
