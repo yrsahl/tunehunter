@@ -1,7 +1,12 @@
 import bcrypt from "bcrypt";
 import { z } from "zod";
 
-import { createTRPCRouter, emailRateLimitedProcedure, protectedProcedure, publicProcedure } from "@/server/api/trpc";
+import {
+  createTRPCRouter,
+  emailRateLimitedProcedure,
+  protectedProcedure,
+  publicProcedure,
+} from "@/server/api/trpc";
 import { accounts, users, verificationTokens } from "@/server/db/schema";
 import { sendVerificationCodeEmail } from "@/services/email";
 import { TRPCError } from "@trpc/server";
@@ -38,7 +43,6 @@ export const userRouter = createTRPCRouter({
       }
       return {
         id: user.id,
-        language: user.language,
         theme: user.theme,
         themeParticles: user.themeParticles,
         region: user.region,
@@ -161,7 +165,6 @@ export const userRouter = createTRPCRouter({
       await ctx.db
         .update(users)
         .set({
-          language: input.language ?? ctx.session.user.language,
           theme: input.theme ?? ctx.session.user.theme,
           themeParticles: input.themeParticles ?? ctx.session.user.themeParticles,
           region: input.region ?? ctx.session.user.region,
