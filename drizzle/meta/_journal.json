@@ -8,6 +8,13 @@
       "when": 1774445327578,
       "tag": "0000_eager_richard_fisk",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1774470404722,
+      "tag": "0001_abnormal_paibok",
+      "breakpoints": true
     }
   ]
 }

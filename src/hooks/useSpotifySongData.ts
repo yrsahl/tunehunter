@@ -23,6 +23,7 @@ const useSpotifySongData = () => {
       year: currentlyPlaying?.item.album.release_date,
       genre: null,
       spotifyId: currentlyPlaying?.item.id,
+      previewUrl: null,
       isrc: null,
     },
     artists: currentlyPlaying?.item.artists.map((artist) => ({
@@ -42,6 +43,7 @@ const useSpotifySongData = () => {
       year: queuedSong.album.release_date,
       genre: null,
       spotifyId: queuedSong.id,
+      previewUrl: null,
       isrc: null,
     },
     artists: queuedSong.artists.map((artist) => ({
@@ -61,6 +63,7 @@ const useSpotifySongData = () => {
       year: track.album.release_date,
       genre: null,
       spotifyId: track.id,
+      previewUrl: null,
       isrc: null,
     },
     artists: track.artists.map((artist) => ({
@@ -80,6 +83,7 @@ const useSpotifySongData = () => {
       year: track.track.album.release_date,
       genre: null,
       spotifyId: track.track.id,
+      previewUrl: null,
       isrc: null,
     },
     artists: track.track.artists.map((artist) => ({

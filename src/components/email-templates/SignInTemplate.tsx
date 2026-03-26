@@ -14,15 +14,8 @@ export const SignInTemplate = ({ url }: SignInTemplateProps) => (
       <table width="100%" cellPadding={0} cellSpacing={0}>
         <tbody>
           <tr>
-            <td
-              align="center"
-              style={{ backgroundColor: "#162455", padding: "48px 16px" }}
-            >
-              <table
-                cellPadding={0}
-                cellSpacing={0}
-                style={{ maxWidth: 540, width: "100%" }}
-              >
+            <td align="center" style={{ backgroundColor: "#162455", padding: "48px 16px" }}>
+              <table cellPadding={0} cellSpacing={0} style={{ maxWidth: 540, width: "100%" }}>
                 <tbody>
                   {/* ── Header ── */}
                   <tr>
@@ -62,7 +55,7 @@ export const SignInTemplate = ({ url }: SignInTemplateProps) => (
                           fontFamily: "Arial, sans-serif",
                         }}
                       >
-                        TUNEHUNTER
+                        TuneHunter
                       </span>
                     </td>
                   </tr>
@@ -78,8 +71,7 @@ export const SignInTemplate = ({ url }: SignInTemplateProps) => (
                       style={{
                         backgroundColor: "#0D1840",
                         padding: "40px 44px 36px",
-                        fontFamily:
-                          "'Helvetica Neue', Helvetica, Arial, sans-serif",
+                        fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                       }}
                     >
                       <p
@@ -101,16 +93,12 @@ export const SignInTemplate = ({ url }: SignInTemplateProps) => (
                           lineHeight: 1.65,
                         }}
                       >
-                        Click the button below to sign in to your TuneHunter
-                        account. This link expires in&nbsp;10&nbsp;minutes.
+                        Click the button below to sign in to your TuneHunter account. This link
+                        expires in&nbsp;10&nbsp;minutes.
                       </p>
 
                       {/* CTA button */}
-                      <table
-                        cellPadding={0}
-                        cellSpacing={0}
-                        style={{ marginBottom: 36 }}
-                      >
+                      <table cellPadding={0} cellSpacing={0} style={{ marginBottom: 36 }}>
                         <tbody>
                           <tr>
                             <td
@@ -130,8 +118,7 @@ export const SignInTemplate = ({ url }: SignInTemplateProps) => (
                                   textDecoration: "none",
                                   borderRadius: 12,
                                   letterSpacing: "-0.2px",
-                                  fontFamily:
-                                    "'Helvetica Neue', Helvetica, Arial, sans-serif",
+                                  fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                                 }}
                               >
                                 Sign in to TuneHunter →
@@ -165,8 +152,7 @@ export const SignInTemplate = ({ url }: SignInTemplateProps) => (
                           margin: "0 0 4px",
                           fontSize: 12,
                           color: "rgba(247,249,253,0.35)",
-                          fontFamily:
-                            "'Helvetica Neue', Helvetica, Arial, sans-serif",
+                          fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                         }}
                       >
                         Button not working? Paste this link into your browser:
@@ -190,12 +176,11 @@ export const SignInTemplate = ({ url }: SignInTemplateProps) => (
                           fontSize: 13,
                           color: "rgba(247,249,253,0.35)",
                           lineHeight: 1.65,
-                          fontFamily:
-                            "'Helvetica Neue', Helvetica, Arial, sans-serif",
+                          fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                         }}
                       >
-                        If you didn&apos;t request this sign-in link, you can
-                        safely ignore this email.
+                        If you didn&apos;t request this sign-in link, you can safely ignore this
+                        email.
                       </p>
                     </td>
                   </tr>
@@ -208,8 +193,7 @@ export const SignInTemplate = ({ url }: SignInTemplateProps) => (
                         backgroundColor: "#0A1030",
                         borderRadius: "0 0 20px 20px",
                         padding: "20px 44px",
-                        fontFamily:
-                          "'Helvetica Neue', Helvetica, Arial, sans-serif",
+                        fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                       }}
                     >
                       <p
@@ -220,8 +204,8 @@ export const SignInTemplate = ({ url }: SignInTemplateProps) => (
                           letterSpacing: "0.02em",
                         }}
                       >
-                        © {new Date().getFullYear()} TuneHunter &nbsp;·&nbsp;
-                        Find the music you love
+                        © {new Date().getFullYear()} TuneHunter &nbsp;·&nbsp; Find the music you
+                        love
                       </p>
                     </td>
                   </tr>

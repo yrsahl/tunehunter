@@ -97,6 +97,7 @@ export const fetchItunesTrack = async (
       year: closest.releaseDate?.substring(0, 10) ?? "",
       genre: closest.primaryGenreName ?? null,
       spotifyId: null,
+      previewUrl: null,
       isrc: null,
     },
     artists: [
@@ -140,6 +141,7 @@ export const fetchItunesSearchData = async (query: string): Promise<SearchData |
             year: track.releaseDate?.substring(0, 10) ?? "",
             genre: track.primaryGenreName ?? null,
             spotifyId: null,
+            previewUrl: null,
             isrc: null,
           },
           artists: [

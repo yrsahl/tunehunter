@@ -72,21 +72,23 @@ export const songRouter = createTRPCRouter({
         .groupBy(artists.id);
 
       const needsSpotifyId = !song.spotifyId;
+      const needsPreviewUrl = !song.previewUrl;
       const artistsToEnrich = artistsDb.filter(
         (a) => a.popularity == null || a.followers == null || a.genres.every((g) => g === null),
       );
 
-      // Fetch Spotify track if we need the song's spotifyId or artist Spotify IDs for enrichment
+      // Fetch Spotify track if we need the song's spotifyId, previewUrl, or artist Spotify IDs for enrichment
       let spotifyArtistIdByName: Map<string, string> | null = null;
-      if (needsSpotifyId || artistsToEnrich.length > 0) {
+      if (needsSpotifyId || needsPreviewUrl || artistsToEnrich.length > 0) {
         const query = `${song.title} ${artistsDb[0]?.name ?? ""}`;
         const spotifyTrack = await fetchSpotifyTrack(input.accessToken, query, song.duration);
         if (spotifyTrack) {
-          if (needsSpotifyId) {
-            await ctx.db
-              .update(songs)
-              .set({ spotifyId: spotifyTrack.song.spotifyId })
-              .where(eq(songs.id, song.id));
+          const updates: Partial<typeof songs.$inferInsert> = {};
+          if (needsSpotifyId) updates.spotifyId = spotifyTrack.song.spotifyId;
+          if (needsPreviewUrl && spotifyTrack.song.previewUrl)
+            updates.previewUrl = spotifyTrack.song.previewUrl;
+          if (Object.keys(updates).length > 0) {
+            await ctx.db.update(songs).set(updates).where(eq(songs.id, song.id));
           }
           spotifyArtistIdByName = new Map(
             spotifyTrack.artists.map((a) => [a.name.toLowerCase(), a.id]),
@@ -149,6 +151,7 @@ export const songRouter = createTRPCRouter({
           year: songs.year,
           genre: songs.genre,
           spotifyId: songs.spotifyId,
+          previewUrl: songs.previewUrl,
           isrc: songs.isrc,
         },
         artists: sql<{ id: string; name: string; popularity: number; followers: number }[]>`
@@ -179,6 +182,7 @@ export const songRouter = createTRPCRouter({
           year: songs.year,
           genre: songs.genre,
           spotifyId: songs.spotifyId,
+          previewUrl: songs.previewUrl,
           isrc: songs.isrc,
         },
         artists: sql<{ id: string; name: string; popularity: number; followers: number }[]>`
@@ -209,6 +213,7 @@ export const songRouter = createTRPCRouter({
           year: songs.year,
           genre: songs.genre,
           spotifyId: songs.spotifyId,
+          previewUrl: songs.previewUrl,
           isrc: songs.isrc,
         },
         artists: sql<{ id: string; name: string; popularity: number; followers: number }[]>`

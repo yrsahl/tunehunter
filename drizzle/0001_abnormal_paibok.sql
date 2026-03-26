@@ -1,0 +1,1 @@
+ALTER TABLE "song" ADD COLUMN "preview_url" varchar(512);

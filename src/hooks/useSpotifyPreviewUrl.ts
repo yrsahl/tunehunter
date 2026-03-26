@@ -1,0 +1,65 @@
+import { fetchSpotifyTrackById } from "@/services/spotify/api";
+import { useEffect, useState } from "react";
+import useSpotifyTokens from "./useSpotifyTokens";
+
+const useSpotifyPreviewUrl = (
+  spotifyId: string | null | undefined,
+  title?: string,
+  artist?: string,
+  existingPreviewUrl?: string | null,
+) => {
+  const { accessToken } = useSpotifyTokens();
+  const [previewUrl, setPreviewUrl] = useState<string | null>(existingPreviewUrl ?? null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // Already have it from DB — no need to fetch
+    if (existingPreviewUrl) {
+      setPreviewUrl(existingPreviewUrl);
+      return;
+    }
+
+    if (!spotifyId && !title) return;
+    let cancelled = false;
+
+    const fetchPreview = async () => {
+      setIsLoading(true);
+
+      // Step 1: try direct Spotify track lookup by ID (precise, no extra search)
+      if (spotifyId && accessToken) {
+        const url = await fetchSpotifyTrackById(accessToken, spotifyId);
+        if (!cancelled && url) {
+          setPreviewUrl(url);
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      // Step 2: fallback to spotify-preview-finder (finds previews Spotify API omits)
+      if (title && !cancelled) {
+        const params = new URLSearchParams({ title });
+        if (artist) params.set("artist", artist);
+        try {
+          const response = await fetch(`/api/spotify/preview?${params}`);
+          if (!cancelled && response.ok) {
+            const data = (await response.json()) as { previewUrl: string | null };
+            setPreviewUrl(data.previewUrl);
+          }
+        } catch {
+          // silently fall through — component will show "Open in Spotify" link
+        }
+      }
+
+      if (!cancelled) setIsLoading(false);
+    };
+
+    fetchPreview();
+    return () => {
+      cancelled = true;
+    };
+  }, [spotifyId, accessToken, title, artist, existingPreviewUrl]);
+
+  return { previewUrl, isLoading };
+};
+
+export default useSpotifyPreviewUrl;

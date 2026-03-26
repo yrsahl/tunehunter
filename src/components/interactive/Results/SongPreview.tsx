@@ -1,13 +1,13 @@
 import ConditionalTooltip from "@/components/ConditonalTooltip";
-import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
 import { useDisabledTabStore } from "@/hooks/stores/useDisabledTabStore";
+import useSpotifyPreviewUrl from "@/hooks/useSpotifyPreviewUrl";
 import { formatDate, formatDuration } from "@/lib/formatters";
 import { Track } from "@/types/song-types";
 import { AnimatePresence, motion } from "framer-motion";
-import { Album, Calendar, Clock, HeartIcon, Music, Play } from "lucide-react";
+import { Album, Calendar, Clock, HeartIcon, Music } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { memo } from "react";
-import SpotifyPlayIcon from "../Search/SearchTabContent/SpotifyPlayIcon";
+import PreviewPlayButton from "../Search/SearchTabContent/PreviewPlayButton";
 import WishlistStatusIcon from "../Search/SearchTabContent/WishlistStatusIcon";
 import SongPreviewFallback from "./SongPreviewFallback";
 import SongPreviewSkeleton from "./SongPreviewSkeleton";
@@ -19,8 +19,13 @@ interface ISongPreviewProps {
 
 function SongPreview({ trackData, isLoading }: ISongPreviewProps) {
   const { status } = useSession();
-  const { spotifyConnected } = useSpotifyUserDataContext();
   const { setDisabledTabButtonHovered } = useDisabledTabStore();
+  const { previewUrl, isLoading: isLoadingPreview } = useSpotifyPreviewUrl(
+    trackData?.song.spotifyId,
+    trackData?.song.title,
+    trackData?.artists[0]?.name,
+    trackData?.song.previewUrl,
+  );
   const loggedIn = status === "authenticated";
 
   if (isLoading) {
@@ -78,25 +83,11 @@ function SongPreview({ trackData, isLoading }: ISongPreviewProps) {
                   {artists.length > 0 && <p className="text-md">By {artistNames}</p>}
                   {/* Play & Wishlist */}
                   <div className="mt-3 flex items-center gap-3">
-                    <ConditionalTooltip
-                      active={spotifyConnected && !!spotifyId}
-                      content={
-                        spotifyConnected
-                          ? "Can't find the song on Spotify."
-                          : "Sign in to add the song to play the song!"
-                      }
-                      disabledChild={
-                        <div
-                          className="flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-full bg-slate-400"
-                          onMouseEnter={() => setDisabledTabButtonHovered(true)}
-                          onMouseLeave={() => setDisabledTabButtonHovered(false)}
-                        >
-                          <Play className="h-6 w-6 text-foreground" />
-                        </div>
-                      }
-                    >
-                      <SpotifyPlayIcon spotifyId={spotifyId!} />
-                    </ConditionalTooltip>
+                    <PreviewPlayButton
+                      spotifyId={spotifyId}
+                      previewUrl={previewUrl}
+                      isLoadingPreview={isLoadingPreview}
+                    />
                     <ConditionalTooltip
                       active={loggedIn}
                       content="Sign in to add the song to your wishlist!"

@@ -56,6 +56,7 @@ const toTrack = (recording: MbRecording): Track => {
       year: recording["first-release-date"] ?? firstRelease?.date ?? "",
       genre: null,
       spotifyId: null,
+      previewUrl: null,
       isrc: recording.isrcs?.[0] ?? null,
     },
     artists: recording["artist-credit"].map((ac) => ({

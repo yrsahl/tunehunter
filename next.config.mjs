@@ -10,6 +10,7 @@ import("./src/env.js");
 /** @type {import("next").NextConfig} */
 const NextConfig = {
   reactStrictMode: true,
+  serverExternalPackages: ["spotify-preview-finder"],
   eslint: {
     ignoreDuringBuilds: true,
   },

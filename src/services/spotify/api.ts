@@ -3,6 +3,7 @@ import {
   SpotifyArtist,
   SpotifyArtists,
   SpotifySearchData,
+  SpotifyTrack as SpotifyApiTrack,
   type SpotifyCurrentlyPlaying,
   type SpotifyProfileData,
   type SpotifyQueue,
@@ -97,6 +98,7 @@ export const fetchSpotifyTrack = async (
       year: closest.album.release_date,
       genre: null,
       spotifyId: closest.id,
+      previewUrl: closest.preview_url ?? null,
       isrc: closest.external_ids?.isrc,
     },
     artists: closest.artists.map((a) => ({
@@ -106,6 +108,16 @@ export const fetchSpotifyTrack = async (
       followers: null,
     })),
   };
+};
+
+const TRACK_ENDPOINT = "https://api.spotify.com/v1/tracks";
+
+export const fetchSpotifyTrackById = async (
+  accessToken: string,
+  trackId: string,
+): Promise<string | null> => {
+  const data = await fetchSpotifyData<SpotifyApiTrack>(accessToken, `${TRACK_ENDPOINT}/${trackId}`);
+  return data?.preview_url ?? null;
 };
 
 const ARTIST_ENDPOINT = "https://api.spotify.com/v1/artists";
@@ -158,6 +170,7 @@ export const fetchAllPlaylistTracks = async (
           year: item.track.album.release_date,
           genre: null,
           spotifyId: item.track.id,
+          previewUrl: null,
           isrc: null,
         },
         artists: item.track.artists.map((a) => ({ id: a.id, name: a.name, popularity: null, followers: null })),

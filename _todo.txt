@@ -1,9 +1,10 @@
 ---- CORE
 
 Create a logo
+visual: spotify logo instead of link for play, load smaller
 
+Rework login, also open mails button only on mobile
 Rework settings and registration layout and names
-Open mails button only on mobile
 
 Remove or replace spotify login
 Edit picture functionality (s3 bucket)
@@ -39,6 +40,7 @@ PRO:
 - Data insights
 - Trending per region, maybe genre, maybe some AI integration?
 - Playlist import, search
+- All of SearchTabContent a pro feature? 3 free Playlists a month?
 
 Pay functionality: Stripe 
 - Supporter
