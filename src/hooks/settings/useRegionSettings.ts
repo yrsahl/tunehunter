@@ -64,31 +64,29 @@ const useRegionSettings = () => {
   const createRegionName = (country: CountryCode) => getCountryName(country);
 
   const setRegionByLocation = () => {
-    toast.loading("Determining your location...");
-    getUserLocation().then((location) => {
-      toast.dismiss();
-      if ("error" in location) {
-        toast.error(
-          "We could not determine your location. Please choose it manually or try again later!",
-          { dismissible: true, duration: Infinity },
-        );
-        return;
-      }
+    const locationPromise = new Promise<string>((resolve, reject) => {
+      getUserLocation().then((location) => {
+        if ("error" in location) {
+          reject(new Error("We could not determine your location. Please choose it manually or try again later!"));
+          return;
+        }
 
-      const { latitude, longitude } = location;
-      const countryCode = iso1A2Code([longitude, latitude])?.toLowerCase();
-      if (countryCode === region) return;
+        const { latitude, longitude } = location;
+        const countryCode = iso1A2Code([longitude, latitude])?.toLowerCase();
+        const upper = countryCode?.toUpperCase();
+        if (upper && isCountryCode(upper)) {
+          if (countryCode !== region) changeRegion(upper);
+          resolve(getCountryName(upper) ?? upper);
+        } else {
+          reject(new Error("Could not determine your location."));
+        }
+      });
+    });
 
-      const upper = countryCode?.toUpperCase();
-      if (upper && isCountryCode(upper)) {
-        changeRegion(upper);
-        toast.success(`Set your region to ${getCountryName(upper)}.`);
-      } else {
-        toast.error("Could not determine your location.", {
-          dismissible: true,
-          duration: Infinity,
-        });
-      }
+    toast.promise(locationPromise, {
+      loading: "Determining your location...",
+      success: (countryName) => `Set your region to ${countryName}.`,
+      error: (err: unknown) => err instanceof Error ? err.message : "Could not determine your location.",
     });
   };
 

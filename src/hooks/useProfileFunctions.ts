@@ -7,29 +7,6 @@ import { signOut, useSession } from "next-auth/react";
 import { toast } from "sonner";
 import useRouterWithHelpers from "./useRouterWithHelpers";
 
-const handleServerError = (
-  opts: { message: string },
-  failedActionDescription: string,
-  loadingToast: string | number,
-) => {
-  let errorMessage = "";
-  try {
-    const errors = JSON.parse(opts.message);
-    if (Array.isArray(errors)) {
-      errorMessage = (errors[0] as ErrorFormat).message;
-    }
-  } catch {
-    errorMessage = opts.message;
-  }
-  toast.error(
-    `Something went wrong ${errorMessage && `(Server response: '${errorMessage}')`} and we could not ${failedActionDescription}, sorry! Please try again later.`,
-    {
-      id: loadingToast,
-      dismissible: true,
-      duration: Infinity,
-    },
-  );
-};
 
 const useProfileFunctions = () => {
   const router = useRouterWithHelpers();
@@ -51,19 +28,24 @@ const useProfileFunctions = () => {
       return;
     }
 
-    // Display error text, change colors for input
-    const loadingToast = toast.loading("Changing mail...");
-    editUserMail.mutate(
-      { id: userData.user.id, email: newEmail },
-      {
-        onSuccess: () => {
-          update();
-          toast.dismiss();
-          toast.success("Mail successfully updated.");
-        },
-        onError: (opts) => handleServerError(opts, "update your mail", loadingToast),
+    const mutationPromise = new Promise<void>((resolve, reject) => {
+      editUserMail.mutate(
+        { id: userData.user.id, email: newEmail },
+        { onSuccess: () => { update(); resolve(); }, onError: reject },
+      );
+    });
+
+    toast.promise(mutationPromise, {
+      loading: "Changing mail...",
+      success: "Mail successfully updated.",
+      error: (opts: { message: string }) => {
+        try {
+          const errors = JSON.parse(opts.message) as ErrorFormat[];
+          if (Array.isArray(errors)) return errors[0]?.message ?? opts.message;
+        } catch {}
+        return opts.message;
       },
-    );
+    });
   };
 
   const handleChangeName = async (newName: string): Promise<{ error?: string }> => {
@@ -130,13 +112,10 @@ const useProfileFunctions = () => {
       wait(500).then(() => signOut({ redirect: false })),
       {
         loading: "Logging you out...",
-        success: () => {
-          return "Successfully logged out.";
-        },
-        error: "Something went wrong and we could not log you out.)",
+        success: "Successfully logged out.",
+        error: "Something went wrong and we could not log you out.",
       },
     );
-    toast.dismiss();
   };
 
   const handleDeleteAccount = async (userId: string) => {
@@ -144,19 +123,32 @@ const useProfileFunctions = () => {
       throw new Error("User must be logged in to request account deletion.");
     }
 
-    const loadingToast = toast.loading("Deleting account...");
-    deleteAccount.mutate(
-      { userId },
-      {
-        onSuccess: () => {
-          signOut({ redirect: false });
-          router.push("/");
-          playJingle("reverse");
-          toast.success("Account successfully deleted! Goodbye 👋", { id: loadingToast });
+    const mutationPromise = new Promise<void>((resolve, reject) => {
+      deleteAccount.mutate(
+        { userId },
+        {
+          onSuccess: () => {
+            void signOut({ redirect: false });
+            router.push("/");
+            playJingle("reverse");
+            resolve();
+          },
+          onError: reject,
         },
-        onError: (opts) => handleServerError(opts, "delete your account", loadingToast),
+      );
+    });
+
+    toast.promise(mutationPromise, {
+      loading: "Deleting account...",
+      success: "Account successfully deleted! Goodbye 👋",
+      error: (opts: { message: string }) => {
+        try {
+          const errors = JSON.parse(opts.message) as ErrorFormat[];
+          if (Array.isArray(errors)) return errors[0]?.message ?? opts.message;
+        } catch {}
+        return opts.message;
       },
-    );
+    });
   };
 
   // [SPOTIFY_OAUTH] Re-enable when Spotify extended quota is approved

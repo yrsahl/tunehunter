@@ -117,11 +117,11 @@ const ProfileMenu = () => {
         </p>
         <div className="col-span-1">
           <ChangeMailModal open={changeMailDialogOpen} setOpen={setChangeMailDialogOpen}>
-            <div>
+            <div className="flex items-center justify-center">
               <IconButton
                 data-testid="change-email-button"
                 icon="edit"
-                variant="ghostPrimary"
+                variant="outlinePrimary"
                 size="icon"
                 iconSize="20px"
                 onClick={() => setChangeMailDialogOpen(true)}
@@ -161,10 +161,10 @@ const ProfileMenu = () => {
             </SelectContent>
           </Select>
         </div>
-        <div className="col-span-1 flex h-9 items-center justify-center">
+        <div className="flex items-center justify-center">
           <IconButton
             data-testid="auto-detect-region-button"
-            variant="ghostPrimary"
+            variant="outlinePrimary"
             size="icon"
             icon="mapPin"
             iconSize="20px"
@@ -217,6 +217,7 @@ const ProfileMenu = () => {
         <Switch
           data-testid="theme-toggle"
           id="theme"
+          inverted
           checked={autoThemePreference === "manual"}
           onCheckedChange={(checked) => changeAutoThemePreference(checked ? "manual" : "auto")}
         />
@@ -239,12 +240,13 @@ const ProfileMenu = () => {
         <Switch
           data-testid="particles-toggle"
           id="particles"
+          inverted
           checked={particlePreference ?? false}
           onCheckedChange={changeParticlePreference}
         />
       </div>
 
-      <div className="mt-2 flex flex-col items-center gap-2">
+      <div className="mt-3 flex flex-col items-center gap-2">
         <IconButton
           data-testid="logout-button"
           onClick={() => {
