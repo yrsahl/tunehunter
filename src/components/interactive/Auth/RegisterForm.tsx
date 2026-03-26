@@ -45,12 +45,13 @@ export type RegisterErrorCode = keyof (typeof RegisterResponseMap)["errors"];
 
 interface IProps {
   email: string;
+  setEmail: (email: string) => void;
   menuState: MenuState;
   setMenuState: (menuState: MenuState) => void;
 }
 
-const RegisterForm: FC<IProps> = ({ email, menuState, setMenuState }) => {
-  const { createRegionName, sortedRegions } = useRegionSettings();
+const RegisterForm: FC<IProps> = ({ email, setEmail, menuState, setMenuState }) => {
+  const { region, createRegionName, sortedRegions } = useRegionSettings();
   const [accountCreated, setAccountCreated] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
@@ -61,12 +62,12 @@ const RegisterForm: FC<IProps> = ({ email, menuState, setMenuState }) => {
     defaultValues: {
       email: email,
       name: "",
-      region: "de",
+      region: region,
     },
   });
 
   useEffect(() => {
-    form.setValue("email", email);
+    form.reset({ email, name: "", region });
     setError("");
     setSuccess("");
     setAccountCreated(false);
@@ -84,7 +85,9 @@ const RegisterForm: FC<IProps> = ({ email, menuState, setMenuState }) => {
             if (data?.success) {
               setSuccess(RegisterResponseMap.success);
               setAccountCreated(true);
+              setEmail(values.email);
               signIn("email", { email: values.email, redirect: false });
+              setTimeout(() => setMenuState(MenuState.MagicLinkSent), 3000);
             }
           },
           onError: (error) => setError(error.message),
@@ -94,7 +97,7 @@ const RegisterForm: FC<IProps> = ({ email, menuState, setMenuState }) => {
   };
 
   return (
-    <AuthCard title="Registration" size="small">
+    <AuthCard title="Create account" size="default">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full flex-col space-y-8">
           <div className="flex flex-col space-y-4">
@@ -170,33 +173,22 @@ const RegisterForm: FC<IProps> = ({ email, menuState, setMenuState }) => {
             <FormSuccess message={success} />
           </div>
 
-          <div className="m-auto w-4/5">
-            {!accountCreated && (
-              <div className="flex flex-col items-center gap-1">
-                <IconButton
-                  type="submit"
-                  text="Register"
-                  disabled={isPending}
-                  icon="signUp"
-                  size="lg"
-                  variant="primary"
-                />
-                <Button
-                  variant="link"
-                  onClick={() => setMenuState(MenuState.SignIn)}
-                  className="uppercase"
-                >
-                  Back
-                </Button>
-              </div>
-            )}
-            {!!accountCreated && (
-              <IconButton
-                text="Continue"
-                onClick={() => setMenuState(MenuState.MagicLinkSent)}
-                variant="primary"
-              />
-            )}
+          <div className="flex w-full flex-col items-center gap-1">
+            <IconButton
+              type="submit"
+              text={accountCreated ? "Sending link..." : "Create account"}
+              disabled={isPending || accountCreated}
+              icon="signUp"
+              size="lg"
+              variant="primary"
+            />
+            <Button
+              variant="link"
+              onClick={() => setMenuState(MenuState.SignIn)}
+              className="border-0 font-thin uppercase text-foreground"
+            >
+              Back
+            </Button>
           </div>
         </form>
       </Form>

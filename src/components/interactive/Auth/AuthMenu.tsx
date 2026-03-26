@@ -17,6 +17,12 @@ export enum MenuState {
 const AuthMenu: FC = ({}) => {
   const [email, setEmail] = useState<string>("");
   const [menuState, setMenuState] = useState<MenuState>(0);
+  const [magicLinkReturnTo, setMagicLinkReturnTo] = useState<MenuState>(MenuState.SignIn);
+
+  const goToMagicLink = (returnTo: MenuState) => {
+    setMagicLinkReturnTo(returnTo);
+    setMenuState(MenuState.MagicLinkSent);
+  };
   const router = useRouterWithHelpers();
 
   // Update URL fragment when menuState changes
@@ -61,7 +67,11 @@ const AuthMenu: FC = ({}) => {
           menuState !== MenuState.SignIn && "!-translate-x-[180%]",
         )}
       >
-        <SignInForm email={email} setEmail={setEmail} setMenuState={setMenuState} />
+        <SignInForm
+          email={email}
+          setEmail={setEmail}
+          setMenuState={(s) => s === MenuState.MagicLinkSent ? goToMagicLink(MenuState.SignIn) : setMenuState(s)}
+        />
       </div>
       <div
         className={cn(
@@ -69,7 +79,7 @@ const AuthMenu: FC = ({}) => {
           menuState !== MenuState.MagicLinkSent && "!translate-x-[180%]",
         )}
       >
-        <MagicLinkForm email={email} setMenuState={setMenuState} />
+        <MagicLinkForm email={email} returnTo={magicLinkReturnTo} setMenuState={setMenuState} />
       </div>
       <div
         className={cn(
@@ -77,7 +87,12 @@ const AuthMenu: FC = ({}) => {
           menuState !== MenuState.Register && "!translate-x-[180%]",
         )}
       >
-        <RegisterForm email={email} menuState={menuState} setMenuState={setMenuState} />
+        <RegisterForm
+          email={email}
+          setEmail={setEmail}
+          menuState={menuState}
+          setMenuState={(s) => s === MenuState.MagicLinkSent ? goToMagicLink(MenuState.Register) : setMenuState(s)}
+        />
       </div>
     </div>
   );

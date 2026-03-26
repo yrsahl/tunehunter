@@ -6,68 +6,70 @@ import { MenuState } from "./AuthMenu";
 
 interface IProps {
   email: string;
+  returnTo: MenuState;
   setMenuState: (menuState: MenuState) => void;
 }
 
-const MagicLinkForm: FC<IProps> = ({ email, setMenuState }) => {
+interface MailProvider {
+  label: string;
+  url: string;
+}
+
+const MAIL_PROVIDERS: Record<string, MailProvider> = {
+  "gmail.com": { label: "Open Gmail", url: "https://mail.google.com" },
+  "googlemail.com": { label: "Open Gmail", url: "https://mail.google.com" },
+  "outlook.com": { label: "Open Outlook", url: "https://outlook.live.com" },
+  "hotmail.com": { label: "Open Outlook", url: "https://outlook.live.com" },
+  "hotmail.de": { label: "Open Outlook", url: "https://outlook.live.com" },
+  "live.com": { label: "Open Outlook", url: "https://outlook.live.com" },
+  "live.de": { label: "Open Outlook", url: "https://outlook.live.com" },
+  "msn.com": { label: "Open Outlook", url: "https://outlook.live.com" },
+  "yahoo.com": { label: "Open Yahoo Mail", url: "https://mail.yahoo.com" },
+  "yahoo.de": { label: "Open Yahoo Mail", url: "https://mail.yahoo.com" },
+  "icloud.com": { label: "Open iCloud Mail", url: "https://www.icloud.com/mail" },
+  "me.com": { label: "Open iCloud Mail", url: "https://www.icloud.com/mail" },
+  "mac.com": { label: "Open iCloud Mail", url: "https://www.icloud.com/mail" },
+  "proton.me": { label: "Open Proton Mail", url: "https://mail.proton.me" },
+  "protonmail.com": { label: "Open Proton Mail", url: "https://mail.proton.me" },
+  "protonmail.ch": { label: "Open Proton Mail", url: "https://mail.proton.me" },
+  "pm.me": { label: "Open Proton Mail", url: "https://mail.proton.me" },
+};
+
+function getMailProvider(email: string): MailProvider | null {
+  const domain = email.split("@")[1]?.toLowerCase();
+  if (!domain) return null;
+  return MAIL_PROVIDERS[domain] ?? null;
+}
+
+const MagicLinkForm: FC<IProps> = ({ email, returnTo, setMenuState }) => {
+  const provider = getMailProvider(email);
+
   return (
-    <AuthCard
-      description={`We sent an email to ${email}! If you can't find it, please have a look in your spam folder.`}
-      size="small"
-    >
-      <div className="mt-3 flex w-full flex-col items-center gap-1">
-        <a href="mailto:" className="w-4/5">
-          <IconButton text="Open mails" icon="mailOpen" size={"lg"} variant="primary" />
-        </a>
-        <Button variant="link" onClick={() => setMenuState(MenuState.SignIn)} className="uppercase">
-          Back
-        </Button>
+    <AuthCard title="Check your inbox" size="default">
+      <div className="flex flex-col gap-6">
+        <div className="flex w-full flex-col gap-1 text-balance ">
+          <p>
+            We sent a sign-in link to <span className="font-semibold">{email}</span>.
+          </p>
+          <p className="text-sm text-foreground/50">Can&apos;t find it? Check your spam folder.</p>
+        </div>
+        <div className="flex w-full flex-col items-center gap-1">
+          {provider && (
+            <a href={provider.url} target="_blank" rel="noopener noreferrer" className="w-full">
+              <IconButton text={provider.label} icon="mailOpen" size="lg" variant="primary" />
+            </a>
+          )}
+          <Button
+            variant="link"
+            onClick={() => setMenuState(returnTo)}
+            className="border-0 font-thin uppercase text-foreground"
+          >
+            Back
+          </Button>
+        </div>
       </div>
     </AuthCard>
   );
 };
 
 export default MagicLinkForm;
-
-{
-  /* <Form {...form}>
-<form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full flex-col space-y-6">
-  <div className="space-y-4">
-    <FormField
-      control={form.control}
-      name="token"
-      render={({ field }) => (
-        <FormItem>
-          <FormControl>
-            <InputOTP maxLength={6} {...field} pattern={REGEXP_ONLY_DIGITS_AND_CHARS}>
-              <InputOTPGroup>
-                <InputOTPSlot index={0} className="border-foreground" />
-                <InputOTPSlot index={1} className="border-foreground" />
-                <InputOTPSlot index={2} className="border-foreground" />
-              </InputOTPGroup>
-              <InputOTPSeparator />
-              <InputOTPGroup>
-                <InputOTPSlot index={3} className="border-foreground" />
-                <InputOTPSlot index={4} className="border-foreground" />
-                <InputOTPSlot index={5} className="border-foreground" />
-              </InputOTPGroup>
-            </InputOTP>
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  </div>
-  <FormError message={error} />
-  <FormSuccess message={success} />
-  <div className="flex flex-col items-center gap-2">
-    <Button type="submit" className="w-full" variant="primary" disabled={isPending}>
-      {confirmTokenText}
-    </Button>
-    <Button variant="link" onClick={() => setMenuState(MenuState.SignIn)}>
-      {returnText}
-    </Button>
-  </div>
-</form>
-</Form> */
-}
