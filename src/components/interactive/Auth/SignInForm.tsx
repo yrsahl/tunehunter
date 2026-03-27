@@ -76,7 +76,7 @@ const SignInForm: FC<IProps> = ({ email, setEmail, setMenuState }) => {
             text="Continue"
             icon="arrowRight"
             disabled={!isValidEmail || isPending}
-            size={"default"}
+            size="lg"
             variant="primary"
           />
         </form>
