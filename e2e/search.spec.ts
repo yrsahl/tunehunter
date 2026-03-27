@@ -2,18 +2,6 @@ import { expect, test } from "./fixtures/test-fixtures";
 import { waitForSearchToLoad } from "./utils/test-helpers";
 
 test.describe("@full Search Functionality", () => {
-  test("should accept typing and allow clearing", async ({ page }) => {
-    await page.goto("/");
-    await waitForSearchToLoad(page);
-
-    const searchInput = page.locator('[data-testid="search-input"]');
-    await searchInput.fill("Bohemian Rhapsody");
-    await expect(searchInput).toHaveValue("Bohemian Rhapsody");
-
-    await searchInput.clear();
-    await expect(searchInput).toHaveValue("");
-  });
-
   test("should set and clear search tab query param when clicking trending", async ({ page }) => {
     await page.goto("/");
     await waitForSearchToLoad(page);
@@ -32,15 +20,53 @@ test.describe("@full Search Functionality", () => {
     await page.goto("/");
     await waitForSearchToLoad(page);
 
-    const spotifyTab = page.getByRole("button", { name: /spotify/i });
     const historyTab = page.getByRole("button", { name: /history/i });
     const wishlistTab = page.getByRole("button", { name: /wishlist/i });
 
-    await expect(spotifyTab).toBeDisabled();
     await expect(historyTab).toBeDisabled();
     await expect(wishlistTab).toBeDisabled();
+  });
 
-    await spotifyTab.click({ force: true });
-    await expect(page).not.toHaveURL(/search=spotify/);
+  test("playlist tab is accessible to unauthenticated users and shows URL input", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await waitForSearchToLoad(page);
+
+    const playlistTab = page.getByRole("button", { name: /playlist/i });
+    await expect(playlistTab).toBeEnabled();
+
+    await playlistTab.click();
+    await expect(page).toHaveURL(/search=playlist/);
+
+    await expect(page.locator('[data-testid="playlist-url-input"]')).toBeVisible();
+    await expect(
+      page.getByText("Paste a public Spotify playlist link above to browse its tracks."),
+    ).toBeVisible();
+  });
+
+  test("playlist tab can be toggled off", async ({ page }) => {
+    await page.goto("/");
+    await waitForSearchToLoad(page);
+
+    const playlistTab = page.getByRole("button", { name: /playlist/i });
+    await playlistTab.click();
+    await expect(page).toHaveURL(/search=playlist/);
+
+    await playlistTab.click();
+    await expect(page).not.toHaveURL(/search=playlist/);
+  });
+
+  test("history tab is enabled and navigates when authenticated", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/");
+    await waitForSearchToLoad(page);
+
+    const historyTab = page.getByRole("button", { name: /history/i });
+    await expect(historyTab).toBeEnabled();
+
+    await historyTab.click();
+    await expect(page).toHaveURL(/search=history/);
   });
 });

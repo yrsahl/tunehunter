@@ -46,7 +46,8 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = () 
   const [currentPlaceholder, setCurrentPlaceholder] = useState("");
   const { handleSearchSubmit, handleInputChange, resetSearch } = useSearch();
   const { searchState } = useSearchStore();
-  const { showQueries, setShowQueries, queryData, isQueryDataLoading } = useQueryDataContext();
+  const { showQueries, setShowQueries, queryData, isQueryDataLoading, lastQuery, requestQueryData } =
+    useQueryDataContext();
   const formRef = createRef<HTMLFormElement>();
   const searchBarRef = useRef<HTMLDivElement>(null);
   const searchSettingsIconRef = useRef<HTMLDivElement>(null);
@@ -64,6 +65,17 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = () 
     if (!queryData) return;
     formRef.current?.requestSubmit();
   }, [...Object.values(searchSettings)]);
+
+  // When the dropdown re-opens, refresh queries if the input changed since the last query
+  // (e.g. after a song was selected, the input becomes "Artist - Title" but queryData is stale)
+  const refreshRef = useRef({ input: searchState.input, lastQuery, searchSettings, requestQueryData });
+  refreshRef.current = { input: searchState.input, lastQuery, searchSettings, requestQueryData };
+  useEffect(() => {
+    const { input, lastQuery, searchSettings, requestQueryData } = refreshRef.current;
+    if (showQueries && input && input !== lastQuery) {
+      void requestQueryData(input, searchSettings);
+    }
+  }, [showQueries]);
 
   // Show queries depending on click inside or outside of search bar
   const handleClickSearchBar = (event: MouseEvent) => {

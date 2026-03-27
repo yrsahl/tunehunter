@@ -21,15 +21,17 @@ const useSearch = () => {
   const addSearchActivity = api.userActivities.addSearchActivity.useMutation();
 
   // Are there any settings set?
-  const { searchForClubMixesOnly, minimumLengthOption, minimumLengthSeconds } =
+  const { versionFilter, lengthFilter, lengthRange, yearFilter, yearRange } =
     useSearchSettingsStore();
   const searchSettings = useMemo(
     () => ({
-      searchForClubMixesOnly,
-      minimumLengthOption,
-      minimumLengthSeconds,
+      versionFilter,
+      lengthFilter,
+      lengthRange,
+      yearFilter,
+      yearRange,
     }),
-    [searchForClubMixesOnly, minimumLengthOption, minimumLengthSeconds],
+    [versionFilter, lengthFilter, lengthRange, yearFilter, yearRange],
   );
 
   // On enter, request query data immediately
