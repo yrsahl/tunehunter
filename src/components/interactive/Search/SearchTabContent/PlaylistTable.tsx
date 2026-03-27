@@ -47,6 +47,7 @@ const PlaylistTable = () => {
       >
         <input
           type="text"
+          data-testid="playlist-url-input"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="https://open.spotify.com/playlist/3TxNViSYOIVuZLEe9ZIbyx?si=8974367fcb0f488a"

@@ -26,7 +26,7 @@ export const users = pgTable("user", {
   theme: varchar("theme", { length: 255 }),
   themeParticles: boolean().default(true),
   region: varchar("region", { length: 255 }),
-  role: varchar("role", { length: 255 }),
+  role: varchar("role", { length: 255 }).default("music_lover"),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -310,8 +310,7 @@ export const songListingsRelations = relations(songListings, ({ one }) => ({
   }),
 }));
 
-// VIEW
-// TODO: change to cron job (updates every 15 minutes) when on paid plan on Neon
+// Views
 const createTrendingView = (viewName: string, interval: string) => {
   return pgMaterializedView(viewName).as((qb) =>
     qb
