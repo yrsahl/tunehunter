@@ -23,7 +23,7 @@ test.describe("@full User Profile and Settings", () => {
     await expect(page.locator('[data-testid="change-email-button"]')).toBeVisible();
     await expect(page.locator('[data-testid="region-select"]')).toBeVisible();
     await expect(page.locator('[data-testid="auto-detect-region-button"]')).toBeVisible();
-    await expect(page.locator('[data-testid="theme-select"]')).toBeVisible();
+    await expect(page.locator('[data-testid="theme-toggle"]')).toBeVisible();
     await expect(page.locator('[data-testid="particles-toggle"]')).toBeVisible();
     await expect(page.locator('[data-testid="logout-button"]')).toBeVisible();
   });

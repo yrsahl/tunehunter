@@ -21,21 +21,21 @@ const InfoWithToolTip = ({
 }: InfoWithToolTipInterface) => {
   return (
     <Tooltip>
-      <TooltipTrigger>
+      <TooltipTrigger tabIndex={-1}>
         <div className="flex items-center gap-2 px-1">
           <CustomIcon icon="info" variant={variant} height={iconSize} width={iconSize} />
         </div>
-        <TooltipContent
-          className={cn(
-            "border-foreground/30 bg-background text-foreground",
-            typeof tooltip === "string" ? "max-w-56 text-pretty" : "w-max",
-            className,
-          )}
-          side={side}
-        >
-          {tooltip}
-        </TooltipContent>
       </TooltipTrigger>
+      <TooltipContent
+        className={cn(
+          "border-foreground/30 bg-background text-foreground",
+          typeof tooltip === "string" ? "max-w-56 text-pretty" : "w-max",
+          className,
+        )}
+        side={side}
+      >
+        {tooltip}
+      </TooltipContent>
     </Tooltip>
   );
 };

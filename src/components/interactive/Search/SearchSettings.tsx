@@ -91,7 +91,11 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
           </AnimatePresence>
         </motion.div>
       </PopoverTrigger>
-      <PopoverContent className="flex flex-col gap-3 px-5 py-4" ref={windowRef}>
+      <PopoverContent
+        className="flex flex-col gap-3 px-5 py-4"
+        ref={windowRef}
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         {/* Header */}
         <div className="flex items-center justify-between">
           <p className="text-sm font-medium uppercase tracking-widest text-foreground opacity-60">
