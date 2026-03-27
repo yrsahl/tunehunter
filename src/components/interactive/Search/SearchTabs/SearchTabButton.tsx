@@ -6,6 +6,7 @@ import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 import type { SearchTab } from "./SearchTabBar";
 
 export type AccessScopes = "all" | "signed-in-to-spotify" | "signed-in";
@@ -16,7 +17,7 @@ export const tabAccessMap: Record<SearchTab, AccessScopes> = {
   wishlist: "signed-in",
 };
 const tabTooltipRestrictionMap: Record<SearchTab, string> = {
-  trending: "", // Always accessible
+  trending: "",
   playlist: "",
   wishlist: "Sign in to view your wishlist!",
   history: "Sign in to view your history!",
@@ -41,21 +42,25 @@ const SearchTabButton = ({
     { userId: userData?.user.id! },
     {
       enabled: loggedIn,
-      refetchInterval: 30 * 60 * 1000, // Refetch every 30 minutes to refresh the access token,
+      refetchInterval: 30 * 60 * 1000,
       refetchIntervalInBackground: true,
       refetchOnWindowFocus: false,
     },
   );
 
   const isSearchTabEnabled = (searchTab: SearchTab) => {
-    if (tabAccessMap[searchTab] === "signed-in-to-spotify") return !!spotifyAccount?.data; // If needs to be signed in, enabled if spotify data
-    if (tabAccessMap[searchTab] === "signed-in") return loggedIn; // If needs signed in, enabled if logged in
-    return true; // Enabled otherwise
+    if (tabAccessMap[searchTab] === "signed-in-to-spotify") return !!spotifyAccount?.data;
+    if (tabAccessMap[searchTab] === "signed-in") return loggedIn;
+    return true;
   };
   const isTabEnabled = isSearchTabEnabled(searchTab);
   const isTabActive = activeSearchTab === searchTab;
 
   const handleTabClick = (newSearchTab: SearchTab) => {
+    if (!isTabEnabled) {
+      toast.info(tabTooltipRestrictionMap[newSearchTab]);
+      return;
+    }
     if (newSearchTab === activeSearchTab) {
       setActiveSearchTab("");
       router.setParams({ search: "" });
@@ -75,25 +80,24 @@ const SearchTabButton = ({
           <motion.button
             key={searchTab}
             onClick={() => handleTabClick(searchTab)}
-            disabled={!isTabEnabled}
             className={cn(
-              "whitespace-nowrap border-b-2 text-sm text-foreground transition-all enabled:hover:border-primary/50 sm:text-base",
+              "whitespace-nowrap border-b-2 text-sm text-foreground transition-all sm:text-base",
               isTabActive ? "!border-primary" : "border-transparent",
-              !isTabEnabled && "cursor-not-allowed text-muted-foreground/30",
+              isTabEnabled ? "hover:border-primary/50" : "cursor-pointer text-muted-foreground/30",
             )}
           >
             <div className="flex items-center gap-2 px-1 pb-1">
               <CustomIcon icon={searchTab} variant={isTabEnabled ? "primary" : "primary-muted"} className="pointer-events-none" />
               <span className="pointer-events-none capitalize">{searchTab}</span>
             </div>
-            {!isTabEnabled && (
-              <TooltipContent className="border-foreground/30 bg-background text-foreground">
-                {tabTooltipRestrictionMap[searchTab]}
-              </TooltipContent>
-            )}
           </motion.button>
         </div>
       </TooltipTrigger>
+      {!isTabEnabled && (
+        <TooltipContent className="border-foreground/30 bg-background text-foreground">
+          {tabTooltipRestrictionMap[searchTab]}
+        </TooltipContent>
+      )}
     </Tooltip>
   );
 };
