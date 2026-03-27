@@ -10,9 +10,11 @@ const mockHandleInputChange = vi.fn();
 const mockResetSearch = vi.fn();
 let mockSearchState = { input: "" };
 let mockSearchSettings = {
-  searchForClubMixesOnly: false,
-  minimumLengthOption: "none",
-  minimumLengthSeconds: 0,
+  versionFilter: "all",
+  lengthFilter: false,
+  lengthRange: [120, 600],
+  yearFilter: false,
+  yearRange: [2000, 2026],
 };
 
 vi.mock("next/dynamic", () => ({
@@ -50,9 +52,11 @@ describe("SearchBar", () => {
     mockQueryData = null;
     mockSearchState = { input: "" };
     mockSearchSettings = {
-      searchForClubMixesOnly: false,
-      minimumLengthOption: "none",
-      minimumLengthSeconds: 0,
+      versionFilter: "all",
+      lengthFilter: false,
+      lengthRange: [120, 600],
+      yearFilter: false,
+      yearRange: [2000, 2026],
     };
 
     mockSetShowQueries.mockReset();
@@ -87,7 +91,7 @@ describe("SearchBar", () => {
 
     mockSearchSettings = {
       ...mockSearchSettings,
-      minimumLengthSeconds: 180,
+      lengthRange: [180, 600],
     };
 
     rerender(<SearchBar />);
@@ -106,7 +110,7 @@ describe("SearchBar", () => {
 
     mockSearchSettings = {
       ...mockSearchSettings,
-      searchForClubMixesOnly: true,
+      versionFilter: "remixes",
     };
 
     rerender(<SearchBar />);

@@ -1,16 +1,47 @@
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
-import { useSearchSettingsStore } from "@/hooks/stores/useSearchSettingsStore";
+import {
+  LENGTH_MAX,
+  LENGTH_MIN,
+  VersionFilter,
+  YEAR_MAX,
+  YEAR_MIN,
+  useSearchSettingsStore,
+} from "@/hooks/stores/useSearchSettingsStore";
+import { cn } from "@/lib/utils";
 import { fadeInAndOut, growIn, slideInFromAbove } from "@/styles/animations";
 import { AnimatePresence, motion } from "framer-motion";
 import { Cog } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { RefObject } from "react";
 import IconButton from "../../IconButton";
+import InfoWithToolTip from "../../InfoWithTooltip";
 import { Label } from "../../ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
-import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from "../../ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "../../ui/select";
 import { Slider } from "../../ui/slider";
 import { Switch } from "../../ui/switch";
+
+const formatSeconds = (totalSeconds: number) => {
+  const minutes = Math.floor(totalSeconds / 60)
+    .toString()
+    .padStart(2, "0");
+  const seconds = (totalSeconds % 60).toString().padStart(2, "0");
+  return `${minutes}:${seconds}`;
+};
+
+const VERSION_OPTIONS: { value: VersionFilter; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "originals", label: "Originals" },
+  { value: "remixes", label: "Remixes" },
+  { value: "extended", label: "Extended" },
+];
 
 const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> }) => {
   const { status } = useSession();
@@ -18,28 +49,27 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
 
   // State
   const {
-    searchForClubMixesOnly,
-    minimumLengthOption,
-    minimumLengthSeconds,
-    setSearchForClubMixesOnly,
-    setMinimumLengthOption,
-    setMinimumLengthSeconds,
+    versionFilter,
+    lengthFilter,
+    lengthRange,
+    yearFilter,
+    yearRange,
+    setVersionFilter,
+    setLengthFilter,
+    setLengthRange,
+    setYearFilter,
+    setYearRange,
   } = useSearchSettingsStore();
   const { region, changeRegion, createRegionName, setRegionByLocation, sortedRegions } =
     useRegionSettings();
 
-  const areSettingsSet = searchForClubMixesOnly || minimumLengthOption;
+  const areSettingsSet = versionFilter !== "all" || lengthFilter || yearFilter;
 
   const resetSettings = () => {
-    setSearchForClubMixesOnly(false);
-    setMinimumLengthOption(false);
+    setVersionFilter("all");
+    setLengthFilter(false);
+    setYearFilter(false);
   };
-
-  // Prepared strings
-  const minimumLengthDisplayMinutes = Math.floor(minimumLengthSeconds / 60)
-    .toString()
-    .padStart(2, "0");
-  const minimumLengthDisplaySeconds = (minimumLengthSeconds % 60).toString().padStart(2, "0");
 
   return (
     <Popover>
@@ -61,7 +91,11 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
           </AnimatePresence>
         </motion.div>
       </PopoverTrigger>
-      <PopoverContent className="flex flex-col gap-3 px-5 py-4" ref={windowRef}>
+      <PopoverContent
+        className="flex flex-col gap-3 px-5 py-4"
+        ref={windowRef}
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         {/* Header */}
         <div className="flex items-center justify-between">
           <p className="text-sm font-medium uppercase tracking-widest text-foreground opacity-60">
@@ -81,102 +115,174 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
         </div>
 
         <div className="grid grid-cols-[1fr_auto] items-center gap-x-6 gap-y-1">
-          {/* Minimum length */}
-          <Label htmlFor="minimumlength" className="flex items-center text-base font-light">
-            Minimum length
+          {/* Version filter */}
+          <div className="col-span-2 flex flex-col gap-2 pb-2">
+            <div className="flex items-center gap-1">
+              <Label className="text-base font-light">Version</Label>
+              <InfoWithToolTip
+                tooltip={
+                  <div className="flex flex-col items-start gap-1">
+                    <p>
+                      <span className="font-semibold">All</span> — no filter
+                    </p>
+                    <p>
+                      <span className="font-semibold">Originals</span> — hides remixes, covers &
+                      edits
+                    </p>
+                    <p>
+                      <span className="font-semibold">Remixes</span> — re-edits and bootlegs only
+                    </p>
+                    <p>
+                      <span className="font-semibold">Extended</span> — club, extended & original
+                      mixes
+                    </p>
+                  </div>
+                }
+                iconSize="16px"
+                side="right"
+                variant="primary"
+              />
+            </div>
+            <div className="flex overflow-hidden rounded-md border border-foreground/20">
+              {VERSION_OPTIONS.map(({ value, label }) => (
+                <button
+                  key={value}
+                  onClick={() => setVersionFilter(value)}
+                  className={cn(
+                    "flex-1 py-1.5 text-xs transition-colors",
+                    versionFilter === value
+                      ? "bg-primary font-medium text-primary-foreground"
+                      : "text-muted-foreground hover:bg-foreground/5",
+                  )}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Track length range */}
+          <Label htmlFor="lengthfilter" className="flex items-center text-base font-light">
+            Track length
           </Label>
           <div className="flex h-10 items-center justify-end">
-            <Switch
-              id="minimumlength"
-              checked={minimumLengthOption}
-              onCheckedChange={setMinimumLengthOption}
-            />
+            <Switch id="lengthfilter" checked={lengthFilter} onCheckedChange={setLengthFilter} />
           </div>
           <AnimatePresence mode="popLayout" initial={false}>
-            {minimumLengthOption && (
+            {lengthFilter && (
               <motion.div
-                className="col-span-2 flex items-center gap-4 pb-1 pt-0.5"
+                className="col-span-2 flex items-center gap-2 pb-1 pt-0.5"
                 {...slideInFromAbove()}
-                key="minimumlengthslider"
+                key="lengthrangeslider"
               >
                 <span className="w-10 shrink-0 text-center text-sm font-normal tabular-nums">
-                  {minimumLengthDisplayMinutes}:{minimumLengthDisplaySeconds}
+                  {formatSeconds(lengthRange[0])}
                 </span>
                 <Slider
-                  defaultValue={[minimumLengthSeconds]}
-                  max={600}
-                  min={1}
-                  value={[minimumLengthSeconds]}
-                  onValueChange={(value) => setMinimumLengthSeconds(value[0] ?? 0)}
+                  value={lengthRange}
+                  max={LENGTH_MAX}
+                  min={LENGTH_MIN}
+                  onValueChange={(value) => setLengthRange(value as [number, number])}
                 />
+                <span className="w-10 shrink-0 text-center text-sm font-normal tabular-nums">
+                  {formatSeconds(lengthRange[1])}
+                </span>
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* Club Mixes only */}
-          <Label htmlFor="clubmixesonly" className="flex items-center text-base font-light">
-            Club &amp; Extended mixes only
+          {/* Release year range */}
+          <Label htmlFor="yearfilter" className="flex items-center text-base font-light">
+            Release year
           </Label>
           <div className="flex h-10 items-center justify-end">
-            <Switch
-              id="clubmixesonly"
-              checked={searchForClubMixesOnly}
-              onCheckedChange={setSearchForClubMixesOnly}
-            />
+            <Switch id="yearfilter" checked={yearFilter} onCheckedChange={setYearFilter} />
           </div>
+          <AnimatePresence mode="popLayout" initial={false}>
+            {yearFilter && (
+              <motion.div
+                className="col-span-2 flex items-center gap-2 pb-1 pt-0.5"
+                {...slideInFromAbove()}
+                key="yearrangeslider"
+              >
+                <span className="w-12 shrink-0 text-center text-sm font-normal tabular-nums">
+                  {yearRange[0]}
+                </span>
+                <Slider
+                  value={yearRange}
+                  max={YEAR_MAX}
+                  min={YEAR_MIN}
+                  onValueChange={(value) => setYearRange(value as [number, number])}
+                />
+                <span className="w-12 shrink-0 text-center text-sm font-normal tabular-nums">
+                  {yearRange[1]}
+                </span>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Region */}
         <div className="border-t border-foreground/30 pt-3">
           {loggedIn ? (
-            <p className="text-xs font-light text-muted-foreground">
-              Manage your region in your profile settings.
-            </p>
+            <div className="flex flex-col gap-1">
+              <p className="text-xs font-light text-muted-foreground">
+                Manage your region in your profile settings.
+              </p>
+              <p className="text-xs font-light text-muted-foreground/60">
+                Affects which store and prices are shown.
+              </p>
+            </div>
           ) : (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-0">
-                <Label htmlFor="region" className="shrink-0 text-base font-light">
-                  Region:
-                </Label>
-                <div className="flex items-center gap-1">
-                  <Select onValueChange={changeRegion} value={region}>
-                    <SelectTrigger
-                      id="region"
-                      className="h-9 max-w-36 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 px-1 text-base font-light text-foreground focus:ring-0 focus:ring-offset-0"
-                    >
-                      <motion.div
-                        key={region}
-                        {...growIn()}
-                        className="inline-block w-36 overflow-hidden text-ellipsis text-start"
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-0">
+                  <Label htmlFor="region" className="shrink-0 text-base font-light">
+                    Region:
+                  </Label>
+                  <div className="flex items-center gap-1">
+                    <Select onValueChange={changeRegion} value={region}>
+                      <SelectTrigger
+                        id="region"
+                        className="h-9 max-w-36 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 px-1 text-base font-light text-foreground focus:ring-0 focus:ring-offset-0"
                       >
-                        <SelectValue />
-                      </motion.div>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {sortedRegions.priority.map((region) => (
-                        <SelectItem key={region} value={region}>
-                          {createRegionName(region)}
-                        </SelectItem>
-                      ))}
-                      <SelectSeparator />
-                      {sortedRegions.rest.map((region) => (
-                        <SelectItem key={region} value={region}>
-                          {createRegionName(region)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                        <motion.div
+                          key={region}
+                          {...growIn()}
+                          className="inline-block w-36 overflow-hidden text-ellipsis text-start"
+                        >
+                          <SelectValue />
+                        </motion.div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {sortedRegions.priority.map((region) => (
+                          <SelectItem key={region} value={region}>
+                            {createRegionName(region)}
+                          </SelectItem>
+                        ))}
+                        <SelectSeparator />
+                        {sortedRegions.rest.map((region) => (
+                          <SelectItem key={region} value={region}>
+                            {createRegionName(region)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
+                <IconButton
+                  variant="ghostPrimary"
+                  size="icon"
+                  icon="mapPin"
+                  iconSize="24px"
+                  className="h-8 w-8 shrink-0"
+                  bordered="default"
+                  onClick={setRegionByLocation}
+                />
               </div>
-              <IconButton
-                variant="ghostPrimary"
-                size="icon"
-                icon="mapPin"
-                iconSize="24px"
-                className="h-8 w-8 shrink-0"
-                bordered="default"
-                onClick={setRegionByLocation}
-              />
+              <p className="text-xs font-light text-muted-foreground/60">
+                Affects which store and prices are shown.
+              </p>
             </div>
           )}
         </div>

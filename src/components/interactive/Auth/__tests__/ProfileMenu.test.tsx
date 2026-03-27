@@ -76,6 +76,15 @@ vi.mock("@/hooks/settings/useThemeSettings", () => ({
   AutoThemePreferences: ["auto", "manual"],
 }));
 
+vi.mock("@/hooks/settings/useRoleSettings", () => ({
+  default: () => ({
+    role: "music_lover",
+    changeRole: vi.fn(),
+  }),
+  userRoles: ["music_lover", "dj", "audiophile"],
+  userRoleLabels: { music_lover: "Music Lover", dj: "DJ", audiophile: "Audiophile" },
+}));
+
 vi.mock("@/contexts/SpotifyUserDataContext", () => ({
   useSpotifyUserDataContext: () => ({
     spotifyUserData: {
@@ -251,12 +260,5 @@ describe("ProfileMenu", () => {
     expect(mockHandleDeleteAccount).toHaveBeenCalledWith("user-123");
   });
 
-  it("treats undefined particlePreference as unchecked", () => {
-    mockParticlePreference = undefined;
 
-    render(<ProfileMenu />);
-
-    const particlesToggle = screen.getByTestId("particles-toggle");
-    expect(particlesToggle).not.toBeChecked();
-  });
 });

@@ -1,6 +1,6 @@
 import { SongListingContextProvider } from "@/contexts/SongListingContext";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
-import { SEARCH_SUBMITTED, SelectedSearchParams } from "@/hooks/stores/useSearchStore";
+import useSearchStore, { SEARCH_SUBMITTED, SelectedSearchParams } from "@/hooks/stores/useSearchStore";
 import { useEventEmitter } from "@/hooks/useEventEmitter";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { api } from "@/lib/api";
@@ -8,11 +8,22 @@ import { CountryCode } from "@/lib/validators";
 import { slideInAndOutFromBottom } from "@/styles/animations";
 import { Track } from "@/types/song-types";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import SongListingsContainer from "./SongListingsContainer";
 
 const SongListings = () => {
-  const { eventData: search } = useEventEmitter<SelectedSearchParams | null>(SEARCH_SUBMITTED);
+  const { eventData } = useEventEmitter<SelectedSearchParams | null>(SEARCH_SUBMITTED);
+  const { searchState } = useSearchStore();
+
+  // eventData is undefined until an event arrives; null means explicitly cleared.
+  // When undefined (lazy-loaded component missed the event), fall back to the store.
+  const search: SelectedSearchParams | null | undefined = useMemo(() => {
+    if (eventData !== undefined) return eventData;
+    if (searchState.id && searchState.region && searchState.songArtist && searchState.songTitle) {
+      return { id: searchState.id, region: searchState.region, artist: searchState.songArtist, title: searchState.songTitle };
+    }
+    return undefined;
+  }, [eventData, searchState.id, searchState.region, searchState.songArtist, searchState.songTitle]);
   const { region } = useRegionSettings();
   const router = useRouterWithHelpers();
   const containerRef = useRef<HTMLDivElement | null>(null);
