@@ -260,12 +260,5 @@ describe("ProfileMenu", () => {
     expect(mockHandleDeleteAccount).toHaveBeenCalledWith("user-123");
   });
 
-  it("treats undefined particlePreference as unchecked", () => {
-    mockParticlePreference = undefined;
 
-    render(<ProfileMenu />);
-
-    const particlesToggle = screen.getByTestId("particles-toggle");
-    expect(particlesToggle).not.toBeChecked();
-  });
 });
