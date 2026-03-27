@@ -31,6 +31,7 @@ External service billing alerts (set up in each dashboard, not in app):
 ----- OLD
 
 Another OAuth Provider
+Role tailoring
 
 PRO:
 - Data insights

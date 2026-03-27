@@ -21,7 +21,7 @@ const SongListingsContainer = ({ region }: ISongListingsProps) => {
     !!getVendorResponse("beatport")?.data || !!getVendorResponse("bandcamp")?.data;
 
   return (
-    <div className="hide-scrollbars flex flex-col gap-0 overflow-hidden overflow-x-auto sm:min-h-96 md:flex-row md:gap-12">
+    <div data-testid="song-listings" className="hide-scrollbars flex flex-col gap-0 overflow-hidden overflow-x-auto sm:min-h-96 md:flex-row md:gap-12">
       <SongPreview trackData={trackData ?? undefined} isLoading={isTrackDataLoading} />
       <div className="flex flex-col md:w-1/2">
         <table className="mx-auto my-auto table w-[85%] border-separate border-spacing-y-5 sm:border-spacing-y-5 md:w-full md:border-spacing-y-6">

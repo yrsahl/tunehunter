@@ -26,4 +26,16 @@ test.describe("@smoke Smoke", () => {
 
     await expect(page.locator('[data-testid="login-button"]')).toBeVisible();
   });
+
+  test("search settings popover opens and shows all filters", async ({ page }) => {
+    await page.goto("/");
+    await waitForSearchToLoad(page);
+
+    await page.locator(".lucide-cog").click();
+
+    await expect(page.getByText("Search Filters")).toBeVisible();
+    await expect(page.getByText("Version")).toBeVisible();
+    await expect(page.getByText("Track length")).toBeVisible();
+    await expect(page.getByText("Release year")).toBeVisible();
+  });
 });

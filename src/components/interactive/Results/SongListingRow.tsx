@@ -95,7 +95,11 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
       <td>
         <div className="flex justify-center gap-4 text-sm sm:justify-normal sm:text-base">
           <div className="inline-block">
-            {price != null ? (
+            {price === "0" && vendor === "bandcamp" ? (
+              <span className="text-muted-foreground">
+                From {transformCurrencyStringToIcon(currency)}0
+              </span>
+            ) : price != null ? (
               <>
                 {price}
                 {transformCurrencyStringToIcon(currency)}
@@ -109,16 +113,20 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
 
       {/* Artist's share */}
       <td className="hidden sm:table-cell md:hidden lg:table-cell">
-        <div className="flex flex-col gap-1">
-          <div className="h-1 w-[80%] rounded-full bg-primary/20 md:h-2">
-            {artistsShare && (
-              <div
-                className="h-1 rounded-full bg-success md:h-2"
-                style={{ width: `${artistsShare}%` }}
-              />
-            )}
+        {price == null ? (
+          <span className="flex w-full items-center justify-center text-muted-foreground">-</span>
+        ) : (
+          <div className="flex flex-col gap-1">
+            <div className="h-1 w-[80%] rounded-full bg-primary/20 md:h-2">
+              {artistsShare && (
+                <div
+                  className="h-1 rounded-full bg-success md:h-2"
+                  style={{ width: `${artistsShare}%` }}
+                />
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </td>
 
       {/* Link */}
