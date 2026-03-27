@@ -18,12 +18,22 @@ interface MailProvider {
 const MAIL_PROVIDERS: Record<string, MailProvider> = {
   "gmail.com": { label: "Open Gmail", url: "https://mail.google.com" },
   "googlemail.com": { label: "Open Gmail", url: "https://mail.google.com" },
-  "outlook.com": { label: "Open Outlook", url: "https://outlook.live.com" },
-  "hotmail.com": { label: "Open Outlook", url: "https://outlook.live.com" },
-  "hotmail.de": { label: "Open Outlook", url: "https://outlook.live.com" },
-  "live.com": { label: "Open Outlook", url: "https://outlook.live.com" },
-  "live.de": { label: "Open Outlook", url: "https://outlook.live.com" },
-  "msn.com": { label: "Open Outlook", url: "https://outlook.live.com" },
+  "outlook.com": { label: "Open Outlook", url: "https://outlook.live.com/mail/inbox" },
+  "outlook.de": { label: "Open Outlook", url: "https://outlook.live.com/mail/inbox" },
+  "outlook.co.uk": { label: "Open Outlook", url: "https://outlook.live.com/mail/inbox" },
+  "outlook.com.au": { label: "Open Outlook", url: "https://outlook.live.com/mail/inbox" },
+  "outlook.fr": { label: "Open Outlook", url: "https://outlook.live.com/mail/inbox" },
+  "outlook.es": { label: "Open Outlook", url: "https://outlook.live.com/mail/inbox" },
+  "outlook.it": { label: "Open Outlook", url: "https://outlook.live.com/mail/inbox" },
+  "hotmail.com": { label: "Open Outlook", url: "https://outlook.live.com/mail/inbox" },
+  "hotmail.de": { label: "Open Outlook", url: "https://outlook.live.com/mail/inbox" },
+  "hotmail.co.uk": { label: "Open Outlook", url: "https://outlook.live.com/mail/inbox" },
+  "hotmail.fr": { label: "Open Outlook", url: "https://outlook.live.com/mail/inbox" },
+  "live.com": { label: "Open Outlook", url: "https://outlook.live.com/mail/inbox" },
+  "live.de": { label: "Open Outlook", url: "https://outlook.live.com/mail/inbox" },
+  "live.co.uk": { label: "Open Outlook", url: "https://outlook.live.com/mail/inbox" },
+  "live.fr": { label: "Open Outlook", url: "https://outlook.live.com/mail/inbox" },
+  "msn.com": { label: "Open Outlook", url: "https://outlook.live.com/mail/inbox" },
   "yahoo.com": { label: "Open Yahoo Mail", url: "https://mail.yahoo.com" },
   "yahoo.de": { label: "Open Yahoo Mail", url: "https://mail.yahoo.com" },
   "icloud.com": { label: "Open iCloud Mail", url: "https://www.icloud.com/mail" },
@@ -46,7 +56,7 @@ const MagicLinkForm: FC<IProps> = ({ email, returnTo, setMenuState }) => {
 
   return (
     <AuthCard title="Check your inbox" size="default">
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-7">
         <div className="flex w-full flex-col gap-1 text-balance ">
           <p>
             We sent a sign-in link to <span className="font-semibold">{email}</span>.
@@ -55,7 +65,7 @@ const MagicLinkForm: FC<IProps> = ({ email, returnTo, setMenuState }) => {
         </div>
         <div className="flex w-full flex-col items-center gap-1">
           {provider && (
-            <a href={provider.url} target="_blank" rel="noopener noreferrer" className="w-full">
+            <a href={provider.url} target="_blank" rel="noopener noreferrer" className="w-auto">
               <IconButton text={provider.label} icon="mailOpen" size="lg" variant="primary" />
             </a>
           )}
