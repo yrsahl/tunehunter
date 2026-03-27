@@ -61,7 +61,7 @@ const TableHeader = <T extends string>({
   }
 
   return (
-    <div className="border-x-1 absolute left-1/2 top-0 z-10 flex w-auto -translate-x-1/2 justify-around gap-4 rounded-b-sm border-b-[1px] border-primary bg-background px-6 py-[6px] md:gap-0">
+    <div className="border-x-1 absolute left-1/2 top-0 z-10 flex w-auto -translate-x-1/2 justify-around gap-4 overflow-hidden rounded-b-sm border-b-[1px] border-primary bg-background px-6 py-[6px] [clip-path:inset(0_round_0_0_2px_2px)] md:gap-0">
       {subTabs.map((subTab) => {
         const subTabName = String(subTab).replaceAll("_", " ");
         return (

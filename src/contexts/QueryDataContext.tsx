@@ -6,6 +6,7 @@ import { createContext, ReactNode, useCallback, useContext, useState } from "rea
 
 interface IQueryDataContext {
   queryData: SearchData | null;
+  lastQuery: string;
   showQueries: boolean;
   setShowQueries: (show: boolean) => void;
   requestQueryData: (
@@ -19,6 +20,7 @@ interface IQueryDataContext {
 
 const QueryDataContext = createContext<IQueryDataContext>({
   queryData: null,
+  lastQuery: "",
   showQueries: false,
   setShowQueries: () => {},
   requestQueryData: async () => {},
@@ -31,6 +33,7 @@ export const useQueryDataContext = () => useContext(QueryDataContext);
 export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
   const [showQueries, setShowQueries] = useState(false);
   const [queryData, setQueryData] = useState<SearchData | null>(null);
+  const [lastQuery, setLastQuery] = useState("");
   const [isQueryDataLoading, setIsQueryDataLoading] = useState(false);
   const requestQueryData = useCallback(async (
     query: string,
@@ -42,6 +45,7 @@ export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
     setQueryData(null);
+    setLastQuery(query);
 
     if (displayLoadingIndicator) setIsQueryDataLoading(true);
 
@@ -71,6 +75,7 @@ export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
         showQueries,
         setShowQueries,
         queryData,
+        lastQuery,
         isQueryDataLoading,
         requestQueryData,
         resetQueryData,
