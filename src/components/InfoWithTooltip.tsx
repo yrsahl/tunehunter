@@ -1,11 +1,14 @@
+import { ReactNode } from "react";
 import CustomIcon from "./CustomIcon";
 import { CustomIconVariant } from "./icons";
+import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 interface InfoWithToolTipInterface {
-  tooltip: string;
+  tooltip: ReactNode;
   iconSize?: string;
   variant?: CustomIconVariant;
+  className?: string;
   side?: "top" | "right" | "bottom" | "left";
 }
 
@@ -13,6 +16,7 @@ const InfoWithToolTip = ({
   tooltip,
   iconSize,
   variant,
+  className,
   side = "top",
 }: InfoWithToolTipInterface) => {
   return (
@@ -22,7 +26,11 @@ const InfoWithToolTip = ({
           <CustomIcon icon="info" variant={variant} height={iconSize} width={iconSize} />
         </div>
         <TooltipContent
-          className="max-w-56 text-balance border-foreground/30 bg-background text-foreground"
+          className={cn(
+            "border-foreground/30 bg-background text-foreground",
+            typeof tooltip === "string" ? "max-w-56 text-pretty" : "w-max",
+            className,
+          )}
           side={side}
         >
           {tooltip}

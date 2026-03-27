@@ -3,8 +3,6 @@
 Create a logo
 Use Stitch for UI
 
-Info role cleaner
-
 Separate out Redis/Upstash, maybe more?
 Monitor scrapers in production
 Stresstest + Monitoring
@@ -33,6 +31,7 @@ External service billing alerts (set up in each dashboard, not in app):
 ----- OLD
 
 Another OAuth Provider
+Role tailoring
 
 PRO:
 - Data insights

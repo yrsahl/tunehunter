@@ -16,16 +16,18 @@ const SearchProvider = ({ children }: SearchProviderProps) => {
   const { publishEvent: publishSearchSubmitted } = useEventEmitter<SelectedSearchParams | null>(SEARCH_SUBMITTED);
   const { requestQueryData, resetQueryData } = useQueryDataContext();
   const router = useRouterWithHelpers();
-  const { searchForClubMixesOnly, minimumLengthOption, minimumLengthSeconds } =
+  const { versionFilter, lengthFilter, lengthRange, yearFilter, yearRange } =
     useSearchSettingsStore();
 
   const searchSettings = useMemo(
     () => ({
-      searchForClubMixesOnly,
-      minimumLengthOption,
-      minimumLengthSeconds,
+      versionFilter,
+      lengthFilter,
+      lengthRange,
+      yearFilter,
+      yearRange,
     }),
-    [searchForClubMixesOnly, minimumLengthOption, minimumLengthSeconds],
+    [versionFilter, lengthFilter, lengthRange, yearFilter, yearRange],
   );
 
   const searchIdParam = router.getParams("id");
