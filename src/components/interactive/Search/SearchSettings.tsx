@@ -129,54 +129,64 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
         {/* Region */}
         <div className="border-t border-foreground/30 pt-3">
           {loggedIn ? (
-            <p className="text-xs font-light text-muted-foreground">
-              Manage your region in your profile settings.
-            </p>
+            <div className="flex flex-col gap-1">
+              <p className="text-xs font-light text-muted-foreground">
+                Manage your region in your profile settings.
+              </p>
+              <p className="text-xs font-light text-muted-foreground/60">
+                Affects which store and prices are shown.
+              </p>
+            </div>
           ) : (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-0">
-                <Label htmlFor="region" className="shrink-0 text-base font-light">
-                  Region:
-                </Label>
-                <div className="flex items-center gap-1">
-                  <Select onValueChange={changeRegion} value={region}>
-                    <SelectTrigger
-                      id="region"
-                      className="h-9 max-w-36 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 px-1 text-base font-light text-foreground focus:ring-0 focus:ring-offset-0"
-                    >
-                      <motion.div
-                        key={region}
-                        {...growIn()}
-                        className="inline-block w-36 overflow-hidden text-ellipsis text-start"
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-0">
+                  <Label htmlFor="region" className="shrink-0 text-base font-light">
+                    Region:
+                  </Label>
+                  <div className="flex items-center gap-1">
+                    <Select onValueChange={changeRegion} value={region}>
+                      <SelectTrigger
+                        id="region"
+                        className="h-9 max-w-36 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 px-1 text-base font-light text-foreground focus:ring-0 focus:ring-offset-0"
                       >
-                        <SelectValue />
-                      </motion.div>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {sortedRegions.priority.map((region) => (
-                        <SelectItem key={region} value={region}>
-                          {createRegionName(region)}
-                        </SelectItem>
-                      ))}
-                      <SelectSeparator />
-                      {sortedRegions.rest.map((region) => (
-                        <SelectItem key={region} value={region}>
-                          {createRegionName(region)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                        <motion.div
+                          key={region}
+                          {...growIn()}
+                          className="inline-block w-36 overflow-hidden text-ellipsis text-start"
+                        >
+                          <SelectValue />
+                        </motion.div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {sortedRegions.priority.map((region) => (
+                          <SelectItem key={region} value={region}>
+                            {createRegionName(region)}
+                          </SelectItem>
+                        ))}
+                        <SelectSeparator />
+                        {sortedRegions.rest.map((region) => (
+                          <SelectItem key={region} value={region}>
+                            {createRegionName(region)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
+                <IconButton
+                  variant="ghostPrimary"
+                  size="icon"
+                  icon="mapPin"
+                  iconSize="24px"
+                  className="h-8 w-8 shrink-0"
+                  bordered="default"
+                  onClick={setRegionByLocation}
+                />
               </div>
-              <IconButton
-                variant="ghostPrimary"
-                size="icon"
-                icon="mapPin"
-                iconSize="24px"
-                className="h-8 w-8 shrink-0"
-                bordered="default"
-                onClick={setRegionByLocation}
-              />
+              <p className="text-xs font-light text-muted-foreground/60">
+                Affects which store and prices are shown.
+              </p>
             </div>
           )}
         </div>

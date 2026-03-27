@@ -44,13 +44,19 @@ const SongListingsContainer = ({ region }: ISongListingsProps) => {
             ))}
           </tbody>
         </table>
-        <motion.p
-          animate={{ opacity: hasLosslessOption ? 1 : 0 }}
-          transition={{ duration: 0.4 }}
-          className="mx-auto w-[83%] text-center text-xs text-foreground/50"
-        >
-          *Uncompressed and/or lossless options also available
-        </motion.p>
+        <div className="mx-auto flex w-[83%] flex-col items-center gap-0.5">
+          <motion.p
+            animate={{ opacity: hasLosslessOption ? 1 : 0 }}
+            transition={{ duration: 0.4 }}
+            className="text-center text-xs text-foreground/50"
+          >
+            *Uncompressed and/or lossless options also available
+          </motion.p>
+          <p className="text-center text-xs text-foreground/40">
+            Prices shown for{" "}
+            {new Intl.DisplayNames(["en"], { type: "region" }).of(region) ?? region}
+          </p>
+        </div>
       </div>
     </div>
   );
