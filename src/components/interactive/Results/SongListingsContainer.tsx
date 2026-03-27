@@ -34,7 +34,7 @@ const SongListingsContainer = ({ region }: ISongListingsProps) => {
                 <td className="w-20 normal-case opacity-0 sm:w-[70px] md:text-base">Logo</td>
                 <td className="w-28 text-[15px] font-bold sm:w-24 md:text-base">Quality</td>
                 <td className="w-20 text-[15px] font-bold md:text-base">
-                  Price
+                  Prices
                   <sub className="pl-[2px] text-[10px] font-light text-foreground/40">{region}</sub>
                 </td>
                 <td className="hidden w-36 text-[15px] font-bold sm:table-cell md:hidden md:text-base lg:table-cell">
