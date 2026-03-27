@@ -30,7 +30,12 @@ const SongListingsContainer = ({ region }: ISongListingsProps) => {
               <tr>
                 <td className="w-20 normal-case opacity-0 sm:w-[70px] md:text-base">Logo</td>
                 <td className="w-28 text-[15px] font-bold sm:w-24 md:text-base">Quality</td>
-                <td className="w-20 text-[15px] font-bold md:text-base">Price</td>
+                <td className="w-20 text-[15px] font-bold md:text-base">
+                  Price
+                  <div className="text-[11px] font-light text-foreground/40">
+                    {new Intl.DisplayNames(["en"], { type: "region" }).of(region) ?? region}
+                  </div>
+                </td>
                 <td className="hidden w-36 text-[15px] font-bold sm:table-cell md:hidden md:text-base lg:table-cell">
                   Artist's share
                 </td>
@@ -45,6 +50,10 @@ const SongListingsContainer = ({ region }: ISongListingsProps) => {
           </tbody>
         </table>
         <div className="mx-auto flex w-[83%] flex-col items-center gap-0.5">
+          <p className="text-center text-xs text-foreground/40 sm:hidden">
+            Prices shown for{" "}
+            {new Intl.DisplayNames(["en"], { type: "region" }).of(region) ?? region}
+          </p>
           <motion.p
             animate={{ opacity: hasLosslessOption ? 1 : 0 }}
             transition={{ duration: 0.4 }}
@@ -52,10 +61,6 @@ const SongListingsContainer = ({ region }: ISongListingsProps) => {
           >
             *Uncompressed and/or lossless options also available
           </motion.p>
-          <p className="text-center text-xs text-foreground/40">
-            Prices shown for{" "}
-            {new Intl.DisplayNames(["en"], { type: "region" }).of(region) ?? region}
-          </p>
         </div>
       </div>
     </div>
