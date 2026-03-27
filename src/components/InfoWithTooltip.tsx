@@ -1,14 +1,30 @@
 import CustomIcon from "./CustomIcon";
+import { CustomIconVariant } from "./icons";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
-const InfoWithToolTip = ({ tooltip }: { tooltip: string }) => {
+interface InfoWithToolTipInterface {
+  tooltip: string;
+  iconSize?: string;
+  variant?: CustomIconVariant;
+  side?: "top" | "right" | "bottom" | "left";
+}
+
+const InfoWithToolTip = ({
+  tooltip,
+  iconSize,
+  variant,
+  side = "top",
+}: InfoWithToolTipInterface) => {
   return (
     <Tooltip>
       <TooltipTrigger>
         <div className="flex items-center gap-2 px-1">
-          <CustomIcon icon="info" variant="primary" />
+          <CustomIcon icon="info" variant={variant} height={iconSize} width={iconSize} />
         </div>
-        <TooltipContent className="border-foreground/30 bg-background text-foreground">
+        <TooltipContent
+          className="max-w-56 text-balance border-foreground/30 bg-background text-foreground"
+          side={side}
+        >
           {tooltip}
         </TooltipContent>
       </TooltipTrigger>

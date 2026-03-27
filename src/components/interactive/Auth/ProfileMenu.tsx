@@ -1,4 +1,3 @@
-import CustomIcon from "@/components/CustomIcon";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -9,12 +8,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 // [SPOTIFY_OAUTH] import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
 import useRoleSettings, { userRoleLabels, userRoles } from "@/hooks/settings/useRoleSettings";
 import useThemeSettings from "@/hooks/settings/useThemeSettings";
 // [SPOTIFY_OAUTH] import useAuthError from "@/hooks/useAuthErrors";
+import InfoWithToolTip from "@/components/InfoWithTooltip";
 import useProfileFunctions from "@/hooks/useProfileFunctions";
 import { growIn } from "@/styles/animations";
 import { motion } from "framer-motion";
@@ -155,17 +154,12 @@ const ProfileMenu = () => {
           </Select>
         </div>
         <div className="flex items-center justify-center">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span className="cursor-help">
-                <CustomIcon icon="info" width="22px" height="22px" variant="primary" />
-              </span>
-            </TooltipTrigger>
-            <TooltipContent side="right" className="max-w-52">
-              Your role helps us tailor the app to what matters most to you. DJs see Beatport
-              pricing, Audiophiles get stores with uncompressed/lossless results first.
-            </TooltipContent>
-          </Tooltip>
+          <InfoWithToolTip
+            tooltip="Your role helps us tailor the app to what matters most to you. Music-lover get the default experience, DJs see Beatport pricing first, Audiophiles get stores with uncompressed/lossless results first."
+            side="right"
+            iconSize="24px"
+            variant="info"
+          />
         </div>
 
         {/* Region */}
