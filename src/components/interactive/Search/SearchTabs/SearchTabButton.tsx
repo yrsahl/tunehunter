@@ -1,6 +1,7 @@
 import CustomIcon from "@/components/CustomIcon";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useDisabledTabStore } from "@/hooks/stores/useDisabledTabStore";
+import useDeviceSize from "@/hooks/useDeviceSize";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
@@ -19,8 +20,15 @@ export const tabAccessMap: Record<SearchTab, AccessScopes> = {
 const tabTooltipRestrictionMap: Record<SearchTab, string> = {
   trending: "",
   playlist: "",
-  wishlist: "Sign in to view your wishlist!",
-  history: "Sign in to view your history!",
+  wishlist: "Sign in to view your wishlist",
+  history: "Sign in to view your history",
+};
+
+const tabToastRestrictionMap: Record<SearchTab, string> = {
+  trending: "",
+  playlist: "",
+  wishlist: "Your wishlist requires an account.",
+  history: "Your history requires an account.",
 };
 
 interface SearchTabButtonProps {
@@ -36,6 +44,7 @@ const SearchTabButton = ({
 }: SearchTabButtonProps) => {
   const { data: userData, status: sessionStatus } = useSession();
   const router = useRouterWithHelpers();
+  const { isSmallDevice } = useDeviceSize();
   const loggedIn = sessionStatus === "authenticated";
   const { setDisabledTabButtonHovered } = useDisabledTabStore();
   const { data: spotifyAccount } = api.account.getSpotifyAccountById.useQuery(
@@ -58,7 +67,14 @@ const SearchTabButton = ({
 
   const handleTabClick = (newSearchTab: SearchTab) => {
     if (!isTabEnabled) {
-      toast.info(tabTooltipRestrictionMap[newSearchTab]);
+      if (isSmallDevice) {
+        toast.info(tabToastRestrictionMap[newSearchTab], {
+          action: { label: "Sign in", onClick: () => router.setParams({ profile: "login" }) },
+          classNames: {
+            actionButton: "!bg-primary !text-primary-foreground hover:!bg-primary/80",
+          },
+        });
+      }
       return;
     }
     if (newSearchTab === activeSearchTab) {
@@ -93,7 +109,7 @@ const SearchTabButton = ({
           </motion.button>
         </div>
       </TooltipTrigger>
-      {!isTabEnabled && (
+      {!isTabEnabled && !isSmallDevice && (
         <TooltipContent className="border-foreground/30 bg-background text-foreground">
           {tabTooltipRestrictionMap[searchTab]}
         </TooltipContent>
