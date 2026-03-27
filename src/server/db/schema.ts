@@ -26,6 +26,7 @@ export const users = pgTable("user", {
   theme: varchar("theme", { length: 255 }),
   themeParticles: boolean().default(true),
   region: varchar("region", { length: 255 }),
+  role: varchar("role", { length: 255 }),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({

@@ -10,6 +10,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 // [SPOTIFY_OAUTH] import { useSpotifyUserDataContext } from "@/contexts/SpotifyUserDataContext";
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
+import useRoleSettings, { userRoleLabels, userRoles } from "@/hooks/settings/useRoleSettings";
 import useThemeSettings from "@/hooks/settings/useThemeSettings";
 // [SPOTIFY_OAUTH] import useAuthError from "@/hooks/useAuthErrors";
 import useProfileFunctions from "@/hooks/useProfileFunctions";
@@ -37,6 +38,7 @@ const ProfileMenu = () => {
     changeAutoThemePreference,
     changeParticlePreference,
   } = useThemeSettings();
+  const { role, changeRole } = useRoleSettings();
   const autoThemePreference = preferredTheme === "auto" ? "auto" : "manual";
   const { data: userData } = useSession();
   const userId = userData?.user.id ?? "";
@@ -173,6 +175,31 @@ const ProfileMenu = () => {
             bordered="default"
             onClick={setRegionByLocation}
           />
+        </div>
+
+        {/* Role */}
+        <Label
+          htmlFor="role"
+          className="col-span-2 flex items-center justify-end text-sm font-normal md:text-base"
+        >
+          Role
+        </Label>
+        <div className="col-span-3">
+          <Select onValueChange={(v) => changeRole(v as typeof role)} value={role}>
+            <SelectTrigger
+              id="role"
+              className="h-9 max-w-36 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 font-thin text-foreground focus:ring-0 focus:ring-offset-0 md:text-base"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {userRoles.map((r) => (
+                <SelectItem key={r} value={r}>
+                  {userRoleLabels[r]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* [SPOTIFY_OAUTH] Spotify connect/disconnect row — re-enable when quota approved

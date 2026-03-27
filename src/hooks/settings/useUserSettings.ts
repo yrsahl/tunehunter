@@ -1,5 +1,4 @@
 import { api } from "@/lib/api";
-import { Locale } from "@/lib/validators";
 
 const useUserSettings = (userId: string | undefined) => {
   const mutateSettings = api.user.setUserSettings.useMutation();
@@ -43,10 +42,10 @@ const useUserSettings = (userId: string | undefined) => {
       );
     },
 
-    updatePreferredLanguage: (language: Locale) => {
-      if (!userId) return { error: "Tried to save language without userId" };
+    updatePreferredRegion: (region: string) => {
+      if (!userId) return { error: "Tried to save region without userId" };
       mutateSettings.mutate(
-        { id: userId, language },
+        { id: userId, region },
         {
           onError: () => {
             return 0;
@@ -59,10 +58,10 @@ const useUserSettings = (userId: string | undefined) => {
       );
     },
 
-    updatePreferredRegion: (region: string) => {
-      if (!userId) return { error: "Tried to save region without userId" };
+    updatePreferredRole: (role: string) => {
+      if (!userId) return { error: "Tried to save role without userId" };
       mutateSettings.mutate(
-        { id: userId, region },
+        { id: userId, role },
         {
           onError: () => {
             return 0;

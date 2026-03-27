@@ -33,10 +33,10 @@ declare module "next-auth" {
   }
 
   interface UserSettings {
-    language: string;
     theme: string;
     themeParticles: boolean;
     region: string;
+    role: string;
   }
 }
 

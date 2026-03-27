@@ -46,6 +46,7 @@ export const userRouter = createTRPCRouter({
         theme: user.theme,
         themeParticles: user.themeParticles,
         region: user.region,
+        role: user.role,
       };
     }),
 
@@ -155,10 +156,10 @@ export const userRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-        language: z.string().optional(),
         theme: z.string().optional(),
         themeParticles: z.boolean().optional(),
         region: z.string().optional(),
+        role: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -168,6 +169,7 @@ export const userRouter = createTRPCRouter({
           theme: input.theme ?? ctx.session.user.theme,
           themeParticles: input.themeParticles ?? ctx.session.user.themeParticles,
           region: input.region ?? ctx.session.user.region,
+          role: input.role ?? ctx.session.user.role,
         })
         .where(eq(users.id, input.id));
     }),
