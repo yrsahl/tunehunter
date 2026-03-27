@@ -13,6 +13,7 @@ import useRegionSettings from "@/hooks/settings/useRegionSettings";
 import useRoleSettings, { userRoleLabels, userRoles } from "@/hooks/settings/useRoleSettings";
 import useThemeSettings from "@/hooks/settings/useThemeSettings";
 // [SPOTIFY_OAUTH] import useAuthError from "@/hooks/useAuthErrors";
+import InfoWithToolTip from "@/components/InfoWithTooltip";
 import useProfileFunctions from "@/hooks/useProfileFunctions";
 import { growIn } from "@/styles/animations";
 import { motion } from "framer-motion";
@@ -119,13 +120,46 @@ const ProfileMenu = () => {
               <IconButton
                 data-testid="change-email-button"
                 icon="edit"
-                variant="ghostPrimary"
+                variant="outlinePrimary"
                 size="icon"
                 iconSize="20px"
                 onClick={() => setChangeMailDialogOpen(true)}
               />
             </div>
           </ChangeMailModal>
+        </div>
+
+        {/* Role */}
+        <Label
+          htmlFor="role"
+          className="col-span-2 flex items-center justify-end text-sm font-normal md:text-base"
+        >
+          Role
+        </Label>
+        <div className="col-span-2">
+          <Select onValueChange={(v) => changeRole(v as typeof role)} value={role}>
+            <SelectTrigger
+              id="role"
+              className="h-9 max-w-36 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 font-thin text-foreground focus:ring-0 focus:ring-offset-0 md:text-base"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {userRoles.map((r) => (
+                <SelectItem key={r} value={r}>
+                  {userRoleLabels[r]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center justify-center">
+          <InfoWithToolTip
+            tooltip="Your role helps us tailor the app to what matters most to you. Music-lover get the default experience, DJs see Beatport pricing first, Audiophiles get stores with uncompressed/lossless results first."
+            side="right"
+            iconSize="24px"
+            variant="info"
+          />
         </div>
 
         {/* Region */}
@@ -168,38 +202,13 @@ const ProfileMenu = () => {
         <div className="flex items-center justify-center">
           <IconButton
             data-testid="auto-detect-region-button"
-            variant="ghostPrimary"
+            variant="outlinePrimary"
             size="icon"
             icon="mapPin"
             iconSize="20px"
             bordered="default"
             onClick={setRegionByLocation}
           />
-        </div>
-
-        {/* Role */}
-        <Label
-          htmlFor="role"
-          className="col-span-2 flex items-center justify-end text-sm font-normal md:text-base"
-        >
-          Role
-        </Label>
-        <div className="col-span-3">
-          <Select onValueChange={(v) => changeRole(v as typeof role)} value={role}>
-            <SelectTrigger
-              id="role"
-              className="h-9 max-w-36 justify-start gap-2 text-ellipsis whitespace-nowrap border-none bg-transparent p-0 font-thin text-foreground focus:ring-0 focus:ring-offset-0 md:text-base"
-            >
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {userRoles.map((r) => (
-                <SelectItem key={r} value={r}>
-                  {userRoleLabels[r]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
 
         {/* [SPOTIFY_OAUTH] Spotify connect/disconnect row — re-enable when quota approved
@@ -232,15 +241,15 @@ const ProfileMenu = () => {
         <p className="col-span-2 flex items-center justify-end font-normal">Theme</p>
         <div className="col-span-2 flex items-center gap-2">
           <span
-            className={`w-10 font-thin transition-opacity md:text-base ${autoThemePreference === "auto" ? "opacity-100" : "opacity-30"}`}
+            className={`w-16 font-thin transition-opacity md:text-lg ${autoThemePreference === "manual" ? "opacity-100" : "opacity-30"}`}
           >
-            Auto
+            Manual
           </span>
           /
           <span
-            className={`flex-1 font-thin transition-opacity md:text-base ${autoThemePreference === "manual" ? "opacity-100" : "opacity-30"}`}
+            className={`flex-1 font-thin transition-opacity md:text-base ${autoThemePreference === "auto" ? "opacity-100" : "opacity-30"}`}
           >
-            Manual
+            Auto
           </span>
         </div>
         <div className="flex h-9 items-center">
@@ -248,8 +257,8 @@ const ProfileMenu = () => {
             data-testid="theme-toggle"
             id="theme"
             inverted
-            checked={autoThemePreference === "manual"}
-            onCheckedChange={(checked) => changeAutoThemePreference(checked ? "manual" : "auto")}
+            checked={autoThemePreference === "auto"}
+            onCheckedChange={(checked) => changeAutoThemePreference(checked ? "auto" : "manual")}
           />
         </div>
 
@@ -257,7 +266,7 @@ const ProfileMenu = () => {
         <p className="col-span-2 flex items-center justify-end font-normal">Particles</p>
         <div className="col-span-2 flex items-center gap-2">
           <span
-            className={`w-10 font-thin transition-opacity md:text-base ${(particlePreference ?? false) ? "opacity-30" : "opacity-100"}`}
+            className={`w-16 font-thin transition-opacity md:text-lg ${(particlePreference ?? false) ? "opacity-30" : "opacity-100"}`}
           >
             Off
           </span>

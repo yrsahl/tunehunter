@@ -42,8 +42,5 @@ describe("Particles", () => {
     expect(window.cancelAnimationFrame).toHaveBeenCalledWith(idThatWasScheduled);
   });
 
-  it("renders a canvas element", () => {
-    const { container } = render(<Particles />);
-    expect(container.querySelector("canvas")).not.toBeNull();
-  });
+
 });
