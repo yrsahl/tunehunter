@@ -95,7 +95,7 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
       <td>
         <div className="flex justify-center gap-4 text-sm sm:justify-normal sm:text-base">
           <div className="inline-block">
-            {price === 0 && vendor === "bandcamp" ? (
+            {price === "0" && vendor === "bandcamp" ? (
               <span className="text-muted-foreground">
                 From {transformCurrencyStringToIcon(currency)}0
               </span>
