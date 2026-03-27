@@ -1,8 +1,7 @@
 import { ReactNode } from "react";
 import CustomIcon from "./CustomIcon";
 import { CustomIconVariant } from "./icons";
-import { cn } from "@/lib/utils";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import WithTooltip from "./WithTooltip";
 
 interface InfoWithToolTipInterface {
   tooltip: ReactNode;
@@ -20,23 +19,11 @@ const InfoWithToolTip = ({
   side = "top",
 }: InfoWithToolTipInterface) => {
   return (
-    <Tooltip>
-      <TooltipTrigger tabIndex={-1}>
-        <div className="flex items-center gap-2 px-1">
-          <CustomIcon icon="info" variant={variant} height={iconSize} width={iconSize} />
-        </div>
-      </TooltipTrigger>
-      <TooltipContent
-        className={cn(
-          "border-foreground/30 bg-background text-foreground",
-          typeof tooltip === "string" ? "max-w-56 text-pretty" : "w-max",
-          className,
-        )}
-        side={side}
-      >
-        {tooltip}
-      </TooltipContent>
-    </Tooltip>
+    <WithTooltip tooltip={tooltip} side={side} className={className}>
+      <div className="flex items-center gap-2 px-1">
+        <CustomIcon icon="info" variant={variant} height={iconSize} width={iconSize} />
+      </div>
+    </WithTooltip>
   );
 };
 

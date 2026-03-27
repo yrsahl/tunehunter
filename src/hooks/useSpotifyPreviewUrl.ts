@@ -1,6 +1,6 @@
 import { api } from "@/lib/api";
 import { fetchSpotifyTrackById } from "@/services/spotify/api";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useSpotifyTokens from "./useSpotifyTokens";
 
 const useSpotifyPreviewUrl = (
@@ -11,6 +11,12 @@ const useSpotifyPreviewUrl = (
   songId?: string,
 ) => {
   const { accessToken } = useSpotifyTokens();
+  // Use a ref so the token is always current inside the effect without being a dependency.
+  // This prevents the effect from re-running (and showing loading again) just because the
+  // token loaded asynchronously after the component mounted.
+  const accessTokenRef = useRef(accessToken);
+  accessTokenRef.current = accessToken;
+
   const savePreviewUrl = api.song.savePreviewUrl.useMutation();
   const [previewUrl, setPreviewUrl] = useState<string | null>(existingPreviewUrl ?? null);
   const [isLoading, setIsLoading] = useState(false);
@@ -29,8 +35,8 @@ const useSpotifyPreviewUrl = (
       setIsLoading(true);
 
       // Step 1: try direct Spotify track lookup by ID (precise, no extra search)
-      if (spotifyId && accessToken) {
-        const url = await fetchSpotifyTrackById(accessToken, spotifyId);
+      if (spotifyId && accessTokenRef.current) {
+        const url = await fetchSpotifyTrackById(accessTokenRef.current, spotifyId);
         if (!cancelled && url) {
           setPreviewUrl(url);
           if (songId) savePreviewUrl.mutate({ songId, previewUrl: url });
@@ -62,7 +68,7 @@ const useSpotifyPreviewUrl = (
     return () => {
       cancelled = true;
     };
-  }, [spotifyId, accessToken, title, artist, existingPreviewUrl]);
+  }, [spotifyId, title, artist, existingPreviewUrl]); // accessToken intentionally omitted — see ref above
 
   return { previewUrl, isLoading };
 };
