@@ -1,7 +1,7 @@
 import IconButton from "@/components/IconButton";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { api } from "@/lib/api";
-import { fadeInAndOut } from "@/styles/animations";
+import { fadeIn } from "@/styles/animations";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import NoDataMessage from "./NoDataMessage";
@@ -68,11 +68,11 @@ const PlaylistTable = () => {
       <div className="relative flex-1 overflow-hidden">
         <AnimatePresence mode="wait">
         {isFetching ? (
-          <motion.div key="skeleton" {...fadeInAndOut(0.2)} className="h-full w-full">
+          <motion.div key="skeleton" {...fadeIn(0.2)} className="h-full w-full">
             <SkeletonTable hasHeader={false} />
           </motion.div>
         ) : (
-          <motion.div key={submittedUrl || "empty"} {...fadeInAndOut(0.2)} className="h-full w-full">
+          <motion.div key={submittedUrl || "empty"} {...fadeIn(0.2)} className="h-full w-full">
             {!submittedUrl && (
               <NoDataMessage message="Paste a public Spotify playlist link above to browse its tracks." />
             )}
