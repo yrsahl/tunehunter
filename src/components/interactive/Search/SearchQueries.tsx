@@ -11,7 +11,7 @@ import { fadeInAndOut } from "@/styles/animations";
 import { SpotifyTrack } from "@/types/song-types";
 import { SpotifyTrack as ApiSpotifyTrack } from "@/types/spotify-types";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useRef } from "react";
 import NoDataMessage from "./SearchTabContent/NoDataMessage";
 
 const toSpotifyTrack = (item: ApiSpotifyTrack): SpotifyTrack => ({
@@ -30,31 +30,34 @@ const toSpotifyTrack = (item: ApiSpotifyTrack): SpotifyTrack => ({
 });
 
 const SearchQueries = () => {
-  const { isQueryDataLoading, queryData, lastQuery, setShowQueries } = useQueryDataContext();
+  const {
+    isQueryDataLoading,
+    queryData,
+    lastQuery,
+    setShowQueries,
+    spotifyFallbackResults,
+    setSpotifyFallbackResults,
+    isSpotifyFallbackLoading,
+    setIsSpotifyFallbackLoading,
+  } = useQueryDataContext();
   const { region } = useRegionSettings();
   const { submitSearch } = useSearch();
   const { storeTracksInDb } = useDb();
   const { isSmallDevice } = useDeviceSize();
   const { accessToken, userAccessToken } = useSpotifyTokens();
   const { mutateAsync: storeSpotifyTrack } = api.song.storeSpotifyTrack.useMutation();
-
-  const [spotifyResults, setSpotifyResults] = useState<SpotifyTrack[] | null>(null);
-  const [isSpotifyLoading, setIsSpotifyLoading] = useState(false);
-
-  // Reset Spotify fallback whenever a new iTunes search runs
-  useEffect(() => {
-    setSpotifyResults(null);
-  }, [queryData]);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const handleSpotifyFallback = async () => {
     if (!lastQuery || !accessToken) return;
-    setIsSpotifyLoading(true);
+    setIsSpotifyFallbackLoading(true);
     try {
       const data = await fetchSpotifySearchData(accessToken, lastQuery);
       const items = data?.tracks?.items ?? [];
-      setSpotifyResults(items.map(toSpotifyTrack));
+      setSpotifyFallbackResults(items.map(toSpotifyTrack));
+      scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
     } finally {
-      setIsSpotifyLoading(false);
+      setIsSpotifyFallbackLoading(false);
     }
   };
 
@@ -92,12 +95,10 @@ const SearchQueries = () => {
 
   const queryDataExists = queryData?.tracks?.items && queryData.tracks.items.length > 0;
 
-  const footerButton = (
-    <div className="flex flex-shrink-0 items-center justify-center border-t border-primary/30 py-2">
-      {isSpotifyLoading ? (
+  const fallbackButton = (
+    <div className="flex items-center justify-center py-2">
+      {isSpotifyFallbackLoading ? (
         <LoadingIndicator size={20} />
-      ) : spotifyResults ? (
-        <span className="text-xs text-muted-foreground">Showing results from Spotify</span>
       ) : (
         <button
           onClick={handleSpotifyFallback}
@@ -154,29 +155,35 @@ const SearchQueries = () => {
     <motion.div
       data-testid="search-results"
       {...fadeInAndOut()}
-      className="absolute z-50 flex h-60 w-full flex-col rounded-b-lg border border-t-[1px] border-primary bg-background/30 text-sm backdrop-blur-md md:text-base"
+      ref={scrollRef}
+      className="hide-scrollbars absolute z-50 h-60 w-full overflow-scroll rounded-b-lg border border-t-[1px] border-primary bg-background/30 text-sm backdrop-blur-md md:text-base"
     >
-      <div className="hide-scrollbars flex-1 overflow-scroll">
-        {isQueryDataLoading ? (
-          <NoDataMessage element={<LoadingIndicator size={isSmallDevice ? 40 : 60} />} />
-        ) : spotifyResults ? (
-          spotifyResults.length === 0 ? (
-            <NoDataMessage message="No results on Spotify either." />
-          ) : (
-            <table className="w-full">
-              <motion.tbody {...fadeInAndOut(0.5)}>
-                {spotifyResults.map((track) =>
-                  renderRow(track, track.song.spotifyId ?? track.song.title, () => {
-                    void handleSpotifyTrackClick(track);
-                  }),
-                )}
-              </motion.tbody>
-            </table>
-          )
+      {isQueryDataLoading ? (
+        <NoDataMessage element={<LoadingIndicator size={isSmallDevice ? 40 : 60} />} />
+      ) : spotifyFallbackResults ? (
+        spotifyFallbackResults.length === 0 ? (
+          <NoDataMessage message="No results on Spotify either." />
         ) : (
-          <>
-            {!queryDataExists && <NoDataMessage message="No results." />}
-            {queryDataExists && (
+          <table className="w-full">
+            <motion.tbody {...fadeInAndOut(0.5)}>
+              {spotifyFallbackResults.map((track) =>
+                renderRow(track, track.song.spotifyId ?? track.song.title, () => {
+                  void handleSpotifyTrackClick(track);
+                }),
+              )}
+            </motion.tbody>
+          </table>
+        )
+      ) : (
+        <>
+          {!queryDataExists && (
+            <>
+              <NoDataMessage message="No results." />
+              {fallbackButton}
+            </>
+          )}
+          {queryDataExists && (
+            <>
               <table className="w-full">
                 <motion.tbody {...fadeInAndOut(0.5)} key={queryData.tracks?.href}>
                   {queryData.tracks?.items.map((track) =>
@@ -188,11 +195,11 @@ const SearchQueries = () => {
                   )}
                 </motion.tbody>
               </table>
-            )}
-          </>
-        )}
-      </div>
-      {!isQueryDataLoading && footerButton}
+              {fallbackButton}
+            </>
+          )}
+        </>
+      )}
     </motion.div>
   );
 };

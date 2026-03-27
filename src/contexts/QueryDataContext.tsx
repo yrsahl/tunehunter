@@ -2,11 +2,16 @@ import { SearchSettings } from "@/hooks/stores/useSearchSettingsStore";
 import { applyFilters } from "@/lib/filters";
 import { fetchItunesSearchData } from "@/services/itunes/api";
 import { SearchData } from "@/types/search-types";
+import { SpotifyTrack } from "@/types/song-types";
 import { createContext, ReactNode, useCallback, useContext, useState } from "react";
 
 interface IQueryDataContext {
   queryData: SearchData | null;
   lastQuery: string;
+  spotifyFallbackResults: SpotifyTrack[] | null;
+  setSpotifyFallbackResults: (results: SpotifyTrack[] | null) => void;
+  isSpotifyFallbackLoading: boolean;
+  setIsSpotifyFallbackLoading: (loading: boolean) => void;
   showQueries: boolean;
   setShowQueries: (show: boolean) => void;
   requestQueryData: (
@@ -21,6 +26,10 @@ interface IQueryDataContext {
 const QueryDataContext = createContext<IQueryDataContext>({
   queryData: null,
   lastQuery: "",
+  spotifyFallbackResults: null,
+  setSpotifyFallbackResults: () => {},
+  isSpotifyFallbackLoading: false,
+  setIsSpotifyFallbackLoading: () => {},
   showQueries: false,
   setShowQueries: () => {},
   requestQueryData: async () => {},
@@ -34,6 +43,8 @@ export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
   const [showQueries, setShowQueries] = useState(false);
   const [queryData, setQueryData] = useState<SearchData | null>(null);
   const [lastQuery, setLastQuery] = useState("");
+  const [spotifyFallbackResults, setSpotifyFallbackResults] = useState<SpotifyTrack[] | null>(null);
+  const [isSpotifyFallbackLoading, setIsSpotifyFallbackLoading] = useState(false);
   const [isQueryDataLoading, setIsQueryDataLoading] = useState(false);
   const requestQueryData = useCallback(async (
     query: string,
@@ -46,6 +57,7 @@ export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
     }
     setQueryData(null);
     setLastQuery(query);
+    setSpotifyFallbackResults(null);
 
     if (displayLoadingIndicator) setIsQueryDataLoading(true);
 
@@ -76,6 +88,10 @@ export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
         setShowQueries,
         queryData,
         lastQuery,
+        spotifyFallbackResults,
+        setSpotifyFallbackResults,
+        isSpotifyFallbackLoading,
+        setIsSpotifyFallbackLoading,
         isQueryDataLoading,
         requestQueryData,
         resetQueryData,

@@ -61,24 +61,26 @@ const TableHeader = <T extends string>({
   }
 
   return (
-    <div className="border-x-1 absolute left-1/2 top-0 z-10 flex w-auto -translate-x-1/2 justify-around gap-4 overflow-hidden rounded-b-sm border-b-[1px] border-primary bg-background px-6 py-[6px] [clip-path:inset(0_round_0_0_2px_2px)] md:gap-0">
-      {subTabs.map((subTab) => {
-        const subTabName = String(subTab).replaceAll("_", " ");
-        return (
-          <button
-            key={String(subTab)}
-            className={cn(
-              // Hardcoded width of 32 to make all buttons the same size as the largest one (min-w-0 flex-1 doesn't work here)
-              "flex justify-center whitespace-nowrap text-sm capitalize transition-colors hover:text-foreground sm:text-base md:w-32",
-              className,
-              subTab === activeSubTab ? "text-foreground" : "text-muted-foreground",
-            )}
-            onClick={() => setActiveSubTab(subTab)}
-          >
-            {subTabName}
-          </button>
-        );
-      })}
+    <div className="pointer-events-none absolute left-0 top-0 z-10 flex w-full justify-center">
+      <div className="border-x-1 pointer-events-auto flex w-auto justify-around gap-4 rounded-b-sm border-b-[1px] border-primary bg-background px-6 py-[6px] md:gap-0">
+        {subTabs.map((subTab) => {
+          const subTabName = String(subTab).replaceAll("_", " ");
+          return (
+            <button
+              key={String(subTab)}
+              className={cn(
+                // Hardcoded width of 32 to make all buttons the same size as the largest one (min-w-0 flex-1 doesn't work here)
+                "flex justify-center whitespace-nowrap text-sm capitalize transition-colors hover:text-foreground sm:text-base md:w-32",
+                className,
+                subTab === activeSubTab ? "text-foreground" : "text-muted-foreground",
+              )}
+              onClick={() => setActiveSubTab(subTab)}
+            >
+              {subTabName}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 };
