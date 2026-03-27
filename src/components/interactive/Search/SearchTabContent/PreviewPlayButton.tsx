@@ -1,5 +1,5 @@
 import { LoadingIndicatorTwo } from "@/components/Indicators";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import WithTooltip from "@/components/WithTooltip";
 import { motion } from "framer-motion";
 import { Pause, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -63,9 +63,24 @@ const PreviewPlayButton = ({ spotifyId, previewUrl, isLoadingPreview }: PreviewP
         title="Open in Spotify"
       >
         <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5 text-foreground">
-          <path d="M5.5 16 Q11.5 13.5 18.5 15.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          <path d="M4 11.5 Q11 8.5 20 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          <path d="M3 7.5 Q11 3.5 21 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <path
+            d="M5.5 16 Q11.5 13.5 18.5 15.5"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <path
+            d="M4 11.5 Q11 8.5 20 11"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <path
+            d="M3 7.5 Q11 3.5 21 7"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
         </svg>
       </motion.a>
     );
@@ -74,14 +89,11 @@ const PreviewPlayButton = ({ spotifyId, previewUrl, isLoadingPreview }: PreviewP
   // No spotifyId and no preview URL → nothing to play or link to
   if (!spotifyId) {
     return (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div className="flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-full bg-slate-400">
-            <Play className="h-6 w-6 text-foreground" />
-          </div>
-        </TooltipTrigger>
-        <TooltipContent>No preview available</TooltipContent>
-      </Tooltip>
+      <WithTooltip tooltip="No preview available" asChild>
+        <div className="flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-full bg-slate-400">
+          <Play className="h-6 w-6 text-foreground" />
+        </div>
+      </WithTooltip>
     );
   }
 
