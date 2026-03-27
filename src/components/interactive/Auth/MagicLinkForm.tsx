@@ -56,7 +56,7 @@ const MagicLinkForm: FC<IProps> = ({ email, returnTo, setMenuState }) => {
 
   return (
     <AuthCard title="Check your inbox" size="default">
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-7">
         <div className="flex w-full flex-col gap-1 text-balance ">
           <p>
             We sent a sign-in link to <span className="font-semibold">{email}</span>.
@@ -65,7 +65,7 @@ const MagicLinkForm: FC<IProps> = ({ email, returnTo, setMenuState }) => {
         </div>
         <div className="flex w-full flex-col items-center gap-1">
           {provider && (
-            <a href={provider.url} target="_blank" rel="noopener noreferrer" className="w-full">
+            <a href={provider.url} target="_blank" rel="noopener noreferrer" className="w-auto">
               <IconButton text={provider.label} icon="mailOpen" size="lg" variant="primary" />
             </a>
           )}
