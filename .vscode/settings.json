@@ -5,5 +5,6 @@
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.tsserver.log": "off",
-  "typescript.disableAutomaticTypeAcquisition": false
+  "typescript.disableAutomaticTypeAcquisition": false,
+  "window.autoDetectColorScheme": true
 }

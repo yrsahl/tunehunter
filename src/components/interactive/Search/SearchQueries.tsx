@@ -34,6 +34,7 @@ const SearchQueries = () => {
     isQueryDataLoading,
     queryData,
     lastQuery,
+    isDbFallback,
     setShowQueries,
     spotifyFallbackResults,
     setSpotifyFallbackResults,
@@ -95,7 +96,7 @@ const SearchQueries = () => {
 
   const queryDataExists = queryData?.tracks?.items && queryData.tracks.items.length > 0;
 
-  const fallbackButton = (
+  const fallbackButton = isDbFallback ? null : (
     <div className="flex items-center justify-center py-2">
       {isSpotifyFallbackLoading ? (
         <LoadingIndicator size={20} />
@@ -178,12 +179,23 @@ const SearchQueries = () => {
         <>
           {!queryDataExists && (
             <>
-              <NoDataMessage message="No results." />
+              <NoDataMessage
+                message={
+                  isDbFallback
+                    ? "No results — search is limited right now, please try again later."
+                    : "No results."
+                }
+              />
               {fallbackButton}
             </>
           )}
           {queryDataExists && (
             <>
+              {isDbFallback && (
+                <p className="px-4 py-1.5 text-center text-xs text-muted-foreground">
+                  Search is limited right now — results may be incomplete
+                </p>
+              )}
               <table className="w-full">
                 <motion.tbody {...fadeInAndOut(0.5)} key={queryData.tracks?.href}>
                   {queryData.tracks?.items.map((track) =>

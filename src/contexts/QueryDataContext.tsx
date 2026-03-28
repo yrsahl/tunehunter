@@ -1,5 +1,6 @@
 import { SearchSettings } from "@/hooks/stores/useSearchSettingsStore";
 import { applyFilters } from "@/lib/filters";
+import { fetchDbSearchData } from "@/services/db/api";
 import { fetchItunesSearchData } from "@/services/itunes/api";
 import { SearchData } from "@/types/search-types";
 import { SpotifyTrack } from "@/types/song-types";
@@ -8,6 +9,7 @@ import { createContext, ReactNode, useCallback, useContext, useState } from "rea
 interface IQueryDataContext {
   queryData: SearchData | null;
   lastQuery: string;
+  isDbFallback: boolean;
   spotifyFallbackResults: SpotifyTrack[] | null;
   setSpotifyFallbackResults: (results: SpotifyTrack[] | null) => void;
   isSpotifyFallbackLoading: boolean;
@@ -26,6 +28,7 @@ interface IQueryDataContext {
 const QueryDataContext = createContext<IQueryDataContext>({
   queryData: null,
   lastQuery: "",
+  isDbFallback: false,
   spotifyFallbackResults: null,
   setSpotifyFallbackResults: () => {},
   isSpotifyFallbackLoading: false,
@@ -43,6 +46,7 @@ export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
   const [showQueries, setShowQueries] = useState(false);
   const [queryData, setQueryData] = useState<SearchData | null>(null);
   const [lastQuery, setLastQuery] = useState("");
+  const [isDbFallback, setIsDbFallback] = useState(false);
   const [spotifyFallbackResults, setSpotifyFallbackResults] = useState<SpotifyTrack[] | null>(null);
   const [isSpotifyFallbackLoading, setIsSpotifyFallbackLoading] = useState(false);
   const [isQueryDataLoading, setIsQueryDataLoading] = useState(false);
@@ -57,19 +61,32 @@ export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
     }
     setQueryData(null);
     setLastQuery(query);
+    setIsDbFallback(false);
     setSpotifyFallbackResults(null);
 
     if (displayLoadingIndicator) setIsQueryDataLoading(true);
 
     try {
-      const itunesData = await fetchItunesSearchData(query);
-      if (itunesData) {
-        const filteredData = applyFilters(itunesData, searchSettings);
-        setQueryData(filteredData);
+      let searchData: SearchData | null = null;
+      let dbFallback = false;
+
+      try {
+        searchData = await fetchItunesSearchData(query);
+      } catch {
+        dbFallback = true;
       }
 
-      // iTunes returned nothing — fall back to MusicBrainz
-      // const mbData = await fetchMusicBrainzSearchData(query);
+      // iTunes failed (HTTP error, rate limit, or network issue) — fall back to DB
+      if (searchData === null) {
+        dbFallback = true;
+        searchData = await fetchDbSearchData(query);
+      }
+
+      if (searchData) {
+        const filteredData = applyFilters(searchData, searchSettings);
+        setQueryData(filteredData);
+        setIsDbFallback(dbFallback);
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -88,6 +105,7 @@ export const QueryDataProvider = ({ children }: { children: ReactNode }) => {
         setShowQueries,
         queryData,
         lastQuery,
+        isDbFallback,
         spotifyFallbackResults,
         setSpotifyFallbackResults,
         isSpotifyFallbackLoading,
