@@ -1,3 +1,4 @@
+import useSearchStore from "@/hooks/stores/useSearchStore";
 import useSpotifyTokens from "@/hooks/useSpotifyTokens";
 import { api } from "@/lib/api";
 import { CountryCode } from "@/lib/validators";
@@ -5,7 +6,7 @@ import { AppRouter } from "@/server/api/root";
 import { SongVendorType } from "@/server/db/schema";
 import { Track } from "@/types/song-types";
 import { inferProcedureOutput } from "@trpc/server";
-import { createContext, useCallback, useContext, useEffect, useMemo } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef } from "react";
 
 interface ISongListingContext {
   trackData: Track | null | undefined;
@@ -37,6 +38,7 @@ export const SongListingContextProvider = ({
   children,
 }: ISongListingContextProviderProps) => {
   const { userAccessToken } = useSpotifyTokens();
+  const { setSelectedSearch } = useSearchStore();
   const songId = track.song.id;
 
   // Keep a query for background refresh after artist enrichment
@@ -53,8 +55,7 @@ export const SongListingContextProvider = ({
   // Always fall back to the passed track so trackData is never undefined mid-transition
   const trackData = fetchedTrackData ?? track;
 
-  // 2. Enrich iTunes-sourced songs with Spotify data (popularity, followers, genres)
-  //    Not called for sp_ songs — those already have Spotify data from storeSpotifyTrack
+  // Enrich iTunes-sourced songs with Spotify data (popularity, followers, genres)
   const { mutate: enrichItunesTrackFromSpotify } = api.song.enrichItunesTrackFromSpotify.useMutation({
     onSuccess: () => utils.song.getTrack.invalidate({ id: songId }),
   });
@@ -64,6 +65,22 @@ export const SongListingContextProvider = ({
       enrichItunesTrackFromSpotify({ songId, accessToken: userAccessToken });
     }
   }, [songId, userAccessToken, !!trackData]);
+
+  // Merge sp_ songs into their iTunes counterpart: finds the iTunes match, migrates all FK
+  // relations, deletes the sp_ record, then navigates to the new iTunes ID.
+  const enrichedSpIdRef = useRef<string | null>(null);
+  const { mutate: enrichSpotifySongFromItunes } = api.song.enrichSpotifySongFromItunes.useMutation({
+    onSuccess: (result) => {
+      if (result?.itunesId) {
+        setSelectedSearch({
+          id: result.itunesId,
+          region,
+          artist: track.artists[0]?.name ?? "",
+          title: track.song.title,
+        });
+      }
+    },
+  });
 
   const artists = useMemo(
     () => trackData?.artists.map((artist) => artist.name).join(", ") ?? "",
@@ -79,6 +96,13 @@ export const SongListingContextProvider = ({
       artists.length > 0
     );
   }, [trackData, artists]);
+
+  useEffect(() => {
+    if (isSongDataValid && songId.startsWith("sp_") && enrichedSpIdRef.current !== songId) {
+      enrichedSpIdRef.current = songId;
+      enrichSpotifySongFromItunes({ songId });
+    }
+  }, [songId, isSongDataValid]);
 
   // iTunes
   const { data: itunesResponse, isLoading: isItunesResponseLoading } =

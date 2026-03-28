@@ -11,6 +11,7 @@ export const AddSongSchema = z.object({
   year: z.string(),
   genre: z.union([z.string(), z.null()]),
   spotifyId: z.union([z.string(), z.null()]),
+  previewUrl: z.union([z.string(), z.null()]),
   isrc: z.union([z.string(), z.null()]),
 });
 

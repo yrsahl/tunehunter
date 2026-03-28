@@ -4,14 +4,19 @@ import {
   artists,
   genres,
   songArtists,
+  songListingMisses,
+  songListingRequests,
+  songListings,
   songs,
   trendingViewLast30Days,
   trendingViewLast7Days,
   trendingViewToday,
+  userActivities,
 } from "@/server/db/schema";
+import { fetchItunesTrack } from "@/services/itunes/api";
 import { fetchSpotifyArtistData, fetchSpotifyTrack } from "@/services/spotify";
 import { TrendingTrack, TrendingTracks } from "@/types/song-types";
-import { desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, like, sql } from "drizzle-orm";
 import { z } from "zod";
 import { StoreSongSchema } from "../schemas/song-schemas";
 
@@ -145,6 +150,121 @@ export const songRouter = createTRPCRouter({
       if (!song.genre && firstGenre) {
         await ctx.db.update(songs).set({ genre: firstGenre }).where(eq(songs.id, input.songId));
       }
+    }),
+
+  // Merges a Spotify-sourced song (sp_ prefix) into its iTunes counterpart.
+  // Finds the iTunes match, migrates all FK relations, then deletes the sp_ record.
+  enrichSpotifySongFromItunes: rateLimitedProcedure
+    .input(z.object({ songId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      if (!input.songId.startsWith("sp_")) return;
+      const spId = input.songId;
+
+      const song = await ctx.db.query.songs.findFirst({
+        where: (songs, { eq }) => eq(songs.id, spId),
+      });
+      if (!song) return;
+
+      const artistRows = await ctx.db
+        .select({ id: artists.id, name: artists.name })
+        .from(songArtists)
+        .innerJoin(artists, eq(songArtists.artistId, artists.id))
+        .where(eq(songArtists.songId, spId));
+
+      const primaryArtist = artistRows[0];
+      if (!primaryArtist) return;
+
+      const itunesTrack = await fetchItunesTrack(song.title, primaryArtist.name, song.duration);
+      if (!itunesTrack) return;
+
+      const itunesId = itunesTrack.song.id;
+      const itunesArtist = itunesTrack.artists[0];
+
+      await ctx.db.transaction(async (tx) => {
+        // 1. Upsert iTunes song, carrying over spotifyId and isrc from the sp_ record
+        await tx
+          .insert(songs)
+          .values({
+            id: itunesId,
+            title: itunesTrack.song.title,
+            duration: itunesTrack.song.duration,
+            album: itunesTrack.song.album,
+            albumArtUrl: itunesTrack.song.albumArtUrl,
+            year: itunesTrack.song.year,
+            genre: itunesTrack.song.genre,
+            spotifyId: song.spotifyId,
+            previewUrl: itunesTrack.song.previewUrl,
+            isrc: song.isrc,
+          })
+          .onConflictDoUpdate({
+            target: songs.id,
+            set: {
+              genre: sql`COALESCE(${songs.genre}, EXCLUDED.genre)`,
+              previewUrl: sql`COALESCE(${songs.previewUrl}, EXCLUDED.preview_url)`,
+              spotifyId: sql`COALESCE(${songs.spotifyId}, EXCLUDED.spotify_id)`,
+              isrc: sql`COALESCE(${songs.isrc}, EXCLUDED.isrc)`,
+            },
+          });
+
+        // 2. Upsert iTunes artist and link to the iTunes song
+        if (itunesArtist) {
+          await tx
+            .insert(artists)
+            .values({ id: itunesArtist.id, name: itunesArtist.name, popularity: null, followers: null })
+            .onConflictDoNothing();
+          await tx
+            .insert(songArtists)
+            .values({ songId: itunesId, artistId: itunesArtist.id })
+            .onConflictDoNothing();
+        }
+
+        // 3. Migrate userActivities (sp_ → iTunes ID)
+        await tx.update(userActivities).set({ songId: itunesId }).where(eq(userActivities.songId, spId));
+
+        // 4. Migrate songListings — composite PK requires insert+delete
+        const spListings = await tx.select().from(songListings).where(eq(songListings.songId, spId));
+        if (spListings.length > 0) {
+          await tx
+            .insert(songListings)
+            .values(spListings.map((l) => ({ ...l, songId: itunesId })))
+            .onConflictDoNothing();
+          await tx.delete(songListings).where(eq(songListings.songId, spId));
+        }
+
+        // 5. Migrate songListingMisses — composite PK requires insert+delete
+        const spMisses = await tx.select().from(songListingMisses).where(eq(songListingMisses.songId, spId));
+        if (spMisses.length > 0) {
+          await tx
+            .insert(songListingMisses)
+            .values(spMisses.map((m) => ({ ...m, songId: itunesId })))
+            .onConflictDoNothing();
+          await tx.delete(songListingMisses).where(eq(songListingMisses.songId, spId));
+        }
+
+        // 6. Migrate songListingRequests
+        await tx
+          .update(songListingRequests)
+          .set({ songId: itunesId })
+          .where(eq(songListingRequests.songId, spId));
+
+        // 7. Collect sp_ artist IDs before deletion for orphan cleanup below
+        const spArtistIds = artistRows.map((a) => a.id).filter((id) => id.startsWith("sp_"));
+
+        // 8. Delete sp_ song — cascades any remaining songArtists not yet migrated
+        await tx.delete(songs).where(eq(songs.id, spId));
+
+        // 9. Delete orphaned sp_ artists (no longer referenced by any song)
+        for (const artistId of spArtistIds) {
+          const [ref] = await tx
+            .select({ songId: songArtists.songId })
+            .from(songArtists)
+            .where(eq(songArtists.artistId, artistId))
+            .limit(1);
+          if (!ref) await tx.delete(artists).where(eq(artists.id, artistId));
+        }
+      });
+
+      return { itunesId };
     }),
 
   getTrendingSongs: publicProcedure.query<TrendingTracks>(async ({ ctx }) => {
@@ -376,12 +496,17 @@ export const songRouter = createTRPCRouter({
             year: song.year,
             genre: song.genre,
             spotifyId: song.spotifyId,
+            previewUrl: song.previewUrl,
             isrc: song.isrc,
           })),
         )
         .onConflictDoUpdate({
           target: songs.id,
-          set: { isrc: sql`COALESCE(${songs.isrc}, EXCLUDED.isrc)` },
+          set: {
+            isrc: sql`COALESCE(${songs.isrc}, EXCLUDED.isrc)`,
+            genre: sql`COALESCE(${songs.genre}, EXCLUDED.genre)`,
+            previewUrl: sql`COALESCE(${songs.previewUrl}, EXCLUDED.preview_url)`,
+          },
         });
 
       // Add artists
@@ -401,5 +526,34 @@ export const songRouter = createTRPCRouter({
         })),
       );
       await ctx.db.insert(songArtists).values(relationValues).onConflictDoNothing();
+
+      // Enrich any matching sp_ songs (from playlist favorites) with iTunes genre/previewUrl
+      const enrichable = uniqueInput.filter(({ song }) => song.genre ?? song.previewUrl);
+      if (enrichable.length > 0) {
+        await Promise.all(
+          enrichable.map(({ song, artists: trackArtists }) => {
+            const primaryArtistName = trackArtists[0]?.name ?? "";
+            return ctx.db
+              .update(songs)
+              .set({
+                genre: sql`COALESCE(${songs.genre}, ${song.genre})`,
+                previewUrl: sql`COALESCE(${songs.previewUrl}, ${song.previewUrl})`,
+              })
+              .where(
+                and(
+                  like(songs.id, "sp_%"),
+                  sql`LOWER(${songs.title}) = LOWER(${song.title})`,
+                  sql`ABS(${songs.duration} - ${song.duration}) <= 3000`,
+                  sql`EXISTS (
+                    SELECT 1 FROM ${songArtists} sa
+                    INNER JOIN ${artists} a ON a.id = sa.artist_id
+                    WHERE sa.song_id = ${songs.id}
+                    AND LOWER(a.name) LIKE '%' || LOWER(${primaryArtistName}) || '%'
+                  )`,
+                ),
+              );
+          }),
+        );
+      }
     }),
 });

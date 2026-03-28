@@ -3,8 +3,6 @@
 Create a logo
 Use Stitch for UI
 
-Saving playlist as favorite -> store for now with spotify ID, have a job look up all songs from spotify and enrich them with a server-side job
-
 Animation when favoriting -> song moving there, tab opening
 
 Separate out Redis/Upstash, maybe more?
