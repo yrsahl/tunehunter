@@ -8,7 +8,7 @@ const useFavorites = () => {
     favorites: { data, refetchData, isLoading },
   } = useSearchTabDataContext();
   const addUserActivity = api.userActivities.addUserActivity.useMutation();
-  const addFavoriteFromSpotifyTrack = api.userActivities.addFavoriteFromSpotifyTrack.useMutation();
+  const addFavoritesFromPlaylist = api.userActivities.addFavoritesFromSpotifyPlaylist.useMutation();
   const removeUserActivity = api.userActivities.removeUserActivityByType.useMutation();
   const { region } = useRegionSettings();
 
@@ -17,32 +17,31 @@ const useFavorites = () => {
     return data.some((item) => item.song.id === songId);
   };
 
-  const isOnFavoritesBySpotifyId = (spotifyId: string) => {
-    if (isLoading || !data) return false;
-    return data.some((item) => item.song.spotifyId === spotifyId);
-  };
-
   const addToFavorites = async (songId: string) => {
     if (isOnFavorites(songId)) return;
     await addUserActivity.mutateAsync({ region, songId, type: "favorite" });
     refetchData();
   };
 
-  const addToFavoritesFromSpotifyTrack = async (track: SpotifyTrack) => {
-    if (!track.song.spotifyId || isOnFavoritesBySpotifyId(track.song.spotifyId)) return;
-    await addFavoriteFromSpotifyTrack.mutateAsync({
+  const addAllToFavorites = async (tracks: SpotifyTrack[]) => {
+    const result = await addFavoritesFromPlaylist.mutateAsync({
       region,
-      song: {
-        spotifyId: track.song.spotifyId,
-        title: track.song.title,
-        duration: track.song.duration,
-        album: track.song.album ?? null,
-        albumArtUrl: track.song.albumArtUrl ?? null,
-        year: track.song.year,
-      },
-      artists: track.artists.map((a) => ({ id: a.id, name: a.name })),
+      tracks: tracks
+        .filter((t) => !!t.song.spotifyId)
+        .map((t) => ({
+          song: {
+            spotifyId: t.song.spotifyId!,
+            title: t.song.title,
+            duration: t.song.duration,
+            album: t.song.album ?? null,
+            albumArtUrl: t.song.albumArtUrl ?? null,
+            year: t.song.year,
+          },
+          artists: t.artists.map((a) => ({ id: a.id, name: a.name })),
+        })),
     });
     refetchData();
+    return result;
   };
 
   const removeFromFavorites = async (songId: string) => {
@@ -50,19 +49,14 @@ const useFavorites = () => {
     refetchData();
   };
 
-  const removeFromFavoritesBySpotifyId = async (spotifyId: string) => {
-    await removeFromFavorites(`sp_${spotifyId}`);
-  };
-
   return {
     favoritesData: data,
     favoritesDataIsLoading: isLoading,
+    isAddingAllToFavorites: addFavoritesFromPlaylist.isLoading,
     isOnFavorites,
-    isOnFavoritesBySpotifyId,
     addToFavorites,
-    addToFavoritesFromSpotifyTrack,
+    addAllToFavorites,
     removeFromFavorites,
-    removeFromFavoritesBySpotifyId,
   };
 };
 

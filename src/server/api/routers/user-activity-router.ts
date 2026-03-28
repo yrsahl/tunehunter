@@ -57,57 +57,92 @@ export const userActivitiesRouter = createTRPCRouter({
       });
     }),
 
-  addFavoriteFromSpotifyTrack: protectedProcedure
+  addFavoritesFromSpotifyPlaylist: protectedProcedure
     .input(
       z.object({
         region: z.string(),
-        song: z.object({
-          spotifyId: z.string(),
-          title: z.string(),
-          duration: z.number(),
-          album: z.string().nullable(),
-          albumArtUrl: z.string().nullable(),
-          year: z.string(),
-        }),
-        artists: z.array(z.object({ id: z.string(), name: z.string() })),
+        tracks: z.array(
+          z.object({
+            song: z.object({
+              spotifyId: z.string(),
+              title: z.string(),
+              duration: z.number(),
+              album: z.string().nullable(),
+              albumArtUrl: z.string().nullable(),
+              year: z.string(),
+            }),
+            artists: z.array(z.object({ id: z.string(), name: z.string() })),
+          }),
+        ),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const songId = `sp_${input.song.spotifyId}`;
+      const userId = ctx.session.user.id;
+
+      const existingFavorites = await ctx.db
+        .select({ songId: userActivities.songId })
+        .from(userActivities)
+        .where(and(eq(userActivities.userId, userId), eq(userActivities.type, "favorite")));
+      const existingSongIds = new Set(existingFavorites.map((f) => f.songId));
+
+      const newTracks = input.tracks.filter((t) => !existingSongIds.has(`sp_${t.song.spotifyId}`));
+      if (newTracks.length === 0) return { added: 0 };
+
       await ctx.db
         .insert(songs)
-        .values({
-          id: songId,
-          title: input.song.title,
-          duration: input.song.duration,
-          album: input.song.album,
-          albumArtUrl: input.song.albumArtUrl,
-          year: input.song.year,
-          genre: null,
-          spotifyId: input.song.spotifyId,
-          previewUrl: null,
-          isrc: null,
-        })
+        .values(
+          newTracks.map((t) => ({
+            id: `sp_${t.song.spotifyId}`,
+            title: t.song.title,
+            duration: t.song.duration,
+            album: t.song.album,
+            albumArtUrl: t.song.albumArtUrl,
+            year: t.song.year,
+            genre: null,
+            spotifyId: t.song.spotifyId,
+            previewUrl: null,
+            isrc: null,
+          })),
+        )
         .onConflictDoNothing();
-      for (const artist of input.artists) {
-        const artistId = `sp_${artist.id}`;
+
+      const uniqueArtists = [
+        ...new Map(
+          newTracks
+            .flatMap((t) => t.artists.map((a) => ({ id: `sp_${a.id}`, name: a.name })))
+            .map((a) => [a.id, a]),
+        ).values(),
+      ];
+      if (uniqueArtists.length > 0) {
         await ctx.db
           .insert(artists)
-          .values({ id: artistId, name: artist.name, popularity: null, followers: null })
-          .onConflictDoNothing();
-        await ctx.db
-          .insert(songArtists)
-          .values({ songId, artistId })
+          .values(uniqueArtists.map((a) => ({ id: a.id, name: a.name, popularity: null, followers: null })))
           .onConflictDoNothing();
       }
-      await ctx.db.insert(userActivities).values({
-        userId: ctx.session.user.id,
-        songId,
-        region: input.region,
-        type: "favorite",
-        createdAt: new Date(),
-      });
-      return { songId };
+
+      const uniqueSongArtists = [
+        ...new Map(
+          newTracks
+            .flatMap((t) => t.artists.map((a) => ({ songId: `sp_${t.song.spotifyId}`, artistId: `sp_${a.id}` })))
+            .map((sa) => [`${sa.songId}-${sa.artistId}`, sa]),
+        ).values(),
+      ];
+      if (uniqueSongArtists.length > 0) {
+        await ctx.db.insert(songArtists).values(uniqueSongArtists).onConflictDoNothing();
+      }
+
+      const now = new Date();
+      await ctx.db.insert(userActivities).values(
+        newTracks.map((t) => ({
+          userId,
+          songId: `sp_${t.song.spotifyId}`,
+          region: input.region,
+          type: "favorite" as const,
+          createdAt: now,
+        })),
+      );
+
+      return { added: newTracks.length };
     }),
 
   removeUserActivityByType: protectedProcedure
