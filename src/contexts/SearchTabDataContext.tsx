@@ -29,7 +29,7 @@ interface ISearchTabDataContext {
     isLoading: boolean;
     refetchData: () => void;
   };
-  wishlist: {
+  favorites: {
     data?: inferProcedureOutput<AppRouter["userActivities"]["getUserActivity"]> | null;
     isLoading: boolean;
     refetchData: () => void;
@@ -54,7 +54,7 @@ const SearchTabDataContext = createContext<ISearchTabDataContext>({
     isLoading: false,
     refetchData: () => {},
   },
-  wishlist: {
+  favorites: {
     data: null,
     isLoading: false,
     refetchData: () => {},
@@ -77,8 +77,8 @@ export const SearchTabDataProvider = ({ children }: { children: ReactNode }) => 
     api.song.getTrendingSongs.useQuery(undefined, { staleTime: 5 * 60 * 1000 });
   const { data: historyData, isLoading: isHistoryDataLoading } =
     api.userActivities.getHistory.useQuery(undefined, { enabled: loggedIn });
-  const { data: wishlistData, isLoading: isWishlistDataLoading } =
-    api.userActivities.getUserActivity.useQuery({ type: "wishlist" }, { enabled: loggedIn });
+  const { data: favoritesData, isLoading: isFavoritesDataLoading } =
+    api.userActivities.getUserActivity.useQuery({ type: "favorite" }, { enabled: loggedIn });
   const {
     data: spotifyData,
     isLoading: isSpotifyDataLoading,
@@ -92,7 +92,7 @@ export const SearchTabDataProvider = ({ children }: { children: ReactNode }) => 
   const refetchHistoryData = () => {
     utils.userActivities.getHistory.invalidate();
   };
-  const refetchWishlistData = () => {
+  const refetchFavoritesData = () => {
     utils.userActivities.getUserActivity.invalidate();
   };
 
@@ -103,8 +103,8 @@ export const SearchTabDataProvider = ({ children }: { children: ReactNode }) => 
         return isTrendingDataLoading;
       case "history":
         return isHistoryDataLoading;
-      case "wishlist":
-        return isWishlistDataLoading;
+      case "favorites":
+        return isFavoritesDataLoading;
       default:
         return false;
     }
@@ -115,8 +115,8 @@ export const SearchTabDataProvider = ({ children }: { children: ReactNode }) => 
         return !isTrendingDataLoading && !!trendingData;
       case "history":
         return !isHistoryDataLoading && !!historyData;
-      case "wishlist":
-        return !isWishlistDataLoading && !!wishlistData && wishlistData.length > 0;
+      case "favorites":
+        return !isFavoritesDataLoading && !!favoritesData && favoritesData.length > 0;
       default:
         return false;
     }
@@ -136,7 +136,7 @@ export const SearchTabDataProvider = ({ children }: { children: ReactNode }) => 
     if (!loggedIn) return;
 
     refetchHistoryData();
-    refetchWishlistData();
+    refetchFavoritesData();
 
     if (!spotifyConnected) return;
 
@@ -161,10 +161,10 @@ export const SearchTabDataProvider = ({ children }: { children: ReactNode }) => 
       isLoading: isHistoryDataLoading,
       refetchData: refetchHistoryData,
     },
-    wishlist: {
-      data: wishlistData,
-      isLoading: isWishlistDataLoading,
-      refetchData: refetchWishlistData,
+    favorites: {
+      data: favoritesData,
+      isLoading: isFavoritesDataLoading,
+      refetchData: refetchFavoritesData,
     },
   };
 

@@ -15,19 +15,20 @@ export const tabAccessMap: Record<SearchTab, AccessScopes> = {
   trending: "all",
   playlist: "all",
   history: "signed-in",
-  wishlist: "signed-in",
+  favorites: "signed-in",
 };
+
 const tabTooltipRestrictionMap: Record<SearchTab, string> = {
   trending: "",
   playlist: "",
-  wishlist: "Sign in to view your wishlist",
+  favorites: "Sign in to view your favorites",
   history: "Sign in to view your history",
 };
 
 const tabToastRestrictionMap: Record<SearchTab, string> = {
   trending: "",
   playlist: "",
-  wishlist: "Your wishlist requires an account.",
+  favorites: "Your favorites require an account.",
   history: "Your history requires an account.",
 };
 
@@ -96,6 +97,7 @@ const SearchTabButton = ({
           <motion.button
             key={searchTab}
             onClick={() => handleTabClick(searchTab)}
+            aria-disabled={!isTabEnabled}
             className={cn(
               "whitespace-nowrap border-b-2 text-sm text-foreground transition-all sm:text-base",
               isTabActive ? "!border-primary" : "border-transparent",

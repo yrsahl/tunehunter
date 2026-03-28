@@ -21,10 +21,10 @@ test.describe("@full Search Functionality", () => {
     await waitForSearchToLoad(page);
 
     const historyTab = page.getByRole("button", { name: /history/i });
-    const wishlistTab = page.getByRole("button", { name: /wishlist/i });
+    const favoritesTab = page.getByRole("button", { name: /favorites/i });
 
     await expect(historyTab).toBeDisabled();
-    await expect(wishlistTab).toBeDisabled();
+    await expect(favoritesTab).toBeDisabled();
   });
 
   test("playlist tab is accessible to unauthenticated users and shows URL input", async ({

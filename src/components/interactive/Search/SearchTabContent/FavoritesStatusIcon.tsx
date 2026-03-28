@@ -1,20 +1,20 @@
 import { Button } from "@/components/ui/button";
-import useWishlist from "@/hooks/useWishlist";
+import useFavorites from "@/hooks/useFavorites";
 import { motion, useAnimation } from "framer-motion";
 import { HeartIcon, HeartOff } from "lucide-react";
 
-interface WishlistStatusIconProps {
+interface FavoritesStatusIconProps {
   songId: string;
   variant?: "big" | "small";
 }
 
-interface WishlistedSongProps {
+interface FavoritedSongProps {
   songId: string;
   sizeClasses: string;
-  removeFromWishlist: (songId: string) => void;
+  removeFromFavorites: (songId: string) => void;
 }
 
-const WishlistedSong = ({ songId, sizeClasses, removeFromWishlist }: WishlistedSongProps) => {
+const FavoritedSong = ({ songId, sizeClasses, removeFromFavorites }: FavoritedSongProps) => {
   const heartFullControls = useAnimation();
   const heartBreakControls = useAnimation();
 
@@ -30,12 +30,12 @@ const WishlistedSong = ({ songId, sizeClasses, removeFromWishlist }: WishlistedS
 
   return (
     <Button
-      data-testid="wishlist-remove-button"
+      data-testid="favorites-remove-button"
       size="icon"
       className="border-none bg-transparent transition-all duration-300 hover:bg-transparent"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onClick={() => removeFromWishlist(songId)}
+      onClick={() => removeFromFavorites(songId)}
     >
       <>
         <motion.div
@@ -59,12 +59,12 @@ const WishlistedSong = ({ songId, sizeClasses, removeFromWishlist }: WishlistedS
   );
 };
 
-interface NotWishlistedSongProps {
+interface NotFavoritedSongProps {
   songId: string;
-  addToWishlist: (songId: string) => void;
+  addToFavorites: (songId: string) => void;
 }
 
-const NotWishlistedSong = ({ songId, addToWishlist }: NotWishlistedSongProps) => {
+const NotFavoritedSong = ({ songId, addToFavorites }: NotFavoritedSongProps) => {
   const heartEmptyControls = useAnimation();
   const heartFullControls = useAnimation();
 
@@ -80,10 +80,10 @@ const NotWishlistedSong = ({ songId, addToWishlist }: NotWishlistedSongProps) =>
 
   return (
     <Button
-      data-testid="wishlist-button"
+      data-testid="favorites-button"
       size="icon"
       className="border-none bg-transparent transition-all duration-300 hover:bg-transparent"
-      onClick={() => addToWishlist(songId)}
+      onClick={() => addToFavorites(songId)}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -107,22 +107,22 @@ const NotWishlistedSong = ({ songId, addToWishlist }: NotWishlistedSongProps) =>
   );
 };
 
-const WishlistStatusIcon = ({ songId, variant = "big" }: WishlistStatusIconProps) => {
-  const { isOnWishlist, addToWishlist, removeFromWishlist } = useWishlist();
+const FavoritesStatusIcon = ({ songId, variant = "big" }: FavoritesStatusIconProps) => {
+  const { isOnFavorites, addToFavorites, removeFromFavorites } = useFavorites();
 
   const sizeClasses = variant === "big" ? "h-8 w-8" : "h-7 w-7";
 
-  if (isOnWishlist(songId)) {
+  if (isOnFavorites(songId)) {
     return (
-      <WishlistedSong
+      <FavoritedSong
         songId={songId}
         sizeClasses={sizeClasses}
-        removeFromWishlist={removeFromWishlist}
+        removeFromFavorites={removeFromFavorites}
       />
     );
   }
 
-  return <NotWishlistedSong songId={songId} addToWishlist={addToWishlist} />;
+  return <NotFavoritedSong songId={songId} addToFavorites={addToFavorites} />;
 };
 
-export default WishlistStatusIcon;
+export default FavoritesStatusIcon;

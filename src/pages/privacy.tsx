@@ -23,7 +23,7 @@ const sections: Section[] = [
           "Your preferences: region, language, and theme",
           "A record of every song you search for, including the region at the time of the search",
           "A record of which stores you visit from search results",
-          "Songs you add to your wishlist",
+          "Songs you save to your favorites",
         ],
       },
       {

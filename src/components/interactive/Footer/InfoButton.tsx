@@ -95,7 +95,7 @@ const InfoButton = () => {
                       </span>
                       <ul className="list-inside list-disc space-y-1 pl-2">
                         <li>View your search history</li>
-                        <li>Add songs to your wishlist</li>
+                        <li>Save songs to your favorites</li>
                         <li>Access your Spotify songs</li>
                       </ul>
                     </p>

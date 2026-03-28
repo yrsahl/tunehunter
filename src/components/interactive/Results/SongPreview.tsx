@@ -1,5 +1,4 @@
-import ConditionalTooltip from "@/components/ConditonalTooltip";
-import { useDisabledTabStore } from "@/hooks/stores/useDisabledTabStore";
+import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import useSpotifyPreviewUrl from "@/hooks/useSpotifyPreviewUrl";
 import { formatDate, formatDuration } from "@/lib/formatters";
 import { Track } from "@/types/song-types";
@@ -7,8 +6,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Album, Calendar, Clock, HeartIcon, Music } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { memo } from "react";
+import { toast } from "sonner";
 import PreviewPlayButton from "../Search/SearchTabContent/PreviewPlayButton";
-import WishlistStatusIcon from "../Search/SearchTabContent/WishlistStatusIcon";
+import FavoritesStatusIcon from "../Search/SearchTabContent/FavoritesStatusIcon";
 import SongPreviewFallback from "./SongPreviewFallback";
 import SongPreviewSkeleton from "./SongPreviewSkeleton";
 
@@ -19,7 +19,7 @@ interface ISongPreviewProps {
 
 function SongPreview({ trackData, isLoading }: ISongPreviewProps) {
   const { status } = useSession();
-  const { setDisabledTabButtonHovered } = useDisabledTabStore();
+  const router = useRouterWithHelpers();
   const { previewUrl, isLoading: isLoadingPreview } = useSpotifyPreviewUrl(
     trackData?.song.spotifyId,
     trackData?.song.title,
@@ -89,21 +89,27 @@ function SongPreview({ trackData, isLoading }: ISongPreviewProps) {
                       previewUrl={previewUrl}
                       isLoadingPreview={isLoadingPreview}
                     />
-                    <ConditionalTooltip
-                      active={loggedIn}
-                      content="Sign in to add the song to your wishlist!"
-                      disabledChild={
-                        <div
-                          className="flex h-8 w-8 cursor-not-allowed items-center justify-center rounded-full"
-                          onMouseEnter={() => setDisabledTabButtonHovered(true)}
-                          onMouseLeave={() => setDisabledTabButtonHovered(false)}
-                        >
-                          <HeartIcon className="h-7 w-7 text-foreground" />
-                        </div>
-                      }
-                    >
-                      <WishlistStatusIcon songId={id} />
-                    </ConditionalTooltip>
+                    {loggedIn ? (
+                      <FavoritesStatusIcon songId={id} />
+                    ) : (
+                      <button
+                        className="flex h-8 w-8 items-center justify-center rounded-full"
+                        onClick={() =>
+                          toast.info("Sign in to save your favorites.", {
+                            action: {
+                              label: "Sign in",
+                              onClick: () => router.setParams({ profile: "login" }),
+                            },
+                            classNames: {
+                              actionButton:
+                                "!bg-primary !text-primary-foreground hover:!bg-primary/80",
+                            },
+                          })
+                        }
+                      >
+                        <HeartIcon className="h-7 w-7 text-foreground" />
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

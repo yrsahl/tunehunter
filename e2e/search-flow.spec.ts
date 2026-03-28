@@ -105,7 +105,8 @@ test.describe("@full Search Autocomplete", () => {
     await expect(page.locator('[data-testid="search-results"]')).not.toBeVisible();
   });
 
-  test("song listings render when navigating directly to a song URL", async ({ page }) => {
+  // TODO: needs store API mocking — unreliable without it (depends on DB cache + external APIs)
+  test.skip("song listings render when navigating directly to a song URL", async ({ page }) => {
     await page.goto("/?id=123456789&region=us&artist=Daft+Punk&title=One+More+Time");
     await waitForPageLoad(page);
 

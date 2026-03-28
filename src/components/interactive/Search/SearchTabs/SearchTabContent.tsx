@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import HistoryTable from "../SearchTabContent/HistoryTable";
 import PlaylistTable from "../SearchTabContent/PlaylistTable";
 import TrendingTable from "../SearchTabContent/TrendingTable";
-import WishlistTable from "../SearchTabContent/WishlistTable";
+import FavoritesTable from "../SearchTabContent/FavoritesTable";
 import { SearchTab } from "./SearchTabBar";
 
 interface SearchTabContentProps {
@@ -33,7 +33,7 @@ const SearchTabContent = ({ activeSearchTab }: SearchTabContentProps) => {
         {activeSearchTab === "trending" && <TrendingTable />}
         {activeSearchTab === "playlist" && <PlaylistTable />}
         {activeSearchTab === "history" && <HistoryTable />}
-        {activeSearchTab === "wishlist" && <WishlistTable />}
+        {activeSearchTab === "favorites" && <FavoritesTable />}
       </motion.div>
     </motion.div>
   );

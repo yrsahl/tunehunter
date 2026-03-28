@@ -19,7 +19,7 @@ export type SpotifyTrack = Omit<Track, "song"> & {
 };
 
 export type UserActivityTrack = {
-  type: "search" | "store_visit" | "wishlist";
+  type: "search" | "store_visit" | "favorite";
   createdAt: Date;
 } & Track;
 
