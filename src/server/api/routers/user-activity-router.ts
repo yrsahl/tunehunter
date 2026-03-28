@@ -57,6 +57,59 @@ export const userActivitiesRouter = createTRPCRouter({
       });
     }),
 
+  addFavoriteFromSpotifyTrack: protectedProcedure
+    .input(
+      z.object({
+        region: z.string(),
+        song: z.object({
+          spotifyId: z.string(),
+          title: z.string(),
+          duration: z.number(),
+          album: z.string().nullable(),
+          albumArtUrl: z.string().nullable(),
+          year: z.string(),
+        }),
+        artists: z.array(z.object({ id: z.string(), name: z.string() })),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const songId = `sp_${input.song.spotifyId}`;
+      await ctx.db
+        .insert(songs)
+        .values({
+          id: songId,
+          title: input.song.title,
+          duration: input.song.duration,
+          album: input.song.album,
+          albumArtUrl: input.song.albumArtUrl,
+          year: input.song.year,
+          genre: null,
+          spotifyId: input.song.spotifyId,
+          previewUrl: null,
+          isrc: null,
+        })
+        .onConflictDoNothing();
+      for (const artist of input.artists) {
+        const artistId = `sp_${artist.id}`;
+        await ctx.db
+          .insert(artists)
+          .values({ id: artistId, name: artist.name, popularity: null, followers: null })
+          .onConflictDoNothing();
+        await ctx.db
+          .insert(songArtists)
+          .values({ songId, artistId })
+          .onConflictDoNothing();
+      }
+      await ctx.db.insert(userActivities).values({
+        userId: ctx.session.user.id,
+        songId,
+        region: input.region,
+        type: "favorite",
+        createdAt: new Date(),
+      });
+      return { songId };
+    }),
+
   removeUserActivityByType: protectedProcedure
     .input(RemoveUserActivitySchema)
     .mutation(async ({ ctx, input }) => {

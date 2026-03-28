@@ -46,6 +46,11 @@ export const playlistRouter = createTRPCRouter({
     }
 
     const tracks = await fetchAllPlaylistTracks(token, playlistId);
+    if (tracks === "not_found")
+      return {
+        error:
+          "This playlist is curated by Spotify and can't be loaded. Try linking one of your own." as const,
+      };
     if (tracks === null) return { error: "Playlist not found or is private." as const };
 
     return { tracks };

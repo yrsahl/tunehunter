@@ -3,35 +3,16 @@ import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { api } from "@/lib/api";
 import { fadeIn } from "@/styles/animations";
 import { AnimatePresence, motion } from "framer-motion";
-import { HeartIcon } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import NoDataMessage from "./NoDataMessage";
+import PlaylistFavoritesIcon from "./PlaylistFavoritesIcon";
 import SkeletonTable from "./SkeletonTable";
 import TableRow from "./TableRow";
 
 const PlaylistTable = () => {
   const router = useRouterWithHelpers();
-  const { status } = useSession();
   const [inputValue, setInputValue] = useState("");
   const [submittedUrl, setSubmittedUrl] = useState("");
-
-  const favoriteElement = () => {
-    if (status === "authenticated") return null;
-    return (
-      <button
-        className="flex items-center justify-center p-2 text-foreground/40 transition-colors hover:text-foreground"
-        onClick={() => {
-          toast("Sign in to save songs to your favorites", {
-            action: { label: "Sign in", onClick: () => router.setParams({ profile: "login" }) },
-          });
-        }}
-      >
-        <HeartIcon className="h-7 w-7" />
-      </button>
-    );
-  };
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -70,7 +51,7 @@ const PlaylistTable = () => {
           data-testid="playlist-url-input"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          placeholder="https://open.spotify.com/playlist/3TxNViSYOIVuZLEe9ZIbyx?si=8974367fcb0f488a"
+          placeholder="https://open.spotify.com/playlist/..."
           className="min-w-0 flex-1 bg-transparent text-sm text-foreground/80 outline-none placeholder:text-muted-foreground/80"
         />
         <div className="min-w-0">
@@ -113,7 +94,7 @@ const PlaylistTable = () => {
                           key={`${index}-${track.song.spotifyId}`}
                           track={track}
                           showDuration
-                          extraElement={favoriteElement()}
+                          extraElement={<PlaylistFavoritesIcon track={track} />}
                         />
                       ))}
                     </tbody>

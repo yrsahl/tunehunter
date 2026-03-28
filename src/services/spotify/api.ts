@@ -149,14 +149,15 @@ type SpotifyPlaylistTracksPage = {
 export const fetchAllPlaylistTracks = async (
   token: string,
   playlistId: string,
-): Promise<import("@/types/song-types").SpotifyTrack[] | null> => {
+): Promise<import("@/types/song-types").SpotifyTrack[] | "not_found" | null> => {
   const MAX_TRACKS = 500;
   const tracks: import("@/types/song-types").SpotifyTrack[] = [];
   let url: string | null =
     `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=100&fields=items(track(id,name,duration_ms,album(name,release_date,images),artists(id,name))),next`;
 
-  const firstPage = await fetchSpotifyData<SpotifyPlaylistTracksPage>(token, url);
-  if (!firstPage) return null; // private or not found
+  const firstPage = await fetchSpotifyPlaylistFirstPage(token, url);
+  if (firstPage === "not_found") return "not_found";
+  if (!firstPage) return null;
 
   const addTracks = (page: SpotifyPlaylistTracksPage) => {
     for (const item of page.items) {
@@ -198,8 +199,16 @@ async function fetchSpotifyData<T>(token: string, endpoint: string): Promise<T |
       Authorization: `Bearer ${token}`,
     },
   });
-  if (response.status === 204 || response.status >= 400) {
-    return null;
-  }
+  if (response.status === 204 || response.status >= 400) return null;
   return (await response.json()) as T;
+}
+
+async function fetchSpotifyPlaylistFirstPage(
+  token: string,
+  url: string,
+): Promise<SpotifyPlaylistTracksPage | "not_found" | null> {
+  const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  if (response.status === 404) return "not_found";
+  if (response.status === 204 || response.status >= 400) return null;
+  return (await response.json()) as SpotifyPlaylistTracksPage;
 }
