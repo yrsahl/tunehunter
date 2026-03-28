@@ -2,6 +2,15 @@ import { fireEvent, render, screen } from "@/test/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import FavoritesStatusIcon from "../FavoritesStatusIcon";
 
+vi.mock("framer-motion", () => ({
+  motion: {
+    div: ({ children, className }: { children?: React.ReactNode; className?: string }) => (
+      <div className={className}>{children}</div>
+    ),
+  },
+  useAnimation: () => ({ start: vi.fn(), stop: vi.fn(), set: vi.fn() }),
+}));
+
 const mockUseFavorites = vi.fn();
 
 vi.mock("@/hooks/useFavorites", () => ({

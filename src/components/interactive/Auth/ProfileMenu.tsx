@@ -89,7 +89,7 @@ const ProfileMenu = () => {
             >
               <IconButton icon="upload" className="h-full w-full" size="icon" iconSize="20px" />
             </motion.div>
-            <Avatar className="relative z-10 border border-foreground/20">
+            <Avatar className="relative z-10 border border-foreground">
               {userImg && <AvatarImage src={userImg} alt={userImgAlt} />}
               {!userImg && <AvatarFallback>{userName?.slice(0, 2)}</AvatarFallback>}
             </Avatar>
@@ -155,10 +155,10 @@ const ProfileMenu = () => {
         </div>
         <div className="flex items-center justify-center">
           <InfoWithToolTip
-            tooltip="Your role can help us tailor the app for you in future versions."
+            tooltip="Optional. Tells us who you are — DJ, audiophile, or music lover — so we can tailor features to you."
             side="right"
-            iconSize="24px"
-            variant="info"
+            iconSize={"24px"}
+            variant="primary"
           />
         </div>
 
@@ -179,7 +179,7 @@ const ProfileMenu = () => {
               <motion.div
                 key={region}
                 {...growIn()}
-                className="inline-block w-32 overflow-hidden text-ellipsis text-start"
+                className="inline-block max-w-28 overflow-hidden text-ellipsis text-start"
               >
                 <SelectValue />
               </motion.div>

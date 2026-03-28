@@ -7,7 +7,6 @@ import {
   YEAR_MIN,
   useSearchSettingsStore,
 } from "@/hooks/stores/useSearchSettingsStore";
-import { cn } from "@/lib/utils";
 import { fadeInAndOut, growIn, slideInFromAbove } from "@/styles/animations";
 import { AnimatePresence, motion } from "framer-motion";
 import { Cog } from "lucide-react";
@@ -116,9 +115,11 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
 
         <div className="grid grid-cols-[1fr_auto] items-center gap-x-6 gap-y-1">
           {/* Version filter */}
-          <div className="col-span-2 flex flex-col gap-2 pb-2">
+          <div className="col-span-2 flex items-center justify-between pb-2">
             <div className="flex items-center gap-1">
-              <Label className="text-base font-light">Version</Label>
+              <Label htmlFor="versionfilter" className="text-base font-light">
+                Version
+              </Label>
               <InfoWithToolTip
                 tooltip={
                   <div className="flex flex-col items-start gap-1">
@@ -138,27 +139,47 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
                     </p>
                   </div>
                 }
-                iconSize="16px"
+                mobileToast={
+                  <div className="flex flex-col gap-0.5">
+                    <p>
+                      <span className="font-semibold">All</span> — no filter
+                    </p>
+                    <p>
+                      <span className="font-semibold">Originals</span> — hides remixes, covers &
+                      edits
+                    </p>
+                    <p>
+                      <span className="font-semibold">Remixes</span> — re-edits and bootlegs only
+                    </p>
+                    <p>
+                      <span className="font-semibold">Extended</span> — club, extended & original
+                      mixes
+                    </p>
+                  </div>
+                }
+                iconSize="20px"
                 side="right"
                 variant="primary"
               />
             </div>
-            <div className="flex overflow-hidden rounded-md border border-foreground/20">
-              {VERSION_OPTIONS.map(({ value, label }) => (
-                <button
-                  key={value}
-                  onClick={() => setVersionFilter(value)}
-                  className={cn(
-                    "flex-1 py-1.5 text-xs transition-colors",
-                    versionFilter === value
-                      ? "bg-primary font-medium text-primary-foreground"
-                      : "text-muted-foreground hover:bg-foreground/5",
-                  )}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
+            <Select
+              value={versionFilter}
+              onValueChange={(v) => setVersionFilter(v as VersionFilter)}
+            >
+              <SelectTrigger
+                id="versionfilter"
+                className="h-8 w-32 border-foreground/20 text-sm font-light focus:ring-0 focus:ring-offset-0"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {VERSION_OPTIONS.map(({ value, label }) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Track length range */}
@@ -227,10 +248,10 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
           {loggedIn ? (
             <div className="flex flex-col gap-1">
               <p className="text-xs font-light text-muted-foreground">
-                Manage your region in your profile settings.
-              </p>
-              <p className="text-xs font-light text-muted-foreground/60">
                 Affects which store and prices are shown.
+              </p>
+              <p className="text-xs font-light text-muted-foreground">
+                Manage your region in your profile settings.
               </p>
             </div>
           ) : (
@@ -280,7 +301,7 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
                   onClick={setRegionByLocation}
                 />
               </div>
-              <p className="text-xs font-light text-muted-foreground/60">
+              <p className="text-xs font-light text-muted-foreground">
                 Affects which store and prices are shown.
               </p>
             </div>

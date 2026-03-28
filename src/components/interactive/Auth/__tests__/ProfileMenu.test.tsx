@@ -3,6 +3,16 @@ import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import ProfileMenu from "../ProfileMenu";
 
+vi.mock("framer-motion", () => ({
+  motion: {
+    div: ({ children, className }: { children?: ReactNode; className?: string }) => (
+      <div className={className}>{children}</div>
+    ),
+  },
+  AnimatePresence: ({ children }: { children: ReactNode }) => <>{children}</>,
+  useAnimation: () => ({ start: vi.fn(), stop: vi.fn(), set: vi.fn() }),
+}));
+
 const mockHandleDeleteAccount = vi.fn();
 const mockHandleLinkSpotify = vi.fn();
 const mockHandleSignOut = vi.fn();
