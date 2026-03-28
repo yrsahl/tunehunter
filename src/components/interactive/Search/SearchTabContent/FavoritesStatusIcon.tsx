@@ -32,7 +32,7 @@ const FavoritedSong = ({ songId, sizeClasses, removeFromFavorites }: FavoritedSo
     <Button
       data-testid="favorites-remove-button"
       size="icon"
-      className="border-none bg-transparent transition-all duration-300 hover:bg-transparent"
+      className="relative border-none bg-transparent transition-all duration-300 hover:bg-transparent"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={() => removeFromFavorites(songId)}
@@ -82,7 +82,7 @@ const NotFavoritedSong = ({ songId, addToFavorites }: NotFavoritedSongProps) => 
     <Button
       data-testid="favorites-button"
       size="icon"
-      className="border-none bg-transparent transition-all duration-300 hover:bg-transparent"
+      className="relative border-none bg-transparent transition-all duration-300 hover:bg-transparent"
       onClick={() => addToFavorites(songId)}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

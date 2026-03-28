@@ -79,7 +79,6 @@ const PlaylistTable = () => {
           disabled={!inputValue.trim() || isFetching}
           variant="primary"
           text="Load"
-          icon="search"
           type="submit"
           size="xs"
           textStyle="uppercase text-xs"

@@ -3,47 +3,56 @@ import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { formatDate } from "@/lib/formatters";
 import { fadeIn } from "@/styles/animations";
 import { motion } from "framer-motion";
-import { useState } from "react";
 import NoDataMessage from "./NoDataMessage";
 import SkeletonTable from "./SkeletonTable";
-import TableFilterBar, { type SortOption } from "./TableFilterBar";
 import TableRow from "./TableRow";
+import TableSortHead from "./TableSortHead";
+import useTableSort from "./useTableSort";
 
-type HistorySortKey = "date_desc" | "date_asc" | "song_az" | "artist_az";
-
-const SORT_OPTIONS: SortOption[] = [
-  { value: "date_desc", label: "Newest first" },
-  { value: "date_asc", label: "Oldest first" },
-  { value: "song_az", label: "Song A → Z" },
-  { value: "artist_az", label: "Artist A → Z" },
-];
+type HistorySortKey =
+  | "date_desc"
+  | "date_asc"
+  | "song_az"
+  | "song_za"
+  | "artist_az"
+  | "artist_za"
+  | "duration_asc"
+  | "duration_desc";
 
 const HistoryTable = () => {
   const {
     history: { data, isLoading },
   } = useSearchTabDataContext();
-  const [filter, setFilter] = useState("");
-  const [sort, setSort] = useState<HistorySortKey>("date_desc");
+  const { sort, setSort, toggleSort, filter, setFilter, scrollRef } =
+    useTableSort<HistorySortKey>("date_desc");
 
   const searchHistory = data?.searchHistory;
 
-  const filtered = (searchHistory ?? []).filter((t) => {
-    if (!filter) return true;
-    const q = filter.toLowerCase();
-    return (
-      t.song.title.toLowerCase().includes(q) ||
-      t.artists.some((a) => a.name.toLowerCase().includes(q))
-    );
-  });
-
-  const displayed = [...filtered].sort((a, b) => {
+  const displayed = [...(searchHistory ?? [])]
+    .filter((t) => {
+      if (!filter) return true;
+      const q = filter.toLowerCase();
+      return (
+        t.song.title.toLowerCase().includes(q) ||
+        t.artists.some((a) => a.name.toLowerCase().includes(q))
+      );
+    })
+    .sort((a, b) => {
     switch (sort) {
       case "date_asc":
         return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       case "song_az":
         return a.song.title.localeCompare(b.song.title);
+      case "song_za":
+        return b.song.title.localeCompare(a.song.title);
       case "artist_az":
         return (a.artists[0]?.name ?? "").localeCompare(b.artists[0]?.name ?? "");
+      case "artist_za":
+        return (b.artists[0]?.name ?? "").localeCompare(a.artists[0]?.name ?? "");
+      case "duration_asc":
+        return a.song.duration - b.song.duration;
+      case "duration_desc":
+        return b.song.duration - a.song.duration;
       default:
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     }
@@ -54,15 +63,27 @@ const HistoryTable = () => {
       <SkeletonTable hasHeader={false} hasExtraElement />
     </motion.div>
   ) : searchHistory?.length ? (
-    <motion.div key="content" {...fadeIn(0.3)} className="flex h-full w-full flex-col">
-      <TableFilterBar
-        filterValue={filter}
-        onFilterChange={setFilter}
-        sortValue={sort}
-        onSortChange={(v) => setSort(v as HistorySortKey)}
-        sortOptions={SORT_OPTIONS}
-      />
-      <div className="hide-scrollbars relative flex-1 overflow-scroll overflow-x-hidden px-3 pb-4 pt-2 sm:px-5 sm:pt-4 md:px-7">
+    <motion.div
+      key="content"
+      {...fadeIn(0.3)}
+      className="flex h-full w-full flex-col overflow-hidden"
+    >
+      <div className="shrink-0 px-3 sm:px-5 md:px-7">
+        <table className="w-full table-fixed">
+          <TableSortHead
+            sort={sort}
+            onToggleSort={toggleSort}
+            onReset={sort === "date_desc" && !filter ? undefined : () => { setSort("date_desc"); setFilter(""); }}
+            filterValue={filter}
+            onFilterChange={setFilter}
+            hasExtraElement
+          />
+        </table>
+      </div>
+      <div
+        ref={scrollRef}
+        className="hide-scrollbars flex-1 overflow-y-auto overflow-x-hidden px-3 pb-4 pt-2 [mask-image:linear-gradient(to_bottom,transparent_0px,black_12px)] sm:px-5 md:px-7"
+      >
         {displayed.length > 0 ? (
           <table className="w-full table-fixed">
             <tbody>
@@ -72,10 +93,7 @@ const HistoryTable = () => {
                   track={track}
                   showDuration
                   extraElement={
-                    <InfoWithToolTip
-                      variant="primary"
-                      tooltip={`Searched for on the ${formatDate(track.createdAt)} `}
-                    />
+                    <InfoWithToolTip variant="primary" tooltip={formatDate(track.createdAt)} />
                   }
                 />
               ))}
