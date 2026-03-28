@@ -13,7 +13,7 @@ import {
   trendingViewToday,
   userActivities,
 } from "@/server/db/schema";
-import { fetchItunesTrack } from "@/services/itunes/api";
+import { fetchItunesTrack, fetchItunesTrackById } from "@/services/itunes/api";
 import { fetchSpotifyArtistData, fetchSpotifyTrack } from "@/services/spotify";
 import { TrendingTrack, TrendingTracks } from "@/types/song-types";
 import { and, desc, eq, like, sql } from "drizzle-orm";
@@ -155,7 +155,7 @@ export const songRouter = createTRPCRouter({
   // Merges a Spotify-sourced song (sp_ prefix) into its iTunes counterpart.
   // Finds the iTunes match, migrates all FK relations, then deletes the sp_ record.
   enrichSpotifySongFromItunes: rateLimitedProcedure
-    .input(z.object({ songId: z.string() }))
+    .input(z.object({ songId: z.string(), itunesId: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {
       if (!input.songId.startsWith("sp_")) return;
       const spId = input.songId;
@@ -174,7 +174,14 @@ export const songRouter = createTRPCRouter({
       const primaryArtist = artistRows[0];
       if (!primaryArtist) return;
 
-      const itunesTrack = await fetchItunesTrack(song.title, primaryArtist.name, song.duration);
+      // If the caller already knows the iTunes track ID (from the vendor listing URL),
+      // use a direct lookup instead of a search — avoids a duplicate API call and
+      // works correctly across all regions (search without country defaults to US store).
+      // Fall back to search if the direct lookup returns nothing (e.g. the URL's ?i= param
+      // is a collection/album ID rather than a track ID for certain releases).
+      const itunesTrack = input.itunesId
+        ? (await fetchItunesTrackById(input.itunesId)) ?? await fetchItunesTrack(song.title, primaryArtist.name, song.duration)
+        : await fetchItunesTrack(song.title, primaryArtist.name, song.duration);
       if (!itunesTrack) return;
 
       const itunesId = itunesTrack.song.id;

@@ -1,9 +1,18 @@
-import { type NeonQueryFunction, neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
+import { Pool, neonConfig } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-serverless";
 
 import { env } from "@/env";
 import * as schema from "./schema";
 
+// Node.js 22+ ships native WebSocket; configure neon to use it
+neonConfig.webSocketConstructor = WebSocket;
+
 const dbUrl = process.env.NODE_ENV === "development" ? env.DATABASE_URL_DEV : env.DATABASE_URL;
-const sqlConnection: NeonQueryFunction<boolean, boolean> = neon(dbUrl);
-export const db = drizzle(sqlConnection, { schema });
+
+// Reuse the pool across hot reloads in dev to avoid exhausting WebSocket connections
+const globalForDb = globalThis as unknown as { pool: Pool | undefined };
+if (!globalForDb.pool) {
+  globalForDb.pool = new Pool({ connectionString: dbUrl });
+}
+
+export const db = drizzle(globalForDb.pool, { schema });

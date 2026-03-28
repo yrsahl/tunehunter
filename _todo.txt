@@ -3,8 +3,6 @@
 Create a logo
 Use Stitch for UI
 
-Animation when favoriting -> song moving there, tab opening
-
 Separate out Redis/Upstash, maybe more?
 Monitor scrapers in production
 Stresstest + Monitoring

@@ -1,8 +1,10 @@
 import InfoWithToolTip from "@/components/InfoWithTooltip";
+import { Input } from "@/components/ui/input";
 import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { formatDate } from "@/lib/formatters";
 import { fadeIn } from "@/styles/animations";
-import { motion } from "framer-motion";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
+import { SearchIcon } from "lucide-react";
 import NoDataMessage from "./NoDataMessage";
 import SkeletonTable from "./SkeletonTable";
 import TableRow from "./TableRow";
@@ -74,8 +76,6 @@ const HistoryTable = () => {
             sort={sort}
             onToggleSort={toggleSort}
             onReset={sort === "date_desc" && !filter ? undefined : () => { setSort("date_desc"); setFilter(""); }}
-            filterValue={filter}
-            onFilterChange={setFilter}
             hasExtraElement
           />
         </table>
@@ -87,16 +87,34 @@ const HistoryTable = () => {
         {displayed.length > 0 ? (
           <table className="w-full table-fixed">
             <tbody>
-              {displayed.map((track, index) => (
-                <TableRow
-                  key={`${index}-${track.song.id}`}
-                  track={track}
-                  showDuration
-                  extraElement={
-                    <InfoWithToolTip variant="primary" tooltip={formatDate(track.createdAt)} />
-                  }
-                />
-              ))}
+              <LayoutGroup id="history">
+                <AnimatePresence>
+                  {displayed.map((track) => (
+                    <TableRow
+                      key={`${track.song.id}-${track.createdAt}`}
+                      track={track}
+                      showDuration
+                      extraElement={
+                        <InfoWithToolTip variant="primary" tooltip={formatDate(track.createdAt)} />
+                      }
+                    />
+                  ))}
+                </AnimatePresence>
+              </LayoutGroup>
+              <tr>
+                <td colSpan={99} className="pb-1 pt-3">
+                  <form onSubmit={(e) => e.preventDefault()} className="relative mx-auto w-[80%]">
+                    <Input
+                      value={filter}
+                      onChange={(e) => setFilter(e.target.value)}
+                      className="h-8 border-foreground/20 bg-transparent pl-8 pr-2 text-sm font-light placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
+                    />
+                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2">
+                      <SearchIcon size={14} className="text-foreground" />
+                    </span>
+                  </form>
+                </td>
+              </tr>
             </tbody>
           </table>
         ) : (

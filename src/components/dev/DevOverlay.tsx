@@ -6,7 +6,7 @@ const DevOverlay = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="bottom-4 left-4 z-50 hidden font-mono text-xs text-white sm:fixed">
+    <div className="hidden sm:fixed sm:bottom-4 sm:left-4 sm:z-50 sm:block sm:font-mono sm:text-xs sm:text-white">
       {open && (
         <div className="mb-2 max-h-80 w-auto overflow-y-auto rounded-md bg-black/80 p-2 backdrop-blur-sm">
           {log.length === 0 && <p className="text-white/50">No calls yet.</p>}

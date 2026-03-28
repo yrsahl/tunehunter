@@ -88,10 +88,10 @@ const useSearch = () => {
     publishSearchSubmitted({ id, region, artist: artistsJoined, title, track }, false);
 
     // Store search activity and refresh history data for user (fire-and-forget)
-    addSearchActivity.mutate({ songId: id, region }, {
-      onSuccess: () => history.refetchData(),
-      onError: (error) => console.error("User activity could not be stored", error),
-    });
+    // Use mutateAsync + promise chain so the refetch fires even if this component unmounts
+    void addSearchActivity.mutateAsync({ songId: id, region })
+      .then(() => history.refetchData())
+      .catch((error) => console.error("User activity could not be stored", error));
 
     // Push to router
     const trackSearchHref = {

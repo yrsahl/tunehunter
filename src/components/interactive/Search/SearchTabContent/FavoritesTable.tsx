@@ -1,6 +1,8 @@
 import useFavorites from "@/hooks/useFavorites";
+import { Input } from "@/components/ui/input";
 import { fadeIn } from "@/styles/animations";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
+import { SearchIcon } from "lucide-react";
 import useTableSort from "./useTableSort";
 import FavoritesStatusIcon from "./FavoritesStatusIcon";
 import NoDataMessage from "./NoDataMessage";
@@ -65,8 +67,6 @@ const FavoritesTable = () => {
             sort={sort}
             onToggleSort={toggleSort}
             onReset={sort === "date_desc" && !filter ? undefined : () => { setSort("date_desc"); setFilter(""); }}
-            filterValue={filter}
-            onFilterChange={setFilter}
             hasExtraElement
           />
         </table>
@@ -87,6 +87,20 @@ const FavoritesTable = () => {
                   ))}
                 </AnimatePresence>
               </LayoutGroup>
+              <tr>
+                <td colSpan={99} className="pb-1 pt-3">
+                  <form onSubmit={(e) => e.preventDefault()} className="relative mx-auto w-[80%]">
+                    <Input
+                      value={filter}
+                      onChange={(e) => setFilter(e.target.value)}
+                      className="h-8 border-foreground/20 bg-transparent pl-8 pr-2 text-sm font-light placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
+                    />
+                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2">
+                      <SearchIcon size={14} className="text-foreground" />
+                    </span>
+                  </form>
+                </td>
+              </tr>
             </tbody>
           </table>
         ) : (

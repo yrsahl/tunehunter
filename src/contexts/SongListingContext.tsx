@@ -1,5 +1,8 @@
-import useSearchStore from "@/hooks/stores/useSearchStore";
+import EnrichmentDebugPanel from "@/components/dev/EnrichmentDebugPanel";
+import useSearchStore, { SEARCH_SUBMITTED, SelectedSearchParams } from "@/hooks/stores/useSearchStore";
+import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import useSpotifyTokens from "@/hooks/useSpotifyTokens";
+import { useEventEmitter } from "@/hooks/useEventEmitter";
 import { api } from "@/lib/api";
 import { CountryCode } from "@/lib/validators";
 import { AppRouter } from "@/server/api/root";
@@ -39,6 +42,8 @@ export const SongListingContextProvider = ({
 }: ISongListingContextProviderProps) => {
   const { userAccessToken } = useSpotifyTokens();
   const { setSelectedSearch } = useSearchStore();
+  const router = useRouterWithHelpers();
+  const { publishEvent } = useEventEmitter<SelectedSearchParams | null>(SEARCH_SUBMITTED);
   const songId = track.song.id;
 
   // Keep a query for background refresh after artist enrichment
@@ -56,9 +61,10 @@ export const SongListingContextProvider = ({
   const trackData = fetchedTrackData ?? track;
 
   // Enrich iTunes-sourced songs with Spotify data (popularity, followers, genres)
-  const { mutate: enrichItunesTrackFromSpotify } = api.song.enrichItunesTrackFromSpotify.useMutation({
-    onSuccess: () => utils.song.getTrack.invalidate({ id: songId }),
-  });
+  const { mutate: enrichItunesTrackFromSpotify, status: flowAStatus } =
+    api.song.enrichItunesTrackFromSpotify.useMutation({
+      onSuccess: () => utils.song.getTrack.invalidate({ id: songId }),
+    });
 
   useEffect(() => {
     if (userAccessToken && trackData && !songId.startsWith("sp_")) {
@@ -69,18 +75,39 @@ export const SongListingContextProvider = ({
   // Merge sp_ songs into their iTunes counterpart: finds the iTunes match, migrates all FK
   // relations, deletes the sp_ record, then navigates to the new iTunes ID.
   const enrichedSpIdRef = useRef<string | null>(null);
-  const { mutate: enrichSpotifySongFromItunes } = api.song.enrichSpotifySongFromItunes.useMutation({
-    onSuccess: (result) => {
-      if (result?.itunesId) {
-        setSelectedSearch({
+  const mergedItunesIdRef = useRef<string | null>(null);
+  const { mutate: enrichSpotifySongFromItunes, status: flowBStatus, error: flowBError } =
+    api.song.enrichSpotifySongFromItunes.useMutation({
+      onError: () => {
+        // Reset guard so the next render can retry (e.g. transient network error)
+        enrichedSpIdRef.current = null;
+      },
+      onSuccess: (result) => {
+        // If the mutation returned without an itunesId (server hit an early return),
+        // reset the guard so the effect can retry when itunesResponse next changes.
+        if (!result?.itunesId) {
+          enrichedSpIdRef.current = null;
+          return;
+        }
+        // Pre-populate the getTrack cache for the iTunes ID before navigating so that
+        // SongListings never sees track=null during the transition (which would unmount
+        // the entire provider and flash all listings back to loading state).
+        if (trackData) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          utils.song.getTrack.setData({ id: result.itunesId }, { ...trackData, song: { ...trackData.song, id: result.itunesId } } as any);
+        }
+        mergedItunesIdRef.current = result.itunesId;
+        const mergedSearch = {
           id: result.itunesId,
           region,
           artist: track.artists[0]?.name ?? "",
           title: track.song.title,
-        });
-      }
-    },
-  });
+        };
+        setSelectedSearch(mergedSearch);
+        publishEvent(mergedSearch, false);
+        void router.setParams({ id: result.itunesId });
+      },
+    });
 
   const artists = useMemo(
     () => trackData?.artists.map((artist) => artist.name).join(", ") ?? "",
@@ -97,84 +124,118 @@ export const SongListingContextProvider = ({
     );
   }, [trackData, artists]);
 
-  useEffect(() => {
-    if (isSongDataValid && songId.startsWith("sp_") && enrichedSpIdRef.current !== songId) {
-      enrichedSpIdRef.current = songId;
-      enrichSpotifySongFromItunes({ songId });
-    }
-  }, [songId, isSongDataValid]);
-
   // iTunes
-  const { data: itunesResponse, isLoading: isItunesResponseLoading } =
-    api.songListings.getSongListing.useQuery(
-      {
-        vendor: "itunes",
-        region,
-        songId,
-        artist: artists,
-        album: trackData?.song.album || "",
-        duration: trackData?.song.duration || 0,
-        title: trackData?.song.title || "",
-      },
-      {
-        refetchOnWindowFocus: false,
-        enabled: isSongDataValid,
-      },
-    );
+  const {
+    data: itunesResponse,
+    isLoading: isItunesResponseLoading,
+    isFetching: isItunesFetching,
+    isPreviousData: isItunesPlaceholder,
+  } = api.songListings.getSongListing.useQuery(
+    {
+      vendor: "itunes",
+      region,
+      songId,
+      artist: artists,
+      album: trackData?.song.album || "",
+      duration: trackData?.song.duration || 0,
+      title: trackData?.song.title || "",
+    },
+    {
+      refetchOnWindowFocus: false,
+      enabled: isSongDataValid,
+      keepPreviousData: true,
+    },
+  );
 
-  // // Beatport
-  const { data: beatportResponse, isLoading: isBeatportResponseLoading } =
-    api.songListings.getSongListing.useQuery(
-      {
-        vendor: "beatport",
-        region,
-        songId,
-        artist: artists,
-        album: trackData?.song.album || "",
-        duration: trackData?.song.duration || 0,
-        title: trackData?.song.title || "",
-      },
-      {
-        refetchOnWindowFocus: false,
-        enabled: isSongDataValid,
-      },
-    );
+  // Trigger merge when the iTunes listing returns a match for an sp_ song.
+  // The listing URL contains the iTunes trackId (?i=TRACKID), so we pass it directly —
+  // no second iTunes search needed, and the correct regional store is already used.
+  useEffect(() => {
+    if (!songId.startsWith("sp_")) return;
+    if (!itunesResponse || !("data" in itunesResponse) || !itunesResponse.data) return;
+    if (isItunesPlaceholder) return;
+    if (enrichedSpIdRef.current === songId) return;
+
+    let itunesId: string | undefined;
+    try {
+      itunesId = new URL(itunesResponse.data.url).searchParams.get("i") ?? undefined;
+    } catch {
+      return;
+    }
+    if (!itunesId) return;
+
+    enrichedSpIdRef.current = songId;
+    enrichSpotifySongFromItunes({ songId, itunesId });
+  }, [itunesResponse, songId, isItunesPlaceholder]);
+
+  // Beatport
+  const {
+    data: beatportResponse,
+    isLoading: isBeatportResponseLoading,
+    isFetching: isBeatportFetching,
+    isPreviousData: isBeatportPlaceholder,
+  } = api.songListings.getSongListing.useQuery(
+    {
+      vendor: "beatport",
+      region,
+      songId,
+      artist: artists,
+      album: trackData?.song.album || "",
+      duration: trackData?.song.duration || 0,
+      title: trackData?.song.title || "",
+    },
+    {
+      refetchOnWindowFocus: false,
+      enabled: isSongDataValid,
+      keepPreviousData: true,
+    },
+  );
 
   // Amazon
-  const { data: amazonResponse, isLoading: isAmazonResponseLoading } =
-    api.songListings.getSongListing.useQuery(
-      {
-        vendor: "amazon",
-        region,
-        songId,
-        artist: artists,
-        album: trackData?.song.album || "",
-        duration: trackData?.song.duration || 0,
-        title: trackData?.song.title || "",
-      },
-      {
-        refetchOnWindowFocus: false,
-        enabled: isSongDataValid,
-      },
-    );
+  const {
+    data: amazonResponse,
+    isLoading: isAmazonResponseLoading,
+    isFetching: isAmazonFetching,
+    isPreviousData: isAmazonPlaceholder,
+  } = api.songListings.getSongListing.useQuery(
+    {
+      vendor: "amazon",
+      region,
+      songId,
+      artist: artists,
+      album: trackData?.song.album || "",
+      duration: trackData?.song.duration || 0,
+      title: trackData?.song.title || "",
+    },
+    {
+      refetchOnWindowFocus: false,
+      enabled: isSongDataValid,
+      keepPreviousData: true,
+    },
+  );
 
   // Bandcamp
-  const { data: bandcampResponse, isLoading: isBandcampResponseLoading } =
-    api.songListings.getSongListing.useQuery(
-      {
-        vendor: "bandcamp",
-        region,
-        songId,
-        artist: artists,
-        album: trackData?.song.album || "",
-        duration: trackData?.song.duration || 0,
-        title: trackData?.song.title || "",
-      },
-      {
-        refetchOnWindowFocus: false,
-        enabled: isSongDataValid,
-      },
-    );
+  const {
+    data: bandcampResponse,
+    isLoading: isBandcampResponseLoading,
+    isFetching: isBandcampFetching,
+    isPreviousData: isBandcampPlaceholder,
+  } = api.songListings.getSongListing.useQuery(
+    {
+      vendor: "bandcamp",
+      region,
+      songId,
+      artist: artists,
+      album: trackData?.song.album || "",
+      duration: trackData?.song.duration || 0,
+      title: trackData?.song.title || "",
+    },
+    {
+      refetchOnWindowFocus: false,
+      enabled: isSongDataValid,
+      keepPreviousData: true,
+    },
+  );
 
   const getVendorResponse = useCallback(
     (vendor: SongVendorType) => {
@@ -227,5 +288,24 @@ export const SongListingContextProvider = ({
     [trackData, getVendorResponse, getVendorResponseLoadingState],
   );
 
-  return <SongListingContext.Provider value={contextValue}>{children}</SongListingContext.Provider>;
+  return (
+    <SongListingContext.Provider value={contextValue}>
+      {children}
+      <EnrichmentDebugPanel
+        songId={songId}
+        trackData={trackData}
+        isSongDataValid={isSongDataValid}
+        flowAStatus={flowAStatus}
+        flowBStatus={flowBStatus}
+        flowBError={flowBError?.message ?? null}
+        mergedItunesId={mergedItunesIdRef.current}
+        vendors={[
+          { name: "iTunes", isLoading: isItunesResponseLoading, isFetching: isItunesFetching, isPlaceholderData: isItunesPlaceholder, data: itunesResponse },
+          { name: "Beatport", isLoading: isBeatportResponseLoading, isFetching: isBeatportFetching, isPlaceholderData: isBeatportPlaceholder, data: beatportResponse },
+          { name: "Amazon", isLoading: isAmazonResponseLoading, isFetching: isAmazonFetching, isPlaceholderData: isAmazonPlaceholder, data: amazonResponse },
+          { name: "Bandcamp", isLoading: isBandcampResponseLoading, isFetching: isBandcampFetching, isPlaceholderData: isBandcampPlaceholder, data: bandcampResponse },
+        ]}
+      />
+    </SongListingContext.Provider>
+  );
 };

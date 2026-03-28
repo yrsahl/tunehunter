@@ -45,17 +45,23 @@ export const songListingsRouter = createTRPCRouter({
       }),
     ]);
 
+    // Helper: fire-and-forget request log — the song may be deleted by the sp_→iTunes
+    // enrichment while this query is in-flight, causing a FK violation. Safe to ignore.
+    const logRequest = (values: typeof songListingRequests.$inferInsert) => {
+      void ctx.db.insert(songListingRequests).values(values).catch(() => undefined);
+    };
+
     // 1. Try DB first
     const isStale = dbListing && Date.now() - dbListing.updatedAt.getTime() > LISTING_TTL_MS;
     if (dbListing && !isStale) {
-      await ctx.db.insert(songListingRequests).values({ songId, vendor, source: "db_cache" });
+      logRequest({ songId, vendor, source: "db_cache" });
       return { data: dbListing };
     }
 
     // Check cached "not found" result
     const isMissStale = dbMiss && Date.now() - dbMiss.checkedAt.getTime() > MISS_TTL_MS;
     if (dbMiss && !isMissStale) {
-      await ctx.db.insert(songListingRequests).values({ songId, vendor, source: "db_cache" });
+      logRequest({ songId, vendor, source: "db_cache" });
       return { error: "NO_DATA_FOUND" };
     }
 
@@ -63,7 +69,7 @@ export const songListingsRouter = createTRPCRouter({
     const identifier = ctx.session?.user?.id ?? ctx.ip;
     const { success } = await vendorRateLimiters[vendor]!.limit(identifier);
     if (!success) {
-      await ctx.db.insert(songListingRequests).values({ songId, vendor, source: "rate_limited" });
+      logRequest({ songId, vendor, source: "rate_limited" });
       return { error: "RATE_LIMITED" as const };
     }
 
@@ -78,42 +84,47 @@ export const songListingsRouter = createTRPCRouter({
         signal: AbortSignal.timeout(8_000),
       });
     } catch {
-      await ctx.db.insert(songListingRequests).values({ songId, vendor, source: "store_unreachable" });
+      logRequest({ songId, vendor, source: "store_unreachable" });
       return { error: "STORE_UNREACHABLE" };
     }
     const fetchDurationMs = Date.now() - fetchStart;
-    await ctx.db.insert(songListingRequests).values({ songId, vendor, source: "external", fetchDurationMs });
+    logRequest({ songId, vendor, source: "external", fetchDurationMs });
     if (vendorListing.data) {
-      const [upserted] = await ctx.db
-        .insert(songListings)
-        .values(vendorListing.data)
-        .onConflictDoUpdate({
-          target: [songListings.songId, songListings.vendorId, songListings.region],
-          set: {
-            url: vendorListing.data.url,
-            price: vendorListing.data.price,
-            currency: vendorListing.data.currency,
-            duration: vendorListing.data.duration,
-            updatedAt: new Date(),
-          },
-        })
-        .returning();
-      // Construct the response from already-fetched relations — no extra round-trip needed
-      if (upserted && songRecord) {
-        return { data: { ...upserted, songVendor: vendorMetaData, song: songRecord } };
+      try {
+        const [upserted] = await ctx.db
+          .insert(songListings)
+          .values(vendorListing.data)
+          .onConflictDoUpdate({
+            target: [songListings.songId, songListings.vendorId, songListings.region],
+            set: {
+              url: vendorListing.data.url,
+              price: vendorListing.data.price,
+              currency: vendorListing.data.currency,
+              duration: vendorListing.data.duration,
+              updatedAt: new Date(),
+            },
+          })
+          .returning();
+        // Construct the response from already-fetched relations — no extra round-trip needed
+        if (upserted && songRecord) {
+          return { data: { ...upserted, songVendor: vendorMetaData, song: songRecord } };
+        }
+      } catch {
+        // Song was deleted by enrichment mid-flight — cache write is lost, client re-fetches
       }
     }
 
     // Log the genuine no-match and cache it so we don't re-hit the vendor within the TTL
     await Promise.all([
-      ctx.db.insert(songListingRequests).values({ songId, vendor, source: "no_match" }),
+      ctx.db.insert(songListingRequests).values({ songId, vendor, source: "no_match" }).catch(() => undefined),
       ctx.db
         .insert(songListingMisses)
         .values({ songId, vendorId, region })
         .onConflictDoUpdate({
           target: [songListingMisses.songId, songListingMisses.vendorId, songListingMisses.region],
           set: { checkedAt: new Date() },
-        }),
+        })
+        .catch(() => undefined),
     ]);
 
     return { error: "NO_DATA_FOUND" };

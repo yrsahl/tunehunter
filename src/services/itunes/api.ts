@@ -111,6 +111,43 @@ export const fetchItunesTrack = async (
   };
 };
 
+export const fetchItunesTrackById = async (itunesId: string): Promise<Track | null> => {
+  const params = new URLSearchParams({ id: itunesId, entity: "song" });
+  const response = await fetch(`https://itunes.apple.com/lookup?${params}`, {
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+  });
+  if (!response.ok) return null;
+
+  const data = (await response.json()) as ItunesApiResponse;
+  // When the ID belongs to a single-release, iTunes returns the collection first
+  // (wrapperType="collection") followed by the track — find the first track result.
+  const result = data.results.find((r) => r.wrapperType === "track" && r.kind === "song");
+  if (!result) return null;
+
+  return {
+    song: {
+      id: result.trackId.toString(),
+      title: result.trackName,
+      duration: result.trackTimeMillis,
+      album: result.collectionName ?? null,
+      albumArtUrl: result.artworkUrl100 ?? "",
+      year: result.releaseDate?.substring(0, 10) ?? "",
+      genre: result.primaryGenreName ?? null,
+      spotifyId: null,
+      previewUrl: result.previewUrl ?? null,
+      isrc: null,
+    },
+    artists: [
+      {
+        id: result.artistId.toString(),
+        name: result.artistName,
+        popularity: null,
+        followers: null,
+      },
+    ],
+  };
+};
+
 export const fetchItunesSearchData = async (query: string): Promise<SearchData | null> => {
   const params = new URLSearchParams({
     term: query,

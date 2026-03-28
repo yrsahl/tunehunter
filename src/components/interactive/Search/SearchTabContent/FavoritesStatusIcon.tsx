@@ -112,6 +112,10 @@ const FavoritesStatusIcon = ({ songId, variant = "big" }: FavoritesStatusIconPro
 
   const sizeClasses = variant === "big" ? "h-8 w-8" : "h-7 w-7";
 
+  const handleAddToFavorites = async (id: string) => {
+    await addToFavorites(id);
+  };
+
   if (isOnFavorites(songId)) {
     return (
       <FavoritedSong
@@ -122,7 +126,7 @@ const FavoritesStatusIcon = ({ songId, variant = "big" }: FavoritesStatusIconPro
     );
   }
 
-  return <NotFavoritedSong songId={songId} addToFavorites={addToFavorites} />;
+  return <NotFavoritedSong songId={songId} addToFavorites={handleAddToFavorites} />;
 };
 
 export default FavoritesStatusIcon;

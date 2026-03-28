@@ -1,13 +1,9 @@
-import { Input } from "@/components/ui/input";
-import { SearchIcon } from "lucide-react";
 import SortHeader from "./SortHeader";
 
 interface TableSortHeadProps {
   sort: string;
   onToggleSort: (asc: string, desc: string) => void;
   onReset?: () => void;
-  filterValue: string;
-  onFilterChange: (value: string) => void;
   hasExtraElement?: boolean;
 }
 
@@ -15,24 +11,11 @@ const TableSortHead = ({
   sort,
   onToggleSort,
   onReset,
-  filterValue,
-  onFilterChange,
   hasExtraElement,
 }: TableSortHeadProps) => (
   <thead>
     <tr>
-      <th className="w-[56px] py-2 pr-4 sm:w-[132px] sm:pr-6" colSpan={hasExtraElement ? 2 : 1}>
-        <form onSubmit={(e) => e.preventDefault()} className="relative hidden sm:block">
-          <Input
-            value={filterValue}
-            onChange={(e) => onFilterChange(e.target.value)}
-            className="h-8 border-foreground/20 bg-transparent pl-8 pr-2 text-sm font-light placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
-          />
-          <span className="absolute left-2.5 top-1/2 -translate-y-1/2">
-            <SearchIcon size={14} className="text-foreground" />
-          </span>
-        </form>
-      </th>
+      <th className="w-[56px] py-2 pr-4 sm:w-[132px] sm:pr-6" colSpan={hasExtraElement ? 2 : 1} />
       <th className="w-[30%] py-2 pr-5 text-left font-normal sm:w-[28%] sm:pr-6">
         <SortHeader
           label="Artist"
