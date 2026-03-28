@@ -148,7 +148,7 @@ const RegisterForm: FC<IProps> = ({ email, setEmail, menuState, setMenuState }) 
                   <FormLabel className="text-base font-normal">Region</FormLabel>
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger id="region" className="border-2 border-primary">
+                      <SelectTrigger id="region" className="h-10 border-2 border-primary">
                         <motion.div
                           key={field.value}
                           {...growIn()}
