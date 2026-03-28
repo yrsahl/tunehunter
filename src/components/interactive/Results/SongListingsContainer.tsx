@@ -53,7 +53,7 @@ const SongListingsContainer = ({ region }: ISongListingsProps) => {
         <div className="mx-auto flex w-[83%] flex-col items-center gap-0.5">
           <p className="text-center text-xs text-foreground/40 sm:hidden">
             Prices shown for{" "}
-            {new Intl.DisplayNames(["en"], { type: "region" }).of(region) ?? region}
+            {new Intl.DisplayNames(["en"], { type: "region" }).of(region) ?? region}.
           </p>
           <motion.p
             animate={{ opacity: hasLosslessOption ? 1 : 0 }}

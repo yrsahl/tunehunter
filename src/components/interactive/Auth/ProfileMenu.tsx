@@ -155,7 +155,7 @@ const ProfileMenu = () => {
         </div>
         <div className="flex items-center justify-center">
           <InfoWithToolTip
-            tooltip="Your role helps us tailor the app to what matters most to you. Music-lover get the default experience, DJs see Beatport pricing first, Audiophiles get stores with uncompressed/lossless results first."
+            tooltip="Your role can help us tailor the app for you in future versions."
             side="right"
             iconSize="24px"
             variant="info"
