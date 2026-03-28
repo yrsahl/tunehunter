@@ -1,8 +1,11 @@
 import EnrichmentDebugPanel from "@/components/dev/EnrichmentDebugPanel";
-import useSearchStore, { SEARCH_SUBMITTED, SelectedSearchParams } from "@/hooks/stores/useSearchStore";
+import useSearchStore, {
+  SEARCH_SUBMITTED,
+  SelectedSearchParams,
+} from "@/hooks/stores/useSearchStore";
+import { useEventEmitter } from "@/hooks/useEventEmitter";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import useSpotifyTokens from "@/hooks/useSpotifyTokens";
-import { useEventEmitter } from "@/hooks/useEventEmitter";
 import { api } from "@/lib/api";
 import { CountryCode } from "@/lib/validators";
 import { AppRouter } from "@/server/api/root";
@@ -76,38 +79,44 @@ export const SongListingContextProvider = ({
   // relations, deletes the sp_ record, then navigates to the new iTunes ID.
   const enrichedSpIdRef = useRef<string | null>(null);
   const mergedItunesIdRef = useRef<string | null>(null);
-  const { mutate: enrichSpotifySongFromItunes, status: flowBStatus, error: flowBError } =
-    api.song.enrichSpotifySongFromItunes.useMutation({
-      onError: () => {
-        // Reset guard so the next render can retry (e.g. transient network error)
+  const {
+    mutate: enrichSpotifySongFromItunes,
+    status: flowBStatus,
+    error: flowBError,
+  } = api.song.enrichSpotifySongFromItunes.useMutation({
+    onError: () => {
+      // Reset guard so the next render can retry (e.g. transient network error)
+      enrichedSpIdRef.current = null;
+    },
+    onSuccess: (result) => {
+      // If the mutation returned without an itunesId (server hit an early return),
+      // reset the guard so the effect can retry when itunesResponse next changes.
+      if (!result?.itunesId) {
         enrichedSpIdRef.current = null;
-      },
-      onSuccess: (result) => {
-        // If the mutation returned without an itunesId (server hit an early return),
-        // reset the guard so the effect can retry when itunesResponse next changes.
-        if (!result?.itunesId) {
-          enrichedSpIdRef.current = null;
-          return;
-        }
-        // Pre-populate the getTrack cache for the iTunes ID before navigating so that
-        // SongListings never sees track=null during the transition (which would unmount
-        // the entire provider and flash all listings back to loading state).
-        if (trackData) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          utils.song.getTrack.setData({ id: result.itunesId }, { ...trackData, song: { ...trackData.song, id: result.itunesId } } as any);
-        }
-        mergedItunesIdRef.current = result.itunesId;
-        const mergedSearch = {
-          id: result.itunesId,
-          region,
-          artist: track.artists[0]?.name ?? "",
-          title: track.song.title,
-        };
-        setSelectedSearch(mergedSearch);
-        publishEvent(mergedSearch, false);
-        void router.setParams({ id: result.itunesId });
-      },
-    });
+        return;
+      }
+      // Pre-populate the getTrack cache for the iTunes ID before navigating so that
+      // SongListings never sees track=null during the transition (which would unmount
+      // the entire provider and flash all listings back to loading state).
+      if (trackData) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        utils.song.getTrack.setData({ id: result.itunesId }, {
+          ...trackData,
+          song: { ...trackData.song, id: result.itunesId },
+        } as any);
+      }
+      mergedItunesIdRef.current = result.itunesId;
+      const mergedSearch = {
+        id: result.itunesId,
+        region,
+        artist: track.artists[0]?.name ?? "",
+        title: track.song.title,
+      };
+      setSelectedSearch(mergedSearch);
+      publishEvent(mergedSearch, false);
+      void router.setParams({ id: result.itunesId });
+    },
+  });
 
   const artists = useMemo(
     () => trackData?.artists.map((artist) => artist.name).join(", ") ?? "",
@@ -291,21 +300,47 @@ export const SongListingContextProvider = ({
   return (
     <SongListingContext.Provider value={contextValue}>
       {children}
-      <EnrichmentDebugPanel
-        songId={songId}
-        trackData={trackData}
-        isSongDataValid={isSongDataValid}
-        flowAStatus={flowAStatus}
-        flowBStatus={flowBStatus}
-        flowBError={flowBError?.message ?? null}
-        mergedItunesId={mergedItunesIdRef.current}
-        vendors={[
-          { name: "iTunes", isLoading: isItunesResponseLoading, isFetching: isItunesFetching, isPlaceholderData: isItunesPlaceholder, data: itunesResponse },
-          { name: "Beatport", isLoading: isBeatportResponseLoading, isFetching: isBeatportFetching, isPlaceholderData: isBeatportPlaceholder, data: beatportResponse },
-          { name: "Amazon", isLoading: isAmazonResponseLoading, isFetching: isAmazonFetching, isPlaceholderData: isAmazonPlaceholder, data: amazonResponse },
-          { name: "Bandcamp", isLoading: isBandcampResponseLoading, isFetching: isBandcampFetching, isPlaceholderData: isBandcampPlaceholder, data: bandcampResponse },
-        ]}
-      />
+      {process.env.NODE_ENV === "development" && (
+        <EnrichmentDebugPanel
+          songId={songId}
+          trackData={trackData}
+          isSongDataValid={isSongDataValid}
+          flowAStatus={flowAStatus}
+          flowBStatus={flowBStatus}
+          flowBError={flowBError?.message ?? null}
+          mergedItunesId={mergedItunesIdRef.current}
+          vendors={[
+            {
+              name: "iTunes",
+              isLoading: isItunesResponseLoading,
+              isFetching: isItunesFetching,
+              isPlaceholderData: isItunesPlaceholder,
+              data: itunesResponse,
+            },
+            {
+              name: "Beatport",
+              isLoading: isBeatportResponseLoading,
+              isFetching: isBeatportFetching,
+              isPlaceholderData: isBeatportPlaceholder,
+              data: beatportResponse,
+            },
+            {
+              name: "Amazon",
+              isLoading: isAmazonResponseLoading,
+              isFetching: isAmazonFetching,
+              isPlaceholderData: isAmazonPlaceholder,
+              data: amazonResponse,
+            },
+            {
+              name: "Bandcamp",
+              isLoading: isBandcampResponseLoading,
+              isFetching: isBandcampFetching,
+              isPlaceholderData: isBandcampPlaceholder,
+              data: bandcampResponse,
+            },
+          ]}
+        />
+      )}
     </SongListingContext.Provider>
   );
 };
