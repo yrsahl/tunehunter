@@ -3,15 +3,35 @@ import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { api } from "@/lib/api";
 import { fadeIn } from "@/styles/animations";
 import { AnimatePresence, motion } from "framer-motion";
+import { HeartIcon } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import NoDataMessage from "./NoDataMessage";
 import SkeletonTable from "./SkeletonTable";
 import TableRow from "./TableRow";
 
 const PlaylistTable = () => {
   const router = useRouterWithHelpers();
+  const { status } = useSession();
   const [inputValue, setInputValue] = useState("");
   const [submittedUrl, setSubmittedUrl] = useState("");
+
+  const favoriteElement = () => {
+    if (status === "authenticated") return null;
+    return (
+      <button
+        className="flex items-center justify-center p-2 text-foreground/40 transition-colors hover:text-foreground"
+        onClick={() => {
+          toast("Sign in to save songs to your favorites", {
+            action: { label: "Sign in", onClick: () => router.setParams({ profile: "login" }) },
+          });
+        }}
+      >
+        <HeartIcon className="h-7 w-7" />
+      </button>
+    );
+  };
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -51,7 +71,7 @@ const PlaylistTable = () => {
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="https://open.spotify.com/playlist/3TxNViSYOIVuZLEe9ZIbyx?si=8974367fcb0f488a"
-          className="min-w-0 flex-1 bg-transparent text-sm text-foreground/80 outline-none placeholder:text-muted-foreground/50"
+          className="min-w-0 flex-1 bg-transparent text-sm text-foreground/80 outline-none placeholder:text-muted-foreground/80"
         />
         <div className="min-w-0">
           <IconButton
@@ -67,40 +87,41 @@ const PlaylistTable = () => {
 
       <div className="relative flex-1 overflow-hidden">
         <AnimatePresence mode="wait">
-        {isFetching ? (
-          <motion.div key="skeleton" {...fadeIn(0.2)} className="h-full w-full">
-            <SkeletonTable hasHeader={false} />
-          </motion.div>
-        ) : (
-          <motion.div key={submittedUrl || "empty"} {...fadeIn(0.2)} className="h-full w-full">
-            {!submittedUrl && (
-              <NoDataMessage message="Paste a public Spotify playlist link above to browse its tracks." />
-            )}
-            {submittedUrl && hasError && (
-              <NoDataMessage
-                message={"error" in data && data.error ? data.error : "Something went wrong."}
-              />
-            )}
-            {submittedUrl && tracks && tracks.length === 0 && (
-              <NoDataMessage message="This playlist is empty." />
-            )}
-            {submittedUrl && tracks && tracks.length > 0 && (
-              <div className="hide-scrollbars relative h-full w-full overflow-scroll overflow-x-hidden px-3 pb-4 pt-2 sm:px-5 sm:pt-4 md:px-7">
-                <table className="w-full table-fixed">
-                  <tbody>
-                    {tracks.map((track, index) => (
-                      <TableRow
-                        key={`${index}-${track.song.spotifyId}`}
-                        track={track}
-                        showDuration
-                      />
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </motion.div>
-        )}
+          {isFetching ? (
+            <motion.div key="skeleton" {...fadeIn(0.2)} className="h-full w-full">
+              <SkeletonTable hasHeader={false} />
+            </motion.div>
+          ) : (
+            <motion.div key={submittedUrl || "empty"} {...fadeIn(0.2)} className="h-full w-full">
+              {!submittedUrl && (
+                <NoDataMessage message="Paste a public Spotify playlist link above to browse its tracks." />
+              )}
+              {submittedUrl && hasError && (
+                <NoDataMessage
+                  message={"error" in data && data.error ? data.error : "Something went wrong."}
+                />
+              )}
+              {submittedUrl && tracks && tracks.length === 0 && (
+                <NoDataMessage message="This playlist is empty." />
+              )}
+              {submittedUrl && tracks && tracks.length > 0 && (
+                <div className="hide-scrollbars relative h-full w-full overflow-scroll overflow-x-hidden px-3 pb-4 pt-2 sm:px-5 sm:pt-4 md:px-7">
+                  <table className="w-full table-fixed">
+                    <tbody>
+                      {tracks.map((track, index) => (
+                        <TableRow
+                          key={`${index}-${track.song.spotifyId}`}
+                          track={track}
+                          showDuration
+                          extraElement={favoriteElement()}
+                        />
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
     </div>

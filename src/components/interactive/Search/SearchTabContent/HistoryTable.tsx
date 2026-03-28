@@ -29,7 +29,10 @@ const HistoryTable = () => {
                 track={track}
                 showDuration
                 extraElement={
-                  <InfoWithToolTip tooltip={`Searched for on the ${formatDate(track.createdAt)}`} />
+                  <InfoWithToolTip
+                    variant="primary"
+                    tooltip={`Searched for on the ${formatDate(track.createdAt)} `}
+                  />
                 }
               />
             ))}
