@@ -43,7 +43,9 @@ const placeholderValues = [
 interface ISearchBarProps {}
 
 const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = () => {
-  const [currentPlaceholder, setCurrentPlaceholder] = useState("");
+  const [currentPlaceholder, setCurrentPlaceholder] = useState(
+    "Search for a track to compare prices…",
+  );
   const { handleSearchSubmit, handleInputChange, resetSearch } = useSearch();
   const { searchState } = useSearchStore();
   const { showQueries, setShowQueries, queryData, isQueryDataLoading, lastQuery, requestQueryData } =
@@ -53,10 +55,14 @@ const SearchBar: ForwardRefRenderFunction<HTMLDivElement, ISearchBarProps> = () 
   const searchSettingsIconRef = useRef<HTMLDivElement>(null);
   const searchSettingsWindowRef = useRef<HTMLDivElement>(null);
 
-  // Puts a random placeholder song value into the search bar
+  // First-time visitors see the descriptive placeholder; returning visitors see a random song
   useIsomorphicLayoutEffect(() => {
-    const rndPlaceholderIndex = Math.floor(Math.random() * placeholderValues.length);
-    setCurrentPlaceholder(placeholderValues[rndPlaceholderIndex]!);
+    if (localStorage.getItem("th_visited")) {
+      const rndPlaceholderIndex = Math.floor(Math.random() * placeholderValues.length);
+      setCurrentPlaceholder(placeholderValues[rndPlaceholderIndex]!);
+    } else {
+      localStorage.setItem("th_visited", "1");
+    }
   }, []);
 
   // Trigger form submit when settings change
