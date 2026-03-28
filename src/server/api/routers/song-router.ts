@@ -13,7 +13,6 @@ import {
   trendingViewToday,
   userActivities,
 } from "@/server/db/schema";
-import { fetchItunesTrack, fetchItunesTrackById } from "@/services/itunes/api";
 import { fetchSpotifyArtistData, fetchSpotifyTrack } from "@/services/spotify";
 import { TrendingTrack, TrendingTracks } from "@/types/song-types";
 import { and, desc, eq, like, sql } from "drizzle-orm";
@@ -155,10 +154,10 @@ export const songRouter = createTRPCRouter({
   // Merges a Spotify-sourced song (sp_ prefix) into its iTunes counterpart.
   // Finds the iTunes match, migrates all FK relations, then deletes the sp_ record.
   enrichSpotifySongFromItunes: rateLimitedProcedure
-    .input(z.object({ songId: z.string(), itunesId: z.string().optional() }))
+    .input(z.object({ songId: z.string(), itunesId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       if (!input.songId.startsWith("sp_")) return;
-      const spId = input.songId;
+      const { songId: spId, itunesId } = input;
 
       const song = await ctx.db.query.songs.findFirst({
         where: (songs, { eq }) => eq(songs.id, spId),
@@ -171,36 +170,20 @@ export const songRouter = createTRPCRouter({
         .innerJoin(artists, eq(songArtists.artistId, artists.id))
         .where(eq(songArtists.songId, spId));
 
-      const primaryArtist = artistRows[0];
-      if (!primaryArtist) return;
-
-      // If the caller already knows the iTunes track ID (from the vendor listing URL),
-      // use a direct lookup instead of a search — avoids a duplicate API call and
-      // works correctly across all regions (search without country defaults to US store).
-      // Fall back to search if the direct lookup returns nothing (e.g. the URL's ?i= param
-      // is a collection/album ID rather than a track ID for certain releases).
-      const itunesTrack = input.itunesId
-        ? (await fetchItunesTrackById(input.itunesId)) ?? await fetchItunesTrack(song.title, primaryArtist.name, song.duration)
-        : await fetchItunesTrack(song.title, primaryArtist.name, song.duration);
-      if (!itunesTrack) return;
-
-      const itunesId = itunesTrack.song.id;
-      const itunesArtist = itunesTrack.artists[0];
-
       await ctx.db.transaction(async (tx) => {
-        // 1. Upsert iTunes song, carrying over spotifyId and isrc from the sp_ record
+        // 1. Upsert iTunes song — all data already available on the sp_ record
         await tx
           .insert(songs)
           .values({
             id: itunesId,
-            title: itunesTrack.song.title,
-            duration: itunesTrack.song.duration,
-            album: itunesTrack.song.album,
-            albumArtUrl: itunesTrack.song.albumArtUrl,
-            year: itunesTrack.song.year,
-            genre: itunesTrack.song.genre,
+            title: song.title,
+            duration: song.duration,
+            album: song.album,
+            albumArtUrl: song.albumArtUrl,
+            year: song.year,
+            genre: song.genre,
             spotifyId: song.spotifyId,
-            previewUrl: itunesTrack.song.previewUrl,
+            previewUrl: song.previewUrl,
             isrc: song.isrc,
           })
           .onConflictDoUpdate({
@@ -213,15 +196,11 @@ export const songRouter = createTRPCRouter({
             },
           });
 
-        // 2. Upsert iTunes artist and link to the iTunes song
-        if (itunesArtist) {
-          await tx
-            .insert(artists)
-            .values({ id: itunesArtist.id, name: itunesArtist.name, popularity: null, followers: null })
-            .onConflictDoNothing();
+        // 2. Link existing sp_ artists to the iTunes song
+        for (const artist of artistRows) {
           await tx
             .insert(songArtists)
-            .values({ songId: itunesId, artistId: itunesArtist.id })
+            .values({ songId: itunesId, artistId: artist.id })
             .onConflictDoNothing();
         }
 
@@ -254,13 +233,11 @@ export const songRouter = createTRPCRouter({
           .set({ songId: itunesId })
           .where(eq(songListingRequests.songId, spId));
 
-        // 7. Collect sp_ artist IDs before deletion for orphan cleanup below
-        const spArtistIds = artistRows.map((a) => a.id).filter((id) => id.startsWith("sp_"));
-
-        // 8. Delete sp_ song — cascades any remaining songArtists not yet migrated
+        // 7. Delete sp_ song — cascades any remaining songArtists not yet migrated
         await tx.delete(songs).where(eq(songs.id, spId));
 
-        // 9. Delete orphaned sp_ artists (no longer referenced by any song)
+        // 8. Delete orphaned sp_ artists (no longer referenced by any song)
+        const spArtistIds = artistRows.map((a) => a.id).filter((id) => id.startsWith("sp_"));
         for (const artistId of spArtistIds) {
           const [ref] = await tx
             .select({ songId: songArtists.songId })
