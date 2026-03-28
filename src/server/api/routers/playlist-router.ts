@@ -1,6 +1,6 @@
 import { clientCredentialsToken } from "@/server/db/schema";
 import { requestClientCredentialsToken } from "@/services/spotify";
-import { fetchAllPlaylistTracks } from "@/services/spotify/api";
+import { fetchAllPlaylistTracks, fetchPlaylistMeta } from "@/services/spotify/api";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -45,14 +45,19 @@ export const playlistRouter = createTRPCRouter({
       token = newToken.access_token;
     }
 
-    const tracks = await fetchAllPlaylistTracks(token, playlistId);
+    const [tracks, meta] = await Promise.all([
+      fetchAllPlaylistTracks(token, playlistId),
+      fetchPlaylistMeta(token, playlistId),
+    ]);
     if (tracks === "not_found")
       return {
         error:
           "This playlist is curated by Spotify and can't be loaded. Try linking one of your own." as const,
       };
+    if (tracks === "no_music_tracks")
+      return { error: "This playlist only contains podcast episodes — no music tracks to load." as const };
     if (tracks === null) return { error: "Playlist not found or is private." as const };
 
-    return { tracks };
+    return { tracks, meta };
   }),
 });

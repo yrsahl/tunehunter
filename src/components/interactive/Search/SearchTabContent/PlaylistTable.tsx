@@ -1,10 +1,11 @@
 import IconButton from "@/components/IconButton";
+import WithTooltip from "@/components/WithTooltip";
 import useFavorites from "@/hooks/useFavorites";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { api } from "@/lib/api";
-import { fadeIn, slideInFromBottom } from "@/styles/animations";
+import { fadeIn } from "@/styles/animations";
 import { AnimatePresence, motion } from "framer-motion";
-import { HeartIcon } from "lucide-react";
+import { ArrowLeftRightIcon, HeartIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -16,6 +17,7 @@ const PlaylistTable = () => {
   const router = useRouterWithHelpers();
   const [inputValue, setInputValue] = useState("");
   const [submittedUrl, setSubmittedUrl] = useState("");
+  const [isEditing, setIsEditing] = useState(true);
   const { status } = useSession();
   const { addAllToFavorites, isAddingAllToFavorites } = useFavorites();
 
@@ -32,6 +34,14 @@ const PlaylistTable = () => {
     { url: submittedUrl },
     { enabled: !!submittedUrl, staleTime: 5 * 60 * 1000, retry: false },
   );
+
+  const hasError = data && "error" in data;
+  const tracks = data && "tracks" in data ? data.tracks : null;
+  const meta = data && "meta" in data ? data.meta : null;
+
+  useEffect(() => {
+    if (tracks && !isFetching) setIsEditing(false);
+  }, [tracks, isFetching]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,33 +68,97 @@ const PlaylistTable = () => {
     }
   };
 
-  const hasError = data && "error" in data;
-  const tracks = data && "tracks" in data ? data.tracks : null;
+  const showLoadedHeader = !isEditing && !!tracks && !isFetching;
 
   return (
     <div className="flex h-full w-full flex-col">
-      <form
-        onSubmit={handleSubmit}
-        className="flex shrink-0 items-center gap-2 border-b border-foreground/10 px-3 py-2 sm:px-5"
-      >
-        <input
-          type="text"
-          data-testid="playlist-url-input"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          placeholder="https://open.spotify.com/playlist/..."
-          className="min-w-0 flex-1 bg-transparent text-base text-foreground/80 outline-none placeholder:text-muted-foreground/80"
-        />
-        <IconButton
-          disabled={!inputValue.trim() || isFetching}
-          variant="primary"
-          text="Load"
-          type="submit"
-          size="xs"
-          textStyle="uppercase text-xs"
-          className="w-auto shrink-0"
-        />
-      </form>
+      <div className="shrink-0 border-b border-foreground/10">
+        <AnimatePresence mode="wait" initial={false}>
+          {showLoadedHeader ? (
+            <motion.div
+              key="loaded"
+              {...fadeIn(0.15)}
+              className="flex h-12 items-center gap-2 px-3 sm:px-5"
+            >
+              <div className="min-w-0 flex-1 truncate">
+                {meta?.name ? (
+                  <span className="text-base text-foreground/80">{meta.name}</span>
+                ) : (
+                  <span className="text-base text-foreground/30">
+                    {tracks.length} track{tracks.length === 1 ? "" : "s"}
+                  </span>
+                )}
+                {meta?.owner && (
+                  <span className="text-base text-foreground/30"> · {meta.owner}</span>
+                )}
+              </div>
+              <div className="flex shrink-0 items-center gap-3">
+                <span className="text-base text-foreground/30">
+                  {tracks.length} track{tracks.length === 1 ? "" : "s"}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleFavoriteAll}
+                  disabled={isAddingAllToFavorites}
+                  className="flex items-center gap-1.5 text-base text-primary transition hover:text-foreground disabled:opacity-40"
+                >
+                  <HeartIcon className="h-4 w-4" />
+                  Save all
+                </button>
+                <WithTooltip tooltip="Edit playlist URL" mobileToast="Edit playlist URL" asChild>
+                  <button
+                    type="button"
+                    onClick={() => setIsEditing(true)}
+                    className="flex h-8 w-8 items-center justify-center text-foreground/40 transition hover:text-foreground"
+                  >
+                    <ArrowLeftRightIcon className="h-4 w-4" />
+                  </button>
+                </WithTooltip>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.form
+              key="input"
+              {...fadeIn(0.15)}
+              onSubmit={handleSubmit}
+              className="flex h-12 items-center gap-2 px-3 sm:px-5"
+            >
+              <input
+                type="text"
+                data-testid="playlist-url-input"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="https://open.spotify.com/playlist/..."
+                className="min-w-0 flex-1 bg-transparent text-sm text-foreground/80 outline-none placeholder:text-muted-foreground/80"
+              />
+              <IconButton
+                disabled={!inputValue.trim() || isFetching}
+                variant="primary"
+                text="Load playlist"
+                type="submit"
+                size="xs"
+                textStyle="uppercase text-xs"
+                className="w-auto shrink-0"
+              />
+              {!!tracks && (
+                <WithTooltip
+                  tooltip="Back to playlist info"
+                  mobileToast="Back to playlist info"
+                  asChild
+                >
+                  <button
+                    type="button"
+                    onClick={() => setIsEditing(false)}
+                    className="flex h-8 w-8 items-center justify-center text-foreground/40 transition hover:text-foreground"
+                  >
+                    <ArrowLeftRightIcon className="h-4 w-4" />
+                  </button>
+                </WithTooltip>
+              )}
+            </motion.form>
+          )}
+        </AnimatePresence>
+      </div>
 
       <div className="relative flex-1 overflow-hidden">
         <AnimatePresence mode="wait">
@@ -106,7 +180,7 @@ const PlaylistTable = () => {
                 <NoDataMessage message="This playlist is empty." />
               )}
               {submittedUrl && tracks && tracks.length > 0 && (
-                <div className="hide-scrollbars relative h-full w-full overflow-scroll overflow-x-hidden px-3 pb-4 pt-2 sm:px-5 sm:pt-4 md:px-7">
+                <div className="hide-scrollbars relative h-full w-full overflow-scroll overflow-x-hidden px-3 pb-4 pt-2 sm:px-5 md:px-7">
                   <table className="w-full table-fixed">
                     <tbody>
                       {tracks.map((track, index) => (
@@ -124,29 +198,6 @@ const PlaylistTable = () => {
           )}
         </AnimatePresence>
       </div>
-
-      <AnimatePresence>
-        {tracks && tracks.length > 0 && !isFetching && (
-          <motion.div
-            key="save-all-footer"
-            {...slideInFromBottom(0.25)}
-            className="flex shrink-0 items-center justify-between border-t border-foreground/10 px-3 py-2 sm:px-5"
-          >
-            <span className="text-xs text-foreground/30">
-              {tracks.length} track{tracks.length === 1 ? "" : "s"}
-            </span>
-            <button
-              type="button"
-              onClick={handleFavoriteAll}
-              disabled={isAddingAllToFavorites}
-              className="flex items-center gap-1.5 text-xs text-foreground/50 transition hover:text-foreground/80 disabled:opacity-40"
-            >
-              <HeartIcon className="h-3.5 w-3.5" />
-              Save all to favorites
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };

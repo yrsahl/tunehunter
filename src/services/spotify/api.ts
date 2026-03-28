@@ -141,19 +141,37 @@ export const fetchSpotifyArtistData = async (token: string, artistId: string) =>
   return fetchSpotifyData<SpotifyArtist>(token, artistUrl);
 };
 
+type SpotifyPlaylistMeta = {
+  name: string;
+  owner: { display_name: string };
+};
+
+export const fetchPlaylistMeta = async (
+  token: string,
+  playlistId: string,
+): Promise<{ name: string; owner: string } | null> => {
+  const data = await fetchSpotifyData<SpotifyPlaylistMeta>(
+    token,
+    `https://api.spotify.com/v1/playlists/${playlistId}?fields=name,owner(display_name)`,
+  );
+  if (!data) return null;
+  return { name: data.name, owner: data.owner.display_name };
+};
+
 type SpotifyPlaylistTracksPage = {
-  items: { track: { id: string; name: string; duration_ms: number; album: { name: string; release_date: string; images: { url: string }[] }; artists: { id: string; name: string }[] } | null }[];
+  items: { track: { type: string; id: string; name: string; duration_ms: number; album: { name: string; release_date: string; images: { url: string }[] }; artists: { id: string; name: string }[] } | null }[];
   next: string | null;
 };
 
 export const fetchAllPlaylistTracks = async (
   token: string,
   playlistId: string,
-): Promise<import("@/types/song-types").SpotifyTrack[] | "not_found" | null> => {
+): Promise<import("@/types/song-types").SpotifyTrack[] | "not_found" | "no_music_tracks" | null> => {
   const MAX_TRACKS = 500;
   const tracks: import("@/types/song-types").SpotifyTrack[] = [];
+  let skippedEpisodes = 0;
   let url: string | null =
-    `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=100&fields=items(track(id,name,duration_ms,album(name,release_date,images),artists(id,name))),next`;
+    `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=100&fields=items(track(type,id,name,duration_ms,album(name,release_date,images),artists(id,name))),next`;
 
   const firstPage = await fetchSpotifyPlaylistFirstPage(token, url);
   if (firstPage === "not_found") return "not_found";
@@ -161,7 +179,9 @@ export const fetchAllPlaylistTracks = async (
 
   const addTracks = (page: SpotifyPlaylistTracksPage) => {
     for (const item of page.items) {
-      if (!item.track || tracks.length >= MAX_TRACKS) continue;
+      if (!item.track) continue;
+      if (item.track.type !== "track") { skippedEpisodes++; continue; }
+      if (tracks.length >= MAX_TRACKS) continue;
       tracks.push({
         song: {
           title: item.track.name,
@@ -189,6 +209,7 @@ export const fetchAllPlaylistTracks = async (
     url = page.next;
   }
 
+  if (tracks.length === 0 && skippedEpisodes > 0) return "no_music_tracks";
   return tracks;
 };
 
