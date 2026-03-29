@@ -1,5 +1,7 @@
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { vendorRateLimiters } from "@/lib/rate-limiter";
+import { redis } from "@/lib/redis";
+import { sendTelegram } from "@/lib/telegram";
 import { songListingMisses, songListingRequests, songListings } from "@/server/db/schema";
 import { fetchVendorData } from "@/services/vendors";
 import { SongListingSchema } from "../schemas/song-listings-schemas";
@@ -85,6 +87,25 @@ export const songListingsRouter = createTRPCRouter({
       });
     } catch {
       logRequest({ songId, vendor, source: "store_unreachable" });
+
+      // Circuit breaker: alert after 3 failures within a 10-minute window
+      const circuitKey = `scraper:circuit:${vendor}`;
+      const suppressKey = `scraper:circuit:sent:${vendor}`;
+      const failures = await redis.incr(circuitKey);
+      if (failures === 1) void redis.expire(circuitKey, 600);
+      if (failures >= 3) {
+        const alreadySent = await redis.get(suppressKey);
+        if (!alreadySent) {
+          void Promise.all([
+            sendTelegram(
+              `<b>⚠️ ${vendor.toUpperCase()} scraper down</b>\n` +
+              `${failures} unreachable errors in the last 10 minutes.`,
+            ),
+            redis.set(suppressKey, "1", { ex: 3600 }),
+          ]);
+        }
+      }
+
       return { error: "STORE_UNREACHABLE" };
     }
     const fetchDurationMs = Date.now() - fetchStart;

@@ -48,6 +48,8 @@ export const env = createEnv({
     AMAZON_PA_TAG_IT: z.string().optional(),
     AMAZON_PA_TAG_CA: z.string().optional(),
     AMAZON_PA_TAG_AU: z.string().optional(),
+    TELEGRAM_BOT_TOKEN: z.string().optional(),
+    TELEGRAM_CHAT_ID: z.string().optional(),
   },
 
   /**
@@ -105,6 +107,8 @@ export const env = createEnv({
     AMAZON_PA_TAG_IT: process.env.AMAZON_PA_TAG_IT,
     AMAZON_PA_TAG_CA: process.env.AMAZON_PA_TAG_CA,
     AMAZON_PA_TAG_AU: process.env.AMAZON_PA_TAG_AU,
+    TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
+    TELEGRAM_CHAT_ID: process.env.TELEGRAM_CHAT_ID,
     NEXT_PUBLIC_ITUNES_PROXY_URL: process.env.NEXT_PUBLIC_ITUNES_PROXY_URL,
     NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_DE: process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_DE,
     NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_US: process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_US,
