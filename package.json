@@ -19,6 +19,11 @@
     "test:e2e": "playwright test",
     "test:e2e:smoke": "playwright test e2e/smoke.spec.ts",
     "test:e2e:full": "playwright test --grep @full",
+    "stress:baseline": "k6 run -e STRESS_PROFILE=baseline scripts/stress/tunehunter.k6.js",
+    "stress:spike": "k6 run -e STRESS_PROFILE=spike scripts/stress/tunehunter.k6.js",
+    "stress:soak": "k6 run -e STRESS_PROFILE=soak scripts/stress/tunehunter.k6.js",
+    "stress:vendor-probe": "k6 run -e STRESS_PROFILE=vendor_probe scripts/stress/tunehunter.k6.js",
+    "stress:trpc-rl": "bun run scripts/stress/trpc-rate-limit-drill.ts",
     "prepare": "husky"
   },
   "dependencies": {
