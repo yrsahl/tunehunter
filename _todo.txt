@@ -3,9 +3,6 @@
 Create a logo
 Use Stitch for UI
 
-Separate out Redis/Upstash, maybe more?
-Monitor scrapers in production
-Stresstest + Monitoring
 
 ---- SCALABILITY
 

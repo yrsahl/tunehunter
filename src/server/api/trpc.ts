@@ -121,7 +121,12 @@ const enforceRateLimit = t.middleware(async ({ ctx, next }) => {
     const identifier = ctx.session?.user?.id ?? ctx.ip;
     const { success } = await trpcRateLimiter.limit(identifier);
     if (!success) {
-      void redis.incr("stats:trpc:rate_limited");
+      void Promise.all([
+        redis.incr("stats:trpc:rate_limited"),
+        redis.incr("stats:trpc:rl:window").then((n) => {
+          if (n === 1) void redis.expire("stats:trpc:rl:window", 3600);
+        }),
+      ]);
       throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
     }
   } catch (err) {

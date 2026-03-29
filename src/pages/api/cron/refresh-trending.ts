@@ -4,6 +4,7 @@ import {
   trendingViewLast7Days,
   trendingViewToday,
 } from "@/server/db/schema";
+import { redis } from "@/lib/redis";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -16,6 +17,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     db.refreshMaterializedView(trendingViewLast7Days),
     db.refreshMaterializedView(trendingViewLast30Days),
   ]);
+
+  await redis.set("trending:last_refreshed", Date.now().toString());
 
   res.status(200).json({ refreshed: true, at: new Date().toISOString() });
 }
