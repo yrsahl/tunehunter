@@ -268,29 +268,31 @@ export const SongListingContextProvider = ({
     (vendor: SongVendorType) => {
       switch (vendor) {
         case "itunes":
-          return isItunesResponseLoading;
+          return isItunesResponseLoading || isItunesPlaceholder;
         case "beatport":
-          return isBeatportResponseLoading;
+          return isBeatportResponseLoading || isBeatportPlaceholder;
         case "amazon":
-          return isAmazonResponseLoading;
+          return isAmazonResponseLoading || isAmazonPlaceholder;
         case "bandcamp":
-          return isBandcampResponseLoading;
+          return isBandcampResponseLoading || isBandcampPlaceholder;
         default:
           return true;
       }
     },
     [
-      isItunesResponseLoading,
-      isBeatportResponseLoading,
-      isAmazonResponseLoading,
-      isBandcampResponseLoading,
+      isItunesResponseLoading, isItunesPlaceholder,
+      isBeatportResponseLoading, isBeatportPlaceholder,
+      isAmazonResponseLoading, isAmazonPlaceholder,
+      isBandcampResponseLoading, isBandcampPlaceholder,
     ],
   );
+
+  const isTrackDataLoading = fetchedTrackData?.song.id !== songId;
 
   const contextValue = useMemo(
     () => ({
       trackData,
-      isTrackDataLoading: false,
+      isTrackDataLoading,
       getVendorResponse,
       getVendorResponseLoadingState,
     }),
