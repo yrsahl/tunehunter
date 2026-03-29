@@ -9,10 +9,10 @@ const durationSeconds = Number(process.env.DURATION_SECONDS || 180);
 const pauseMs = Number(process.env.PAUSE_MS || 50);
 
 const client = createTRPCProxyClient<AppRouter>({
+  transformer: superjson,
   links: [
     httpBatchLink({
       url: `${baseUrl}/api/trpc`,
-      transformer: superjson,
     }),
   ],
 });
@@ -99,4 +99,3 @@ async function main() {
 }
 
 void main();
-
