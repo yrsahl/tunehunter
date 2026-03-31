@@ -89,7 +89,7 @@ const PreviewPlayButton = ({ spotifyId, previewUrl, isLoadingPreview }: PreviewP
   // No spotifyId and no preview URL → nothing to play or link to
   if (!spotifyId) {
     return (
-      <WithTooltip tooltip="No preview available" touchToast="No preview available" asChild>
+      <WithTooltip tooltip="No preview available" touchToast="No preview available." asChild>
         <div className="flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-full bg-slate-400">
           <Play className="h-6 w-6 text-foreground" />
         </div>
