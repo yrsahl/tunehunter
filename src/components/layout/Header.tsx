@@ -22,9 +22,9 @@ const Header = () => {
           <h1 className="tracking-wider text-primary">Hunter</h1>
         </button>
       </div>
-      {/* <p className="text-md italic text-muted-foreground">
-        The easy way to buy club mixes of your favorite tunes!
-      </p> */}
+      <p className="text-md text-center italic text-muted-foreground">
+        Compare Amazon, Beatport and Bandcamp instantly!
+      </p>
     </div>
   );
 };

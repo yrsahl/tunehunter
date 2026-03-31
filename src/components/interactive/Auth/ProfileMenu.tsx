@@ -210,6 +210,9 @@ const ProfileMenu = () => {
             onClick={setRegionByLocation}
           />
         </div>
+        <p className="col-span-3 col-start-2 text-xs font-light text-muted-foreground">
+          Affects which store and prices are shown.
+        </p>
 
         {/* [SPOTIFY_OAUTH] Spotify connect/disconnect row — re-enable when quota approved
         <p className="col-span-2 flex items-center justify-end">Spotify</p>

@@ -105,7 +105,7 @@ const PlaylistTable = () => {
                   <HeartIcon className="h-4 w-4" />
                   Save all
                 </button>
-                <WithTooltip tooltip="Edit playlist URL" mobileToast="Edit playlist URL" asChild>
+                <WithTooltip tooltip="Edit playlist URL" touchToast="Edit playlist URL" asChild>
                   <button
                     type="button"
                     onClick={() => setIsEditing(true)}
@@ -143,7 +143,7 @@ const PlaylistTable = () => {
               {!!tracks && (
                 <WithTooltip
                   tooltip="Back to playlist info"
-                  mobileToast="Back to playlist info"
+                  touchToast="Back to playlist info"
                   asChild
                 >
                   <button

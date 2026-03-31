@@ -139,7 +139,7 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
                     </p>
                   </div>
                 }
-                mobileToast={
+                touchToast={
                   <div className="flex flex-col gap-0.5">
                     <p>
                       <span className="font-semibold">All</span> — no filter
@@ -247,9 +247,6 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
         <div className="border-t border-foreground/30 pt-3">
           {loggedIn ? (
             <div className="flex flex-col gap-1">
-              <p className="text-xs font-light text-muted-foreground">
-                Affects which store and prices are shown.
-              </p>
               <p className="text-xs font-light text-muted-foreground">
                 Manage your region in your profile settings.
               </p>

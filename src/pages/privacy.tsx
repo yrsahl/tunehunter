@@ -26,12 +26,6 @@ const sections: Section[] = [
           "Songs you save to your favorites",
         ],
       },
-      {
-        heading: "If you connect Spotify",
-        items: [
-          "Your Spotify OAuth token, used only to read your recently played tracks, queue, and top tracks — we do not write to your Spotify account",
-        ],
-      },
     ],
   },
   {
