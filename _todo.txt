@@ -3,7 +3,7 @@
 Create a logo
 
 1. TAB: search when no results -> no way to go back
-2. Favorites: paging
+2. TAB: paging for >30 (trending, favorites, history), or just show more
 3. Playlist: differentiate by error -> “private playlist”
 
 ---- SCALABILITY
