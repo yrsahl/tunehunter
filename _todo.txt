@@ -1,8 +1,10 @@
 ---- CORE
 
 Create a logo
-Use Stitch for UI
 
+1. TAB: search when no results -> no way to go back
+2. Favorites: paging
+3. Playlist: differentiate by error -> “private playlist”
 
 ---- SCALABILITY
 
