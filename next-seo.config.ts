@@ -3,7 +3,7 @@ import { type DefaultSeoProps } from "next-seo";
 const config: DefaultSeoProps = {
   title: "TuneHunter",
   description:
-    "Compare music vendors like Beatport and Amazon Music to find the best deal for your music!",
+    "Buy tracks faster. Search every major music store at once.",
   canonical: "https://tunehunter.app/",
   additionalLinkTags: [
     {

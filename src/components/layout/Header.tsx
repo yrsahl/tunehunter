@@ -23,7 +23,7 @@ const Header = () => {
         </button>
       </div>
       <p className="text-md text-center italic text-muted-foreground">
-        Compare Amazon, Beatport and Bandcamp instantly!
+        Buy tracks faster. Search every major music store at once.
       </p>
     </div>
   );
