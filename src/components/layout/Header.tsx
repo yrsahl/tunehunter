@@ -22,7 +22,7 @@ const Header = () => {
           <h1 className="tracking-wider text-primary">Hunter</h1>
         </button>
       </div>
-      <p className="text-md text-center italic text-muted-foreground">
+      <p className="text-md text-center italic text-foreground/60">
         Buy tracks faster. Search every major music store at once.
       </p>
     </div>
