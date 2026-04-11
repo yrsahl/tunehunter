@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 const Custom404: NextPage = () => {
   useEffect(() => {
-    trackEvent("404", { path: window.location.pathname });
+    trackEvent("404");
   }, []);
 
   return (

@@ -165,7 +165,7 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
             </div>
             <Select
               value={versionFilter}
-              onValueChange={(v) => { setVersionFilter(v as VersionFilter); trackEvent("Filter Applied", { filter: "version", value: v }); }}
+              onValueChange={(v) => { setVersionFilter(v as VersionFilter); if (v !== "all") trackEvent(`Filter Applied: version/${v}`); }}
             >
               <SelectTrigger
                 id="versionfilter"
@@ -188,7 +188,7 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
             Track length
           </Label>
           <div className="flex h-10 items-center justify-end">
-            <Switch id="lengthfilter" checked={lengthFilter} onCheckedChange={(v) => { setLengthFilter(v); if (v) trackEvent("Filter Applied", { filter: "length" }); }} />
+            <Switch id="lengthfilter" checked={lengthFilter} onCheckedChange={(v) => { setLengthFilter(v); if (v) trackEvent("Filter Applied: length"); }} />
           </div>
           <AnimatePresence mode="popLayout" initial={false}>
             {lengthFilter && (
@@ -218,7 +218,7 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
             Release year
           </Label>
           <div className="flex h-10 items-center justify-end">
-            <Switch id="yearfilter" checked={yearFilter} onCheckedChange={(v) => { setYearFilter(v); if (v) trackEvent("Filter Applied", { filter: "year" }); }} />
+            <Switch id="yearfilter" checked={yearFilter} onCheckedChange={(v) => { setYearFilter(v); if (v) trackEvent("Filter Applied: year"); }} />
           </div>
           <AnimatePresence mode="popLayout" initial={false}>
             {yearFilter && (

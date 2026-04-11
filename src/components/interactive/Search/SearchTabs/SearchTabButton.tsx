@@ -83,7 +83,7 @@ const SearchTabButton = ({
       setActiveSearchTab("");
       router.setParams({ search: "" });
     } else {
-      trackEvent("Tab Switched", { tab: newSearchTab });
+      trackEvent(`Tab Switched: ${newSearchTab}`);
       setActiveSearchTab(newSearchTab);
       router.setParams({ search: newSearchTab });
     }

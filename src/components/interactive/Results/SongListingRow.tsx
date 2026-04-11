@@ -71,7 +71,7 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
     // Open site
     window.open(withAffiliateTag(url), "_blank");
 
-    trackEvent("Vendor Link Clicked", { vendor });
+    trackEvent(`Vendor Link Clicked: ${vendor}`);
 
     // Add activity
     addUserActivity.mutate({ region, songId, type: "store_visit" });
