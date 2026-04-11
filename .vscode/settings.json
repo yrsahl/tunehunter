@@ -3,8 +3,9 @@
     "**/node_modules": false,
     "**/playwright-report": true
   },
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "typescript.tsserver.log": "off",
-  "typescript.disableAutomaticTypeAcquisition": false,
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "js/ts.tsserver.log": "off",
+  "js/ts.tsserver.automaticTypeAcquisition.enabled": true,
+  "css.lint.unknownAtRules": "ignore",
   "window.autoDetectColorScheme": true
 }
