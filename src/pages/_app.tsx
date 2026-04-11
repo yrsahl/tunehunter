@@ -49,8 +49,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <DefaultSeo {...SEO} />
       <Toaster position="top-right" toastOptions={toastOptions} closeButton richColors />
       {process.env.NODE_ENV === "development" && <DevOverlay />}
-      <Script id="plausible-init" strategy="afterInteractive">{`window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()`}</Script>
-      <Script async src="https://plausible.io/js/pa-f7TccdK8oaAAyTMB2n6aH.js" strategy="afterInteractive" />
+      <Script defer data-domain="tunehunter.app" data-extensions="false" src="https://plausible.io/js/script.js" strategy="afterInteractive" />
       <SpeedInsights />
       <Analytics />
       <SessionProvider session={session}>
