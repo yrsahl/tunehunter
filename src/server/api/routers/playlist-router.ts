@@ -52,11 +52,13 @@ export const playlistRouter = createTRPCRouter({
     if (tracks === "not_found")
       return {
         error:
-          "This playlist is curated by Spotify and can't be loaded. Try linking one of your own." as const,
+          "This playlist couldn't be loaded. It may be private, curated by Spotify, or the link is invalid." as const,
       };
+    if (tracks === "private")
+      return { error: "This playlist is private. Make it public in Spotify to load it here." as const };
     if (tracks === "no_music_tracks")
       return { error: "This playlist only contains podcast episodes — no music tracks to load." as const };
-    if (tracks === null) return { error: "Playlist not found or is private." as const };
+    if (tracks === null) return { error: "Playlist not found." as const };
 
     return { tracks, meta };
   }),

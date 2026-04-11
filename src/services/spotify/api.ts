@@ -166,7 +166,7 @@ type SpotifyPlaylistTracksPage = {
 export const fetchAllPlaylistTracks = async (
   token: string,
   playlistId: string,
-): Promise<import("@/types/song-types").SpotifyTrack[] | "not_found" | "no_music_tracks" | null> => {
+): Promise<import("@/types/song-types").SpotifyTrack[] | "not_found" | "no_music_tracks" | "private" | null> => {
   const MAX_TRACKS = 500;
   const tracks: import("@/types/song-types").SpotifyTrack[] = [];
   let skippedEpisodes = 0;
@@ -175,6 +175,7 @@ export const fetchAllPlaylistTracks = async (
 
   const firstPage = await fetchSpotifyPlaylistFirstPage(token, url);
   if (firstPage === "not_found") return "not_found";
+  if (firstPage === "private") return "private";
   if (!firstPage) return null;
 
   const addTracks = (page: SpotifyPlaylistTracksPage) => {
@@ -227,9 +228,10 @@ async function fetchSpotifyData<T>(token: string, endpoint: string): Promise<T |
 async function fetchSpotifyPlaylistFirstPage(
   token: string,
   url: string,
-): Promise<SpotifyPlaylistTracksPage | "not_found" | null> {
+): Promise<SpotifyPlaylistTracksPage | "not_found" | "private" | null> {
   const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
   if (response.status === 404) return "not_found";
+  if (response.status === 403) return "private";
   if (response.status === 204 || response.status >= 400) return null;
   return (await response.json()) as SpotifyPlaylistTracksPage;
 }

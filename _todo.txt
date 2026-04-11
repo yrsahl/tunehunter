@@ -5,7 +5,7 @@ Create a logo
 0. Bug: Sometimes the very first search result pops up and right away hides gain, URL also goes back to root
 1. TAB: search when no results -> no way to go back
 2. TAB: paging for >30 (trending, favorites, history), or just show more
-3. Playlist: differentiate by error -> “private playlist”
+3. Playlist: saving all works?
 4. Playlist: extend with iTunes playlists
 5. Increase Cache time for already-hit songs
 6. Maybe increase rate-limiting for Bandcamp
