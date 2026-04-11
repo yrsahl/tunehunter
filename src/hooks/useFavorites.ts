@@ -1,5 +1,5 @@
 import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
-import { track } from "@/lib/plausible";
+import { trackEvent } from "@/lib/plausible";
 import { api } from "@/lib/api";
 import { SpotifyTrack } from "@/types/song-types";
 import useRegionSettings from "./settings/useRegionSettings";
@@ -21,7 +21,7 @@ const useFavorites = () => {
   const addToFavorites = async (songId: string) => {
     if (isOnFavorites(songId)) return;
     await addUserActivity.mutateAsync({ region, songId, type: "favorite" });
-    track("Wishlist Add");
+    trackEvent("Wishlist Add");
     refetchData();
   };
 
@@ -48,7 +48,7 @@ const useFavorites = () => {
 
   const removeFromFavorites = async (songId: string) => {
     await removeUserActivity.mutateAsync({ songId, type: "favorite" });
-    track("Wishlist Remove");
+    trackEvent("Wishlist Remove");
     refetchData();
   };
 

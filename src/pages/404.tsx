@@ -1,11 +1,11 @@
-import { track } from "@/lib/plausible";
+import { trackEvent } from "@/lib/plausible";
 import { type NextPage } from "next";
 import Link from "next/link";
 import { useEffect } from "react";
 
 const Custom404: NextPage = () => {
   useEffect(() => {
-    track("404", { path: window.location.pathname });
+    trackEvent("404", { path: window.location.pathname });
   }, []);
 
   return (

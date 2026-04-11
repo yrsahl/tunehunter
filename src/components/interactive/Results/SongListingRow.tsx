@@ -7,7 +7,7 @@ import { CountryCode } from "@/lib/validators";
 import { SongVendorType } from "@/server/db/schema";
 import { transformCurrencyStringToIcon, withAffiliateTag } from "@/services/vendors";
 import { motion } from "framer-motion";
-import { track } from "@/lib/plausible";
+import { trackEvent } from "@/lib/plausible";
 import SongListingRowMessage from "./SongListingRowMessage";
 import SongListingRowSkeleton from "./SongListingRowSkeleton";
 import VendorLogo from "./VendorLogo";
@@ -71,7 +71,7 @@ const SongListingRow = ({ vendor, region }: SongListingRowProps) => {
     // Open site
     window.open(withAffiliateTag(url), "_blank");
 
-    track("Vendor Link Clicked", { vendor });
+    trackEvent("Vendor Link Clicked", { vendor });
 
     // Add activity
     addUserActivity.mutate({ region, songId, type: "store_visit" });

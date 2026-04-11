@@ -1,7 +1,7 @@
 import { useQueryDataContext } from "@/contexts/QueryDataContext";
 import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { api } from "@/lib/api";
-import { track as trackEvent } from "@/lib/plausible";
+import { trackEvent } from "@/lib/plausible";
 import { CountryCode } from "@/lib/validators";
 import { Track } from "@/types/song-types";
 import { debounce } from "lodash";
