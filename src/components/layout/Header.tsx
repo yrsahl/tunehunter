@@ -1,10 +1,11 @@
 "use client";
 
 import { resetDevTrpcLog } from "@/lib/api";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 
 const Header = () => {
   const router = useRouter();
+  const showSlogan = router.pathname !== "/404";
 
   const handleClick = () => {
     if (process.env.NODE_ENV === "development") resetDevTrpcLog();
@@ -22,9 +23,11 @@ const Header = () => {
           <h1 className="tracking-wider text-primary">Hunter</h1>
         </button>
       </div>
-      <p className="text-md text-center italic text-foreground/60">
-        Buy tracks faster. Search every major music store at once.
-      </p>
+      {showSlogan && (
+        <p className="text-md text-center italic text-foreground/60">
+          Buy tracks faster. Search every major music store at once.
+        </p>
+      )}
     </div>
   );
 };
