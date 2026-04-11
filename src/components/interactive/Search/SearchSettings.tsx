@@ -1,4 +1,5 @@
 import useRegionSettings from "@/hooks/settings/useRegionSettings";
+import { track } from "@/lib/plausible";
 import {
   LENGTH_MAX,
   LENGTH_MIN,
@@ -164,7 +165,7 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
             </div>
             <Select
               value={versionFilter}
-              onValueChange={(v) => setVersionFilter(v as VersionFilter)}
+              onValueChange={(v) => { setVersionFilter(v as VersionFilter); track("Filter Applied", { filter: "version", value: v }); }}
             >
               <SelectTrigger
                 id="versionfilter"
@@ -187,7 +188,7 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
             Track length
           </Label>
           <div className="flex h-10 items-center justify-end">
-            <Switch id="lengthfilter" checked={lengthFilter} onCheckedChange={setLengthFilter} />
+            <Switch id="lengthfilter" checked={lengthFilter} onCheckedChange={(v) => { setLengthFilter(v); if (v) track("Filter Applied", { filter: "length" }); }} />
           </div>
           <AnimatePresence mode="popLayout" initial={false}>
             {lengthFilter && (
@@ -217,7 +218,7 @@ const SearchSettings = ({ windowRef }: { windowRef: RefObject<HTMLDivElement> })
             Release year
           </Label>
           <div className="flex h-10 items-center justify-end">
-            <Switch id="yearfilter" checked={yearFilter} onCheckedChange={setYearFilter} />
+            <Switch id="yearfilter" checked={yearFilter} onCheckedChange={(v) => { setYearFilter(v); if (v) track("Filter Applied", { filter: "year" }); }} />
           </div>
           <AnimatePresence mode="popLayout" initial={false}>
             {yearFilter && (

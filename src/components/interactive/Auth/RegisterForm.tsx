@@ -22,6 +22,7 @@ import { RegisterSchema } from "@/server/api/schemas/account-schemas";
 import { growIn } from "@/styles/animations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
+import { track } from "@/lib/plausible";
 import { signIn } from "next-auth/react";
 import { useEffect, useState, useTransition, type FC } from "react";
 import { useForm } from "react-hook-form";
@@ -84,6 +85,7 @@ const RegisterForm: FC<IProps> = ({ email, setEmail, menuState, setMenuState }) 
           onSettled: (data) => {
             if (data?.error) setError(RegisterResponseMap.errors[data.error]);
             if (data?.success) {
+              track("Sign Up");
               setSuccess(RegisterResponseMap.success);
               setAccountCreated(true);
               setEmail(values.email);

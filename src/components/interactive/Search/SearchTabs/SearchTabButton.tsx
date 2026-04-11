@@ -6,6 +6,7 @@ import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { track } from "@/lib/plausible";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import type { SearchTab } from "./SearchTabBar";
@@ -82,6 +83,7 @@ const SearchTabButton = ({
       setActiveSearchTab("");
       router.setParams({ search: "" });
     } else {
+      track("Tab Switched", { tab: newSearchTab });
       setActiveSearchTab(newSearchTab);
       router.setParams({ search: newSearchTab });
     }

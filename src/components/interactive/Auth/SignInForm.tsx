@@ -5,6 +5,7 @@ import useAuthError from "@/hooks/useAuthErrors";
 import { api } from "@/lib/api";
 import { buildRedirectPath } from "@/lib/auth";
 import { signIn } from "next-auth/react";
+import { track } from "@/lib/plausible";
 import { useEffect, useTransition, type FC, type FormEvent } from "react";
 import { toast } from "sonner";
 import AuthCard from "./AuthCard";
@@ -50,6 +51,7 @@ const SignInForm: FC<IProps> = ({ email, setEmail, setMenuState }) => {
       toast.promise(mailSentPromise, {
         loading: "Sending you an e-mail...",
         success: () => {
+          track("Login");
           setMenuState(MenuState.MagicLinkSent);
           return "E-mail with login link has been sent.";
         },
