@@ -6,6 +6,7 @@ Create a logo
 2. TAB: paging for >30 (trending, favorites, history), or just show more
 3. Playlist: differentiate by error -> “private playlist”
 4. Playlist: extend with iTunes playlists
+5. Increase Cache time for already-hit songs
 
 ---- SCALABILITY
 
