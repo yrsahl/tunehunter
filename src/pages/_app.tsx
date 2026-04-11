@@ -49,7 +49,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <DefaultSeo {...SEO} />
       <Toaster position="top-right" toastOptions={toastOptions} closeButton richColors />
       {process.env.NODE_ENV === "development" && <DevOverlay />}
-      <Script defer data-domain="tunehunter.app" data-extensions="false" src="https://plausible.io/js/script.js" strategy="afterInteractive" />
+      <Script defer data-domain="tunehunter.app" src="https://plausible.io/js/script.js" strategy="afterInteractive" />
       <SpeedInsights />
       <Analytics />
       <SessionProvider session={session}>
