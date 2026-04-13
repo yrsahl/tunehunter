@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /insights
+Disallow: /api/
+
+Sitemap: https://tunehunter.app/sitemap.xml
