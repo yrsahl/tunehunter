@@ -3,7 +3,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { useDisabledTabStore } from "@/hooks/stores/useDisabledTabStore";
 import useDeviceSize from "@/hooks/useDeviceSize";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
-import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { trackEvent } from "@/lib/plausible";
@@ -44,23 +43,12 @@ const SearchTabButton = ({
   activeSearchTab,
   setActiveSearchTab,
 }: SearchTabButtonProps) => {
-  const { data: userData, status: sessionStatus } = useSession();
+  const { status: sessionStatus } = useSession();
   const router = useRouterWithHelpers();
   const { isSmallDevice } = useDeviceSize();
   const loggedIn = sessionStatus === "authenticated";
   const { setDisabledTabButtonHovered } = useDisabledTabStore();
-  const { data: spotifyAccount } = api.account.getSpotifyAccountById.useQuery(
-    { userId: userData?.user.id! },
-    {
-      enabled: loggedIn,
-      refetchInterval: 30 * 60 * 1000,
-      refetchIntervalInBackground: true,
-      refetchOnWindowFocus: false,
-    },
-  );
-
   const isSearchTabEnabled = (searchTab: SearchTab) => {
-    if (tabAccessMap[searchTab] === "signed-in-to-spotify") return !!spotifyAccount?.data;
     if (tabAccessMap[searchTab] === "signed-in") return loggedIn;
     return true;
   };

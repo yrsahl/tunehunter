@@ -2,13 +2,12 @@ import { SpotifyPlaybackState, SpotifyPlaybackStateShort } from "@/types/spotify
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { useEventEmitter } from "./useEventEmitter";
-import useSpotifyTokens from "./useSpotifyTokens";
 
 // There are two ways to control the Spotify Web Player:
 // 1. Via the SDK (https://developer.spotify.com/documentation/web-playback-sdk/reference#spotifyplayer) - the 'player' object
 // 2. Manually via the Web API (e.g. https://developer.spotify.com/documentation/web-api/reference/get-information-about-the-users-current-playback), necessary for missing implementations in the SDK like playing a specific track
 export default function useSpotifyPlayer() {
-  const { userAccessToken: token } = useSpotifyTokens();
+  const token: string | undefined = undefined; // Spotify OAuth removed
   const playerRef = useRef<Spotify.Player | null>(null);
   const [_player, setPlayer] = useState<Spotify.Player | null>(null);
   const [deviceId, setDeviceId] = useState<string | null>(null);

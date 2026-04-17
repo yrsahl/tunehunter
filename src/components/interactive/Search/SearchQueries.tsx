@@ -45,7 +45,7 @@ const SearchQueries = () => {
   const { submitSearch } = useSearch();
   const { storeTracksInDb } = useDb();
   const { isSmallDevice } = useDeviceSize();
-  const { accessToken, userAccessToken } = useSpotifyTokens();
+  const { accessToken } = useSpotifyTokens();
   const { mutateAsync: storeSpotifyTrack } = api.song.storeSpotifyTrack.useMutation();
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -78,7 +78,7 @@ const SearchQueries = () => {
           isrc: track.song.isrc ?? null,
         },
         artists: track.artists.map((a) => ({ spotifyId: a.id, name: a.name })),
-        accessToken: userAccessToken ?? undefined,
+        accessToken,
       });
     } catch {
       return;

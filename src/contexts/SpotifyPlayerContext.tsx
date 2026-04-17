@@ -2,7 +2,6 @@ import { SpotifyPlaybackState, SpotifyPlaybackStateShort } from "@/types/spotify
 import axios from "axios";
 import { createContext, ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { useEventEmitter } from "../hooks/useEventEmitter";
-import useSpotifyTokens from "../hooks/useSpotifyTokens";
 
 interface SpotifyPlayerContextType {
   deviceId: string | null;
@@ -22,7 +21,7 @@ export function useSpotifyPlayerContext() {
 const SpotifyPlayerContext = createContext<SpotifyPlayerContextType | undefined>(undefined);
 
 export const SpotifyPlayerProvider = ({ children }: { children: ReactNode }) => {
-  const { userAccessToken: token } = useSpotifyTokens();
+  const token: string | undefined = undefined; // Spotify OAuth removed
   const playerRef = useRef<Spotify.Player | null>(null);
   const [deviceId, setDeviceId] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);

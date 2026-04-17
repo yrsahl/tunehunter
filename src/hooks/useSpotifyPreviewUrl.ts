@@ -29,6 +29,7 @@ const useSpotifyPreviewUrl = (
     }
 
     if (!spotifyId && !title) return;
+    if (!accessTokenRef.current) return; // wait for client credentials token before attempting Step 1
     let cancelled = false;
 
     const fetchPreview = async () => {
@@ -68,7 +69,8 @@ const useSpotifyPreviewUrl = (
     return () => {
       cancelled = true;
     };
-  }, [spotifyId, title, artist, existingPreviewUrl]); // accessToken intentionally omitted — see ref above
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [spotifyId, title, artist, existingPreviewUrl, !!accessToken]); // !!accessToken re-fires once token first loads; ref handles subsequent refreshes
 
   return { previewUrl, isLoading };
 };

@@ -43,7 +43,7 @@ export const SongListingContextProvider = ({
   region,
   children,
 }: ISongListingContextProviderProps) => {
-  const { userAccessToken } = useSpotifyTokens();
+  const { accessToken } = useSpotifyTokens();
   const { setSelectedSearch } = useSearchStore();
   const router = useRouterWithHelpers();
   const { publishEvent } = useEventEmitter<SelectedSearchParams | null>(SEARCH_SUBMITTED);
@@ -70,10 +70,10 @@ export const SongListingContextProvider = ({
     });
 
   useEffect(() => {
-    if (userAccessToken && trackData && !songId.startsWith("sp_")) {
-      enrichItunesTrackFromSpotify({ songId, accessToken: userAccessToken });
+    if (accessToken && trackData && !songId.startsWith("sp_")) {
+      enrichItunesTrackFromSpotify({ songId, accessToken });
     }
-  }, [songId, userAccessToken, !!trackData]);
+  }, [songId, accessToken, !!trackData]);
 
   // Merge sp_ songs into their iTunes counterpart: finds the iTunes match, migrates all FK
   // relations, deletes the sp_ record, then navigates to the new iTunes ID.

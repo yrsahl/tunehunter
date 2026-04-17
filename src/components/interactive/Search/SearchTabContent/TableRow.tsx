@@ -33,7 +33,7 @@ const TableRow = ({
   const { isSmallDevice } = useDeviceSize();
   const buttonSize = isSmallDevice ? "xs" : "sm";
   const { storeTracksInDb } = useDb();
-  const { userAccessToken } = useSpotifyTokens();
+  const { accessToken } = useSpotifyTokens();
   const { mutateAsync: storeSpotifyTrack } = api.song.storeSpotifyTrack.useMutation();
 
   const primaryArtist = track.artists[0]?.name || "";
@@ -69,7 +69,7 @@ const TableRow = ({
               isrc: spotifyTrack.song.isrc ?? null,
             },
             artists: spotifyTrack.artists.map((a) => ({ spotifyId: a.id, name: a.name })),
-            accessToken: userAccessToken ?? undefined,
+            accessToken,
           });
         } catch {
           return;
