@@ -106,6 +106,9 @@ export const userRouter = createTRPCRouter({
   editUserMail: protectedProcedure
     .input(z.object({ id: z.string(), email: z.string().email() }))
     .mutation(async ({ ctx, input }) => {
+      if (ctx.session.user.id !== input.id)
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+
       const mailInUse = await ctx.db.query.users.findFirst({
         where: (users, { eq }) => eq(users.email, input.email),
       });
@@ -117,12 +120,18 @@ export const userRouter = createTRPCRouter({
   editUserImage: protectedProcedure
     .input(z.object({ id: z.string(), image: z.string().nullable() }))
     .mutation(async ({ ctx, input }) => {
+      if (ctx.session.user.id !== input.id)
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+
       await ctx.db.update(users).set({ image: input.image }).where(eq(users.id, input.id));
     }),
 
   editUserName: protectedProcedure
     .input(z.object({ id: z.string(), name: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      if (ctx.session.user.id !== input.id)
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+
       const usernameInUse = await ctx.db.query.users.findFirst({
         where: (users, { eq }) => eq(users.name, input.name),
       });
@@ -136,6 +145,9 @@ export const userRouter = createTRPCRouter({
   deleteUserAndAccountsByUserId: protectedProcedure
     .input(z.object({ userId: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      if (ctx.session.user.id !== input.userId)
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+
       await ctx.db.delete(users).where(eq(users.id, input.userId)).returning();
     }),
 
@@ -150,6 +162,9 @@ export const userRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      if (ctx.session.user.id !== input.id)
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+
       await ctx.db
         .update(users)
         .set({
@@ -164,6 +179,9 @@ export const userRouter = createTRPCRouter({
   unlinkSpotifyAccount: protectedProcedure
     .input(z.object({ userId: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      if (ctx.session.user.id !== input.userId)
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+
       await ctx.db.delete(accounts).where(eq(accounts.userId, input.userId)).returning();
     }),
 });
