@@ -45,14 +45,6 @@ export const userRouter = createTRPCRouter({
       };
     }),
 
-  getVerificationTokenByEmail: publicProcedure
-    .input(z.object({ email: z.string().email() }))
-    .query(async ({ ctx, input }) => {
-      return ctx.db.query.verificationTokens.findFirst({
-        where: (tokens, { eq }) => eq(tokens.identifier, input.email),
-      });
-    }),
-
   // ********* Mutations *********
   createAccount: publicProcedure
     .input(RegisterSchema)

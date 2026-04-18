@@ -13,13 +13,7 @@ const useVerificationToken = () => {
     const verificationToken = `${numbers}`;
 
     try {
-      // Check if token already exists and delete it
-      const existingTokenData = await utils.user.getVerificationTokenByEmail.fetch({ email });
-      if (existingTokenData?.token) {
-        deleteVerificationToken.mutate({ email });
-      }
-
-      // Create new token and hash it for DB
+      deleteVerificationToken.mutate({ email });
       storeAndSendVerificationToken.mutate({ email, token: verificationToken });
 
       return { success: "tokenSent" };
