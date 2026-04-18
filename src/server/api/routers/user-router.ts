@@ -15,18 +15,13 @@ import { RegisterResponse, RegisterSchema } from "../schemas/account-schemas";
 
 export const userRouter = createTRPCRouter({
   // ********* Queries *********
-  getUserById: publicProcedure.input(z.object({ id: z.string() })).query(({ ctx, input }) => {
-    return ctx.db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.id, input.id),
-    });
-  }),
-
   getUserByEmail: publicProcedure
     .input(z.object({ email: z.string().email() }))
-    .query(({ ctx, input }) => {
-      return ctx.db.query.users.findFirst({
+    .query(async ({ ctx, input }) => {
+      const user = await ctx.db.query.users.findFirst({
         where: (users, { eq }) => eq(users.email, input.email),
       });
+      return { exists: !!user };
     }),
 
   getUserSettings: protectedProcedure

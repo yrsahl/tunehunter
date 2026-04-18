@@ -83,8 +83,8 @@ const ChangeMailModal = ({ children, open, setOpen }: ChangeMailDialogProps) => 
     }
 
     // Check if account exists already
-    const account = await utils.user.getUserByEmail.fetch({ email });
-    if (account) {
+    const { exists } = await utils.user.getUserByEmail.fetch({ email });
+    if (exists) {
       setError("An account with this mail already exists!");
       return;
     }

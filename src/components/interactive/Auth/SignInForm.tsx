@@ -31,9 +31,9 @@ const SignInForm: FC<IProps> = ({ email, setEmail, setMenuState }) => {
   const handleContinue = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     startTransition(async () => {
-      const user = await utils.user.getUserByEmail.fetch({ email });
+      const { exists } = await utils.user.getUserByEmail.fetch({ email });
 
-      if (!user) {
+      if (!exists) {
         setMenuState(MenuState.Register);
         return;
       }
