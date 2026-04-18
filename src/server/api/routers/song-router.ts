@@ -451,7 +451,16 @@ export const songRouter = createTRPCRouter({
     }),
 
   savePreviewUrl: publicProcedure
-    .input(z.object({ songId: z.string(), previewUrl: z.string() }))
+    .input(z.object({
+      songId: z.string(),
+      previewUrl: z.string().url().refine(
+        (url) => {
+          const host = new URL(url).hostname;
+          return host.endsWith(".scdn.co") || host.endsWith(".spotify.com") || host.endsWith(".itunes.apple.com");
+        },
+        { message: "Preview URL must be from Spotify or iTunes" },
+      ),
+    }))
     .mutation(async ({ ctx, input }) => {
       await ctx.db
         .update(songs)
