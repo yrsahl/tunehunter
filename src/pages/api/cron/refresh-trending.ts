@@ -4,11 +4,12 @@ import {
   trendingViewLast7Days,
   trendingViewToday,
 } from "@/server/db/schema";
+import { env } from "@/env.js";
 import { redis } from "@/lib/redis";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.headers.authorization !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (req.headers.authorization !== `Bearer ${env.CRON_SECRET}`) {
     return res.status(401).end();
   }
 
