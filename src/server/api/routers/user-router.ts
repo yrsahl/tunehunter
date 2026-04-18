@@ -27,6 +27,9 @@ export const userRouter = createTRPCRouter({
   getUserSettings: protectedProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
+      if (ctx.session.user.id !== input.userId)
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+
       const user = await ctx.db.query.users.findFirst({
         where: (users, { eq }) => eq(users.id, input.userId),
       });
