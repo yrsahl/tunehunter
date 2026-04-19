@@ -76,8 +76,8 @@ const post: BlogPost = {
     {
       type: "ul",
       items: [
-        "Beatport has the widest techno catalog by far, including most major label exclusives (Drumcode, Afterlife, ARTS, FJAAK, etc.) and a significant pre-release window — sometimes 2–4 weeks before other stores.",
-        "Juno Download excels for UK labels (Tresor, Metalheadz, Perc Trax, Blueprint) and continental European underground releases. Strong on industrial techno.",
+        "Beatport has the widest techno catalog by far, with strong stock from labels like Drumcode, Afterlife, ARTS, and FJAAK. Many labels give Beatport an early or exclusive release window — often 1–2 weeks ahead of other stores, though this varies by label.",
+        "Juno Download excels for UK and European underground labels — Metalheadz, Perc Trax, Blueprint (UK), and Tresor (Berlin) — and is often the first or best-stocked store for hard and industrial techno outside the Beatport ecosystem.",
         "Traxsource has grown its techno section substantially and is now solid for melodic techno, minimal techno, and crossover releases, though it still lags on the harder underground stuff.",
       ],
     },
@@ -132,7 +132,7 @@ const post: BlogPost = {
     },
     {
       type: "cta",
-      text: "Search any track on TuneHunter and instantly see prices across Beatport, Juno, Traxsource and more side by side. No accounts needed.",
+      text: "Search any track on TuneHunter and instantly see prices across Beatport, Bandcamp, iTunes, and Amazon side by side — no accounts needed.",
       linkText: "Try TuneHunter",
       linkHref: "/",
     },

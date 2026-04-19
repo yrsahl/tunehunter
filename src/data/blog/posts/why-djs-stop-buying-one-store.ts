@@ -57,7 +57,7 @@ const post: BlogPost = {
       items: [
         "Many underground UK labels release exclusively or earliest on Juno Download.",
         "Some indie and DIY releases only exist on Bandcamp.",
-        "Apple Music often has exclusives for major-label pop releases.",
+        "Apple Music (iTunes) occasionally carries exclusive or earlier digital releases for major-label pop and country.",
         "Amazon Music HD occasionally prices albums significantly below other stores.",
       ],
     },
@@ -95,7 +95,7 @@ const post: BlogPost = {
     },
     {
       type: "callout",
-      html: "The solution isn't to manually check every store — it's to search once and see all stores simultaneously. That's the entire premise behind <strong>TuneHunter</strong>: one search, every major store, prices and formats shown side by side.",
+      html: "The solution isn't to manually check every store — it's to search once and see all stores simultaneously. That's the entire premise behind <strong>TuneHunter</strong>: one search across Beatport, Bandcamp, iTunes, and Amazon, with prices and formats shown side by side.",
     },
     {
       type: "h2",
@@ -105,7 +105,7 @@ const post: BlogPost = {
       type: "ul",
       items: [
         "You identify a track you want to buy.",
-        "You search it on TuneHunter — it queries Beatport, Juno, Bandcamp, iTunes, and Amazon simultaneously.",
+        "You search it on TuneHunter — it queries Beatport, Bandcamp, iTunes, and Amazon simultaneously.",
         "You see all available listings: price, format, region.",
         "You click through to the cheapest (or highest-quality) option.",
         "You buy it there.",
