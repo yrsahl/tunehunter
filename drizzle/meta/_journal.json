@@ -36,6 +36,13 @@
       "when": 1743120000000,
       "tag": "0004_rename_wishlist_to_favorites",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1745020800000,
+      "tag": "0005_add_new_vendors",
+      "breakpoints": true
     }
   ]
 }

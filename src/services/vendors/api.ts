@@ -1,4 +1,5 @@
 import { NewSongListing } from "@/server/api/schemas/song-listings-schemas";
+import type { SongVendorType } from "@/server/db/schema";
 import { ITunesData } from "@/types/itunes-types";
 import axios from "axios";
 import * as cheerio from "cheerio";
@@ -49,7 +50,7 @@ export type VendorDataResponse = VendorDataSuccessResponse | VendorDataErrorResp
 
 interface IFetchVendorData {
   region: string;
-  vendorData: { vendorId: number; store: "itunes" | "bandcamp" | "beatport" | "amazon" };
+  vendorData: { vendorId: number; store: SongVendorType };
   songData: {
     songId: string;
     title: string;
@@ -99,16 +100,18 @@ export const fetchVendorData = async ({
   songData,
   signal,
 }: IFetchVendorData): Promise<VendorDataResponse> => {
-  if (vendorData.store === "itunes") return await fetchItunesData({ region, vendorData, songData, signal });
-  if (vendorData.store === "beatport")
-    return await fetchBeatportData({ region, vendorData, songData, signal });
-  if (vendorData.store === "bandcamp")
-    return await fetchBandcampData({ region, vendorData, songData, signal });
-  if (vendorData.store === "amazon") return await fetchAmazonData({ region, vendorData, songData, signal });
+  const args = { region, vendorData, songData, signal };
+  if (vendorData.store === "itunes")      return await fetchItunesData(args);
+  if (vendorData.store === "beatport")    return await fetchBeatportData(args);
+  if (vendorData.store === "bandcamp")    return await fetchBandcampData(args);
+  if (vendorData.store === "amazon")      return await fetchAmazonData(args);
+  if (vendorData.store === "traxsource")  return await fetchTraxsourceData(args);
+  if (vendorData.store === "junodownload")return await fetchJunodownloadData(args);
+  if (vendorData.store === "qobuz")       return await fetchQobuzData(args);
+  if (vendorData.store === "hdtracks")    return await fetchHdtracksData(args);
+  if (vendorData.store === "sevendigital")return await fetchSevendigitalData(args);
 
-  return {
-    error: "VENDOR_NOT_SUPPORTED",
-  };
+  return { error: "VENDOR_NOT_SUPPORTED" };
 };
 
 // iTunes
@@ -675,4 +678,475 @@ const fetchBandcampData = async ({
       region,
     } satisfies NewSongListing,
   };
+};
+
+// ── Shared helpers for duration-text scrapers ─────────────────────────────────
+
+/** Parse "M:SS" or "H:MM:SS" duration text to milliseconds. */
+function parseMMSS(text: string): number | null {
+  const parts = text.trim().split(":").map(Number);
+  if (parts.length < 2 || parts.some(isNaN)) return null;
+  if (parts.length === 2) return (parts[0]! * 60 + parts[1]!) * 1000;
+  return (parts[0]! * 3600 + parts[1]! * 60 + parts[2]!) * 1000;
+}
+
+// ── Traxsource ────────────────────────────────────────────────────────────────
+// Traxsource is a server-side rendered electronic music store.
+// Search is filtered to tracks via `cn=tracks`; each .trax-row holds title,
+// artists, duration (.time in M:SS), and price.
+
+const fetchTraxsourceData = async ({
+  region,
+  vendorData,
+  songData,
+  signal,
+}: IFetchVendorData): Promise<VendorDataResponse> => {
+  const { songId, title, artist, duration } = songData;
+  const { vendorId } = vendorData;
+
+  const query = encodeURIComponent(`${title} ${artist}`);
+  const searchUrl = `https://www.traxsource.com/search?term=${query}&cn=tracks&ipp=25`;
+
+  let html: string;
+  try {
+    const response = await axios.get<string>(searchUrl, {
+      headers: { "User-Agent": SCRAPER_UA, "Accept-Language": getAcceptLanguage(region) },
+      signal,
+    });
+    html = response.data;
+  } catch (err) {
+    if (signal?.aborted) throw err;
+    return { error: "NO_MATCH_FOUND" };
+  }
+
+  const $ = cheerio.load(html);
+  const listings: NewSongListing[] = [];
+
+  $(".trax-row").each((_, el) => {
+    const $el = $(el);
+
+    const cardTitle = $el.find(".title a, .col-title a").first().text().trim();
+    if (!cardTitle || !titleMatches(cardTitle, title)) return;
+
+    const cardArtist = $el.find(".artists a, .col-artists a").first().text().trim();
+    if (!cardArtist || !artistMatches(cardArtist, artist)) return;
+
+    const durationText = $el.find(".time, .col-time .time, .duration").first().text().trim();
+    const durationMs = parseMMSS(durationText);
+    if (!durationMs) return;
+
+    const priceText = $el.find(".price, .trax-price, .buy-price, [class*='price']").first().text().trim();
+    const priceMatch = priceText.match(/(\d+)[.,](\d{2})/);
+    const price = priceMatch ? `${priceMatch[1]}.${priceMatch[2]}` : undefined;
+    const currency = priceText.includes("€") ? "EUR" : priceText.includes("£") ? "GBP" : "USD";
+
+    const trackHref = $el.find(".title a, .col-title a").first().attr("href") ?? "";
+    if (!trackHref) return;
+    const url = trackHref.startsWith("http") ? trackHref : `https://www.traxsource.com${trackHref}`;
+
+    listings.push({ songId, vendorId, url, duration: durationMs, price, currency, region } satisfies NewSongListing);
+  });
+
+  const match = filterListings(listings, duration);
+  if (match) return { data: match };
+  return { error: "NO_MATCH_FOUND" };
+};
+
+// ── Juno Download ─────────────────────────────────────────────────────────────
+// Juno Download is a server-side rendered electronic music store.
+// Search returns release cards that each contain a tracklist; the scraper
+// scans all track rows across all cards for a title + duration match.
+// Artist match is done against the release-level artist name.
+
+const fetchJunodownloadData = async ({
+  region,
+  vendorData,
+  songData,
+  signal,
+}: IFetchVendorData): Promise<VendorDataResponse> => {
+  const { songId, title, artist, duration } = songData;
+  const { vendorId } = vendorData;
+
+  const query = encodeURIComponent(`${title} ${artist}`);
+  const searchUrl =
+    `https://www.junodownload.com/search/?q%5Ball%5D%5B%5D=${query}` +
+    `&solrorder=relevancy&format_code%5B%5D=MP3&format_code%5B%5D=WAV`;
+
+  let html: string;
+  try {
+    const response = await axios.get<string>(searchUrl, {
+      headers: { "User-Agent": SCRAPER_UA, "Accept-Language": getAcceptLanguage(region) },
+      signal,
+    });
+    html = response.data;
+  } catch (err) {
+    if (signal?.aborted) throw err;
+    return { error: "NO_MATCH_FOUND" };
+  }
+
+  const $ = cheerio.load(html);
+  const listings: NewSongListing[] = [];
+
+  // Each product card holds a release; scan its tracks individually.
+  $(".product, .juno-download-listing-item, [class*='listing-item']").each((_, releaseEl) => {
+    const $release = $(releaseEl);
+
+    const releaseArtist =
+      $release.find(".juno-download-listing-item__artists a, .artistname a, .artist a").first().text().trim() ||
+      $release.find("[class*='artist']").first().text().trim();
+
+    // Skip the whole card if the release artist doesn't match (saves scanning its tracks).
+    if (releaseArtist && !artistMatches(releaseArtist, artist)) return;
+
+    const releaseHref =
+      $release.find(".juno-download-listing-item__title a, .productname a, h2 a, h3 a").first().attr("href") ?? "";
+    const releaseUrl = releaseHref.startsWith("http")
+      ? releaseHref
+      : `https://www.junodownload.com${releaseHref}`;
+
+    $release.find(".juno-download-tracklist__track, .trk, [class*='track-row'], tr.track").each((_, trackEl) => {
+      const $track = $(trackEl);
+
+      const trackTitle =
+        $track.find(".juno-download-tracklist__track-title, .trk-title, [class*='title']").first().text().trim();
+      if (!trackTitle || !titleMatches(trackTitle, title)) return;
+
+      const durationText =
+        $track
+          .find(".juno-download-tracklist__track-length, .trk-length, [class*='length'], [class*='duration']")
+          .first()
+          .text()
+          .trim();
+      const durationMs = parseMMSS(durationText);
+      if (!durationMs) return;
+
+      const rawPriceAttr = $track.find("[data-price]").first().attr("data-price") ?? "";
+      const rawPriceText =
+        $track.find("[class*='buy'], [class*='price']").first().text().trim() || rawPriceAttr;
+      const priceMatch = rawPriceText.match(/(\d+)[.,](\d{2})/);
+      const price = priceMatch ? `${priceMatch[1]}.${priceMatch[2]}` : undefined;
+      const currency = rawPriceText.includes("€") ? "EUR" : rawPriceText.includes("$") ? "USD" : "GBP";
+
+      const url = releaseUrl || `https://www.junodownload.com`;
+      if (!releaseUrl) return;
+
+      listings.push({ songId, vendorId, url, duration: durationMs, price, currency, region } satisfies NewSongListing);
+    });
+  });
+
+  const match = filterListings(listings, duration);
+  if (match) return { data: match };
+  return { error: "NO_MATCH_FOUND" };
+};
+
+// ── Qobuz ─────────────────────────────────────────────────────────────────────
+// Qobuz has a partner API at https://www.qobuz.com/api.json/0.2/.
+// Requires QOBUZ_APP_ID (register at https://www.qobuz.com/us-en/discover/api).
+// Without credentials the function returns NO_MATCH_FOUND immediately.
+
+interface QobuzSearchResponse {
+  tracks?: {
+    items: Array<{
+      id: number;
+      title: string;
+      duration: number; // seconds
+      performer?: { name: string; id: number };
+      album?: {
+        id: string | number;
+        title: string;
+        url?: string;
+        artist?: { name: string; id: number };
+      };
+      price?: { value: number; currency: string };
+    }>;
+  };
+}
+
+const QOBUZ_LOCALES: Record<string, string> = {
+  US: "us-en",
+  GB: "gb-en",
+  DE: "de-de",
+  FR: "fr-fr",
+  ES: "es-es",
+  IT: "it-it",
+  NL: "nl-nl",
+  BE: "be-en",
+  AU: "au-en",
+  CA: "ca-en",
+  JP: "jp-ja",
+  SE: "se-sv",
+  PL: "pl-pl",
+};
+
+const fetchQobuzData = async ({
+  region,
+  vendorData,
+  songData,
+  signal,
+}: IFetchVendorData): Promise<VendorDataResponse> => {
+  const { songId, title, artist, duration } = songData;
+  const { vendorId } = vendorData;
+
+  const appId = process.env.QOBUZ_APP_ID;
+  if (!appId) return { error: "NO_MATCH_FOUND" };
+
+  const query = encodeURIComponent(`${title} ${artist}`);
+  const searchUrl =
+    `https://www.qobuz.com/api.json/0.2/catalog/search` +
+    `?query=${query}&type=tracks&limit=5&app_id=${encodeURIComponent(appId)}`;
+
+  let data: QobuzSearchResponse;
+  try {
+    const response = await axios.get<QobuzSearchResponse>(searchUrl, {
+      headers: { "X-App-Id": appId },
+      signal,
+    });
+    data = response.data;
+  } catch (err) {
+    if (signal?.aborted) throw err;
+    return { error: "NO_MATCH_FOUND" };
+  }
+
+  const locale = QOBUZ_LOCALES[region.toUpperCase()] ?? "us-en";
+  const items = data?.tracks?.items ?? [];
+
+  const listings: NewSongListing[] = items
+    .filter((track) => {
+      if (!track.duration) return false;
+      const resultArtist = track.performer?.name ?? track.album?.artist?.name ?? "";
+      return titleMatches(track.title, title) && artistMatches(resultArtist, artist);
+    })
+    .map((track) => {
+      // Localise album URL to the requested region, then anchor to the specific track.
+      const rawAlbumUrl = track.album?.url ?? "";
+      const albumUrl = rawAlbumUrl
+        ? rawAlbumUrl.replace(/qobuz\.com\/[a-z]{2}-[a-z]{2}\//, `qobuz.com/${locale}/`)
+        : `https://www.qobuz.com/${locale}/`;
+      const url = `${albumUrl}#track/${track.id}`;
+
+      return {
+        songId,
+        vendorId,
+        url,
+        duration: track.duration * 1000,
+        price:
+          track.price?.value != null
+            ? parseFloat(track.price.value.toString()).toFixed(2)
+            : undefined,
+        currency: (track.price?.currency ?? "USD").toUpperCase(),
+        region,
+      } satisfies NewSongListing;
+    });
+
+  const match = filterListings(listings, duration);
+  if (match) return { data: match };
+  return { error: "NO_MATCH_FOUND" };
+};
+
+// ── HDTracks ──────────────────────────────────────────────────────────────────
+// HDTracks is a US-focused hi-res download store.
+// Their site is a React SPA with hash-based routing, so standard HTML scraping
+// won't find search results. The scraper first tries to extract a Next.js-style
+// __NEXT_DATA__ payload (if the host migrated to Next.js), then falls back to
+// Magento-style SSR product cards (their older platform).
+// All prices are in USD.
+
+interface HdtracksTrack {
+  title: string;
+  artist: string;
+  durationMs: number;
+  url: string;
+  price?: string;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function extractHdtracksNextData(nextData: any): HdtracksTrack[] {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const queries: any[] = nextData?.props?.pageProps?.dehydratedState?.queries ?? [];
+  const tracks: HdtracksTrack[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  for (const q of queries as any[]) {
+    const raw = q?.state?.data;
+    if (!raw) continue;
+    const items: unknown[] = Array.isArray(raw)
+      ? raw
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      : ((raw as any)?.items ?? (raw as any)?.results ?? (raw as any)?.tracks ?? []);
+    if (!Array.isArray(items)) continue;
+    for (const item of items) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const it = item as any;
+      const t: string = it?.title ?? it?.name ?? "";
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const a: string = it?.artist?.name ?? it?.artist ?? it?.performers ?? "";
+      const dur: number | null = typeof it?.duration === "number" ? it.duration * 1000 : null;
+      const href: string = it?.url ?? it?.canonical_url ?? it?.path ?? "";
+      if (!t || !dur || !href) continue;
+      tracks.push({
+        title: t,
+        artist: String(a),
+        durationMs: dur,
+        url: href.startsWith("http") ? href : `https://www.hdtracks.com${href}`,
+        price: it?.price != null ? parseFloat(String(it.price)).toFixed(2) : undefined,
+      });
+    }
+  }
+  return tracks;
+}
+
+const fetchHdtracksData = async ({
+  region,
+  vendorData,
+  songData,
+  signal,
+}: IFetchVendorData): Promise<VendorDataResponse> => {
+  const { songId, title, artist, duration } = songData;
+  const { vendorId } = vendorData;
+
+  const query = encodeURIComponent(`${title} ${artist}`);
+  // Try the Magento-era catalog search URL which still serves SSR HTML for some platforms.
+  const searchUrl = `https://www.hdtracks.com/catalogsearch/result/?q=${query}`;
+
+  let html: string;
+  try {
+    const response = await axios.get<string>(searchUrl, {
+      headers: { "User-Agent": SCRAPER_UA },
+      signal,
+    });
+    html = response.data;
+  } catch (err) {
+    if (signal?.aborted) throw err;
+    return { error: "NO_MATCH_FOUND" };
+  }
+
+  const $ = cheerio.load(html);
+  const listings: NewSongListing[] = [];
+
+  // Path 1 — Next.js embedded data (if HDTracks migrated to Next.js)
+  const nextDataText = $("#__NEXT_DATA__").text();
+  if (nextDataText) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const nextData = JSON.parse(nextDataText) as any;
+      const tracks = extractHdtracksNextData(nextData);
+      for (const t of tracks) {
+        if (!titleMatches(t.title, title) || !artistMatches(t.artist, artist)) continue;
+        listings.push({
+          songId, vendorId, url: t.url, duration: t.durationMs,
+          price: t.price, currency: "USD", region,
+        } satisfies NewSongListing);
+      }
+    } catch { /* not valid Next.js data, fall through */ }
+  }
+
+  // Path 2 — Magento-style SSR product cards
+  if (!listings.length) {
+    $(".product-item, .product-items li, .item.product").each((_, el) => {
+      const $el = $(el);
+
+      const cardTitle =
+        $el.find(".product-item-name a, .product-item-name, .product-name a, h2 a").first().text().trim();
+      if (!cardTitle || !titleMatches(cardTitle, title)) return;
+
+      const cardArtist = $el.find(".artist, .artist-name, [class*='artist']").first().text().trim();
+      if (cardArtist && !artistMatches(cardArtist, artist)) return;
+
+      const durationText =
+        $el.find(".duration, .track-length, [class*='duration'], [class*='length']").first().text().trim();
+      const durationMs = parseMMSS(durationText);
+      if (!durationMs) return;
+
+      const priceText = $el.find(".price, .product-price, [class*='price']").first().text().trim();
+      const priceMatch = priceText.match(/(\d+)[.,](\d{2})/);
+      const price = priceMatch ? `${priceMatch[1]}.${priceMatch[2]}` : undefined;
+
+      const trackHref =
+        $el.find("a.product-item-link, a.product-name").first().attr("href") ?? "";
+      if (!trackHref) return;
+      const url = trackHref.startsWith("http") ? trackHref : `https://www.hdtracks.com${trackHref}`;
+
+      listings.push({ songId, vendorId, url, duration: durationMs, price, currency: "USD", region } satisfies NewSongListing);
+    });
+  }
+
+  const match = filterListings(listings, duration);
+  if (match) return { data: match };
+  return { error: "NO_MATCH_FOUND" };
+};
+
+// ── 7digital ──────────────────────────────────────────────────────────────────
+// 7digital has a public developer API at https://api.7digital.com/1.2/.
+// Requires SEVENDIGITAL_CONSUMER_KEY (register at https://developer.7digital.com/).
+// Without credentials the function returns NO_MATCH_FOUND immediately.
+// Duration in the response is in seconds; price includes currency code.
+
+interface SevendigitalSearchResponse {
+  searchResults?: {
+    searchResult: Array<{
+      type: string;
+      track?: {
+        id: number;
+        title: string;
+        url: string;
+        duration: number; // seconds
+        artist: { id: number; name: string; url: string };
+        price?: { value: number; formattedPrice: string; currency: string; status: string };
+      };
+    }>;
+  };
+}
+
+const fetchSevendigitalData = async ({
+  region,
+  vendorData,
+  songData,
+  signal,
+}: IFetchVendorData): Promise<VendorDataResponse> => {
+  const { songId, title, artist, duration } = songData;
+  const { vendorId } = vendorData;
+
+  const consumerKey = process.env.SEVENDIGITAL_CONSUMER_KEY;
+  if (!consumerKey) return { error: "NO_MATCH_FOUND" };
+
+  const query = encodeURIComponent(`${title} ${artist}`);
+  const country = region.toUpperCase();
+  const searchUrl =
+    `https://api.7digital.com/1.2/track/search` +
+    `?q=${query}&country=${country}&pageSize=5` +
+    `&oauth_consumer_key=${encodeURIComponent(consumerKey)}` +
+    `&imageSize=0&usageTypes=download&f=json`;
+
+  let data: SevendigitalSearchResponse;
+  try {
+    const response = await axios.get<SevendigitalSearchResponse>(searchUrl, { signal });
+    data = response.data;
+  } catch (err) {
+    if (signal?.aborted) throw err;
+    return { error: "NO_MATCH_FOUND" };
+  }
+
+  const results = data?.searchResults?.searchResult ?? [];
+  const listings: NewSongListing[] = results
+    .filter((r) => r.type === "track" && r.track != null)
+    .filter((r) => {
+      const t = r.track!;
+      return titleMatches(t.title, title) && artistMatches(t.artist.name, artist);
+    })
+    .map((r) => {
+      const t = r.track!;
+      return {
+        songId,
+        vendorId,
+        url: t.url,
+        duration: t.duration * 1000,
+        price:
+          t.price?.value != null ? parseFloat(t.price.value.toString()).toFixed(2) : undefined,
+        currency: (t.price?.currency ?? "USD").toUpperCase(),
+        region,
+      } satisfies NewSongListing;
+    });
+
+  const match = filterListings(listings, duration);
+  if (match) return { data: match };
+  return { error: "NO_MATCH_FOUND" };
 };
