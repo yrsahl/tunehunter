@@ -86,6 +86,26 @@ async function fetchVercelBandwidthGb(): Promise<number | null> {
 }
 
 export const statsRouter = createTRPCRouter({
+  getPublicStats: publicProcedure.query(async ({ ctx }) => {
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    const [todaySearches, totalSearches] = await Promise.all([
+      ctx.db
+        .select({ count: count() })
+        .from(userActivities)
+        .where(and(eq(userActivities.type, "search"), gt(userActivities.createdAt, startOfToday)))
+        .then((r) => r[0]?.count ?? 0),
+      ctx.db
+        .select({ count: count() })
+        .from(userActivities)
+        .where(eq(userActivities.type, "search"))
+        .then((r) => r[0]?.count ?? 0),
+    ]);
+
+    return { todaySearches, totalSearches };
+  }),
+
   getStats: publicProcedure.query(async ({ ctx }) => {
     const [totalSearches, dbCacheHits, externalFetches, rateLimited, storeUnreachable, noMatch, trpcRateLimited, byVendor] = await Promise.all([
       // Total song searches
