@@ -3,6 +3,7 @@ import SearchTabContent from "@/components/interactive/Search/SearchTabs/SearchT
 import { useActiveSearchTabStore } from "@/hooks/stores/useActiveSearchTab";
 import { api } from "@/lib/api";
 import { AnimatePresence } from "framer-motion";
+import { BadgeDollarSign, ShoppingCart, Zap } from "lucide-react";
 import type { NextPage } from "next";
 import Head from "next/head";
 import dynamic from "next/dynamic";
@@ -52,7 +53,13 @@ export const Home: NextPage = () => {
         <Search />
 
         {/* Social proof counter */}
-        <p className="-mt-6 text-xs text-muted-foreground">{counterText}</p>
+        <div className="-mt-6 flex items-center gap-2">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+          </span>
+          <p className="text-xs text-foreground">{counterText}</p>
+        </div>
 
         {/* Tab Content */}
         <AnimatePresence mode="wait">
@@ -62,22 +69,40 @@ export const Home: NextPage = () => {
         {/* Results */}
         <SongListings />
 
-        {/* SEO body text */}
-        <section className="max-w-2xl space-y-3 pb-4 text-center text-sm text-muted-foreground">
-          <p>
-            TuneHunter lets you compare music download prices across all major stores in a single
-            search — no more jumping between tabs to find the best deal. Search once, see every
-            price, buy where it makes sense.
-          </p>
-          <p>
-            Whether you are a DJ hunting for the perfect track on Beatport, a collector browsing
-            Bandcamp for exclusive releases, or just looking for the cheapest place to buy songs
-            online, TuneHunter searches Beatport, Bandcamp, iTunes, and Amazon at once and shows
-            you every available price side by side.
-          </p>
-          <p>
-            Free to use, no account required. Start comparing music download prices now — just type
-            an artist or track name above.
+        {/* SEO feature section */}
+        <section className="w-full max-w-2xl overflow-hidden rounded-2xl border border-border bg-card/70 text-sm">
+          <div className="grid grid-cols-1 divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+            <div className="flex items-start gap-3 px-5 py-4 sm:flex-col sm:items-center sm:gap-2 sm:text-center">
+              <ShoppingCart className="mt-0.5 h-5 w-5 shrink-0 text-primary sm:mt-0" />
+              <div>
+                <p className="font-semibold text-foreground">4 stores at once</p>
+                <p className="mt-0.5 text-xs text-foreground">
+                  Beatport, Bandcamp, iTunes & Amazon — searched simultaneously
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 px-5 py-4 sm:flex-col sm:items-center sm:gap-2 sm:text-center">
+              <BadgeDollarSign className="mt-0.5 h-5 w-5 shrink-0 text-primary sm:mt-0" />
+              <div>
+                <p className="font-semibold text-foreground">Compare prices</p>
+                <p className="mt-0.5 text-xs text-foreground">
+                  Find the cheapest place to buy any track online without tab-hopping
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 px-5 py-4 sm:flex-col sm:items-center sm:gap-2 sm:text-center">
+              <Zap className="mt-0.5 h-5 w-5 shrink-0 text-primary sm:mt-0" />
+              <div>
+                <p className="font-semibold text-foreground">Free &amp; instant</p>
+                <p className="mt-0.5 text-xs text-foreground">
+                  No account needed — results in seconds for DJs and collectors alike
+                </p>
+              </div>
+            </div>
+          </div>
+          <p className="border-t border-border px-5 py-3 text-center text-xs text-foreground">
+            TuneHunter is the easiest way to compare music download prices across every major
+            store. Search once, see every price, buy where it makes sense.
           </p>
         </section>
       </div>
