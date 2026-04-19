@@ -69,40 +69,25 @@ export const Home: NextPage = () => {
         {/* Results */}
         <SongListings />
 
-        {/* SEO feature section */}
-        <section className="w-full max-w-2xl overflow-hidden rounded-2xl border border-border bg-card/70 text-sm">
-          <div className="grid grid-cols-1 divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-            <div className="flex items-start gap-3 px-5 py-4 sm:flex-col sm:items-center sm:gap-2 sm:text-center">
-              <ShoppingCart className="mt-0.5 h-5 w-5 shrink-0 text-primary sm:mt-0" />
-              <div>
-                <p className="font-semibold text-foreground">4 stores at once</p>
-                <p className="mt-0.5 text-xs text-foreground">
-                  Beatport, Bandcamp, iTunes & Amazon — searched simultaneously
-                </p>
-              </div>
+        {/* SEO section */}
+        <section className="w-full max-w-xl space-y-4 pb-6 text-center text-xs text-foreground">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+            <div className="flex items-center gap-1.5">
+              <ShoppingCart className="h-3.5 w-3.5 text-primary" />
+              <span>Beatport, Bandcamp, iTunes &amp; Amazon</span>
             </div>
-            <div className="flex items-start gap-3 px-5 py-4 sm:flex-col sm:items-center sm:gap-2 sm:text-center">
-              <BadgeDollarSign className="mt-0.5 h-5 w-5 shrink-0 text-primary sm:mt-0" />
-              <div>
-                <p className="font-semibold text-foreground">Compare prices</p>
-                <p className="mt-0.5 text-xs text-foreground">
-                  Find the cheapest place to buy any track online without tab-hopping
-                </p>
-              </div>
+            <div className="flex items-center gap-1.5">
+              <BadgeDollarSign className="h-3.5 w-3.5 text-primary" />
+              <span>Compare prices instantly</span>
             </div>
-            <div className="flex items-start gap-3 px-5 py-4 sm:flex-col sm:items-center sm:gap-2 sm:text-center">
-              <Zap className="mt-0.5 h-5 w-5 shrink-0 text-primary sm:mt-0" />
-              <div>
-                <p className="font-semibold text-foreground">Free &amp; instant</p>
-                <p className="mt-0.5 text-xs text-foreground">
-                  No account needed — results in seconds for DJs and collectors alike
-                </p>
-              </div>
+            <div className="flex items-center gap-1.5">
+              <Zap className="h-3.5 w-3.5 text-primary" />
+              <span>Free · No account needed</span>
             </div>
           </div>
-          <p className="border-t border-border px-5 py-3 text-center text-xs text-foreground">
-            TuneHunter is the easiest way to compare music download prices across every major
-            store. Search once, see every price, buy where it makes sense.
+          <p className="leading-relaxed">
+            The fastest way to find the cheapest place to buy any track online — search once,
+            see every price, buy where it makes sense.
           </p>
         </section>
       </div>
