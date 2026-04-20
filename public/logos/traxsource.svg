@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Traxsource — dark background, brand green #00B300 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#0d0d0d"/>
+  <!-- Horizontal bar of T -->
+  <rect x="96" y="112" width="320" height="72" rx="10" fill="#00B300"/>
+  <!-- Stem of T -->
+  <rect x="220" y="184" width="72" height="216" rx="10" fill="#00B300"/>
+</svg>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Juno Download — white background, brand orange #FF6600 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#ffffff"/>
+  <!-- Vertical bar of J -->
+  <rect x="220" y="96" width="72" height="220" rx="10" fill="#FF6600"/>
+  <!-- Curved foot of J (arc going left) -->
+  <path d="M292 316 Q292 400 220 400 Q148 400 148 316 L148 316" stroke="#FF6600" stroke-width="72" fill="none" stroke-linecap="round"/>
+</svg>

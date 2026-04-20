@@ -246,44 +246,165 @@ export const SongListingContextProvider = ({
     },
   );
 
+  // Traxsource
+  const {
+    data: traxsourceResponse,
+    isLoading: isTraxsourceResponseLoading,
+    isFetching: isTraxsourceFetching,
+    isPreviousData: isTraxsourcePlaceholder,
+  } = api.songListings.getSongListing.useQuery(
+    {
+      vendor: "traxsource",
+      region,
+      songId,
+      artist: artists,
+      album: trackData?.song.album || "",
+      duration: trackData?.song.duration || 0,
+      title: trackData?.song.title || "",
+    },
+    {
+      refetchOnWindowFocus: false,
+      enabled: isSongDataValid,
+      keepPreviousData: true,
+    },
+  );
+
+  // Juno Download
+  const {
+    data: junodownloadResponse,
+    isLoading: isJunodownloadResponseLoading,
+    isFetching: isJunodownloadFetching,
+    isPreviousData: isJunodownloadPlaceholder,
+  } = api.songListings.getSongListing.useQuery(
+    {
+      vendor: "junodownload",
+      region,
+      songId,
+      artist: artists,
+      album: trackData?.song.album || "",
+      duration: trackData?.song.duration || 0,
+      title: trackData?.song.title || "",
+    },
+    {
+      refetchOnWindowFocus: false,
+      enabled: isSongDataValid,
+      keepPreviousData: true,
+    },
+  );
+
+  // Qobuz
+  const {
+    data: qobuzResponse,
+    isLoading: isQobuzResponseLoading,
+    isFetching: isQobuzFetching,
+    isPreviousData: isQobuzPlaceholder,
+  } = api.songListings.getSongListing.useQuery(
+    {
+      vendor: "qobuz",
+      region,
+      songId,
+      artist: artists,
+      album: trackData?.song.album || "",
+      duration: trackData?.song.duration || 0,
+      title: trackData?.song.title || "",
+    },
+    {
+      refetchOnWindowFocus: false,
+      enabled: isSongDataValid,
+      keepPreviousData: true,
+    },
+  );
+
+  // HDTracks
+  const {
+    data: hdtracksResponse,
+    isLoading: isHdtracksResponseLoading,
+    isFetching: isHdtracksFetching,
+    isPreviousData: isHdtracksPlaceholder,
+  } = api.songListings.getSongListing.useQuery(
+    {
+      vendor: "hdtracks",
+      region,
+      songId,
+      artist: artists,
+      album: trackData?.song.album || "",
+      duration: trackData?.song.duration || 0,
+      title: trackData?.song.title || "",
+    },
+    {
+      refetchOnWindowFocus: false,
+      enabled: isSongDataValid,
+      keepPreviousData: true,
+    },
+  );
+
+  // 7digital
+  const {
+    data: sevendigitalResponse,
+    isLoading: isSevendigitalResponseLoading,
+    isFetching: isSevendigitalFetching,
+    isPreviousData: isSevendigitalPlaceholder,
+  } = api.songListings.getSongListing.useQuery(
+    {
+      vendor: "sevendigital",
+      region,
+      songId,
+      artist: artists,
+      album: trackData?.song.album || "",
+      duration: trackData?.song.duration || 0,
+      title: trackData?.song.title || "",
+    },
+    {
+      refetchOnWindowFocus: false,
+      enabled: isSongDataValid,
+      keepPreviousData: true,
+    },
+  );
+
   const getVendorResponse = useCallback(
     (vendor: SongVendorType) => {
       switch (vendor) {
-        case "itunes":
-          return itunesResponse;
-        case "beatport":
-          return beatportResponse;
-        case "amazon":
-          return amazonResponse;
-        case "bandcamp":
-          return bandcampResponse;
-        default:
-          return null;
+        case "itunes":       return itunesResponse;
+        case "beatport":     return beatportResponse;
+        case "amazon":       return amazonResponse;
+        case "bandcamp":     return bandcampResponse;
+        case "traxsource":   return traxsourceResponse;
+        case "junodownload": return junodownloadResponse;
+        case "qobuz":        return qobuzResponse;
+        case "hdtracks":     return hdtracksResponse;
+        case "sevendigital": return sevendigitalResponse;
       }
     },
-    [itunesResponse, beatportResponse, amazonResponse, bandcampResponse],
+    [
+      itunesResponse, beatportResponse, amazonResponse, bandcampResponse,
+      traxsourceResponse, junodownloadResponse, qobuzResponse, hdtracksResponse, sevendigitalResponse,
+    ],
   );
 
   const getVendorResponseLoadingState = useCallback(
     (vendor: SongVendorType) => {
       switch (vendor) {
-        case "itunes":
-          return isItunesResponseLoading || isItunesPlaceholder;
-        case "beatport":
-          return isBeatportResponseLoading || isBeatportPlaceholder;
-        case "amazon":
-          return isAmazonResponseLoading || isAmazonPlaceholder;
-        case "bandcamp":
-          return isBandcampResponseLoading || isBandcampPlaceholder;
-        default:
-          return true;
+        case "itunes":       return isItunesResponseLoading       || isItunesPlaceholder;
+        case "beatport":     return isBeatportResponseLoading     || isBeatportPlaceholder;
+        case "amazon":       return isAmazonResponseLoading       || isAmazonPlaceholder;
+        case "bandcamp":     return isBandcampResponseLoading     || isBandcampPlaceholder;
+        case "traxsource":   return isTraxsourceResponseLoading   || isTraxsourcePlaceholder;
+        case "junodownload": return isJunodownloadResponseLoading || isJunodownloadPlaceholder;
+        case "qobuz":        return isQobuzResponseLoading        || isQobuzPlaceholder;
+        case "hdtracks":     return isHdtracksResponseLoading     || isHdtracksPlaceholder;
+        case "sevendigital": return isSevendigitalResponseLoading || isSevendigitalPlaceholder;
       }
     },
     [
-      isItunesResponseLoading, isItunesPlaceholder,
-      isBeatportResponseLoading, isBeatportPlaceholder,
-      isAmazonResponseLoading, isAmazonPlaceholder,
-      isBandcampResponseLoading, isBandcampPlaceholder,
+      isItunesResponseLoading,       isItunesPlaceholder,
+      isBeatportResponseLoading,     isBeatportPlaceholder,
+      isAmazonResponseLoading,       isAmazonPlaceholder,
+      isBandcampResponseLoading,     isBandcampPlaceholder,
+      isTraxsourceResponseLoading,   isTraxsourcePlaceholder,
+      isJunodownloadResponseLoading, isJunodownloadPlaceholder,
+      isQobuzResponseLoading,        isQobuzPlaceholder,
+      isHdtracksResponseLoading,     isHdtracksPlaceholder,
+      isSevendigitalResponseLoading, isSevendigitalPlaceholder,
     ],
   );
 
@@ -339,6 +460,41 @@ export const SongListingContextProvider = ({
               isFetching: isBandcampFetching,
               isPlaceholderData: isBandcampPlaceholder,
               data: bandcampResponse,
+            },
+            {
+              name: "Traxsource",
+              isLoading: isTraxsourceResponseLoading,
+              isFetching: isTraxsourceFetching,
+              isPlaceholderData: isTraxsourcePlaceholder,
+              data: traxsourceResponse,
+            },
+            {
+              name: "Juno Download",
+              isLoading: isJunodownloadResponseLoading,
+              isFetching: isJunodownloadFetching,
+              isPlaceholderData: isJunodownloadPlaceholder,
+              data: junodownloadResponse,
+            },
+            {
+              name: "Qobuz",
+              isLoading: isQobuzResponseLoading,
+              isFetching: isQobuzFetching,
+              isPlaceholderData: isQobuzPlaceholder,
+              data: qobuzResponse,
+            },
+            {
+              name: "HDTracks",
+              isLoading: isHdtracksResponseLoading,
+              isFetching: isHdtracksFetching,
+              isPlaceholderData: isHdtracksPlaceholder,
+              data: hdtracksResponse,
+            },
+            {
+              name: "7digital",
+              isLoading: isSevendigitalResponseLoading,
+              isFetching: isSevendigitalFetching,
+              isPlaceholderData: isSevendigitalPlaceholder,
+              data: sevendigitalResponse,
             },
           ]}
         />
