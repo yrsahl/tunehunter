@@ -86,11 +86,9 @@ export const Home: NextPage<HomeProps> = ({ hasInitialId }) => {
         <AnimatePresence>
           {!hasId && (
             <motion.section
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              style={{ overflow: "hidden" }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1, transition: { duration: 0.4 } }}
+              exit={{ opacity: 0, transition: { duration: 0.1 } }}
               className="w-full space-y-4 pb-6 text-center text-sm leading-relaxed text-foreground"
             >
               <p>
