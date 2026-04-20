@@ -3,7 +3,6 @@ import SearchTabContent from "@/components/interactive/Search/SearchTabs/SearchT
 import { useActiveSearchTabStore } from "@/hooks/stores/useActiveSearchTab";
 import { api } from "@/lib/api";
 import { AnimatePresence } from "framer-motion";
-import { BadgeDollarSign, ShoppingCart, Zap } from "lucide-react";
 import type { NextPage } from "next";
 import Head from "next/head";
 import dynamic from "next/dynamic";
@@ -69,25 +68,22 @@ export const Home: NextPage = () => {
         {/* Results */}
         <SongListings />
 
-        {/* SEO section */}
-        <section className="w-full max-w-xl space-y-4 pb-6 text-center text-xs text-foreground">
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-            <div className="flex items-center gap-1.5">
-              <ShoppingCart className="h-3.5 w-3.5 text-primary" />
-              <span>Beatport, Bandcamp, iTunes &amp; Amazon</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <BadgeDollarSign className="h-3.5 w-3.5 text-primary" />
-              <span>Compare prices instantly</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Zap className="h-3.5 w-3.5 text-primary" />
-              <span>Free · No account needed</span>
-            </div>
-          </div>
-          <p className="leading-relaxed">
-            The fastest way to find the cheapest place to buy any track online — search once,
-            see every price, buy where it makes sense.
+        {/* SEO body text */}
+        <section className="w-full max-w-lg space-y-4 pb-6 text-center text-sm leading-relaxed text-foreground">
+          <p>
+            TuneHunter lets you compare music download prices across all major stores in a single
+            search — no more jumping between tabs to find the best deal. Search once, see every
+            price, buy where it makes sense.
+          </p>
+          <p>
+            Whether you are a DJ hunting for the perfect track on Beatport, a collector browsing
+            Bandcamp for exclusive releases, or just looking for the cheapest place to buy songs
+            online, TuneHunter searches Beatport, Bandcamp, iTunes, and Amazon at once and shows
+            you every available price side by side.
+          </p>
+          <p>
+            Free to use, no account required. Start comparing music download prices now — just
+            type an artist or track name above.
           </p>
         </section>
       </div>
