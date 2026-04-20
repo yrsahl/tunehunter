@@ -201,6 +201,13 @@ const InfoButton = () => {
               </div> */}
               <div className="flex justify-center gap-4">
                 <Link
+                  href="/blog"
+                  className="text-xs text-foreground/40 underline underline-offset-4 hover:text-foreground/60"
+                  onClick={() => setInfoFrameOpen(false)}
+                >
+                  Blog
+                </Link>
+                <Link
                   href="/privacy"
                   className="text-xs text-foreground/40 underline underline-offset-4 hover:text-foreground/60"
                   onClick={() => setInfoFrameOpen(false)}
