@@ -47,10 +47,7 @@ export const Home: NextPage<HomeProps> = ({ hasInitialId }) => {
     refetchOnWindowFocus: false,
   });
 
-  const counterText =
-    publicStats && publicStats.todaySearches > 0
-      ? `${publicStats.todaySearches.toLocaleString()} tracks compared today`
-      : "Comparing prices across 4 stores";
+  const showCounter = !!publicStats && publicStats.todaySearches >= 50;
 
   return (
     <>
@@ -64,14 +61,18 @@ export const Home: NextPage<HomeProps> = ({ hasInitialId }) => {
         {/* Search */}
         <Search />
 
-        {/* Social proof counter */}
-        <div className="-mt-6 flex items-center gap-2">
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
-          </span>
-          <p className="text-xs text-foreground">{counterText}</p>
-        </div>
+        {/* Social proof counter — only shown once daily searches reach 50 */}
+        {showCounter && (
+          <div className="-mt-6 flex items-center gap-2">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+            </span>
+            <p className="text-xs text-foreground">
+              {publicStats.todaySearches.toLocaleString()} tracks compared today
+            </p>
+          </div>
+        )}
 
         {/* Tab Content */}
         <AnimatePresence mode="wait">
