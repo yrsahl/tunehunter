@@ -1,11 +1,11 @@
 import Search from "@/components/interactive/Search/Search";
 import SearchTabContent from "@/components/interactive/Search/SearchTabs/SearchTabContent";
 import { useActiveSearchTabStore } from "@/hooks/stores/useActiveSearchTab";
-import useSearchStore from "@/hooks/stores/useSearchStore";
 import { api } from "@/lib/api";
 import { AnimatePresence, motion } from "framer-motion";
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
 
 const jsonLd = {
@@ -28,10 +28,20 @@ const SongListings = dynamic(() => import("@/components/interactive/Results/Song
   ssr: false,
 });
 
-export const Home: NextPage = () => {
+interface HomeProps {
+  hasInitialId: boolean;
+}
+
+export const getServerSideProps: GetServerSideProps<HomeProps> = ({ query }) => ({
+  props: { hasInitialId: !!query.id },
+});
+
+export const Home: NextPage<HomeProps> = ({ hasInitialId }) => {
   const { activeSearchTab } = useActiveSearchTabStore();
-  const { searchState } = useSearchStore();
-  const hasActiveSearch = !!searchState.id;
+  const router = useRouter();
+  // Use the server-detected value until the router hydrates to avoid a flash
+  const hasId = router.isReady ? !!router.query.id : hasInitialId;
+
   const { data: publicStats } = api.stats.getPublicStats.useQuery(undefined, {
     staleTime: 60_000,
     refetchOnWindowFocus: false,
@@ -71,9 +81,9 @@ export const Home: NextPage = () => {
         {/* Results */}
         <SongListings />
 
-        {/* SEO body text — only shown when no track is selected */}
+        {/* SEO body text — hidden whenever ?id is present in the URL */}
         <AnimatePresence>
-          {!hasActiveSearch && (
+          {!hasId && (
             <motion.section
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
