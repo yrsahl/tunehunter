@@ -78,7 +78,8 @@
         "nodemailer",
         "@neondatabase/serverless",
         "eslint",
-        "eslint-config-next"
+        "eslint-config-next",
+        "bcryptjs"
       ],
       "matchPackagePatterns": ["^@typescript-eslint/"],
       "enabled": false

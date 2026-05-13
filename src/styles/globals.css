@@ -1,8 +1,8 @@
+@import "sonner/dist/styles.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import "sonner/dist/styles.css";
 
 @layer base {
   :root {
