@@ -2,7 +2,7 @@ import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import useSpotifyPreviewUrl from "@/hooks/useSpotifyPreviewUrl";
 import { formatDate, formatDuration } from "@/lib/formatters";
 import { Track } from "@/types/song-types";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { Album, Calendar, Clock, HeartIcon, Music } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { memo } from "react";

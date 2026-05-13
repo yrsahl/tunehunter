@@ -4,7 +4,7 @@ import useFavorites from "@/hooks/useFavorites";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { api } from "@/lib/api";
 import { fadeIn } from "@/styles/animations";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { ArrowLeftRightIcon, HeartIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";

@@ -10,7 +10,7 @@ import { fetchSpotifySearchData } from "@/services/spotify/api";
 import { fadeInAndOut } from "@/styles/animations";
 import { SpotifyTrack } from "@/types/song-types";
 import { SpotifyTrack as ApiSpotifyTrack } from "@/types/spotify-types";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useRef } from "react";
 import NoDataMessage from "./SearchTabContent/NoDataMessage";
 

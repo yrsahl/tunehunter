@@ -6,7 +6,7 @@ import useSearchStore from "@/hooks/stores/useSearchStore";
 import useSearch from "@/hooks/useSearch";
 import { cn } from "@/lib/utils";
 import { fadeInAndOut } from "@/styles/animations";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { Search } from "lucide-react";
 import dynamic from "next/dynamic";
 import {

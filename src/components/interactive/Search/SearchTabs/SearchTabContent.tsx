@@ -2,7 +2,7 @@ import useDeviceSize from "@/hooks/useDeviceSize";
 import { useActiveSearchTabStore } from "@/hooks/stores/useActiveSearchTab";
 import { cn } from "@/lib/utils";
 import { fadeIn } from "@/styles/animations";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useRef } from "react";
 import HistoryTable from "../SearchTabContent/HistoryTable";
 import PlaylistTable from "../SearchTabContent/PlaylistTable";

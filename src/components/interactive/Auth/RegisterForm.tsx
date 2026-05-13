@@ -21,7 +21,7 @@ import { api } from "@/lib/api";
 import { RegisterSchema } from "@/server/api/schemas/account-schemas";
 import { growIn } from "@/styles/animations";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { trackEvent } from "@/lib/plausible";
 import { signIn } from "next-auth/react";
 import { useEffect, useState, useTransition, type FC } from "react";

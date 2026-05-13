@@ -1,7 +1,7 @@
 import RankingIndicator from "@/components/icons/RankingIndicator";
 import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { fadeIn } from "@/styles/animations";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useState } from "react";
 import NoDataMessage from "./NoDataMessage";
 import SkeletonTable from "./SkeletonTable";

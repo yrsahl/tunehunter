@@ -7,7 +7,7 @@ import { api } from "@/lib/api";
 import { CountryCode } from "@/lib/validators";
 import { slideInAndOutFromBottom } from "@/styles/animations";
 import { Track } from "@/types/song-types";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useRef } from "react";
 import SongListingsContainer from "./SongListingsContainer";
 

@@ -16,7 +16,7 @@ import useThemeSettings from "@/hooks/settings/useThemeSettings";
 import InfoWithToolTip from "@/components/InfoWithTooltip";
 import useProfileFunctions from "@/hooks/useProfileFunctions";
 import { growIn } from "@/styles/animations";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import IconButton from "../../IconButton";

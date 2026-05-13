@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { CountryCode } from "@/lib/validators";
 import { SongVendorType } from "@/server/db/schema";
 import { transformCurrencyStringToIcon, withAffiliateTag } from "@/services/vendors";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { trackEvent } from "@/lib/plausible";
 import SongListingRowMessage from "./SongListingRowMessage";
 import SongListingRowSkeleton from "./SongListingRowSkeleton";

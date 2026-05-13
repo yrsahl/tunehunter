@@ -1,7 +1,7 @@
 import useFavorites from "@/hooks/useFavorites";
 import { Input } from "@/components/ui/input";
 import { fadeIn } from "@/styles/animations";
-import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
+import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import { SearchIcon } from "lucide-react";
 import useTableSort from "./useTableSort";
 import FavoritesStatusIcon from "./FavoritesStatusIcon";

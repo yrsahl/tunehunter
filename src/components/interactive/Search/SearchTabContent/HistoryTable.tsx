@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { formatDate } from "@/lib/formatters";
 import { fadeIn } from "@/styles/animations";
-import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
+import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import { SearchIcon } from "lucide-react";
 import NoDataMessage from "./NoDataMessage";
 import SkeletonTable from "./SkeletonTable";

@@ -3,7 +3,7 @@ import RankingIndicator from "@/components/icons/RankingIndicator";
 import { MusicPlayingIndicator } from "@/components/Indicators";
 import { useSearchTabDataContext } from "@/contexts/SearchTabDataContext";
 import { fadeInAndOut } from "@/styles/animations";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { SkipForward } from "lucide-react";
 import { useState } from "react";
 import NoDataMessage from "./NoDataMessage";

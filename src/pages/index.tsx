@@ -1,7 +1,7 @@
 import Search from "@/components/interactive/Search/Search";
 import SearchTabContent from "@/components/interactive/Search/SearchTabs/SearchTabContent";
 import { useActiveSearchTabStore } from "@/hooks/stores/useActiveSearchTab";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "motion/react";
 import type { NextPage } from "next";
 import Head from "next/head";
 import dynamic from "next/dynamic";

@@ -9,7 +9,7 @@ import {
   useSearchSettingsStore,
 } from "@/hooks/stores/useSearchSettingsStore";
 import { fadeInAndOut, growIn, slideInFromAbove } from "@/styles/animations";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { Cog } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { RefObject } from "react";

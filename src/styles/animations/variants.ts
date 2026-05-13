@@ -8,7 +8,7 @@ export const fadeInAndOut = (duration = 0.3) => ({
   initial: { opacity: 0 },
   animate: { opacity: 1 },
   exit: { opacity: 0 },
-  transition: { duration, ease: "easeInOut" },
+  transition: { duration, ease: "easeInOut" as const },
 });
 
 export const growIn = (duration = 0.3) => ({

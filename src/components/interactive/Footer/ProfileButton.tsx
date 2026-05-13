@@ -2,7 +2,7 @@ import { useDisabledTabStore } from "@/hooks/stores/useDisabledTabStore";
 import useDeviceSize from "@/hooks/useDeviceSize";
 import useRouterWithHelpers from "@/hooks/useRouterWithHelpers";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { User, X } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";

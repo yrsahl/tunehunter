@@ -1,6 +1,6 @@
 import { LoadingIndicatorTwo } from "@/components/Indicators";
 import WithTooltip from "@/components/WithTooltip";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Pause, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 

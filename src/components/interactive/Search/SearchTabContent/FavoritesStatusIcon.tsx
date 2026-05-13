@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import useFavorites from "@/hooks/useFavorites";
-import { motion, useAnimation } from "framer-motion";
+import { motion, useAnimation } from "motion/react";
 import { HeartIcon, HeartOff } from "lucide-react";
 
 interface FavoritesStatusIconProps {

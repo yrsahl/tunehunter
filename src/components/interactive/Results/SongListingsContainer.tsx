@@ -2,7 +2,7 @@ import { useSongListingContext } from "@/contexts/SongListingContext";
 import useDeviceSize from "@/hooks/useDeviceSize";
 import { CountryCode } from "@/lib/validators";
 import { songVendorArray } from "@/server/db/schema";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import dynamic from "next/dynamic";
 import SongPreview from "./SongPreview";
 const SongListingRow = dynamic(() => import("./SongListingRow"), {
