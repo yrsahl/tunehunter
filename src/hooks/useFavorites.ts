@@ -55,7 +55,7 @@ const useFavorites = () => {
   return {
     favoritesData: data,
     favoritesDataIsLoading: isLoading,
-    isAddingAllToFavorites: addFavoritesFromPlaylist.isLoading,
+    isAddingAllToFavorites: addFavoritesFromPlaylist.isPending,
     isOnFavorites,
     addToFavorites,
     addAllToFavorites,

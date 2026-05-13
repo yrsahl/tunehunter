@@ -12,6 +12,7 @@ import { AppRouter } from "@/server/api/root";
 import { SongVendorType } from "@/server/db/schema";
 import { Track } from "@/types/song-types";
 import { inferProcedureOutput } from "@trpc/server";
+import { keepPreviousData } from "@tanstack/react-query";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef } from "react";
 
 interface ISongListingContext {
@@ -138,7 +139,7 @@ export const SongListingContextProvider = ({
     data: itunesResponse,
     isLoading: isItunesResponseLoading,
     isFetching: isItunesFetching,
-    isPreviousData: isItunesPlaceholder,
+    isPlaceholderData: isItunesPlaceholder,
   } = api.songListings.getSongListing.useQuery(
     {
       vendor: "itunes",
@@ -152,7 +153,7 @@ export const SongListingContextProvider = ({
     {
       refetchOnWindowFocus: false,
       enabled: isSongDataValid,
-      keepPreviousData: true,
+      placeholderData: keepPreviousData,
     },
   );
 
@@ -182,7 +183,7 @@ export const SongListingContextProvider = ({
     data: beatportResponse,
     isLoading: isBeatportResponseLoading,
     isFetching: isBeatportFetching,
-    isPreviousData: isBeatportPlaceholder,
+    isPlaceholderData: isBeatportPlaceholder,
   } = api.songListings.getSongListing.useQuery(
     {
       vendor: "beatport",
@@ -196,7 +197,7 @@ export const SongListingContextProvider = ({
     {
       refetchOnWindowFocus: false,
       enabled: isSongDataValid,
-      keepPreviousData: true,
+      placeholderData: keepPreviousData,
     },
   );
 
@@ -205,7 +206,7 @@ export const SongListingContextProvider = ({
     data: amazonResponse,
     isLoading: isAmazonResponseLoading,
     isFetching: isAmazonFetching,
-    isPreviousData: isAmazonPlaceholder,
+    isPlaceholderData: isAmazonPlaceholder,
   } = api.songListings.getSongListing.useQuery(
     {
       vendor: "amazon",
@@ -219,7 +220,7 @@ export const SongListingContextProvider = ({
     {
       refetchOnWindowFocus: false,
       enabled: isSongDataValid,
-      keepPreviousData: true,
+      placeholderData: keepPreviousData,
     },
   );
 
@@ -228,7 +229,7 @@ export const SongListingContextProvider = ({
     data: bandcampResponse,
     isLoading: isBandcampResponseLoading,
     isFetching: isBandcampFetching,
-    isPreviousData: isBandcampPlaceholder,
+    isPlaceholderData: isBandcampPlaceholder,
   } = api.songListings.getSongListing.useQuery(
     {
       vendor: "bandcamp",
@@ -242,7 +243,7 @@ export const SongListingContextProvider = ({
     {
       refetchOnWindowFocus: false,
       enabled: isSongDataValid,
-      keepPreviousData: true,
+      placeholderData: keepPreviousData,
     },
   );
 

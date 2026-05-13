@@ -4,10 +4,11 @@
  *
  * We also create a few inference helpers for input and output types.
  */
-import { type TRPCLink, TRPCClientError, unstable_httpBatchStreamLink } from "@trpc/client";
+import { type TRPCLink, TRPCClientError, httpBatchStreamLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
 import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 import { observable } from "@trpc/server/observable";
+import { QueryCache, MutationCache } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import superjson from "superjson";
@@ -72,15 +73,9 @@ const getBaseUrl = () => {
 
 /** A set of type-safe react-query hooks for your tRPC API. */
 export const api = createTRPCNext<AppRouter>({
+  transformer: superjson,
   config() {
     return {
-      /**
-       * Transformer used for data de-serialization from the server.
-       *
-       * @see https://trpc.io/docs/data-transformers
-       */
-      transformer: superjson,
-
       /**
        * Links used to determine request flow from client to server.
        *
@@ -88,15 +83,14 @@ export const api = createTRPCNext<AppRouter>({
        */
       links: [
         ...(process.env.NODE_ENV === "development" ? [devCounterLink] : []),
-        unstable_httpBatchStreamLink({
+        httpBatchStreamLink({
           url: `${getBaseUrl()}/api/trpc`,
+          transformer: superjson,
         }),
       ],
       queryClientConfig: {
-        defaultOptions: {
-          queries: { onError },
-          mutations: { onError },
-        },
+        queryCache: new QueryCache({ onError }),
+        mutationCache: new MutationCache({ onError }),
       },
       // ---- Invalidate everything on any mutation
       // overrides: {
