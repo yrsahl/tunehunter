@@ -2,7 +2,11 @@ import { env } from "@/env";
 import { SearchData } from "@/types/search-types";
 import { Track } from "@/types/song-types";
 
-const getEndpoint = () => env.NEXT_PUBLIC_ITUNES_PROXY_URL ?? "https://itunes.apple.com/search";
+const isIOS = () =>
+  typeof navigator !== "undefined" && /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+const getEndpoint = () =>
+  isIOS() ? (env.NEXT_PUBLIC_ITUNES_PROXY_URL ?? "https://itunes.apple.com/search") : "https://itunes.apple.com/search";
 
 const SONG_LIMIT = 30;
 
