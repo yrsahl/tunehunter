@@ -2,6 +2,7 @@
 
 Create a logo
 
+
 0. Bug: Sometimes the very first search result pops up and right away hides gain, URL also goes back to root
 1. TAB: search when no results -> no way to go back since the search is now not displayed anymore
 2. TAB: paging for >30 (trending, favorites, history), or just show more
