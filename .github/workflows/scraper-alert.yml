@@ -6,12 +6,20 @@ on:
 
 permissions: {}
 
+concurrency:
+  group: scraper-alert
+  cancel-in-progress: false
+
 jobs:
   alert:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Call scraper alert endpoint
         run: |
-          curl --fail -X GET \
-            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          curl --fail --silent --show-error --retry 3 --retry-all-errors \
+            --connect-timeout 10 --max-time 90 -X GET \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
             "https://tunehunter.app/api/cron/scraper-alert"
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
