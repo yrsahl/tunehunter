@@ -68,6 +68,7 @@ export const env = createEnv({
     NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_IT: z.string().optional(),
     NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_CA: z.string().optional(),
     NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_AU: z.string().optional(),
+    NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_JP: z.string().optional(),
   },
 
   /**
@@ -118,6 +119,7 @@ export const env = createEnv({
     NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_IT: process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_IT,
     NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_CA: process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_CA,
     NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_AU: process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_AU,
+    NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_JP: process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_TAG_JP,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

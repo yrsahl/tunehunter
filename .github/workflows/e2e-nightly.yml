@@ -5,6 +5,9 @@ on:
     - cron: "0 2 * * *"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   full-e2e:
     timeout-minutes: 90
@@ -29,10 +32,10 @@ jobs:
 
       - uses: oven-sh/setup-bun@v1
         with:
-          bun-version: latest
+          bun-version: "1.4.2"
 
       - name: Install dependencies
-        run: bun install
+        run: bun install --frozen-lockfile
 
       - name: Install Playwright Browsers
         run: bunx playwright install --with-deps
@@ -40,13 +43,29 @@ jobs:
       - name: Set up environment variables
         run: |
           echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/test_db" >> .env.local
+          echo "DATABASE_URL_DEV=postgresql://postgres:postgres@localhost:5432/test_db" >> .env.local
+          echo "UPSTASH_REDIS_REST_URL=https://example.com" >> .env.local
+          echo "UPSTASH_REDIS_REST_TOKEN=test-token" >> .env.local
           echo "NEXTAUTH_SECRET=test-secret-key-for-ci" >> .env.local
           echo "NEXTAUTH_URL=http://localhost:3000" >> .env.local
+          echo "EMAIL_SERVER_HOST=localhost" >> .env.local
+          echo "EMAIL_SERVER_PORT=1025" >> .env.local
+          echo "EMAIL_SERVER_USER=test" >> .env.local
+          echo "EMAIL_SERVER_PASSWORD=test" >> .env.local
+          echo "EMAIL_FROM=test@example.com" >> .env.local
           echo "SPOTIFY_CLIENT_ID=test-spotify-client-id" >> .env.local
           echo "SPOTIFY_CLIENT_SECRET=test-spotify-client-secret" >> .env.local
+          echo "DASHBOARD_PASSWORD=test-password" >> .env.local
+          echo "CRON_SECRET=test-cron-secret" >> .env.local
+          echo "CLOUDINARY_CLOUD_NAME=test" >> .env.local
+          echo "CLOUDINARY_API_KEY=test" >> .env.local
+          echo "CLOUDINARY_API_SECRET=test" >> .env.local
 
       - name: Run database migrations
-        run: bun run db:push
+        run: bun run db:migrate:prod
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+          SKIP_ENV_VALIDATION: 1
 
       - name: Build application
         run: bun run build

@@ -1,14 +1,26 @@
 name: Refresh trending views
 
 on:
+  schedule:
+    - cron: "*/15 * * * *"
   workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: refresh-trending
+  cancel-in-progress: false
 
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Call refresh endpoint
         run: |
-          curl --fail -X GET \
-            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          curl --fail --silent --show-error --retry 3 --retry-all-errors \
+            --connect-timeout 10 --max-time 120 -X GET \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
             "https://tunehunter.app/api/cron/refresh-trending"
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
