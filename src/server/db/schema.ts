@@ -231,7 +231,17 @@ export const songListingRequests = pgTable(
   }),
 );
 
-export const songVendorArray = ["itunes", "bandcamp", "beatport", "amazon"] as const;
+export const songVendorArray = [
+  "itunes",
+  "bandcamp",
+  "beatport",
+  "amazon",
+  "traxsource",
+  "junodownload",
+  "qobuz",
+  "hdtracks",
+  "sevendigital",
+] as const;
 export type SongVendorType = (typeof songVendorArray)[number];
 export const songVendorTypeEnum = pgEnum("song_vendor_type", songVendorArray);
 

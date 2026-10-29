@@ -18,8 +18,8 @@ export const emailRateLimiter = new Ratelimit({
 // Per-vendor limits — applied on cache misses only (when outbound HTTP calls are made).
 // Bandcamp: up to 4 outbound requests per lookup (1 search + 3 track pages),
 // so 10 lookups/min ≈ 40 HTTP requests/min to Bandcamp.
-// Beatport/Amazon: 1 request per lookup.
-// iTunes: official API, more lenient.
+// Beatport/Amazon/Traxsource/Juno/HDTracks: 1 request per lookup.
+// iTunes/Qobuz/7digital: official APIs, more lenient.
 export const vendorRateLimiters: Record<string, Ratelimit> = {
   bandcamp: new Ratelimit({
     redis,
@@ -40,5 +40,30 @@ export const vendorRateLimiters: Record<string, Ratelimit> = {
     redis,
     limiter: Ratelimit.slidingWindow(20, "1 m"),
     prefix: "rl:vendor:amazon",
+  }),
+  traxsource: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(15, "1 m"),
+    prefix: "rl:vendor:traxsource",
+  }),
+  junodownload: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(15, "1 m"),
+    prefix: "rl:vendor:junodownload",
+  }),
+  qobuz: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(20, "1 m"),
+    prefix: "rl:vendor:qobuz",
+  }),
+  hdtracks: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(10, "1 m"),
+    prefix: "rl:vendor:hdtracks",
+  }),
+  sevendigital: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(20, "1 m"),
+    prefix: "rl:vendor:sevendigital",
   }),
 };

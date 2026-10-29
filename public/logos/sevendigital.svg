@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 7digital — white background, brand red #E8002D -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#ffffff"/>
+  <!-- Top bar of 7 -->
+  <rect x="96" y="104" width="320" height="68" rx="10" fill="#E8002D"/>
+  <!-- Diagonal stroke of 7 -->
+  <line x1="376" y1="172" x2="196" y2="420" stroke="#E8002D" stroke-width="72" stroke-linecap="round"/>
+</svg>

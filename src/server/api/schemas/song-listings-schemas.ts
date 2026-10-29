@@ -1,10 +1,10 @@
-import { songListings, songs, songVendors } from "@/server/db/schema";
+import { songListings, songs, songVendorArray, songVendors } from "@/server/db/schema";
 import { InferInsertModel, InferSelectModel } from "drizzle-orm";
 import { z } from "zod";
 
 // Schemas
 export const SongListingSchema = z.object({
-  vendor: z.enum(["itunes", "bandcamp", "beatport", "amazon"]),
+  vendor: z.enum(songVendorArray),
   region: z.string(),
   songId: z.string(),
   artist: z.string(),

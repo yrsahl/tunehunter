@@ -1,17 +1,19 @@
 /**
- * Vendor test script — runs songs against iTunes, Beatport, Bandcamp, and Amazon.
+ * Vendor test script — runs songs against all configured vendors.
  *
  * Usage:
- *   bun scripts/test-vendors.ts               # all vendors, region GB
- *   bun scripts/test-vendors.ts --amazon      # Amazon-only regional sweep (all 8 regions)
- *   bun scripts/test-vendors.ts --region US   # all vendors, region US
+ *   bun scripts/test-vendors.ts                     # all vendors, region GB
+ *   bun scripts/test-vendors.ts --region US         # all vendors, region US
+ *   bun scripts/test-vendors.ts --amazon            # Amazon-only regional sweep (all 8 regions)
+ *   bun scripts/test-vendors.ts --vendor traxsource # single vendor, region GB
  *
  * Strategy: first resolve the accurate duration from iTunes (which returns
- * exact trackTimeMillis), then pass that duration to Beatport, Bandcamp & Amazon
+ * exact trackTimeMillis), then pass that duration to all downstream vendors
  * so the matching window works correctly even for approximate input durations.
  */
 
 import { fetchVendorData } from "../src/services/vendors/api";
+import type { SongVendorType } from "../src/server/db/schema";
 
 // Approximate durations (ms) — good enough for iTunes resolution.
 // iTunes then gives us the exact value to pass downstream.
@@ -30,7 +32,7 @@ const SONGS: { title: string; artist: string; durationMs: number }[] = [
   { title: "Can't Do Without You", artist: "Caribou",               durationMs: 272_000 },
   { title: "Avril 14th",         artist: "Aphex Twin",              durationMs: 125_000 },
   { title: "Kiara",              artist: "Bonobo",                  durationMs: 459_000 },
-  { title: "Archangel",          artist: "Burial",                  durationMs: 234_000 },
+  { title: "Archangel",         artist: "Burial",                  durationMs: 234_000 },
   // Bandcamp-heavy / indie
   { title: "LesAlpx",            artist: "Floating Points",         durationMs: 315_000 },
   { title: "Sea Calls Me Home",  artist: "Julia Holter",            durationMs: 250_000 },
@@ -57,24 +59,38 @@ const SONGS: { title: string; artist: string; durationMs: number }[] = [
   { title: "Re:Stacks",          artist: "Bon Iver",                durationMs: 254_000 },
 ];
 
-const ITUNES_VENDOR   = { vendorId: 1, store: "itunes"   as const };
-const BEATPORT_VENDOR = { vendorId: 3, store: "beatport" as const };
-const BANDCAMP_VENDOR = { vendorId: 2, store: "bandcamp" as const };
-const AMAZON_VENDOR   = { vendorId: 4, store: "amazon"   as const };
+// Vendor registry — IDs match the insertion order in the migration.
+const VENDORS: Record<SongVendorType, { vendorId: number; store: SongVendorType }> = {
+  itunes:       { vendorId: 1, store: "itunes" },
+  bandcamp:     { vendorId: 2, store: "bandcamp" },
+  beatport:     { vendorId: 3, store: "beatport" },
+  amazon:       { vendorId: 4, store: "amazon" },
+  traxsource:   { vendorId: 5, store: "traxsource" },
+  junodownload: { vendorId: 6, store: "junodownload" },
+  qobuz:        { vendorId: 7, store: "qobuz" },
+  hdtracks:     { vendorId: 8, store: "hdtracks" },
+  sevendigital: { vendorId: 9, store: "sevendigital" },
+};
 
-// Regions tested in the sweep:
-//   ✅ expected to work: US, DE, FR, ES, IT (digital music store present, no WAF)
-//   ❌ GB: WAF blocked  ❌ CA/AU: no digital music download store
+// Vendors shown in the standard all-vendor table run.
+// itunes is used internally for duration resolution so it always runs first.
+const PRIMARY_VENDORS: SongVendorType[] = [
+  "beatport", "bandcamp", "amazon",
+  "traxsource", "junodownload", "qobuz", "hdtracks", "sevendigital",
+];
+
+// Regions tested in the Amazon sweep
 const AMAZON_REGIONS = ["US", "DE", "FR", "ES", "IT", "GB", "CA", "AU"] as const;
 
-// A small representative set for the Amazon regional sweep (avoids hammering servers)
 const AMAZON_SWEEP_SONGS: { title: string; artist: string; durationMs: number }[] = [
-  { title: "Get Lucky",       artist: "Daft Punk",    durationMs: 248_000 },
-  { title: "Blinding Lights", artist: "The Weeknd",   durationMs: 200_000 },
-  { title: "Strobe",          artist: "deadmau5",     durationMs: 637_000 },
+  { title: "Get Lucky",       artist: "Daft Punk",     durationMs: 248_000 },
+  { title: "Blinding Lights", artist: "The Weeknd",    durationMs: 200_000 },
+  { title: "Strobe",          artist: "deadmau5",      durationMs: 637_000 },
   { title: "bad guy",         artist: "Billie Eilish", durationMs: 194_000 },
   { title: "Midnight City",   artist: "M83",           durationMs: 243_000 },
 ];
+
+// ── CLI args ──────────────────────────────────────────────────────────────────
 
 const args = process.argv.slice(2);
 const AMAZON_SWEEP = args.includes("--amazon");
@@ -82,8 +98,13 @@ const REGION: string = (() => {
   const idx = args.indexOf("--region");
   return idx !== -1 && args[idx + 1] ? args[idx + 1]! : "GB";
 })();
+const SINGLE_VENDOR: SongVendorType | undefined = (() => {
+  const idx = args.indexOf("--vendor");
+  const name = idx !== -1 ? args[idx + 1] : undefined;
+  return name && name in VENDORS ? (name as SongVendorType) : undefined;
+})();
 
-// ── helpers ──────────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 const pad = (s: string, n: number) => s.slice(0, n).padEnd(n);
 
@@ -94,14 +115,14 @@ function fmt(res: Awaited<ReturnType<typeof fetchVendorData>>): string {
   return `✅ ${price}`;
 }
 
-/**
- * Resolve the accurate track duration from iTunes so that Beatport, Bandcamp
- * and Amazon matching gets precise input rather than our rough estimates.
- * Falls back to the hardcoded approximation if iTunes doesn't have the track.
- */
-async function resolveItunes(title: string, artist: string, fallbackMs: number, region = REGION): Promise<{ durationMs: number; itunesResult: Awaited<ReturnType<typeof fetchVendorData>> }> {
+async function resolveItunes(
+  title: string,
+  artist: string,
+  fallbackMs: number,
+  region = REGION,
+): Promise<{ durationMs: number; itunesResult: Awaited<ReturnType<typeof fetchVendorData>> }> {
   const itunesResult = await fetchVendorData({
-    vendorData: ITUNES_VENDOR,
+    vendorData: VENDORS.itunes,
     region,
     songData: { songId: "test", title, artist, duration: fallbackMs },
   });
@@ -109,59 +130,93 @@ async function resolveItunes(title: string, artist: string, fallbackMs: number, 
   return { durationMs, itunesResult };
 }
 
-// ── all-vendor test ───────────────────────────────────────────────────────────
+// ── Single-vendor run ─────────────────────────────────────────────────────────
 
-async function testSong(song: (typeof SONGS)[0]) {
-  const { title, artist, durationMs: approxMs } = song;
-  const songId = "test";
-
-  // Step 1: resolve exact duration from iTunes
-  const { durationMs, itunesResult } = await resolveItunes(title, artist, approxMs);
-
-  // Step 2: test Beatport, Bandcamp and Amazon with the resolved duration
-  const [beatport, bandcamp, amazon] = await Promise.all([
-    fetchVendorData({ vendorData: BEATPORT_VENDOR, region: REGION, songData: { songId, title, artist, duration: durationMs } }),
-    fetchVendorData({ vendorData: BANDCAMP_VENDOR, region: REGION, songData: { songId, title, artist, duration: durationMs } }),
-    fetchVendorData({ vendorData: AMAZON_VENDOR,   region: REGION, songData: { songId, title, artist, duration: durationMs } }),
-  ]);
-
-  return { title, artist, itunes: itunesResult, beatport, bandcamp, amazon };
-}
-
-async function runAllVendors() {
-  console.log("\n=== Vendor test run ===");
+async function runSingleVendor(vendorKey: SongVendorType) {
+  const vendor = VENDORS[vendorKey];
+  console.log(`\n=== Single-vendor test: ${vendorKey} ===`);
   console.log(`Region: ${REGION}  |  Songs: ${SONGS.length}\n`);
-  console.log(
-    `${"Song (title — artist)".padEnd(42)}  ${"iTunes".padEnd(18)}  ${"Beatport".padEnd(18)}  ${"Bandcamp".padEnd(18)}  ${"Amazon".padEnd(18)}`
-  );
-  console.log("─".repeat(125));
+  const col = 42;
+  const vcol = 20;
+  console.log(`${"Song (title — artist)".padEnd(col)}  ${"iTunes".padEnd(vcol)}  ${vendorKey.padEnd(vcol)}`);
+  console.log("─".repeat(col + vcol * 2 + 6));
 
-  let itunesHits = 0;
-  let beatportHits = 0;
-  let bandcampHits = 0;
-  let amazonHits = 0;
-
-  // Sequential to avoid hammering servers
+  let hits = 0;
   for (const song of SONGS) {
     try {
-      const result = await testSong(song);
-      const label = `${result.title} — ${result.artist}`;
-      const itunesFmt   = fmt(result.itunes);
-      const beatportFmt = fmt(result.beatport);
-      const bandcampFmt = fmt(result.bandcamp);
-      const amazonFmt   = fmt(result.amazon);
-      if (!("error" in result.itunes   && result.itunes.error))   itunesHits++;
-      if (!("error" in result.beatport && result.beatport.error)) beatportHits++;
-      if (!("error" in result.bandcamp && result.bandcamp.error)) bandcampHits++;
-      if (!("error" in result.amazon   && result.amazon.error))   amazonHits++;
-      console.log(`${pad(label, 42)}  ${pad(itunesFmt, 18)}  ${pad(beatportFmt, 18)}  ${pad(bandcampFmt, 18)}  ${pad(amazonFmt, 18)}`);
+      const { title, artist, durationMs: approxMs } = song;
+      const { durationMs, itunesResult } = await resolveItunes(title, artist, approxMs);
+      const result = await fetchVendorData({
+        vendorData: vendor,
+        region: REGION,
+        songData: { songId: "test", title, artist, duration: durationMs },
+      });
+      if (!("error" in result && result.error)) hits++;
+      const label = `${title} — ${artist}`;
+      console.log(`${pad(label, col)}  ${pad(fmt(itunesResult), vcol)}  ${pad(fmt(result), vcol)}`);
     } catch (e) {
-      console.log(`${pad(`${song.title} — ${song.artist}`, 42)}  ERROR: ${e instanceof Error ? e.message : e}`);
+      console.log(`${pad(`${song.title} — ${song.artist}`, col)}  ERROR: ${e instanceof Error ? e.message : e}`);
     }
   }
 
-  console.log("─".repeat(125));
-  console.log(`\nHits: iTunes ${itunesHits}/${SONGS.length}  |  Beatport ${beatportHits}/${SONGS.length}  |  Bandcamp ${bandcampHits}/${SONGS.length}  |  Amazon ${amazonHits}/${SONGS.length}`);
+  console.log("─".repeat(col + vcol * 2 + 6));
+  console.log(`\nHits: ${vendorKey} ${hits}/${SONGS.length}`);
+}
+
+// ── All-vendor run ────────────────────────────────────────────────────────────
+
+async function runAllVendors() {
+  const vendorsToShow = PRIMARY_VENDORS;
+  const colLabel = 42;
+  const colVendor = 20;
+  const itunesCol = colVendor;
+
+  console.log("\n=== Vendor test run ===");
+  console.log(`Region: ${REGION}  |  Songs: ${SONGS.length}\n`);
+
+  const header =
+    `${"Song (title — artist)".padEnd(colLabel)}  ${"iTunes".padEnd(itunesCol)}  ` +
+    vendorsToShow.map((v) => v.padEnd(colVendor)).join("  ");
+  console.log(header);
+  console.log("─".repeat(header.length));
+
+  const hits: Record<string, number> = Object.fromEntries(
+    ["itunes", ...vendorsToShow].map((v) => [v, 0]),
+  );
+
+  for (const song of SONGS) {
+    try {
+      const { title, artist, durationMs: approxMs } = song;
+      const { durationMs, itunesResult } = await resolveItunes(title, artist, approxMs);
+      if (!("error" in itunesResult && itunesResult.error)) hits["itunes"]!++;
+
+      const results = await Promise.all(
+        vendorsToShow.map((v) =>
+          fetchVendorData({
+            vendorData: VENDORS[v],
+            region: REGION,
+            songData: { songId: "test", title, artist, duration: durationMs },
+          }),
+        ),
+      );
+
+      results.forEach((r, i) => {
+        if (!("error" in r && r.error)) hits[vendorsToShow[i]!]!++;
+      });
+
+      const label = `${title} — ${artist}`;
+      const cells = results.map((r) => pad(fmt(r), colVendor)).join("  ");
+      console.log(`${pad(label, colLabel)}  ${pad(fmt(itunesResult), itunesCol)}  ${cells}`);
+    } catch (e) {
+      console.log(`${pad(`${song.title} — ${song.artist}`, colLabel)}  ERROR: ${e instanceof Error ? e.message : e}`);
+    }
+  }
+
+  console.log("─".repeat(header.length));
+  const hitLine = ["itunes", ...vendorsToShow]
+    .map((v) => `${v} ${hits[v]}/${SONGS.length}`)
+    .join("  ");
+  console.log(`\nHits: ${hitLine}`);
 }
 
 // ── Amazon regional sweep ─────────────────────────────────────────────────────
@@ -180,31 +235,26 @@ async function runAmazonSweep() {
 
   for (const song of AMAZON_SWEEP_SONGS) {
     const { title, artist, durationMs: approxMs } = song;
-    // Resolve duration once from US iTunes (most reliable)
     const { durationMs } = await resolveItunes(title, artist, approxMs, "US");
 
-    // Test all regions in parallel
     const results = await Promise.all(
       AMAZON_REGIONS.map((region) =>
         fetchVendorData({
-          vendorData: AMAZON_VENDOR,
+          vendorData: VENDORS.amazon,
           region,
           songData: { songId: "test", title, artist, duration: durationMs },
-        })
-      )
+        }),
+      ),
     );
 
     const label = `${title} — ${artist}`;
     const cells = results.map((res, i) => {
       const r = AMAZON_REGIONS[i]!;
-      const cell = fmt(res);
       if (!("error" in res && res.error)) hits[r]!++;
-      return pad(cell, regionCol);
+      return pad(fmt(res), regionCol);
     });
     console.log(`${pad(label, songCol)}  ${cells.join("  ")}`);
 
-    // Pause between songs to avoid triggering Amazon's IP-rate-limit WAF.
-    // (Not needed in production where each serverless invocation has a fresh IP.)
     await new Promise((r) => setTimeout(r, 3000));
   }
 
@@ -213,11 +263,13 @@ async function runAmazonSweep() {
   console.log(`\nHits  ${hitLine}`);
 }
 
-// ── entry point ───────────────────────────────────────────────────────────────
+// ── Entry point ───────────────────────────────────────────────────────────────
 
 async function main() {
   if (AMAZON_SWEEP) {
     await runAmazonSweep();
+  } else if (SINGLE_VENDOR) {
+    await runSingleVendor(SINGLE_VENDOR);
   } else {
     await runAllVendors();
   }

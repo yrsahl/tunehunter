@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- HDTracks — dark navy background, white HD mark -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#001f4d"/>
+  <!-- H: left post -->
+  <rect x="60"  y="120" width="60" height="272" rx="8" fill="#ffffff"/>
+  <!-- H: crossbar -->
+  <rect x="60"  y="220" width="160" height="60"  rx="8" fill="#ffffff"/>
+  <!-- H: right post -->
+  <rect x="160" y="120" width="60" height="272" rx="8" fill="#ffffff"/>
+  <!-- D: vertical post -->
+  <rect x="264" y="120" width="60" height="272" rx="8" fill="#ffffff"/>
+  <!-- D: curved right side -->
+  <path d="M324 120 Q452 120 452 256 Q452 392 324 392" stroke="#ffffff" stroke-width="60" fill="none" stroke-linecap="butt"/>
+</svg>

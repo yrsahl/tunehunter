@@ -1,7 +1,8 @@
 import { api } from "@/lib/api";
+import { songVendorArray } from "@/server/db/schema";
 import type { NextPage } from "next";
 
-const vendors = ["itunes", "bandcamp", "beatport", "amazon"] as const;
+const vendors = songVendorArray;
 
 type ServiceRow = {
   name: string;

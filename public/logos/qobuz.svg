@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Qobuz — white background, brand navy #002C5F -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#ffffff"/>
+  <!-- Q: outer circle -->
+  <circle cx="240" cy="240" r="148" stroke="#002C5F" stroke-width="72" fill="none"/>
+  <!-- Q: tail -->
+  <line x1="340" y1="330" x2="430" y2="420" stroke="#002C5F" stroke-width="72" stroke-linecap="round"/>
+</svg>

@@ -10,10 +10,15 @@ import * as schema from "./schema";
 const db = drizzle(neon(process.env.DATABASE_URL!), { schema });
 
 const VENDOR_METADATA: Record<string, { quality: string; format: string }> = {
-  itunes:   { quality: "256kbps", format: "AAC" },
-  amazon:   { quality: "256kbps", format: "MP3" },
-  beatport: { quality: "320kbps", format: "MP3 & WAV" },
-  bandcamp: { quality: "Variable", format: "Multiple" },
+  itunes:       { quality: "256kbps",              format: "AAC" },
+  amazon:       { quality: "256kbps",              format: "MP3" },
+  beatport:     { quality: "320kbps",              format: "MP3 & WAV" },
+  bandcamp:     { quality: "Variable",             format: "Multiple" },
+  traxsource:   { quality: "320kbps",              format: "MP3 & WAV" },
+  junodownload: { quality: "Variable",             format: "MP3 & WAV & FLAC" },
+  qobuz:        { quality: "Up to 24-bit/192kHz",  format: "FLAC & MP3" },
+  hdtracks:     { quality: "Up to 24-bit/192kHz",  format: "FLAC & More" },
+  sevendigital: { quality: "320kbps",              format: "MP3" },
 };
 
 const vendors = await db.query.songVendors.findMany();
